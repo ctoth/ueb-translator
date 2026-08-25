@@ -5,7 +5,7 @@ const config: ViteUserConfigExport = defineConfig({
   test: {
     coverage: {
       enabled: true,
-      include: ["src/**/*.ts"],
+      include: ["src/**/*.ts", "tools/rule-compiler/src/**/*.ts"],
       provider: "v8",
       reporter: ["text", "json-summary"],
       thresholds: {

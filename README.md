@@ -29,6 +29,8 @@ if (result.ok) {
 - Zero runtime dependencies and browser-native ECMAScript modules.
 - Package size, minified size, and compressed size are measured, not guessed.
 
+The [compiler architecture](https://github.com/ctoth/ueb-translator/blob/main/docs/ARCHITECTURE.md) documents the selected finite-state algorithms, source-rule provenance, and package boundary. Run `npm run size` for a reproducible raw, minified, gzip, and Brotli byte report.
+
 ## Status
 
 The first milestone establishes strict compilation, provenance rules, and the
