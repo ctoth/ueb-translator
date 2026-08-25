@@ -34,6 +34,19 @@ The generated graph uses five arrays:
 
 The walker binary-searches each state's edge range and remembers the most recent final state, giving deterministic longest matching. Failures report the first unmatched Unicode scalar using both scalar and UTF-16 code-unit offsets and return no partial output.
 
+## Uncontracted mode scanner
+
+Grade 1 input is parsed once into a closed discriminated union of validated
+letters, digits, symbols, spaces, and line boundaries. That makes unsupported
+input a perimeter result and leaves the mode scanner unable to observe a token
+without a standards-defined output. The scanner then makes one left-to-right
+pass, carrying only numeric mode and the preceding unit required by UEB's
+question-mark disambiguation rule. Maximal letter and symbols-sequence spans
+select capital word and passage indicators; explicit document nodes carry
+typeform and Braille-grouping semantics that cannot be recovered from plain
+text. This is a specialized sequential transducer in Mohri's sense, with UEB
+Sections 3-9 defining the transitions and outputs.
+
 ## Provenance and rejection
 
 Compilation returns a separate provenance object containing normalized source rules plus the rule identifiers responsible for every state and every output. It is never part of the runtime object. Compilation fails for:

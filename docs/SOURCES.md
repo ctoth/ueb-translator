@@ -31,6 +31,14 @@ official rule or symbol being exercised.
 
 Every additional algorithm must be cited here and at its implementation site.
 
+## Test methodology
+
+- `fast-check` supplies runner-independent property generation, reproducible
+  seeds, and counterexample shrinking for deterministic translation invariants.
+  <https://fast-check.dev/docs/introduction/>
+- Vitest Browser Mode with its Playwright provider executes the built ESM entry
+  point in headless Chromium. <https://vitest.dev/guide/browser/>
+
 ## Non-normative corpora
 
 - Project Gutenberg will provide public-domain literary text for coverage,

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "browser-test/**/*.ts",
+    "vitest.browser.config.ts"
+  ]
+}
