@@ -1,0 +1,20 @@
+# Abstract
+
+## Original Text (Verbatim)
+
+In this paper, we describe a new method for constructing minimal, deterministic,
+acyclic finite-state automata from a set of strings. Traditional methods consist of
+two phases: the first to construct a trie, the second one to minimize it. Our
+approach is to construct a minimal automaton in a single phase by adding new strings
+one by one and minimizing the resulting automaton on-the-fly. We present a general
+algorithm as well as a specialization that relies upon the lexicographical ordering
+of the input strings. Our method is fast and significantly lowers memory
+requirements in comparison to other methods.
+
+---
+
+## Our Interpretation
+
+The sorted specialization is ideal for a build-time rule compiler because source
+rules can be sorted deterministically at negligible cost. It yields a canonical
+minimal graph without ever materializing the full unminimized trie.

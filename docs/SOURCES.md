@@ -21,6 +21,13 @@ official rule or symbol being exercised.
 1. The Unicode Consortium, *The Unicode Standard*, Braille Patterns block,
    U+2800-U+28FF. Dot `n` is represented by bit `n - 1` in the code point's
    low byte. <https://www.unicode.org/charts/PDF/U2800.pdf>
+2. Jan Daciuk, Stoyan Mihov, Bruce W. Watson, and Richard E. Watson,
+   *Incremental Construction of Minimal Acyclic Finite-State Automata*, 2000.
+   The sorted incremental construction and its terminal-output transducer
+   extension define the rule compiler. <https://aclanthology.org/J00-1002/>
+3. Mehryar Mohri, *Finite-State Transducers in Language and Speech Processing*,
+   1997. Sequential transducer semantics and the determinization/minimization
+   boundary define the browser runtime model. <https://aclanthology.org/J97-2003/>
 
 Every additional algorithm must be cited here and at its implementation site.
 
