@@ -1,0 +1,66 @@
+name: Liblouis oracle
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      # Official release and asset digest:
+      # https://github.com/liblouis/liblouis/releases/tag/v3.38.0
+      LIBLOUIS_VERSION: "3.38.0"
+      LIBLOUIS_SHA256: "afb26096b18b17f43e6055e6a79ce0058eb9dbdcdcc4597522dcd7f11915ec16"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install project development dependencies
+        run: npm ci
+
+      - name: Build pinned Liblouis release
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/liblouis-${LIBLOUIS_VERSION}.tar.gz"
+          source_dir="$RUNNER_TEMP/liblouis-${LIBLOUIS_VERSION}"
+          install_dir="$RUNNER_TEMP/liblouis-install"
+          url="https://github.com/liblouis/liblouis/releases/download/v${LIBLOUIS_VERSION}/liblouis-${LIBLOUIS_VERSION}.tar.gz"
+
+          curl --fail --location --proto '=https' --tlsv1.2 "$url" --output "$archive"
+          echo "${LIBLOUIS_SHA256}  ${archive}" | sha256sum --check --strict
+          tar --extract --gzip --file "$archive" --directory "$RUNNER_TEMP"
+          cd "$source_dir"
+          ./configure --prefix="$install_dir" --without-yaml
+          make --jobs="$(nproc)"
+          make install
+
+      - name: Type-check oracle adapter
+        run: npm run oracle:typecheck
+
+      - name: Test oracle protocol
+        run: npm run oracle:test
+
+      - name: Build oracle adapter
+        run: npm run oracle:build
+
+      - name: Smoke-check process boundary and UEB table mappings
+        env:
+          # lou_translate's table-path behavior is documented at:
+          # https://liblouis.io/documentation/liblouis/How-tables-are-found.html
+          LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
+          LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
+        run: npm run oracle:smoke
