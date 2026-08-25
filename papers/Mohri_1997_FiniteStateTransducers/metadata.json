@@ -1,0 +1,13 @@
+{
+  "cite_key": "mohri1997transducers",
+  "title": "Finite-State Transducers in Language and Speech Processing",
+  "authors": [
+    "Mehryar Mohri"
+  ],
+  "year": "1997",
+  "doi": "10.1162/coli.1997.23.2.269",
+  "abstract": "A theoretical and algorithmic treatment of sequential string and weighted transducers, including characterizations and efficient determinization and minimization algorithms with speech-recognition applications.",
+  "url": "https://aclanthology.org/J97-2003/",
+  "pdf_url": "https://aclanthology.org/J97-2003.pdf",
+  "document_type": "article"
+}

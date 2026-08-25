@@ -1,0 +1,17 @@
+{
+  "cite_key": "daciuk2000incremental",
+  "title": "Incremental Construction of Minimal Acyclic Finite-State Automata",
+  "authors": [
+    "Jan Daciuk",
+    "Stoyan Mihov",
+    "Bruce W. Watson",
+    "Richard E. Watson"
+  ],
+  "year": "2000",
+  "arxiv_id": "cs/0007009",
+  "doi": "10.1162/089120100561601",
+  "abstract": "A method for constructing minimal deterministic acyclic finite-state automata incrementally from sorted or unsorted finite string sets, reducing intermediate memory compared with constructing and then minimizing a complete trie.",
+  "url": "https://aclanthology.org/J00-1002/",
+  "pdf_url": "https://aclanthology.org/J00-1002.pdf",
+  "document_type": "article"
+}
