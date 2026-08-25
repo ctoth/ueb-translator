@@ -3,6 +3,11 @@ import type { ViteUserConfigExport } from "vitest/config";
 
 const config: ViteUserConfigExport = defineConfig({
   test: {
+    include: [
+      "test/**/*.test.ts",
+      "tools/liblouis-oracle/test/**/*.test.ts",
+      "tools/rule-compiler/test/**/*.test.ts",
+    ],
     coverage: {
       enabled: true,
       include: ["src/**/*.ts", "tools/rule-compiler/src/**/*.ts"],
