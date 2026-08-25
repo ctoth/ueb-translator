@@ -19,7 +19,7 @@
   "scripts": {
     "browser:test": "vitest run --config vitest.browser.config.ts",
     "browser:typecheck": "tsc -p tsconfig.browser.json --noEmit",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node scripts/clean-dist.mts && tsc -p tsconfig.build.json",
     "check": "npm run build && npm run typecheck && npm run browser:typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run browser:test && npm run oracle:test",
     "lint": "eslint .",
     "oracle": "node node_modules/.cache/ueb-translator/liblouis-oracle/cli.js",
