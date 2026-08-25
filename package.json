@@ -17,7 +17,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node scripts/clean-dist.mts && tsc -p tsconfig.build.json",
     "check": "npm run typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run oracle:test",
     "lint": "eslint .",
     "oracle": "node node_modules/.cache/ueb-translator/liblouis-oracle/cli.js",
