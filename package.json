@@ -36,7 +36,12 @@
     "browser:test": "vitest run --config vitest.browser.config.ts",
     "browser:typecheck": "tsc -p tsconfig.browser.json --noEmit",
     "build": "node scripts/clean-dist.mts && tsc -p tsconfig.build.json",
-    "check": "npm run grade2:generate:check && npm run build && npm run typecheck && npm run browser:typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run browser:test && npm run oracle:test",
+    "check": "npm run grade2:generate:check && npm run build && npm run corpus:build && npm run corpus:smoke && npm run typecheck && npm run browser:typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run browser:test && npm run oracle:test",
+    "corpus:benchmark": "npm run corpus:build && node node_modules/.cache/ueb-translator/corpus-benchmark/tools/corpus-benchmark/cli.mjs benchmark",
+    "corpus:build": "tsc -p tools/corpus-benchmark/tsconfig.build.json",
+    "corpus:prepare": "npm run corpus:build && node node_modules/.cache/ueb-translator/corpus-benchmark/tools/corpus-benchmark/cli.mjs prepare",
+    "corpus:smoke": "node node_modules/.cache/ueb-translator/corpus-benchmark/tools/corpus-benchmark/smoke.mjs",
+    "corpus:typecheck": "tsc -p tools/corpus-benchmark/tsconfig.json --noEmit",
     "grade2:generate": "npm run grade2:rules:build && node scripts/generate-grade2.mts",
     "grade2:generate:check": "npm run grade2:rules:build && node scripts/generate-grade2.mts --check",
     "grade2:rules:build": "tsc -p rules/ueb-2024/tsconfig.build.json",
@@ -50,7 +55,7 @@
     "rules:typecheck": "tsc -p tools/rule-compiler/tsconfig.json --noEmit",
     "size": "node scripts/report-size.mts",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit && npm run corpus:typecheck"
   },
   "engines": {
     "node": ">=22"

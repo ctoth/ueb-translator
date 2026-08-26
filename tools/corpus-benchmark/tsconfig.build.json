@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "isolatedDeclarations": false,
+    "noEmit": false,
+    "noEmitOnError": true,
+    "outDir": "../../node_modules/.cache/ueb-translator/corpus-benchmark",
+    "rootDir": "../.."
+  },
+  "include": [
+    "../../src/**/*.ts",
+    "./*.mts",
+    "./src/**/*.ts"
+  ]
+}
