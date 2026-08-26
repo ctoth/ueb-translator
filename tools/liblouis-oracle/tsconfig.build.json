@@ -4,9 +4,9 @@
     "noEmit": false,
     "noEmitOnError": true,
     "outDir": "../../node_modules/.cache/ueb-translator/liblouis-oracle",
-    "rootDir": "src",
+    "rootDir": "../..",
     "sourceMap": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["../../src/**/*.ts", "src/**/*.ts"],
   "exclude": ["test/**/*.ts"]
 }

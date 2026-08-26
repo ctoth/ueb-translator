@@ -65,9 +65,32 @@ Run `npm run oracle:smoke` with the environment above to verify the pinned
 binary and all table mappings. The smoke check validates only process health
 and Unicode Braille output; it contains no expected Liblouis translations.
 
+## Differential failures
+
+`npm run oracle:compare` accepts project-owned local results, invokes only a
+forward Liblouis translation, and compares the two ephemeral outputs. A case
+must identify its local evidence with one of two closed variants:
+
+```json
+{"caseId":"example","local":{"kind":"rule","ruleId":"UEB-10.3-and"},"localOutput":"⠯","mode":"grade2","print":"and"}
+```
+
+The alternative local variant is
+`{"kind":"test","testId":"path:test-name"}`. A disagreement exits nonzero
+and emits the input, both outputs, the local identifier, Liblouis version and
+tables, plus an instruction to adjudicate against ICEB. It never edits or
+accepts a fixture, test, rule, or translation.
+
+CI runs `oracle:differential:smoke` after the process smoke. That script obtains
+each local output from the current project translator at runtime, so no
+Liblouis-derived expected output or generated translation is committed. Its
+project-owned cases cover Grade 1, the generated Grade 2 rule identifier, and
+raw technical text. Each JSON result names the exact Liblouis version and table
+list. Any disagreement fails the job while preserving both outputs as CI
+evidence for ICEB adjudication.
+
 [release]: https://github.com/liblouis/liblouis/releases/tag/v3.38.0
 [g1]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g1.ctb
 [g2]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g2.ctb
 [math]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-math.ctb
 [cli]: https://liblouis.io/documentation/liblouis/lou_005ftranslate-_0028program_0029.html
-

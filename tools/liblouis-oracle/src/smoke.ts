@@ -20,20 +20,19 @@ function isUnicodeBraille(value: string): boolean {
 async function main(): Promise<void> {
   const executable = process.env["LIBLOUIS_ORACLE_BIN"] ?? "lou_translate";
   const version = await verifyOracleVersion(executable);
-  const checkedModes: string[] = [];
+  const checked: { readonly mode: string; readonly tables: readonly string[] }[] = [];
 
   for (const request of requests) {
     const response = await runOracleTranslation(executable, request, version);
     if (response.output.length === 0 || !isUnicodeBraille(response.output)) {
       throw new Error(`${request.mode} did not return Unicode Braille cells`);
     }
-    checkedModes.push(request.mode);
+    checked.push({ mode: request.mode, tables: response.oracle.tables });
   }
 
   process.stdout.write(
-    `${JSON.stringify({ checkedModes, ok: true, version: LIBLOUIS_ORACLE_VERSION })}\n`,
+    `${JSON.stringify({ checked, ok: true, version: LIBLOUIS_ORACLE_VERSION })}\n`,
   );
 }
 
 void main();
-
