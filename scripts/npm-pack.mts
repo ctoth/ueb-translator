@@ -27,6 +27,10 @@ function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function isUnknownArray(value: unknown): value is readonly unknown[] {
+  return Array.isArray(value);
+}
+
 function requiredString(
   record: Readonly<Record<string, unknown>>,
   key: string,
@@ -51,12 +55,12 @@ function requiredNumber(
 
 export function parseNpmPackOutput(output: string): PackedPackage {
   const parsed: unknown = JSON.parse(output);
-  if (!Array.isArray(parsed) || parsed.length !== 1 || !isRecord(parsed[0])) {
+  if (!isUnknownArray(parsed) || parsed.length !== 1 || !isRecord(parsed[0])) {
     throw new Error("npm pack did not return exactly one package record.");
   }
   const record = parsed[0];
   const rawFiles = record["files"];
-  if (!Array.isArray(rawFiles)) {
+  if (!isUnknownArray(rawFiles)) {
     throw new Error("npm pack did not return a file inventory.");
   }
   const files: PackedFile[] = [];
