@@ -25,13 +25,12 @@ export type {
 export type {
   Grade1TranslationRequest,
   Grade2TranslationRequest,
-  TechnicalInput,
-  TechnicalTextInput,
   TechnicalTranslationRequest,
   UebTranslationMode,
   UebTranslationRequest,
   UebTranslationResult,
 } from "./translate.js";
+export type { TechnicalInput, TechnicalTextInput } from "./technical.js";
 export type {
   CompiledTransducer,
   TransducerNoMatchingRule,

@@ -3,14 +3,34 @@ import {
   constants,
   gzipSync,
 } from "node:zlib";
+import { resolve } from "node:path";
 
 import { build } from "esbuild";
+import { npmPack } from "./npm-pack.mts";
 
 interface BundleSizes {
   readonly brotli: number;
   readonly gzip: number;
   readonly minified: number;
   readonly raw: number;
+}
+
+interface PackageSizes {
+  readonly files: number;
+  readonly packed: number;
+  readonly unpacked: number;
+}
+
+function packageSizes(): PackageSizes {
+  const packedPackage = npmPack({
+    cwd: resolve(import.meta.dirname, ".."),
+    kind: "dry-run",
+  });
+  return {
+    files: packedPackage.files.length,
+    packed: packedPackage.size,
+    unpacked: packedPackage.unpackedSize,
+  };
 }
 
 async function browserBundle(
@@ -55,7 +75,12 @@ console.log(
   JSON.stringify(
     {
       backtranslation: await measure("src/backtranslation.ts"),
-      literary: await measure("src/index.ts"),
+      cells: await measure("src/cell.ts"),
+      combined: await measure("src/index.ts"),
+      grade1: await measure("src/grade1.ts"),
+      grade2: await measure("src/grade2.ts"),
+      grade2Diagnostics: await measure("src/grade2-diagnostics.ts"),
+      package: packageSizes(),
       technical: await measure("src/technical.ts"),
       unit: "bytes",
     },

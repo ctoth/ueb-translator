@@ -9,9 +9,8 @@ import {
   type Grade2Result,
 } from "./grade2.js";
 import {
-  translateTechnical,
-  translateTechnicalText,
-  type TechnicalDocument,
+  translateTechnicalInput,
+  type TechnicalInput,
   type TechnicalResult,
   type TechnicalTextResult,
 } from "./technical.js";
@@ -25,13 +24,6 @@ export interface Grade2TranslationRequest {
   readonly input: Grade2Document | string;
   readonly mode: "grade2";
 }
-
-export interface TechnicalTextInput {
-  readonly kind: "technical-text";
-  readonly text: string;
-}
-
-export type TechnicalInput = TechnicalDocument | TechnicalTextInput;
 
 export interface TechnicalTranslationRequest {
   readonly input: TechnicalInput;
@@ -65,11 +57,6 @@ export function translateUeb(
         ? translateGrade2(request.input)
         : translateGrade2(request.input);
     case "technical":
-      switch (request.input.kind) {
-        case "technical-document":
-          return translateTechnical(request.input);
-        case "technical-text":
-          return translateTechnicalText(request.input.text);
-      }
+      return translateTechnicalInput(request.input);
   }
 }

@@ -33,15 +33,19 @@ describe("published size report", () => {
       "combined",
       "grade1",
       "grade2",
+      "grade2Diagnostics",
       "package",
       "technical",
       "unit",
     ]);
     expect(parsed["unit"]).toBe("bytes");
-    expect(parsed["package"]).toMatchObject({
-      files: expect.any(Number),
-      packed: expect.any(Number),
-      unpacked: expect.any(Number),
-    });
+    const packageReport = parsed["package"];
+    expect(isRecord(packageReport)).toBe(true);
+    if (!isRecord(packageReport)) {
+      return;
+    }
+    expect(typeof packageReport["files"]).toBe("number");
+    expect(typeof packageReport["packed"]).toBe("number");
+    expect(typeof packageReport["unpacked"]).toBe("number");
   }, 65_000);
 });

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "declaration": true,
@@ -23,6 +24,7 @@
     "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "rewriteRelativeImportExtensions": true,
     "strict": true,
     "strictBindCallApply": true,
     "strictBuiltinIteratorReturn": true,
