@@ -6,10 +6,20 @@ import {
 
 import { build } from "esbuild";
 
-async function browserBundle(minify: boolean): Promise<Uint8Array> {
+interface BundleSizes {
+  readonly brotli: number;
+  readonly gzip: number;
+  readonly minified: number;
+  readonly raw: number;
+}
+
+async function browserBundle(
+  entryPoint: string,
+  minify: boolean,
+): Promise<Uint8Array> {
   const result = await build({
     bundle: true,
-    entryPoints: ["src/index.ts"],
+    entryPoints: [entryPoint],
     format: "esm",
     legalComments: "none",
     minify,
@@ -24,22 +34,28 @@ async function browserBundle(minify: boolean): Promise<Uint8Array> {
   return output.contents;
 }
 
-const raw = await browserBundle(false);
-const minified = await browserBundle(true);
-const gzip = gzipSync(minified, { level: 9 });
-const brotli = brotliCompressSync(minified, {
-  params: {
-    [constants.BROTLI_PARAM_QUALITY]: 11,
-  },
-});
+async function measure(entryPoint: string): Promise<BundleSizes> {
+  const raw = await browserBundle(entryPoint, false);
+  const minified = await browserBundle(entryPoint, true);
+  const gzip = gzipSync(minified, { level: 9 });
+  const brotli = brotliCompressSync(minified, {
+    params: {
+      [constants.BROTLI_PARAM_QUALITY]: 11,
+    },
+  });
+  return {
+    brotli: brotli.byteLength,
+    gzip: gzip.byteLength,
+    minified: minified.byteLength,
+    raw: raw.byteLength,
+  };
+}
 
 console.log(
   JSON.stringify(
     {
-      brotli: brotli.byteLength,
-      gzip: gzip.byteLength,
-      minified: minified.byteLength,
-      raw: raw.byteLength,
+      literary: await measure("src/index.ts"),
+      technical: await measure("src/technical.ts"),
       unit: "bytes",
     },
     undefined,

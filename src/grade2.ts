@@ -58,6 +58,8 @@ export type Grade2Result =
   | Grade2Success
   | Grade2UnsupportedCharacter;
 
+export type Grade2TextResult = Grade2Success | Grade2UnsupportedCharacter;
+
 export type Grade2AppliedRule = ContextualAppliedRule;
 
 export interface Grade2InternalSuccess extends Grade2Success {
@@ -427,6 +429,8 @@ export function translateGrade2Internal(
 }
 
 /** Translate print to deterministic contracted UEB. */
+export function translateGrade2(input: string): Grade2TextResult;
+export function translateGrade2(input: Grade2Document): Grade2Result;
 export function translateGrade2(input: string | Grade2Document): Grade2Result {
   const result = translateGrade2Internal(input);
   if (!result.ok) {

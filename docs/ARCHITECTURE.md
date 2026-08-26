@@ -84,6 +84,30 @@ typeform and Braille-grouping semantics that cannot be recovered from plain
 text. This is a specialized sequential transducer in Mohri's sense, with UEB
 Sections 3-9 defining the transitions and outputs.
 
+## Structured technical runtime
+
+The technical entry point is a closed recursive algebra over print identity and
+layout semantics. One post-order traversal validates leaf values, emits the
+official UEB cells, and carries grade-1 protection offsets with each successful
+subtree. Offsets are shifted as fractions, scripts, radicals, groups,
+modifiers, functions, shapes, and operations compose; invalid children return
+through the same typed result path. There is no second parse and no recovery of
+an expression tree from a visually ambiguous string.
+
+For the preferred July 2025 grade-1 policy, a final linear scan partitions the
+emitted expression at Braille spaces, filters standing-only protection sites,
+and applies the source's symbol/word/passage counts. The alternative
+`all-technical` policy wraps the expression directly. Both passes are linear in
+the emitted cells and independent of rule-inventory size. Finite sign
+inventories are exhaustive `satisfies Record<ClosedUnion, string>` tables, so a
+new public atom cannot compile without a cell mapping.
+
+Matrix rows and displayed computer lines remain explicit blocks. The matrix
+walker preserves caller-provided rows, columns, enclosure, and gap policy;
+computer spacing converts only internal cells of an explicitly significant
+three-or-more-space run. Width-aware line breaking and tactile diagram drawing
+are later layout concerns, not hidden translation heuristics.
+
 ## Provenance and rejection
 
 Compilation returns a separate provenance object containing normalized source rules plus the rule identifiers responsible for every state and every output. It is never part of the runtime object. Compilation fails for:

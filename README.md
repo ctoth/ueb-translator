@@ -49,6 +49,40 @@ const result = translateGrade2("You should receive your letter.");
 Rule traces are intentionally separate from the ordinary browser path and are
 available from `ueb-translator/grade2/diagnostics` for conformance work.
 
+Technical UEB is also a separate browser entry point. Plain text preserves the
+print symbols actually supplied; stacked fractions, scripts, radicals,
+matrices, chemistry, and significant computer layout use explicit structure:
+
+```ts
+import {
+  translateTechnical,
+  type TechnicalDocument,
+} from "ueb-translator/technical";
+
+const document = {
+  kind: "technical-document",
+  profile: {
+    grade1: "preferred",
+    jurisdiction: "international",
+    operationSpacing: "unspaced",
+  },
+  blocks: [{
+    kind: "expression",
+    expression: {
+      kind: "general-fraction",
+      numerator: { kind: "identifier", value: "x" },
+      denominator: { kind: "number", value: "2" },
+    },
+  }],
+} satisfies TechnicalDocument;
+
+const result = translateTechnical(document);
+```
+
+The [technical contract](https://github.com/ctoth/ueb-translator/blob/main/docs/TECHNICAL.md)
+lists the closed variants, regional policies, official source precedence, and
+the boundary where raw strings must not be treated as a visual notation tree.
+
 ## Design constraints
 
 - UEB only: uncontracted (grade 1), contracted (grade 2), and technical UEB.
