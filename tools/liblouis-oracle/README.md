@@ -88,6 +88,8 @@ Grade 2 provenance rule contributes a source example and a second context, and
 the inventory retains relevant official-example Grade 1, Grade 2, and raw
 technical fixtures. Construction fails below 1,000 uniquely identified cases or
 when a case does not exercise its claimed rule provenance.
+Case identifiers are stable reconciliation keys; change one only when its input
+or local evidence identity changes, so obsolete ledger entries remain visible.
 
 [`disagreements.json`](../disagreements.json) is a tracked, versioned report of
 the exact disagreements from the pinned release. Every entry records both
