@@ -1,7 +1,25 @@
 {
   "name": "ueb-translator",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A tiny, standards-driven Unified English Braille translator for browsers.",
+  "keywords": [
+    "accessibility",
+    "braille",
+    "browser",
+    "typescript",
+    "ueb"
+  ],
+  "homepage": "https://github.com/ctoth/ueb-translator#readme",
+  "bugs": {
+    "url": "https://github.com/ctoth/ueb-translator/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctoth/ueb-translator.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -67,9 +85,6 @@
     "size": "npm run --silent build && node scripts/report-size.mts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit && npm run corpus:typecheck"
-  },
-  "engines": {
-    "node": ">=22"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
