@@ -31,6 +31,10 @@ official rule or symbol being exercised.
 4. Richard Bellman, *On the Theory of Dynamic Programming*, 1952. Bellman's
    optimality recurrence defines contracted-rule selection over the acyclic
    segmentation graph. <https://doi.org/10.1073/pnas.38.8.716>
+5. National Institute of Standards and Technology, *Secure Hash Standard
+   (SHS)*, FIPS PUB 180-4. SHA-256 content digests define the immutable corpus
+   records and the sealed train/holdout partition.
+   <https://csrc.nist.gov/pubs/fips/180-4/upd1/final>
 
 Every additional algorithm must be cited here and at its implementation site.
 
@@ -46,9 +50,10 @@ Every additional algorithm must be cited here and at its implementation site.
 
 - Project Gutenberg will provide public-domain literary text for coverage,
   performance, and compression experiments.
-- English Wikinews is the proposed modern journalistic corpus; its official
-  Wikimedia dump is licensed under CC BY 2.5. Corpus snapshots and attribution
-  must remain outside the npm artifact.
+- English Wikinews supplies modern journalistic prose from official Wikimedia
+  dumps. Its text is public domain, CC BY 2.5, or CC BY 4.0 according to the
+  article's publication date. Corpus snapshots and attribution remain outside
+  the npm artifact. <https://en.wikinews.org/wiki/Wikinews:Copyright>
 
 Corpora never establish expected Braille. Rule-linked tests from normative
 sources do.
