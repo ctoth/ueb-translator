@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  invertContextualProgram,
   runContextualTransducer,
   type ContextualTransducerProgram,
 } from "../src/contextual-transducer.js";
@@ -62,5 +63,38 @@ describe("runContextualTransducer", () => {
       ...suffixGuardProgram,
       rules: [],
     })).toThrow(/missing rule/u);
+  });
+});
+
+describe("invertContextualProgram", () => {
+  it("fails closed when compact inverse arrays disagree", () => {
+    expect(() => invertContextualProgram({
+      ...suffixGuardProgram,
+      matcher: [
+        ["ab"],
+        suffixGuardProgram.matcher[1],
+        suffixGuardProgram.matcher[2],
+        suffixGuardProgram.matcher[3],
+        "",
+        suffixGuardProgram.matcher[5],
+      ],
+    })).toThrow(/malformed rule count/u);
+
+    expect(() => invertContextualProgram({
+      ...suffixGuardProgram,
+      rules: [],
+    })).toThrow(/missing rule/u);
+
+    expect(() => invertContextualProgram({
+      ...suffixGuardProgram,
+      matcher: [
+        [],
+        suffixGuardProgram.matcher[1],
+        suffixGuardProgram.matcher[2],
+        suffixGuardProgram.matcher[3],
+        "",
+        suffixGuardProgram.matcher[5],
+      ],
+    })).toThrow(/unindexed inverse rules/u);
   });
 });
