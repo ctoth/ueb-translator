@@ -93,6 +93,16 @@ describe("Liblouis differential case protocol", () => {
     [
       {
         caseId: "x",
+        local: { kind: "test", testId: "x", unexpected: true },
+        localOutput: "",
+        mode: "grade1",
+        print: "",
+      },
+      "unknown test evidence field: unexpected",
+    ],
+    [
+      {
+        caseId: "x",
         local: { kind: "corpus", testId: "x" },
         localOutput: "",
         mode: "grade1",
@@ -220,5 +230,30 @@ describe("compareOracleTranslation", () => {
     expect(() =>
       compareOracleTranslation(case_, { ...oracle, id: "another-case" }),
     ).toThrow("does not match");
+  });
+
+  it("fails with both outputs and the local test identifier", () => {
+    const testCase = {
+      ...case_,
+      local: { kind: "test", testId: "grade2.test.ts:and" },
+    } as const;
+    const comparison = compareOracleTranslation(testCase, {
+      ...oracle,
+      output: "⠁⠝⠙",
+    });
+
+    expect(comparison).toMatchObject({
+      error: {
+        code: "translation-disagreement",
+        message:
+          "case-1 disagrees at local test grade2.test.ts:and; adjudicate against ICEB",
+      },
+      evidence: {
+        local: { kind: "test", output: "⠯", testId: "grade2.test.ts:and" },
+        oracle: { output: "⠁⠝⠙" },
+      },
+      kind: "disagreement",
+      ok: false,
+    });
   });
 });
