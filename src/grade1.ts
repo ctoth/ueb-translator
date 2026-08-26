@@ -70,6 +70,8 @@ export type Grade1Result =
   | Grade1Success
   | Grade1UnsupportedCharacter;
 
+export type Grade1TextResult = Grade1Success | Grade1UnsupportedCharacter;
+
 interface ScalarToken {
   readonly codeUnitIndex: number;
   readonly scalarIndex: number;
@@ -696,6 +698,8 @@ function translateDocument(document: Grade1Document): Grade1Result {
 }
 
 /** Translate print to deterministic uncontracted UEB. */
+export function translateGrade1(input: string): Grade1TextResult;
+export function translateGrade1(input: Grade1Document): Grade1Result;
 export function translateGrade1(input: string | Grade1Document): Grade1Result {
   return typeof input === "string" ? translateText(input) : translateDocument(input);
 }

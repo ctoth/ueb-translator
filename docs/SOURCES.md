@@ -28,6 +28,9 @@ official rule or symbol being exercised.
 3. Mehryar Mohri, *Finite-State Transducers in Language and Speech Processing*,
    1997. Sequential transducer semantics and the determinization/minimization
    boundary define the browser runtime model. <https://aclanthology.org/J97-2003/>
+4. Richard Bellman, *On the Theory of Dynamic Programming*, 1952. Bellman's
+   optimality recurrence defines contracted-rule selection over the acyclic
+   segmentation graph. <https://doi.org/10.1073/pnas.38.8.716>
 
 Every additional algorithm must be cited here and at its implementation site.
 

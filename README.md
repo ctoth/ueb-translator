@@ -38,6 +38,17 @@ const document = {
 const result = translateGrade1(document);
 ```
 
+Contracted literary UEB is a separate, tree-shakeable entry point:
+
+```ts
+import { translateGrade2 } from "ueb-translator/grade2";
+
+const result = translateGrade2("You should receive your letter.");
+```
+
+Rule traces are intentionally separate from the ordinary browser path and are
+available from `ueb-translator/grade2/diagnostics` for conformance work.
+
 ## Design constraints
 
 - UEB only: uncontracted (grade 1), contracted (grade 2), and technical UEB.
