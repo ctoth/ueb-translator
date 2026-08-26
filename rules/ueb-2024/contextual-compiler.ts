@@ -1,16 +1,24 @@
 import type { IcebRuleCitation } from "./source.js";
+import type {
+  ContextualBoundaryKind,
+  ContextualBoundaryMask,
+  ContextualGuardOpcode,
+  ContextualGuardTuple,
+  ContextualPrecedence,
+  ContextualRuleTuple,
+} from "../../src/contextual-transducer.js";
 
-export type ContextualPrecedence = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export type { ContextualPrecedence } from "../../src/contextual-transducer.js";
 
 export type ContextualRuleGuard =
   | { readonly kind: "eligibility-word"; readonly word: string }
   | { readonly kind: "first-syllable" }
   | { readonly kind: "following-not-vowel-y" }
   | { readonly kind: "lower-sign"; readonly policy: "enough-or-in" | "other" }
-  | { readonly kind: "not-boundary"; readonly boundary: "prefix" }
+  | { readonly kind: "not-boundary"; readonly boundary: ContextualBoundaryKind }
   | {
       readonly kind: "not-crossing";
-      readonly boundaries: readonly ("braille-line" | "compound" | "syllable")[];
+      readonly boundaries: readonly ContextualBoundaryKind[];
     }
   | { readonly kind: "not-word"; readonly words: readonly string[] }
   | { readonly kind: "not-word-ending"; readonly endings: readonly string[] }
@@ -55,30 +63,62 @@ export class ContextualRuleCompilationError extends Error {
   }
 }
 
-export type ContextualGuardOpcode =
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
-  | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
-export type CompiledContextualGuard = readonly [
-  opcode: ContextualGuardOpcode,
-  operandIndex: number,
-];
-export type CompiledContextualRule = readonly [
-  input: string,
-  braille: string,
-  precedence: ContextualPrecedence,
-  guardOffset: number,
-  guardCount: number,
-];
+export type CompiledContextualGuard = ContextualGuardTuple;
+export type CompiledContextualRule = ContextualRuleTuple;
 
-export interface ContextualRuntimeProgram {
+export interface CompiledContextualMatcher {
+  readonly initialGuardOffsets: readonly number[];
+  readonly initialInputOffsets: readonly number[];
+  readonly initialRuleOffsets: readonly number[];
+  readonly inputGuardCounts: readonly number[];
+  readonly inputRuleCounts: readonly number[];
+  readonly inputs: readonly string[];
+}
+
+export interface ContextualCompiledProgram {
   readonly guards: readonly CompiledContextualGuard[];
+  readonly matcher: CompiledContextualMatcher;
   readonly rules: readonly CompiledContextualRule[];
   readonly stringOperands: readonly string[];
 }
 
+function compileMatcher(
+  inputs: readonly string[],
+  ruleOffsets: readonly number[],
+  guardOffsets: readonly number[],
+): CompiledContextualMatcher {
+  const initialGuardOffsets: number[] = [];
+  const initialInputOffsets: number[] = [];
+  const initialRuleOffsets: number[] = [];
+  let cursor = 0;
+  for (let codePoint = 97; codePoint <= 123; codePoint += 1) {
+    while (
+      cursor < inputs.length &&
+      (inputs[cursor]?.charCodeAt(0) ?? codePoint) < codePoint
+    ) {
+      cursor += 1;
+    }
+    initialInputOffsets.push(cursor);
+    initialRuleOffsets.push(ruleOffsets[cursor] ?? ruleOffsets.at(-1) ?? 0);
+    initialGuardOffsets.push(guardOffsets[cursor] ?? guardOffsets.at(-1) ?? 0);
+  }
+  return {
+    initialGuardOffsets,
+    initialInputOffsets,
+    initialRuleOffsets,
+    inputGuardCounts: inputs.map(
+      (_, index) => (guardOffsets[index + 1] ?? 0) - (guardOffsets[index] ?? 0),
+    ),
+    inputRuleCounts: inputs.map(
+      (_, index) => (ruleOffsets[index + 1] ?? 0) - (ruleOffsets[index] ?? 0),
+    ),
+    inputs: [...inputs],
+  };
+}
+
 export interface ContextualCompilationResult {
   readonly provenance: readonly ContextualRuleSource[];
-  readonly runtime: ContextualRuntimeProgram;
+  readonly runtime: ContextualCompiledProgram;
 }
 
 const GUARD_OPCODE: Readonly<Record<ContextualRuleGuard["kind"], ContextualGuardOpcode>> = {
@@ -104,24 +144,21 @@ function compareText(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function guardOperand(guard: ContextualRuleGuard): string {
+function guardStringOperand(guard: ContextualRuleGuard): string | undefined {
   switch (guard.kind) {
     case "eligibility-word":
       return guard.word;
     case "previous-not":
       return guard.characters;
-    case "lower-sign":
-      return "";
-    case "not-boundary":
-      return guard.boundary;
-    case "not-crossing":
-      return [...guard.boundaries].sort(compareText).join("\u0000");
     case "not-word":
       return [...guard.words].sort(compareText).join("\u0000");
     case "not-word-ending":
       return [...guard.endings].sort(compareText).join("\u0000");
     case "first-syllable":
     case "following-not-vowel-y":
+    case "lower-sign":
+    case "not-boundary":
+    case "not-crossing":
     case "not-word-end":
     case "not-word-start":
     case "not-whole-word":
@@ -129,8 +166,42 @@ function guardOperand(guard: ContextualRuleGuard): string {
     case "word-end":
     case "word-internal":
     case "word-start":
-      return "";
+      return undefined;
   }
+}
+
+function boundaryBit(kind: ContextualBoundaryKind): ContextualBoundaryMask {
+  switch (kind) {
+    case "braille-line":
+      return 1;
+    case "compound":
+      return 2;
+    case "prefix":
+      return 4;
+    case "suffix":
+      return 8;
+    case "syllable":
+      return 16;
+    default: {
+      const exhaustive: never = kind;
+      return exhaustive;
+    }
+  }
+}
+
+function isBoundaryMask(value: number): value is ContextualBoundaryMask {
+  return Number.isInteger(value) && value >= 1 && value <= 31;
+}
+
+function boundaryMask(boundaries: readonly ContextualBoundaryKind[]): ContextualBoundaryMask {
+  let mask = 0;
+  for (const boundary of boundaries) {
+    mask |= boundaryBit(boundary);
+  }
+  if (!isBoundaryMask(mask)) {
+    throw new Error("A contextual boundary guard must name at least one boundary.");
+  }
+  return mask;
 }
 
 function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
@@ -140,7 +211,69 @@ function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
 }
 
 function guardKey(guard: ContextualRuleGuard): string {
-  return `${String(guardOpcode(guard)).padStart(2, "0")}:${guardOperand(guard)}`;
+  const operand = guard.kind === "not-boundary"
+    ? boundaryMask([guard.boundary])
+    : guard.kind === "not-crossing"
+      ? boundaryMask(guard.boundaries)
+      : guardStringOperand(guard) ?? "";
+  return `${String(guardOpcode(guard)).padStart(2, "0")}:${String(operand)}`;
+}
+
+function operandIndex(
+  value: string,
+  indexes: ReadonlyMap<string, number>,
+): number {
+  const index = indexes.get(value);
+  if (index === undefined) {
+    throw new Error("Contextual compiler invariant failed: missing string operand.");
+  }
+  return index;
+}
+
+function compileGuard(
+  guard: ContextualRuleGuard,
+  operandIndexes: ReadonlyMap<string, number>,
+): CompiledContextualGuard {
+  switch (guard.kind) {
+    case "eligibility-word":
+      return [0, operandIndex(guard.word, operandIndexes)];
+    case "first-syllable":
+      return [1];
+    case "following-not-vowel-y":
+      return [2];
+    case "lower-sign":
+      return guard.policy === "enough-or-in" ? [3] : [16];
+    case "not-boundary":
+      return [4, boundaryMask([guard.boundary])];
+    case "not-crossing":
+      return [5, boundaryMask(guard.boundaries)];
+    case "not-word":
+      return [6, operandIndex(
+        [...guard.words].sort(compareText).join("\u0000"),
+        operandIndexes,
+      )];
+    case "not-word-ending":
+      return [7, operandIndex(
+        [...guard.endings].sort(compareText).join("\u0000"),
+        operandIndexes,
+      )];
+    case "not-word-end":
+      return [8];
+    case "not-word-start":
+      return [9];
+    case "not-whole-word":
+      return [10];
+    case "previous-not":
+      return [11, operandIndex(guard.characters, operandIndexes)];
+    case "standing-alone":
+      return [12];
+    case "word-end":
+      return [13];
+    case "word-internal":
+      return [14];
+    case "word-start":
+      return [15];
+  }
 }
 
 function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
@@ -206,6 +339,13 @@ function validateAndSort(
         `Rule ${rule.id} has an empty input or output.`,
       );
     }
+    if (!/^[a-z]+$/u.test(rule.input)) {
+      throw new ContextualRuleCompilationError(
+        "unreachable-rule",
+        [rule.id],
+        `Rule ${rule.id} has input outside the lowercase ASCII matcher alphabet.`,
+      );
+    }
     if (ids.has(rule.id)) {
       throw new ContextualRuleCompilationError(
         "conflicting-rule-id",
@@ -262,32 +402,52 @@ export function compileContextualRules(
 ): ContextualCompilationResult {
   const provenance = validateAndSort(sourceRules);
   const operands = [...new Set(
-    provenance.flatMap((rule) => rule.guards.map(guardOperand)),
+    provenance.flatMap((rule) =>
+      rule.guards.flatMap((guard) => {
+        const operand = guardStringOperand(guard);
+        return operand === undefined ? [] : [operand];
+      })
+    ),
   )].sort(compareText);
   const operandIndexes = new Map(
     operands.map((operand, index): readonly [string, number] => [operand, index]),
   );
   const guards: CompiledContextualGuard[] = [];
   const rules: CompiledContextualRule[] = [];
+  const matcherInputs: string[] = [];
+  const matcherGuardOffsets: number[] = [];
+  const matcherRuleOffsets: number[] = [];
+  let previousInput: string | undefined;
   for (const rule of provenance) {
+    if (rule.input !== previousInput) {
+      matcherInputs.push(rule.input);
+      matcherGuardOffsets.push(guards.length);
+      matcherRuleOffsets.push(rules.length);
+      previousInput = rule.input;
+    }
     const guardOffset = guards.length;
     for (const guard of rule.guards) {
-      const operandIndex = operandIndexes.get(guardOperand(guard));
-      if (operandIndex === undefined) {
-        throw new Error("Contextual compiler invariant failed: missing operand.");
-      }
-      guards.push([guardOpcode(guard), operandIndex]);
+      guards.push(compileGuard(guard, operandIndexes));
     }
     rules.push([
-      rule.input,
       rule.braille,
       rule.precedence,
-      guardOffset,
       guards.length - guardOffset,
     ]);
   }
+  matcherGuardOffsets.push(guards.length);
+  matcherRuleOffsets.push(rules.length);
   return {
     provenance,
-    runtime: { guards, rules, stringOperands: operands },
+    runtime: {
+      guards,
+      matcher: compileMatcher(
+        matcherInputs,
+        matcherRuleOffsets,
+        matcherGuardOffsets,
+      ),
+      rules,
+      stringOperands: operands,
+    },
   };
 }

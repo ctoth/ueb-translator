@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { runTransducer } from "../../../src/transducer.js";
+import {
+  matchPrefixTable,
+  matchTransducerPrefixes,
+  runTransducer,
+  type CompactPrefixTable,
+} from "../../../src/transducer.js";
 import {
   compileRules,
   type RuleDefinition,
@@ -23,6 +28,19 @@ function compile(entries: readonly (readonly [string, string])[]) {
     })),
   ).runtime;
 }
+
+function encode(values: readonly number[]): string {
+  return String.fromCharCode(...values.map((value) => value + 0x100));
+}
+
+const prefixTable: CompactPrefixTable = [
+  ["a", "ab", "b"],
+  encode([0, 2, ...Array.from({ length: 25 }, () => 3)]),
+  encode([0, 2, ...Array.from({ length: 25 }, () => 3)]),
+  encode(Array.from({ length: 27 }, () => 0)),
+  encode([1, 1, 1]),
+  encode([0, 0, 0]),
+];
 
 describe("runTransducer", () => {
   it("uses deterministic longest matching", () => {
@@ -143,5 +161,68 @@ describe("runTransducer", () => {
       reason: "no-matching-rule",
       scalarIndex: 0,
     });
+  });
+});
+
+describe("matchTransducerPrefixes", () => {
+  it("returns every final prefix from a requested UTF-16 boundary", () => {
+    const transducer = compile([
+      ["😀", "face"],
+      ["😀a", "face-a"],
+    ]);
+
+    expect(matchTransducerPrefixes(transducer, "x😀ab", 1)).toEqual([
+      { endCodeUnitIndex: 3, outputIndex: 0 },
+      { endCodeUnitIndex: 4, outputIndex: 1 },
+    ]);
+  });
+
+  it("walks through non-final states before reporting a prefix", () => {
+    expect(matchTransducerPrefixes(compile([["ab", "AB"]]), "ab", 0)).toEqual([
+      { endCodeUnitIndex: 2, outputIndex: 0 },
+    ]);
+  });
+
+  it("returns no matches for a malformed graph or non-scalar boundary", () => {
+    const transducer = compile([["😀", "face"]]);
+
+    expect(matchTransducerPrefixes(transducer, "😀", 1)).toEqual([]);
+    expect(matchTransducerPrefixes(transducer, "😀", -1)).toEqual([]);
+    expect(matchTransducerPrefixes(transducer, "😀", 0.5)).toEqual([]);
+    expect(matchTransducerPrefixes(transducer, "😀", 3)).toEqual([]);
+    expect(matchTransducerPrefixes({
+      ...transducer,
+      stateEdgeOffsets: [],
+    }, "😀", 0)).toEqual([]);
+  });
+});
+
+describe("matchPrefixTable", () => {
+  it("returns every exact prefix with its compiled rule range", () => {
+    expect(matchPrefixTable(prefixTable, "xab", 1)).toEqual([
+      { endCodeUnitIndex: 2, guardOffset: 0, ruleCount: 1, ruleOffset: 0 },
+      { endCodeUnitIndex: 3, guardOffset: 0, ruleCount: 1, ruleOffset: 1 },
+    ]);
+  });
+
+  it("fails closed at invalid boundaries, buckets, and encoded ranges", () => {
+    expect(matchPrefixTable(prefixTable, "😀", 1)).toEqual([]);
+    expect(matchPrefixTable(prefixTable, "A", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      prefixTable[0],
+      "",
+      prefixTable[2],
+      prefixTable[3],
+      prefixTable[4],
+      prefixTable[5],
+    ], "a", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      prefixTable[0],
+      prefixTable[1],
+      prefixTable[2],
+      prefixTable[3],
+      "",
+      prefixTable[5],
+    ], "a", 0)).toEqual([]);
   });
 });

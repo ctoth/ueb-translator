@@ -1,21 +1,15 @@
 import {
-  GRADE2_PROGRAM,
-  type ContextualGuardOpcode,
-  type ContextualRuleTuple,
-} from "./generated/grade2-program.js";
+  runContextualTransducer,
+  type ContextualAppliedRule,
+  type ContextualBoundary,
+  type ContextualBoundaryKind,
+  type ContextualTransduction,
+} from "./contextual-transducer.js";
+import { GRADE2_PROGRAM } from "./generated/grade2-program.js";
 import { translateGrade1 } from "./grade1.js";
 
-export type Grade2BoundaryKind =
-  | "braille-line"
-  | "compound"
-  | "prefix"
-  | "suffix"
-  | "syllable";
-
-export interface Grade2Boundary {
-  readonly at: number;
-  readonly kind: Grade2BoundaryKind;
-}
+export type Grade2BoundaryKind = ContextualBoundaryKind;
+export type Grade2Boundary = ContextualBoundary;
 
 export interface Grade2TextRun {
   readonly kind: "text";
@@ -64,12 +58,7 @@ export type Grade2Result =
   | Grade2Success
   | Grade2UnsupportedCharacter;
 
-export interface Grade2AppliedRule {
-  readonly end: number;
-  readonly print: string;
-  readonly ruleIndex: number;
-  readonly start: number;
-}
+export type Grade2AppliedRule = ContextualAppliedRule;
 
 export interface Grade2InternalSuccess extends Grade2Success {
   readonly rules: readonly Grade2AppliedRule[];
@@ -79,22 +68,6 @@ export type Grade2InternalResult =
   | Grade2InternalSuccess
   | Grade2InvalidBoundary
   | Grade2UnsupportedCharacter;
-
-interface Candidate {
-  readonly braille: string;
-  readonly end: number;
-  readonly print: string;
-  readonly rank: number;
-  readonly ruleIndex?: number;
-}
-
-interface BestPath {
-  readonly braille: string;
-  readonly cellCount: number;
-  readonly preferenceScore: number;
-  readonly rankKey: string;
-  readonly rules: readonly Grade2AppliedRule[];
-}
 
 interface LowerSignContext {
   readonly hasLowerPunctuation: boolean;
@@ -114,268 +87,6 @@ function letterCell(letter: string): string {
   return LETTER_CELLS.charAt(index);
 }
 
-type IndexedContextualRule = readonly [
-  rule: ContextualRuleTuple,
-  ruleIndex: number,
-];
-
-interface GuardContext {
-  readonly boundaries: readonly Grade2Boundary[];
-  readonly eligibilityOffset: number;
-  readonly eligibilityWord: string;
-  readonly lowerSign: LowerSignContext;
-  readonly standing: boolean;
-  readonly word: string;
-}
-
-const RULES_BY_INITIAL: ReadonlyMap<string, readonly IndexedContextualRule[]> = (() => {
-  const mutable = new Map<string, IndexedContextualRule[]>();
-  for (const [ruleIndex, rule] of GRADE2_PROGRAM.rules.entries()) {
-    const initial = rule[0].charAt(0);
-    const bucket = mutable.get(initial);
-    if (bucket === undefined) {
-      mutable.set(initial, [[rule, ruleIndex]]);
-    } else {
-      bucket.push([rule, ruleIndex]);
-    }
-  }
-  return mutable;
-})();
-
-function operandAt(index: number): string {
-  const operand = GRADE2_PROGRAM.stringOperands[index];
-  /* v8 ignore next -- generation validates every operand index. */
-  if (operand === undefined) {
-    throw new Error("Generated Grade 2 program references a missing operand.");
-  }
-  return operand;
-}
-
-function crossesNamedBoundary(
-  start: number,
-  end: number,
-  boundaries: readonly Grade2Boundary[],
-  names: string,
-): boolean {
-  const permittedNames = new Set(names.split("\u0000"));
-  return boundaries.some(
-    (boundary) => boundary.at > start && boundary.at < end &&
-      permittedNames.has(boundary.kind),
-  );
-}
-
-function guardAllows(
-  opcode: ContextualGuardOpcode,
-  operand: string,
-  input: string,
-  start: number,
-  context: GuardContext,
-): boolean {
-  const end = start + input.length;
-  switch (opcode) {
-    case 0: {
-      const eligible = context.eligibilityWord === operand ||
-        (context.eligibilityWord.endsWith("s") &&
-          context.eligibilityWord.slice(0, -1) === operand);
-      return eligible && operand.startsWith(
-        input,
-        context.eligibilityOffset + start,
-      );
-    }
-    case 1: {
-      const syllableBoundaries = context.boundaries.filter(
-        (boundary) => boundary.kind === "syllable",
-      );
-      return syllableBoundaries.length === 0 ||
-        syllableBoundaries.some((boundary) => boundary.at === end);
-    }
-    case 2: {
-      const following = context.word.charAt(end);
-      return following === "" || !"aeiouy".includes(following);
-    }
-    case 3:
-      return !context.lowerSign.hasLowerPunctuation ||
-        context.lowerSign.hasUpperPunctuation;
-    case 4:
-    case 5:
-      return !crossesNamedBoundary(start, end, context.boundaries, operand);
-    case 6:
-      return !operand.split("\u0000").includes(context.word.replaceAll("-", ""));
-    case 7:
-      return !operand.split("\u0000").some((ending) => context.word.endsWith(ending));
-    case 8:
-      return end !== context.word.length;
-    case 9:
-      return start !== 0;
-    case 10:
-      return start !== 0 || end !== context.word.length;
-    case 11:
-      return start === 0 || !operand.includes(context.word.charAt(start - 1));
-    case 12:
-      return context.standing;
-    case 13:
-      return end === context.word.length;
-    case 14:
-      return start !== 0 && end !== context.word.length;
-    case 15:
-      return start === 0;
-    case 16:
-      return !context.lowerSign.hasLowerPunctuation;
-  }
-}
-
-function permitsRule(
-  rule: ContextualRuleTuple,
-  start: number,
-  context: GuardContext,
-): boolean {
-  const [input, , , guardOffset, guardCount] = rule;
-  for (let index = guardOffset; index < guardOffset + guardCount; index += 1) {
-    const guard = GRADE2_PROGRAM.guards[index];
-    /* v8 ignore next -- generation validates every guard range. */
-    if (guard === undefined) {
-      throw new Error("Generated Grade 2 program references a missing guard.");
-    }
-    if (!guardAllows(guard[0], operandAt(guard[1]), input, start, context)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function candidatesAt(
-  word: string,
-  start: number,
-  boundaries: readonly Grade2Boundary[],
-  standing: boolean,
-  eligibilityWord: string,
-  eligibilityOffset: number,
-  lowerSign: LowerSignContext,
-): readonly Candidate[] {
-  const candidates: Candidate[] = [
-    {
-      braille: letterCell(word.charAt(start)),
-      end: start + 1,
-      print: word.charAt(start),
-      rank: 9,
-    },
-  ];
-  const context: GuardContext = {
-    boundaries,
-    eligibilityOffset,
-    eligibilityWord,
-    lowerSign,
-    standing,
-    word,
-  };
-  for (const [rule, ruleIndex] of RULES_BY_INITIAL.get(word.charAt(start)) ?? []) {
-    const [print, braille, precedence] = rule;
-    if (
-      word.startsWith(print, start) &&
-      permitsRule(rule, start, context)
-    ) {
-      candidates.push({
-        braille,
-        end: start + print.length,
-        print,
-        rank: precedence,
-        ruleIndex,
-      });
-    }
-  }
-  return candidates;
-}
-
-function better(left: BestPath, right: BestPath): BestPath {
-  if (left.cellCount !== right.cellCount) {
-    return left.cellCount < right.cellCount ? left : right;
-  }
-  if (left.preferenceScore !== right.preferenceScore) {
-    return left.preferenceScore < right.preferenceScore ? left : right;
-  }
-  /* v8 ignore next -- equal-score rules are compiler ordered; retain a stable fallback. */
-  if (left.rankKey !== right.rankKey) {
-    /* v8 ignore next -- see the equal-score invariant above. */
-    return left.rankKey < right.rankKey ? left : right;
-  }
-  /* v8 ignore next -- identical compiled outputs need no observable distinction. */
-  return left.braille <= right.braille ? left : right;
-}
-
-function contractWord(
-  word: string,
-  boundaries: readonly Grade2Boundary[],
-  standing: boolean,
-  eligibilityWord: string,
-  eligibilityOffset: number,
-  lowerSign: LowerSignContext,
-): BestPath {
-  // Bellman's backward recurrence on the acyclic segmentation graph:
-  // https://doi.org/10.1073/pnas.38.8.716
-  const best: (BestPath | undefined)[] = Array.from(
-    { length: word.length + 1 },
-    (): BestPath | undefined => undefined,
-  );
-  best[word.length] = {
-    braille: "",
-    cellCount: 0,
-    preferenceScore: 0,
-    rankKey: "",
-    rules: [],
-  };
-
-  for (let start = word.length - 1; start >= 0; start -= 1) {
-    let selected: BestPath | undefined;
-    for (
-      const candidate of candidatesAt(
-        word,
-        start,
-        boundaries,
-        standing,
-        eligibilityWord,
-        eligibilityOffset,
-        lowerSign,
-      )
-    ) {
-      const suffix = best[candidate.end];
-      /* v8 ignore next -- the literal-letter edge makes every suffix reachable. */
-      if (suffix === undefined) {
-        continue;
-      }
-      const applied = candidate.ruleIndex === undefined
-        ? suffix.rules
-        : [
-            {
-              end: candidate.end,
-              print: candidate.print,
-              ruleIndex: candidate.ruleIndex,
-              start,
-            },
-            ...suffix.rules,
-          ];
-      const path: BestPath = {
-        braille: candidate.braille + suffix.braille,
-        cellCount: candidate.braille.length + suffix.cellCount,
-        preferenceScore:
-          (candidate.ruleIndex === undefined ? 0 : candidate.rank) +
-          suffix.preferenceScore,
-        rankKey: `${String(candidate.rank).padStart(2, "0")}${suffix.rankKey}`,
-        rules: applied,
-      };
-      selected = selected === undefined ? path : better(selected, path);
-    }
-    best[start] = selected;
-  }
-  /* v8 ignore next -- the literal-letter edge makes position zero reachable. */
-  return best[0] ?? {
-    braille: "",
-    cellCount: 0,
-    preferenceScore: 0,
-    rankKey: "",
-    rules: [],
-  };
-}
-
 function contractLexicalWord(
   word: string,
   boundaries: readonly Grade2Boundary[],
@@ -383,11 +94,8 @@ function contractLexicalWord(
   eligibilityWord: string,
   eligibilityOffset: number,
   lowerSign: LowerSignContext,
-): BestPath {
+): ContextualTransduction {
   let braille = "";
-  let cellCount = 0;
-  let preferenceScore = 0;
-  let rankKey = "";
   const rules: Grade2AppliedRule[] = [];
   let cursor = 0;
 
@@ -396,7 +104,6 @@ function contractLexicalWord(
     if (start > cursor) {
       const punctuation = word.slice(cursor, start);
       braille += "⠄".repeat(Array.from(punctuation).length);
-      cellCount += Array.from(punctuation).length;
     }
     const segment = match[0];
     const segmentBoundaries = boundaries
@@ -405,18 +112,20 @@ function contractLexicalWord(
         at: boundary.at - start,
         kind: boundary.kind,
       }));
-    const contracted = contractWord(
-      segment,
-      segmentBoundaries,
-      standing,
-      eligibilityWord,
-      eligibilityOffset + start,
-      lowerSign,
+    const contracted = runContextualTransducer(
+      GRADE2_PROGRAM,
+      {
+        boundaries: segmentBoundaries,
+        eligibilityOffset: eligibilityOffset + start,
+        eligibilityWord,
+        hasLowerPunctuation: lowerSign.hasLowerPunctuation,
+        hasUpperPunctuation: lowerSign.hasUpperPunctuation,
+        standing,
+        word: segment,
+      },
+      letterCell,
     );
     braille += contracted.braille;
-    cellCount += contracted.cellCount;
-    preferenceScore += contracted.preferenceScore;
-    rankKey += contracted.rankKey;
     rules.push(...contracted.rules.map((rule) => ({
       ...rule,
       end: start + rule.end,
@@ -424,7 +133,7 @@ function contractLexicalWord(
     })));
     cursor = start + segment.length;
   }
-  return { braille, cellCount, preferenceScore, rankKey, rules };
+  return { braille, rules };
 }
 
 function capitalPrefix(text: string): string | undefined {
