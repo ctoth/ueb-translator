@@ -64,10 +64,124 @@ describe("tracked Liblouis disagreement ledger", () => {
   });
 
   it.each([
+    [undefined, "ledger must be an object"],
+    [{ disagreements: [], extra: true, version: 1 }, "unknown ledger field: extra"],
     [{ disagreements: [], version: 2 }, "version must be 1"],
+    [{ disagreements: null, version: 1 }, "disagreements must be an array"],
+    [{ disagreements: [null], version: 1 }, "disagreement must be an object"],
+    [
+      { disagreements: [{ ...ledgerEntry, extra: true }], version: 1 },
+      "unknown disagreement field: extra",
+    ],
+    [
+      { disagreements: [{ ...ledgerEntry, caseId: "" }], version: 1 },
+      "caseId must be a non-empty string",
+    ],
+    [
+      { disagreements: [{ ...ledgerEntry, input: null }], version: 1 },
+      "input must be a string",
+    ],
+    [
+      { disagreements: [{ ...ledgerEntry, local: null }], version: 1 },
+      "local must be an object",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          local: { ...ledgerEntry.local, extra: true },
+        }],
+        version: 1,
+      },
+      "unknown local field: extra",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          local: { ...ledgerEntry.local, output: null },
+        }],
+        version: 1,
+      },
+      "local.output must be a string",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          local: { kind: "rule", output: "cells", ruleId: "" },
+        }],
+        version: 1,
+      },
+      "local.ruleId must be a non-empty string",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          local: { kind: "test", output: "cells", testId: "" },
+        }],
+        version: 1,
+      },
+      "local.testId must be a non-empty string",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          local: { kind: "invalid", output: "cells" },
+        }],
+        version: 1,
+      },
+      "local.kind must be rule or test",
+    ],
+    [
+      { disagreements: [{ ...ledgerEntry, oracle: null }], version: 1 },
+      "oracle must be an object",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          oracle: { ...ledgerEntry.oracle, extra: true },
+        }],
+        version: 1,
+      },
+      "unknown oracle field: extra",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          oracle: { ...ledgerEntry.oracle, engine: "other" },
+        }],
+        version: 1,
+      },
+      "oracle evidence is incomplete",
+    ],
     [
       { disagreements: [{ ...ledgerEntry, verdict: undefined }], version: 1 },
       "verdict must be an object",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          verdict: { ...ledgerEntry.verdict, extra: true },
+        }],
+        version: 1,
+      },
+      "unknown verdict field: extra",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          verdict: { ...ledgerEntry.verdict, kind: "invalid" },
+        }],
+        version: 1,
+      },
+      "verdict.kind must be our-bug, liblouis-bug, or permitted-alternative",
     ],
     [
       {
@@ -88,6 +202,20 @@ describe("tracked Liblouis disagreement ledger", () => {
         version: 1,
       },
       "verdict.sources must contain only official ICEB or BANA URLs",
+    ],
+    [
+      {
+        disagreements: [{
+          ...ledgerEntry,
+          verdict: { ...ledgerEntry.verdict, sources: ["not-a-url"] },
+        }],
+        version: 1,
+      },
+      "verdict.sources must contain only official ICEB or BANA URLs",
+    ],
+    [
+      { disagreements: [ledgerEntry, ledgerEntry], version: 1 },
+      "duplicate disagreement caseId: case-1",
     ],
   ])("rejects an untriaged or non-normative ledger: %s", (value, error) => {
     expect(parseDisagreementLedger(value)).toEqual({ error, ok: false });
@@ -134,6 +262,23 @@ describe("tracked Liblouis disagreement ledger", () => {
       stale: [ledgerEntry],
       untriaged: [],
     });
+
+    const testDisagreement = {
+      ...disagreement,
+      evidence: {
+        ...disagreement.evidence,
+        caseId: "test-case",
+        local: { kind: "test", output: "local", testId: "test/id" },
+      },
+    } satisfies OracleComparison;
+    const testLedgerEntry = {
+      ...testDisagreement.evidence,
+      verdict: ledgerEntry.verdict,
+    };
+    expect(reconcileDisagreements([testDisagreement], {
+      disagreements: [testLedgerEntry],
+      version: 1,
+    })).toEqual({ ok: true, stale: [], untriaged: [] });
   });
 
   it("keeps the repository ledger parseable and fully triaged", () => {

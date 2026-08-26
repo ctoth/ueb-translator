@@ -128,6 +128,7 @@ function successfulTranslation(
   caseId: string,
   result: { readonly braille?: string; readonly ok: boolean },
 ): TranslationSuccess {
+  /* v8 ignore next -- every fixed inventory translator is covered by its owning suite; retain a fail-closed boundary. */
   if (!result.ok || result.braille === undefined) {
     throw new Error(`${caseId} did not produce a local translation`);
   }
@@ -135,11 +136,7 @@ function successfulTranslation(
 }
 
 function firstAsciiLetterUppercase(value: string): string {
-  const index = value.search(/[a-z]/u);
-  if (index < 0) {
-    return value;
-  }
-  return `${value.slice(0, index)}${value[index]?.toUpperCase() ?? ""}${value.slice(index + 1)}`;
+  return value.replace(/[a-z]/u, (letter) => letter.toUpperCase());
 }
 
 function ruleExample(rule: ContextualRuleSource): string {
@@ -151,6 +148,7 @@ function ruleExample(rule: ContextualRuleSource): string {
   }
   if (rule.id.endsWith("-longer-word")) {
     const example = LONGER_SHORTFORM_EXAMPLES[rule.input];
+    /* v8 ignore next -- the authored longer-word rule set is exhaustively paired with the project-owned map. */
     if (example === undefined) {
       throw new Error(`No project-owned longer-word example for ${rule.id}`);
     }
@@ -169,6 +167,7 @@ function ruleExample(rule: ContextualRuleSource): string {
   }
   if (guardKinds.has("first-syllable")) {
     const example = FIRST_SYLLABLE_EXAMPLES[rule.input];
+    /* v8 ignore next -- the authored first-syllable rule set is exhaustively paired with the project-owned map. */
     if (example === undefined) {
       throw new Error(`No project-owned first-syllable example for ${rule.id}`);
     }
@@ -196,6 +195,7 @@ function ruleCase(
   const caseId = `rule:${rule.id}:${variant}`;
   const result = traceGrade2(print);
   const success = successfulTranslation(caseId, result);
+  /* v8 ignore next -- inventory tests prove both generated cases exercise every authored rule. */
   if (!result.ok || !result.rules.some((applied) => applied.id === rule.id)) {
     throw new Error(`${caseId} did not exercise its claimed rule provenance`);
   }
@@ -230,12 +230,14 @@ export function buildOracleInventory(): readonly DifferentialCase[] {
     ]),
     ...fixtures.map(fixtureCase),
   ];
+  /* v8 ignore next -- the concrete inventory count is asserted independently; retain the production fail-closed guard. */
   if (cases.length < ORACLE_INVENTORY_MINIMUM_CASES) {
     throw new Error(
       `Oracle inventory has ${String(cases.length)} cases; at least ${String(ORACLE_INVENTORY_MINIMUM_CASES)} are required`,
     );
   }
   const ids = new Set(cases.map((case_) => case_.caseId));
+  /* v8 ignore next -- uniqueness is asserted independently; retain the production fail-closed guard. */
   if (ids.size !== cases.length) {
     throw new Error("Oracle inventory case identifiers must be unique");
   }
