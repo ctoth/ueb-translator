@@ -5,7 +5,8 @@
 The repository contains two deliberately separate layers:
 
 1. `rules/` and `tools/rule-compiler/` hold readable, cited source rules, validation, construction, and provenance. They are development-only.
-2. `src/transducer.ts` holds the browser runtime contract and deterministic walker. Published grade entry points will import only generated flat arrays and this walker.
+2. `src/` holds browser runtime contracts and deterministic walkers. Published
+   grade entry points import only generated compact programs and runtime code.
 
 The `files` allowlist in `package.json` publishes `dist`, `LICENSE`, and `README.md`. It cannot include readable rules, compiler code, research papers, Liblouis tooling, fixtures, traces, or oracle output.
 
@@ -34,6 +35,22 @@ The generated graph uses five arrays:
 
 The walker binary-searches each state's edge range and remembers the most recent final state, giving deterministic longest matching. Failures report the first unmatched Unicode scalar using both scalar and UTF-16 code-unit offsets and return no partial output.
 
+## Contracted contextual program
+
+Grade 2 source rules compile into aligned rule tuples, guard-opcode tuples, and
+a deduplicated operand pool. The compiler normalizes source order, rejects
+duplicate guards and unresolved equal-precedence overlaps, and emits provenance
+in a separate module. The browser runtime has no contraction classes, named
+exceptions, or rule vocabulary: it indexes tuples by their first input scalar
+and exhaustively interprets the closed opcode union.
+
+For each lexical position, permitted rules and the literal-letter fallback form
+the outgoing edges of an acyclic segmentation graph. A backward dynamic program
+uses Bellman's optimality recurrence to minimize emitted cells, then declared
+precedence, then a deterministic output tie-break. This is exact shortest-path
+selection over the compiled rule graph, not a corpus-trained or heuristic
+choice.
+
 ## Uncontracted mode scanner
 
 Grade 1 input is parsed once into a closed discriminated union of validated
@@ -55,6 +72,7 @@ Compilation returns a separate provenance object containing normalized source ru
 - duplicate input, which would make the source relation ambiguous;
 - duplicate rule identifier, which would make provenance conflicting;
 - a missing document/locator or a URL outside the named official authority.
+- duplicate contextual guards or contextual rules with unresolved precedence.
 
 Invariant-only defensive branches are explicitly excluded from coverage where their preconditions are established by the same closed compiler pipeline. Reachable malformed runtime arrays are tested to fail closed.
 

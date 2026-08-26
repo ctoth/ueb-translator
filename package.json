@@ -14,13 +14,24 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./grade2": {
+      "types": "./dist/grade2.d.ts",
+      "import": "./dist/grade2.js"
+    },
+    "./grade2/diagnostics": {
+      "types": "./dist/grade2-diagnostics.d.ts",
+      "import": "./dist/grade2-diagnostics.js"
     }
   },
   "scripts": {
     "browser:test": "vitest run --config vitest.browser.config.ts",
     "browser:typecheck": "tsc -p tsconfig.browser.json --noEmit",
     "build": "node scripts/clean-dist.mts && tsc -p tsconfig.build.json",
-    "check": "npm run build && npm run typecheck && npm run browser:typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run browser:test && npm run oracle:test",
+    "check": "npm run grade2:generate:check && npm run build && npm run typecheck && npm run browser:typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run browser:test && npm run oracle:test",
+    "grade2:generate": "npm run grade2:rules:build && node scripts/generate-grade2.mts",
+    "grade2:generate:check": "npm run grade2:rules:build && node scripts/generate-grade2.mts --check",
+    "grade2:rules:build": "tsc -p rules/ueb-2024/tsconfig.build.json",
     "lint": "eslint .",
     "oracle": "node node_modules/.cache/ueb-translator/liblouis-oracle/cli.js",
     "oracle:build": "tsc -p tools/liblouis-oracle/tsconfig.build.json",
