@@ -49,6 +49,34 @@ const result = translateGrade2("You should receive your letter.");
 Rule traces are intentionally separate from the ordinary browser path and are
 available from `ueb-translator/grade2/diagnostics` for conformance work.
 
+Backtranslation is a separate browser entry point and never guesses between
+standards-valid print candidates:
+
+```ts
+import {
+  backtranslateGrade2,
+  selectBacktranslation,
+} from "ueb-translator/backtranslation";
+
+const decoded = backtranslateGrade2("⠁⠃");
+if (decoded.kind === "ambiguous") {
+  // Both `ab` and the UEB shortform `about` canonically produce these cells.
+  console.log(decoded.candidates.size); // 2n
+  console.log(Array.from(decoded.candidates, ({ print }) => print));
+}
+
+// Optional dictionary or product policy is explicitly caller-owned.
+const selected = selectBacktranslation(decoded, (candidates) =>
+  candidates.find(({ print }) => print === "about")
+);
+```
+
+The default decoder contains no dictionary, frequency corpus, language model,
+or Liblouis code. Grade 2 candidates include the same generated ICEB rule IDs
+used by forward diagnostics. See the
+[backtranslation contract](https://github.com/ctoth/ueb-translator/blob/main/docs/BACKTRANSLATION.md)
+for ambiguity, normalization, failure offsets, and algorithm details.
+
 Technical UEB is also a separate browser entry point. Plain text preserves the
 print symbols actually supplied; stacked fractions, scripts, radicals,
 matrices, chemistry, and significant computer layout use explicit structure:

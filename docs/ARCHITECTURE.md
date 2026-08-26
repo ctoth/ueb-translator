@@ -108,6 +108,29 @@ computer spacing converts only internal cells of an explicitly significant
 three-or-more-space run. Width-aware line breaking and tactile diagram drawing
 are later layout concerns, not hidden translation heuristics.
 
+## Inverse relation and canonical validation
+
+Backtranslation reuses the forward runtime rather than compiling a second
+linguistic table. The compact contextual matcher's existing input ranges are
+inverted into Braille-to-print edges at module initialization. A work-list
+walk over the acyclic cell lattice retains every reachable print path and
+deduplicates identical strings. Capital, numeric, Grade 1, modifier, whitespace,
+and semantic-indicator modes are explicit closed decoder states.
+
+Grade 2 context predicates and preference rules are intentionally not copied
+into the inverse walker. Each cell-compatible print path is composed with the
+canonical forward translator and survives exactly when the complete emitted
+cell sequence equals the input. The surviving candidate carries the aligned
+forward rule IDs. This is Mohri's finite-state relation/composition model used
+as an exact recognizer, not as a heuristic ranking algorithm. Candidate
+materialization is necessarily output-sensitive because some inputs have an
+exponential number of valid print expansions.
+
+Sources:
+
+- Mehryar Mohri, [Finite-State Transducers in Language and Speech Processing](https://aclanthology.org/J97-2003/), 1997, finite-state relations, composition, and bounded ambiguity.
+- International Council on English Braille, [The Rules of Unified English Braille, Third Edition 2024](https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf), Section 10, contraction legality, preference, and expressly permitted alternative transcription.
+
 ## Provenance and rejection
 
 Compilation returns a separate provenance object containing normalized source rules plus the rule identifiers responsible for every state and every output. It is never part of the runtime object. Compilation fails for:
