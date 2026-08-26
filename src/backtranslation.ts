@@ -705,6 +705,10 @@ function combineGrade2(
   };
 }
 
+function fixedGrade1Segment(print: string): NonEmpty<Grade1BacktranslationCandidate> {
+  return [{ mode: "grade1", print }];
+}
+
 function fixedGrade2Segment(print: string): NonEmpty<Grade2BacktranslationCandidate> {
   return [{ mode: "grade2", print, rules: [] }];
 }
@@ -733,11 +737,55 @@ export function backtranslateGrade1(
   if (invalid !== undefined) {
     return invalid;
   }
-  const decoded = decode(braille, GRADE1_BUCKETS);
-  const candidates = nonEmpty(grade1Candidates(braille, decoded));
-  return candidates === undefined
-    ? noParse(braille, "grade1", decoded.furthestCodeUnitIndex)
-    : candidateProduct([candidates], combineGrade1);
+  if (braille.includes(CAPITALS_PASSAGE_INDICATOR)) {
+    const decoded = decode(braille, GRADE1_BUCKETS);
+    const candidates = nonEmpty(grade1Candidates(braille, decoded));
+    return candidates === undefined
+      ? noParse(braille, "grade1", decoded.furthestCodeUnitIndex)
+      : candidateProduct([candidates], combineGrade1);
+  }
+  const segments: MutableNonEmpty<NonEmpty<Grade1BacktranslationCandidate>> = [
+    fixedGrade1Segment(""),
+  ];
+  let segmentStart = 0;
+  let index = 0;
+  while (index < braille.length) {
+    const separator = separatorAt(braille, index);
+    if (separator === undefined) {
+      index += 1;
+      continue;
+    }
+    if (segmentStart < index) {
+      const segmentBraille = braille.slice(segmentStart, index);
+      const decoded = decode(segmentBraille, GRADE1_BUCKETS);
+      const candidates = nonEmpty(grade1Candidates(segmentBraille, decoded));
+      if (candidates === undefined) {
+        return noParse(
+          braille,
+          "grade1",
+          segmentStart + decoded.furthestCodeUnitIndex,
+        );
+      }
+      segments.push(candidates);
+    }
+    segments.push(fixedGrade1Segment(separator.print));
+    index += separator.width;
+    segmentStart = index;
+  }
+  if (segmentStart < braille.length) {
+    const segmentBraille = braille.slice(segmentStart);
+    const decoded = decode(segmentBraille, GRADE1_BUCKETS);
+    const candidates = nonEmpty(grade1Candidates(segmentBraille, decoded));
+    if (candidates === undefined) {
+      return noParse(
+        braille,
+        "grade1",
+        segmentStart + decoded.furthestCodeUnitIndex,
+      );
+    }
+    segments.push(candidates);
+  }
+  return candidateProduct(segments, combineGrade1);
 }
 
 /** Backtranslate contracted UEB without selecting among valid print paths. */

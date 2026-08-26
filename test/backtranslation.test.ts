@@ -139,6 +139,41 @@ describe("backtranslateGrade1", () => {
     });
   });
 
+  it("retains cross-word Grade 1 ambiguity as a symbolic product", () => {
+    const print = Array.from({ length: 15 }, () => "σ").join(" ");
+    const translated = translateGrade1(print);
+    expect(translated.ok).toBe(true);
+    if (!translated.ok) {
+      return;
+    }
+    const result = backtranslateGrade1(translated.braille);
+    expect(result.kind).toBe("ambiguous");
+    if (result.kind === "ambiguous") {
+      expect(result.candidates.size).toBe(32768n);
+      expect(result.candidates.first.print).toBe(
+        Array.from({ length: 15 }, () => "ς").join(" "),
+      );
+      expect(result.candidates.at(32767n)?.print).toBe(print);
+    }
+  });
+
+  it("reports an invalid Grade 1 segment before whitespace", () => {
+    expect(backtranslateGrade1("⣿⠀")).toEqual({
+      codeUnitIndex: 0,
+      kind: "invalid",
+      mode: "grade1",
+      reason: "no-standards-parse",
+      scalarIndex: 0,
+    });
+  });
+
+  it.each(["\n", "\r\n"])(
+    "rejects a noncanonical capitals passage across %j",
+    (boundary) => {
+      expect(backtranslateGrade1(`⠠⠠⠠⠁${boundary}⠃⠠⠄`).kind).toBe("invalid");
+    },
+  );
+
   it("round trips generated supported plain text", () => {
     fc.assert(fc.property(
       fc.array(fc.constantFrom("a", "z", "A", "9", " ", "?", "é", "ω"), {
