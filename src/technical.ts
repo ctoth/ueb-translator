@@ -267,6 +267,13 @@ export interface TechnicalDocument {
   readonly profile: TechnicalProfile;
 }
 
+export interface TechnicalTextInput {
+  readonly kind: "technical-text";
+  readonly text: string;
+}
+
+export type TechnicalInput = TechnicalDocument | TechnicalTextInput;
+
 export interface TechnicalSuccess {
   readonly braille: string;
   readonly mode: "technical";
@@ -1197,4 +1204,16 @@ export function translateTechnical(document: TechnicalDocument): TechnicalResult
     return joined;
   }
   return { braille: joined.braille, mode: "technical", ok: true };
+}
+
+/** Translate exactly one explicit raw-text or structured technical input. */
+export function translateTechnicalInput(
+  input: TechnicalInput,
+): TechnicalResult | TechnicalTextResult {
+  switch (input.kind) {
+    case "technical-document":
+      return translateTechnical(input);
+    case "technical-text":
+      return translateTechnicalText(input.text);
+  }
 }

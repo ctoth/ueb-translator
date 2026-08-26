@@ -3,6 +3,7 @@ import type { ViteUserConfigExport } from "vitest/config";
 
 const config: ViteUserConfigExport = defineConfig({
   test: {
+    fileParallelism: false,
     include: [
       "test/**/*.test.ts",
       "tools/corpus-benchmark/test/**/*.test.ts",

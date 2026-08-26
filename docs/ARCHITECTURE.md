@@ -143,6 +143,19 @@ Compilation returns a separate provenance object containing normalized source ru
 
 Invariant-only defensive branches are explicitly excluded from coverage where their preconditions are established by the same closed compiler pipeline. Reachable malformed runtime arrays are tested to fail closed.
 
-## Reproducible size report
+## Reproducible package and size verification
 
-`npm run size` bundles the browser entry point twice with pinned esbuild: once readable and once minified. It reports raw and minified bytes, plus level-9 gzip and quality-11 Brotli bytes for the minified bundle. No numeric ceiling is inferred before the full rule inventories exist.
+`npm run size` bundles every stable browser entry point plus the combined
+forward dispatcher twice with pinned esbuild: once readable and once minified.
+It reports raw and minified bytes, level-9 gzip and quality-11 Brotli bytes for
+each minified bundle, and the actual packed/unpacked npm package sizes and file
+count. The report measures the complete rule inventories rather than enforcing
+an inferred threshold.
+
+`npm run package:verify` builds an actual tarball and installs it into a clean
+temporary package. A strict declaration walk rejects `any`, assertion escape
+hatches, and Node type references. A separate consumer compilation uses only
+ES2022 and DOM libraries. Pinned esbuild then resolves each public export for
+the browser, and Playwright executes every resulting bundle in Chromium. The
+Grade 1 metafile is also checked structurally for retained Grade 2 or technical
+modules.

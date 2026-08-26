@@ -19,6 +19,14 @@
       "types": "./dist/backtranslation.d.ts",
       "import": "./dist/backtranslation.js"
     },
+    "./cells": {
+      "types": "./dist/cell.d.ts",
+      "import": "./dist/cell.js"
+    },
+    "./grade1": {
+      "types": "./dist/grade1.d.ts",
+      "import": "./dist/grade1.js"
+    },
     "./grade2": {
       "types": "./dist/grade2.d.ts",
       "import": "./dist/grade2.js"
@@ -54,8 +62,9 @@
     "oracle:test": "vitest run --coverage.enabled=false tools/liblouis-oracle/test",
     "oracle:typecheck": "tsc -p tools/liblouis-oracle/tsconfig.json --noEmit",
     "pack:check": "npm pack --dry-run",
+    "package:verify": "npm run --silent build && node scripts/verify-package.mts",
     "rules:typecheck": "tsc -p tools/rule-compiler/tsconfig.json --noEmit",
-    "size": "node scripts/report-size.mts",
+    "size": "npm run --silent build && node scripts/report-size.mts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit && npm run corpus:typecheck"
   },
