@@ -1,5 +1,6 @@
 export { encodeCell } from "./cell.js";
 export { translateGrade1 } from "./grade1.js";
+export { translateUeb } from "./translate.js";
 export { runTransducer } from "./transducer.js";
 export { translateBasicGrade1 } from "./basic-grade1.js";
 export type {
@@ -21,6 +22,16 @@ export type {
   Grade1Typeform,
   Grade1UnsupportedCharacter,
 } from "./grade1.js";
+export type {
+  Grade1TranslationRequest,
+  Grade2TranslationRequest,
+  TechnicalInput,
+  TechnicalTextInput,
+  TechnicalTranslationRequest,
+  UebTranslationMode,
+  UebTranslationRequest,
+  UebTranslationResult,
+} from "./translate.js";
 export type {
   CompiledTransducer,
   TransducerNoMatchingRule,

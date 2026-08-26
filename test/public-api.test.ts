@@ -17,6 +17,26 @@ describe("combined UEB translation API", () => {
       request: { input: "and", mode: "grade2" },
     },
     {
+      expected: { braille: "⠠⠁", mode: "grade1", ok: true },
+      request: {
+        input: {
+          kind: "grade1-document",
+          paragraphs: [{ runs: [{ text: "A" }] }],
+        },
+        mode: "grade1",
+      },
+    },
+    {
+      expected: { braille: "⠯", mode: "grade2", ok: true },
+      request: {
+        input: {
+          kind: "grade2-document",
+          runs: [{ kind: "text", text: "and" }],
+        },
+        mode: "grade2",
+      },
+    },
+    {
       expected: {
         braille: "⠼⠉⠐⠖⠼⠃⠐⠶⠼⠑",
         mode: "technical-text",
@@ -51,7 +71,7 @@ describe("combined UEB translation API", () => {
     } satisfies TechnicalInput;
 
     expect(translateUeb({ input, mode: "technical" })).toEqual({
-      braille: "⠭",
+      braille: "⠰⠭",
       mode: "technical",
       ok: true,
     });
