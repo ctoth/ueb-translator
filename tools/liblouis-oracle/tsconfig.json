@@ -4,9 +4,8 @@
     "declaration": true,
     "declarationMap": true,
     "noEmit": true,
-    "rootDir": ".",
+    "rootDir": "../..",
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": ["../../src/**/*.ts", "*.mts", "src/**/*.ts", "test/**/*.ts"]
 }
-
