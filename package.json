@@ -22,6 +22,10 @@
     "./grade2/diagnostics": {
       "types": "./dist/grade2-diagnostics.d.ts",
       "import": "./dist/grade2-diagnostics.js"
+    },
+    "./technical": {
+      "types": "./dist/technical.d.ts",
+      "import": "./dist/technical.js"
     }
   },
   "scripts": {
