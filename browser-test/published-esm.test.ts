@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { translateGrade1 } from "../dist/index.js";
+import {
+  backtranslateGrade1,
+  backtranslateGrade2,
+} from "../dist/backtranslation.js";
 import { translateGrade2 } from "../dist/grade2.js";
 
 describe("published browser ESM", () => {
@@ -19,5 +23,21 @@ describe("published browser ESM", () => {
       mode: "grade2",
       ok: true,
     });
+  });
+
+  it("retains inverse ambiguity in the tree-shakeable browser entry point", () => {
+    expect(backtranslateGrade1("⠼⠁⠃")).toEqual({
+      candidate: { mode: "grade1", print: "12" },
+      kind: "unique",
+      mode: "grade1",
+    });
+    const result = backtranslateGrade2("⠁⠃");
+    expect(result.kind).toBe("ambiguous");
+    if (result.kind === "ambiguous") {
+      expect(Array.from(result.candidates, (candidate) => candidate.print)).toEqual([
+        "ab",
+        "about",
+      ]);
+    }
   });
 });

@@ -54,6 +54,7 @@ async function measure(entryPoint: string): Promise<BundleSizes> {
 console.log(
   JSON.stringify(
     {
+      backtranslation: await measure("src/backtranslation.ts"),
       literary: await measure("src/index.ts"),
       technical: await measure("src/technical.ts"),
       unit: "bytes",

@@ -64,7 +64,11 @@ produced_by:
 
 ### New Leads (Not Yet in Collection)
 
-- *The Rules of Unified English Braille*, Section 2 and the grade-1 mode rules - supplies the underlying per-sign need for grade-1 protection.
+- (none)
+
+### Now in Collection (previously listed as leads)
+
+- [The Rules of Unified English Braille, Third Edition 2024](../ICEB_2024_RulesUnifiedEnglishBraille/notes.md) - supplies the normative Grade 1 mode and per-sign disambiguation rules assumed by this replacement technical-expression scope planner; Section 10 also shows how Grade 1 indicators prevent contractions and shortforms from changing interpretation.
 
 ### Supersedes or Recontextualizes
 
@@ -77,6 +81,7 @@ produced_by:
 ### Conceptual Links (not citation-based)
 
 - [Finite-State Transducers in Language and Speech Processing](../Mohri_1997_FiniteStateTransducers/notes.md) - moderate connection: per-sign translation is sequential, while this source adds a bounded expression-level planning pass whose decision depends on counts and scope boundaries.
+- [The Rules of Unified English Braille, Third Edition 2024](../ICEB_2024_RulesUnifiedEnglishBraille/notes.md) - strong standards link: the rulebook supplies the Grade 1 semantics this replacement planner scopes, and both sources distinguish canonical production choices from other conforming alternatives that inverse APIs must retain rather than guess between.
 
 ## Open implementation questions
 

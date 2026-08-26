@@ -64,6 +64,12 @@ export interface ContextualTransduction {
   readonly rules: readonly ContextualAppliedRule[];
 }
 
+export interface ContextualInverseRule {
+  readonly braille: string;
+  readonly print: string;
+  readonly ruleIndex: number;
+}
+
 interface Candidate {
   readonly braille: string;
   readonly end: number;
@@ -323,4 +329,39 @@ export function runContextualTransducer(
   const result = best[0];
   /* v8 ignore next -- the literal edge makes position zero reachable. */
   return result ?? { braille: "", rules: [] };
+}
+
+function compactCount(values: string, index: number): number | undefined {
+  const encoded = values.charCodeAt(index);
+  return Number.isNaN(encoded) ? undefined : encoded - 0x100;
+}
+
+/**
+ * Invert the compiled rule edges without duplicating their print strings.
+ * The caller still applies the complete forward transducer to validate context.
+ */
+export function invertContextualProgram(
+  program: ContextualTransducerProgram,
+): readonly ContextualInverseRule[] {
+  const [inputs, , , , inputRuleCounts] = program.matcher;
+  const inverse: ContextualInverseRule[] = [];
+  let ruleIndex = 0;
+  for (const [inputIndex, print] of inputs.entries()) {
+    const ruleCount = compactCount(inputRuleCounts, inputIndex);
+    if (ruleCount === undefined) {
+      throw new Error("Generated contextual program has a malformed rule count.");
+    }
+    for (let offset = 0; offset < ruleCount; offset += 1) {
+      const rule = program.rules[ruleIndex];
+      if (rule === undefined) {
+        throw new Error("Generated contextual program references a missing rule.");
+      }
+      inverse.push({ braille: rule[0], print, ruleIndex });
+      ruleIndex += 1;
+    }
+  }
+  if (ruleIndex !== program.rules.length) {
+    throw new Error("Generated contextual program has unindexed inverse rules.");
+  }
+  return inverse;
 }

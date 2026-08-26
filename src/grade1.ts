@@ -72,6 +72,37 @@ export type Grade1Result =
 
 export type Grade1TextResult = Grade1Success | Grade1UnsupportedCharacter;
 
+export interface Grade1ReverseLetter {
+  readonly braille: string;
+  readonly kind: "letter";
+  readonly numericDigit: string | null;
+  readonly print: string;
+  readonly uppercasePrint: string;
+}
+
+export interface Grade1ReverseModifier {
+  readonly braille: string;
+  readonly kind: "modifier";
+  readonly print: string;
+}
+
+export interface Grade1ReverseSemanticControl {
+  readonly braille: string;
+  readonly kind: "semantic-control";
+}
+
+export interface Grade1ReverseSymbol {
+  readonly braille: string;
+  readonly kind: "symbol";
+  readonly print: string;
+}
+
+export type Grade1ReverseEntry =
+  | Grade1ReverseLetter
+  | Grade1ReverseModifier
+  | Grade1ReverseSemanticControl
+  | Grade1ReverseSymbol;
+
 interface ScalarToken {
   readonly codeUnitIndex: number;
   readonly scalarIndex: number;
@@ -702,4 +733,68 @@ export function translateGrade1(input: string): Grade1TextResult;
 export function translateGrade1(input: Grade1Document): Grade1Result;
 export function translateGrade1(input: string | Grade1Document): Grade1Result {
   return typeof input === "string" ? translateText(input) : translateDocument(input);
+}
+
+function numericDigitFor(letter: string): string | null {
+  if (letter < "a" || letter > "j") {
+    return null;
+  }
+  return letter === "j" ? "0" : String(letter.charCodeAt(0) - 96);
+}
+
+/** Internal inverse alphabet derived from the exact forward Grade 1 tables. */
+export function grade1ReverseEntries(): readonly Grade1ReverseEntry[] {
+  const letters: Grade1ReverseLetter[] = [
+    ...[...LETTER_CELLS].map(([print, braille]): Grade1ReverseLetter => ({
+      braille,
+      kind: "letter",
+      numericDigit: numericDigitFor(print),
+      print,
+      uppercasePrint: print.toUpperCase(),
+    })),
+    ...[...GREEK_CELLS].map(([print, braille]): Grade1ReverseLetter => ({
+      braille,
+      kind: "letter",
+      numericDigit: null,
+      print,
+      uppercasePrint: print.toUpperCase(),
+    })),
+    ...[...SPECIAL_LETTER_CELLS].map(
+      ([print, braille]): Grade1ReverseLetter => ({
+        braille,
+        kind: "letter",
+        numericDigit: null,
+        print,
+        uppercasePrint: print === "ß" ? "ẞ" : print.toUpperCase(),
+      }),
+    ),
+  ];
+  const modifiers = [...COMBINING_MODIFIERS].map(
+    ([print, braille]): Grade1ReverseModifier => ({
+      braille,
+      kind: "modifier",
+      print,
+    }),
+  );
+  const symbols = [...SYMBOLS].map(
+    ([print, braille]): Grade1ReverseSymbol => ({
+      braille,
+      kind: "symbol",
+      print,
+    }),
+  );
+  const semanticControls: Grade1ReverseSemanticControl[] = [
+    { braille: "⠣", kind: "semantic-control" },
+    { braille: "⠜", kind: "semantic-control" },
+    { braille: LIGATURE_INDICATOR, kind: "semantic-control" },
+    ...Object.values(TYPEFORM_INDICATORS).flatMap(
+      (indicators): readonly Grade1ReverseSemanticControl[] => [
+        { braille: indicators.passage, kind: "semantic-control" },
+        { braille: indicators.symbol, kind: "semantic-control" },
+        { braille: indicators.terminator, kind: "semantic-control" },
+        { braille: indicators.word, kind: "semantic-control" },
+      ],
+    ),
+  ];
+  return [...letters, ...modifiers, ...symbols, ...semanticControls];
 }

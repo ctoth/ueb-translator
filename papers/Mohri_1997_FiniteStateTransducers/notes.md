@@ -128,3 +128,4 @@ Mohri supplies the theoretical contract for the runtime: a finite UEB rule dicti
 ### Conceptual Links (not citation-based)
 
 - [Incremental Construction of Minimal Acyclic Finite-State Automata](../Daciuk_2000_MinimalAcyclicAutomata/notes.md) - strong complement: Mohri supplies the subsequential transducer model and minimization boundary, while Daciuk et al. supply the sorted incremental acyclic construction selected for the compiler.
+- [The Rules of Unified English Braille, Third Edition 2024](../ICEB_2024_RulesUnifiedEnglishBraille/notes.md) - strong application link: the UEB contraction rules define a finite, context-sensitive, potentially multi-output inverse relation; Mohri's relation, composition, and bounded-ambiguity results support exhaustive candidate generation followed by canonical forward validation.
