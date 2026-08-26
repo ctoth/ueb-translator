@@ -65,8 +65,8 @@ jobs:
           LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
         run: npm run oracle:smoke
 
-      - name: Fail on project-to-oracle translation disagreements
+      - name: Sweep the tracked project-to-oracle inventory
         env:
           LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
           LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
-        run: npm run oracle:differential:smoke
+        run: npm run oracle:inventory:check
