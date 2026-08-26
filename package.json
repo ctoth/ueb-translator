@@ -15,6 +15,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./backtranslation": {
+      "types": "./dist/backtranslation.d.ts",
+      "import": "./dist/backtranslation.js"
+    },
     "./grade2": {
       "types": "./dist/grade2.d.ts",
       "import": "./dist/grade2.js"
