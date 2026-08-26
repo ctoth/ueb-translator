@@ -835,7 +835,11 @@ function renderExpression(
           item.kind === "identifier" &&
           /^[a-j]/u.test(item.value)
         ) {
-          requirements.push({ end: offset + 1, kind: "symbol", offset });
+          requirements.push({
+            end: offset + 1,
+            kind: "numeric-symbol",
+            offset,
+          });
         }
         braille += itemRendered.braille;
         offset += itemRendered.braille.length;
@@ -1002,7 +1006,11 @@ function renderMatrix(
   );
 }
 
-type Grade1RequirementKind = "standing-symbol" | "standing-word" | "symbol";
+type Grade1RequirementKind =
+  | "numeric-symbol"
+  | "standing-symbol"
+  | "standing-word"
+  | "symbol";
 
 interface Grade1Requirement {
   readonly end: number;
@@ -1056,7 +1064,10 @@ function activeRequirements(
     ) {
       return false;
     }
-    if (requirement.kind === "symbol") {
+    if (
+      requirement.kind === "numeric-symbol" ||
+      requirement.kind === "symbol"
+    ) {
       return true;
     }
     return (
@@ -1090,10 +1101,25 @@ function applyPreferredGrade1(
     if (active.length === 0) {
       continue;
     }
+    const numeric = active.filter(
+      (requirement) => requirement.kind === "numeric-symbol",
+    );
+    const counted = active.filter(
+      (requirement) => requirement.kind !== "numeric-symbol",
+    );
+    if (counted.length === 0) {
+      insertions.push(
+        ...numeric.map((requirement): Grade1Insertion => ({
+          indicator: GRADE1_SYMBOL_INDICATOR,
+          offset: requirement.offset,
+        })),
+      );
+      continue;
+    }
     protectedSequenceCount += 1;
     const wordRequired =
-      active.some((requirement) => requirement.kind === "standing-word") ||
-      active.length > 1;
+      counted.some((requirement) => requirement.kind === "standing-word") ||
+      counted.length > 1;
     if (wordRequired) {
       insertions.push({
         indicator: GRADE1_WORD_INDICATOR,
@@ -1101,7 +1127,13 @@ function applyPreferredGrade1(
       });
       continue;
     }
-    for (const requirement of active) {
+    insertions.push(
+      ...numeric.map((requirement): Grade1Insertion => ({
+        indicator: GRADE1_SYMBOL_INDICATOR,
+        offset: requirement.offset,
+      })),
+    );
+    for (const requirement of counted) {
       insertions.push({
         indicator: GRADE1_SYMBOL_INDICATOR,
         offset: requirement.offset,

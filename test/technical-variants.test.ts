@@ -498,6 +498,54 @@ describe("preferred grade-1 scope edges", () => {
     ).toMatchObject({ braille: "", ok: true });
   });
 
+  it("excludes a-j following numbers from the passage threshold", () => {
+    const numericLetter = (number: string, letter: string): TechnicalExpression => ({
+      items: [
+        { kind: "number", value: number },
+        { kind: "identifier", value: letter },
+      ],
+      kind: "sequence",
+    });
+    const expression: TechnicalExpression = {
+      comparison: "equals",
+      kind: "comparison",
+      left: {
+        comparison: "equals",
+        kind: "comparison",
+        left: numericLetter("1", "a"),
+        right: numericLetter("2", "b"),
+      },
+      right: numericLetter("3", "c"),
+    };
+    expect(
+      translateTechnical({
+        blocks: [{ expression, kind: "expression" }],
+        kind: "technical-document",
+        profile: preferred,
+      }),
+    ).toMatchObject({
+      braille: fromBrf('#A;A "7 #B;B "7 #C;C'),
+      ok: true,
+    });
+
+    expect(
+      translateTechnical({
+        blocks: [
+          {
+            expression: {
+              denominator: { kind: "number", value: "2" },
+              kind: "general-fraction",
+              numerator: numericLetter("1", "a"),
+            },
+            kind: "expression",
+          },
+        ],
+        kind: "technical-document",
+        profile: preferred,
+      }),
+    ).toMatchObject({ braille: fromBrf(";(#A;A./#B)"), ok: true });
+  });
+
   it("spaces an international teaching operation and a lowercase function argument", () => {
     expect(
       translateTechnical({
