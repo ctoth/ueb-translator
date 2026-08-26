@@ -5,7 +5,7 @@
     "noEmit": false,
     "noEmitOnError": true,
     "outDir": "../../node_modules/.cache/ueb-translator/grade2-rules",
-    "rootDir": ".",
+    "rootDir": "../..",
     "types": []
   },
   "include": ["*.ts"]

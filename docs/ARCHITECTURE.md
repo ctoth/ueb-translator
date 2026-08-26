@@ -37,12 +37,32 @@ The walker binary-searches each state's edge range and remembers the most recent
 
 ## Contracted contextual program
 
-Grade 2 source rules compile into aligned rule tuples, guard-opcode tuples, and
-a deduplicated operand pool. The compiler normalizes source order, rejects
-duplicate guards and unresolved equal-precedence overlaps, and emits provenance
-in a separate module. The browser runtime has no contraction classes, named
-exceptions, or rule vocabulary: it indexes tuples by their first input scalar
-and exhaustively interprets the closed opcode union.
+Grade 2 source rules compile their 180 distinct print inputs once into a sorted
+prefix table in the shared transducer runtime layer. A 26-way initial index
+limits each exact `startsWith` match to one lowercase-letter bucket. Fixed-width
+input rule counts, input guard counts, and per-initial offsets locate contiguous
+rule and guard ranges without repeating each input across contextual variants or
+constructing lookup maps in the browser. This representation measured smaller
+than carrying final-output identity through a minimal automaton for this rule
+set: distinct bucket outputs prevented useful suffix-state merging.
+
+The aligned rule tuples, guard tuples, and deduplicated text-operand pool remain
+separate from development-only provenance. Rule and guard offsets are recovered
+from the compiled counts, which removes two high-entropy integers from every
+runtime rule tuple.
+
+Authored guards form a closed discriminated union. Compilation lowers them to
+an exhaustive tuple union: guards without operands occupy one number, textual
+predicates index the string pool, and boundary predicates carry a five-bit mask.
+The generated module imports this runtime contract instead of reproducing it.
+The compiler normalizes source order and rejects duplicate guards and unresolved
+equal-precedence overlaps.
+
+The shared contextual-transducer interpreter owns deterministic prefix matching,
+guard evaluation, and path selection. The Grade 2 entry point supplies only the
+explicit UEB context that cannot be recovered by the automaton itself, such as
+standing-alone status and caller-provided structural boundaries. It contains no
+contraction classes, named exceptions, guard opcodes, or rule-selection loop.
 
 For each lexical position, permitted rules and the literal-letter fallback form
 the outgoing edges of an acyclic segmentation graph. A backward dynamic program

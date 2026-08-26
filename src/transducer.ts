@@ -8,7 +8,7 @@
  * https://aclanthology.org/J97-2003/
  */
 
-export interface CompiledTransducer {
+export interface CompiledAutomaton {
   /** CSR-style start offset for each state's outgoing edges, plus one sentinel. */
   readonly stateEdgeOffsets: readonly number[];
   /** Unicode scalar values, sorted within each state's edge range. */
@@ -17,8 +17,33 @@ export interface CompiledTransducer {
   readonly edgeTargets: readonly number[];
   /** Output indexes for final states, or -1 for non-final states. */
   readonly stateOutputIndexes: readonly number[];
+}
+
+export interface CompiledTransducer extends CompiledAutomaton {
   /** Deduplicated final outputs. */
   readonly outputs: readonly string[];
+}
+
+export interface TransducerPrefixMatch {
+  readonly endCodeUnitIndex: number;
+  readonly outputIndex: number;
+}
+
+/** Sorted rule inputs plus fixed-width initial and rule-range offsets. */
+export type CompactPrefixTable = readonly [
+  inputs: readonly string[],
+  initialInputOffsets: string,
+  initialRuleOffsets: string,
+  initialGuardOffsets: string,
+  inputRuleCounts: string,
+  inputGuardCounts: string,
+];
+
+export interface PrefixTableMatch {
+  readonly endCodeUnitIndex: number;
+  readonly ruleCount: number;
+  readonly guardOffset: number;
+  readonly ruleOffset: number;
 }
 
 export interface TransducerSuccess {
@@ -41,7 +66,7 @@ function arrayValue(values: readonly number[], index: number): number | undefine
 }
 
 function findTarget(
-  transducer: CompiledTransducer,
+  transducer: CompiledAutomaton,
   state: number,
   label: number,
 ): number | undefined {
@@ -75,8 +100,114 @@ function findTarget(
   return undefined;
 }
 
+function isScalarBoundary(input: string, codeUnitIndex: number): boolean {
+  if (!Number.isInteger(codeUnitIndex) || codeUnitIndex < 0 || codeUnitIndex > input.length) {
+    return false;
+  }
+  if (codeUnitIndex === 0 || codeUnitIndex === input.length) {
+    return true;
+  }
+  const current = input.charCodeAt(codeUnitIndex);
+  const previous = input.charCodeAt(codeUnitIndex - 1);
+  return !(current >= 0xdc00 && current <= 0xdfff &&
+    previous >= 0xd800 && previous <= 0xdbff);
+}
+
+/** Return every final automaton prefix beginning at a Unicode scalar boundary. */
+export function matchTransducerPrefixes(
+  transducer: CompiledAutomaton,
+  input: string,
+  startCodeUnitIndex: number,
+): readonly TransducerPrefixMatch[] {
+  if (!isScalarBoundary(input, startCodeUnitIndex)) {
+    return [];
+  }
+
+  const matches: TransducerPrefixMatch[] = [];
+  let state = 0;
+  let cursor = startCodeUnitIndex;
+  while (cursor < input.length) {
+    const codePoint = input.codePointAt(cursor);
+    /* v8 ignore next -- cursor is strictly within a scalar-boundary string. */
+    if (codePoint === undefined) {
+      return [];
+    }
+    const target = findTarget(transducer, state, codePoint);
+    if (target === undefined) {
+      break;
+    }
+    cursor += scalarWidth(codePoint);
+    state = target;
+    const outputIndex = arrayValue(transducer.stateOutputIndexes, state);
+    if (outputIndex !== undefined && outputIndex >= 0) {
+      matches.push({ endCodeUnitIndex: cursor, outputIndex });
+    }
+  }
+  return matches;
+}
+
 function scalarWidth(codePoint: number): 1 | 2 {
   return codePoint > 0xffff ? 2 : 1;
+}
+
+const COMPACT_INTEGER_OFFSET = 0x100;
+
+function compactInteger(values: string, index: number): number | undefined {
+  const encoded = values.charCodeAt(index);
+  return Number.isNaN(encoded) ? undefined : encoded - COMPACT_INTEGER_OFFSET;
+}
+
+/** Match every compiled rule prefix in the input's lowercase-ASCII bucket. */
+export function matchPrefixTable(
+  table: CompactPrefixTable,
+  input: string,
+  startCodeUnitIndex: number,
+): readonly PrefixTableMatch[] {
+  if (!isScalarBoundary(input, startCodeUnitIndex)) {
+    return [];
+  }
+  const [
+    inputs,
+    initialInputOffsets,
+    initialRuleOffsets,
+    initialGuardOffsets,
+    inputRuleCounts,
+    inputGuardCounts,
+  ] = table;
+  const initial = input.charCodeAt(startCodeUnitIndex) - 97;
+  if (initial < 0 || initial >= 26) {
+    return [];
+  }
+  const inputStart = compactInteger(initialInputOffsets, initial);
+  const inputEnd = compactInteger(initialInputOffsets, initial + 1);
+  let ruleOffset = compactInteger(initialRuleOffsets, initial);
+  let guardOffset = compactInteger(initialGuardOffsets, initial);
+  if (
+    inputStart === undefined || inputEnd === undefined ||
+    ruleOffset === undefined || guardOffset === undefined
+  ) {
+    return [];
+  }
+  const matches: PrefixTableMatch[] = [];
+  for (let inputIndex = inputStart; inputIndex < inputEnd; inputIndex += 1) {
+    const print = inputs[inputIndex];
+    const ruleCount = compactInteger(inputRuleCounts, inputIndex);
+    const guardCount = compactInteger(inputGuardCounts, inputIndex);
+    if (print === undefined || ruleCount === undefined || guardCount === undefined) {
+      return [];
+    }
+    if (input.startsWith(print, startCodeUnitIndex)) {
+      matches.push({
+        endCodeUnitIndex: startCodeUnitIndex + print.length,
+        guardOffset,
+        ruleCount,
+        ruleOffset,
+      });
+    }
+    ruleOffset += ruleCount;
+    guardOffset += guardCount;
+  }
+  return matches;
 }
 
 /** Run a deterministic longest-match translation over Unicode scalar input. */

@@ -1,4 +1,7 @@
-import type { CompiledTransducer } from "../../../src/transducer.js";
+import type {
+  CompiledAutomaton,
+  CompiledTransducer,
+} from "../../../src/transducer.js";
 
 /** A pinpoint citation into an official Braille authority publication. */
 export interface RuleCitation {
@@ -55,8 +58,13 @@ interface MutableState {
 }
 
 interface FlatGraph {
-  readonly runtime: CompiledTransducer;
+  readonly runtime: CompiledAutomaton;
   readonly stateIndexes: ReadonlyMap<MutableState, number>;
+}
+
+interface IndexedAutomatonInput {
+  readonly input: string;
+  readonly outputIndex: number;
 }
 
 const NO_OUTPUT = -1;
@@ -222,8 +230,7 @@ function stateSignature(
 }
 
 function buildMinimalGraph(
-  rules: readonly RuleDefinition[],
-  outputIndexes: ReadonlyMap<string, number>,
+  entries: readonly IndexedAutomatonInput[],
 ): MutableState {
   const root = newState();
   const register = new Map<string, MutableState>();
@@ -258,8 +265,8 @@ function buildMinimalGraph(
     path.length = prefixLength + 1;
   }
 
-  for (const rule of rules) {
-    const word = inputCodePoints(rule.input);
+  for (const entry of entries) {
+    const word = inputCodePoints(entry.input);
     const prefixLength = commonPrefixLength(previousWord, word);
     minimizeSuffix(prefixLength);
     const prefixState = path[prefixLength];
@@ -281,12 +288,7 @@ function buildMinimalGraph(
       current = child;
     }
 
-    const outputIndex = outputIndexes.get(rule.output);
-    /* v8 ignore next -- outputIndexes is built from the same validated rules. */
-    if (outputIndex === undefined) {
-      throw new Error("Compiler invariant failed: missing output index.");
-    }
-    current.outputIndex = outputIndex;
+    current.outputIndex = entry.outputIndex;
     previousWord = word;
   }
 
@@ -294,7 +296,7 @@ function buildMinimalGraph(
   return root;
 }
 
-function flattenGraph(root: MutableState, outputs: readonly string[]): FlatGraph {
+function flattenGraph(root: MutableState): FlatGraph {
   const stateIndexes = new Map<MutableState, number>([[root, 0]]);
   const queue: MutableState[] = [root];
   const stateEdgeOffsets: number[] = [];
@@ -333,7 +335,6 @@ function flattenGraph(root: MutableState, outputs: readonly string[]): FlatGraph
     runtime: {
       edgeLabels,
       edgeTargets,
-      outputs,
       stateEdgeOffsets,
       stateOutputIndexes,
     },
@@ -345,13 +346,14 @@ function buildProvenance(
   rules: readonly RuleDefinition[],
   root: MutableState,
   flatGraph: FlatGraph,
+  outputCount: number,
 ): CompilationProvenance {
   const stateRuleIds = Array.from(
     { length: flatGraph.runtime.stateOutputIndexes.length },
     (): string[] => [],
   );
   const outputRuleIds = Array.from(
-    { length: flatGraph.runtime.outputs.length },
+    { length: outputCount },
     (): string[] => [],
   );
 
@@ -421,10 +423,18 @@ export function compileRules(rules: readonly RuleDefinition[]): CompilationResul
     }
   }
 
-  const root = buildMinimalGraph(sortedRules, outputIndexes);
-  const flatGraph = flattenGraph(root, outputs);
+  const entries = sortedRules.map((rule): IndexedAutomatonInput => {
+    const outputIndex = outputIndexes.get(rule.output);
+    /* v8 ignore next -- outputIndexes is built from the same validated rules. */
+    if (outputIndex === undefined) {
+      throw new Error("Compiler invariant failed: missing output index.");
+    }
+    return { input: rule.input, outputIndex };
+  });
+  const root = buildMinimalGraph(entries);
+  const flatGraph = flattenGraph(root);
   return {
-    provenance: buildProvenance(sortedRules, root, flatGraph),
-    runtime: flatGraph.runtime,
+    provenance: buildProvenance(sortedRules, root, flatGraph, outputs.length),
+    runtime: { ...flatGraph.runtime, outputs },
   };
 }

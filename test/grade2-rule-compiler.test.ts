@@ -15,6 +15,10 @@ const runtimeSource = readFileSync(
   new URL("../src/grade2.ts", import.meta.url),
   "utf8",
 );
+const contextualRuntimeSource = readFileSync(
+  new URL("../src/contextual-transducer.ts", import.meta.url),
+  "utf8",
+);
 
 const rule = (
   id: `test-${string}`,
@@ -56,6 +60,24 @@ describe("compileContextualRules", () => {
     );
   });
 
+  it("encodes each guard with only its typed operand kind", () => {
+    const compilation = compileContextualRules([
+      rule("test-standing", "a", 1, [{ kind: "standing-alone" }]),
+      rule("test-boundaries", "b", 2, [{
+        boundaries: ["braille-line", "compound"],
+        kind: "not-crossing",
+      }]),
+      rule("test-words", "c", 3, [{ kind: "not-word", words: ["cat"] }]),
+    ]);
+
+    expect(compilation.runtime.guards).toEqual([
+      [12],
+      [5, 3],
+      [6, 0],
+    ]);
+    expect(compilation.runtime.stringOperands).toEqual(["cat"]);
+  });
+
   it("rejects duplicate identifiers and unsupported empty inputs", () => {
     expect(() =>
       compileContextualRules([
@@ -65,6 +87,15 @@ describe("compileContextualRules", () => {
     ).toThrow(expect.objectContaining({ code: "conflicting-rule-id" }));
     expect(() => compileContextualRules([rule("test-empty", "", 1)]))
       .toThrow(expect.objectContaining({ code: "unreachable-rule" }));
+  });
+
+  it("rejects inputs outside the matcher's lowercase ASCII alphabet", () => {
+    expect(() => compileContextualRules([
+      rule("test-uppercase-input", "A", 1),
+    ])).toThrow(expect.objectContaining({
+      code: "unreachable-rule",
+      ruleIds: ["test-uppercase-input"],
+    }));
   });
 
   it("rejects duplicate guards", () => {
@@ -88,16 +119,33 @@ describe("compileContextualRules", () => {
 });
 
 describe("Grade 2 runtime architecture", () => {
+  it("compiles contextual inputs into the deterministic prefix matcher", () => {
+    const { matcher } = GRADE2_CONTEXTUAL_COMPILATION.runtime;
+    expect(matcher.inputs.length).toBeGreaterThan(0);
+    expect(matcher.initialInputOffsets).toHaveLength(27);
+    expect(matcher.inputRuleCounts).toHaveLength(matcher.inputs.length);
+    expect(matcher.inputRuleCounts.reduce((total, count) => total + count, 0)).toBe(
+      GRADE2_CONTEXTUAL_COMPILATION.runtime.rules.length,
+    );
+  });
+
   it("interprets only the compiled contextual program", () => {
     expect(runtimeSource).toContain('from "./generated/grade2-program.js"');
+    expect(runtimeSource).toContain('from "./contextual-transducer.js"');
     expect(runtimeSource).not.toMatch(
       /GRADE2_RULE_DATA|GRADE2_SHORTFORM_DATA|APPENDIX1_SHORTFORM_DATA|INITIAL_CONTRACTION_EXCEPTION_DATA|FINAL_(?:ITY|NESS)_EXCEPTION|rankFor|permittedCandidate|permits(?:Initial|Final|LowerGroupsign)/u,
     );
   });
 
   it("keeps UEB rule vocabulary out of the generic interpreter", () => {
-    expect(runtimeSource).not.toMatch(
+    expect(contextualRuntimeSource).not.toMatch(
       /alphabetic-wordsign|strong-contraction|lower-groupsign|initial-letter-contraction|final-letter-groupsign|enough-or-in|\b(?:ever|under|children|great|ness|ity)\b/u,
+    );
+  });
+
+  it("delegates matching, guard evaluation, and path selection", () => {
+    expect(runtimeSource).not.toMatch(
+      /^function (?:guardAllows|permitsRule|candidatesAt|better|contractWord)\(/mu,
     );
   });
 });

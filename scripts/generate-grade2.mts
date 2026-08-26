@@ -1,29 +1,20 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-
-type ContextualGuardOpcode =
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
-  | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
-type ContextualPrecedence = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-type LoadedGuard = readonly [opcode: ContextualGuardOpcode, operandIndex: number];
-type LoadedRule = readonly [
-  input: string,
-  braille: string,
-  precedence: ContextualPrecedence,
-  guardOffset: number,
-  guardCount: number,
-];
-
-interface LoadedProgram {
-  readonly guards: readonly LoadedGuard[];
-  readonly rules: readonly LoadedRule[];
-  readonly stringOperands: readonly string[];
-}
+import type { CompiledContextualMatcher } from "../rules/ueb-2024/contextual-compiler.js";
+import type { CompactPrefixTable } from "../src/transducer.js";
+import type {
+  ContextualBoundaryMask,
+  ContextualGuardOpcode,
+  ContextualGuardTuple,
+  ContextualPrecedence,
+  ContextualRuleTuple,
+  ContextualTransducerProgram,
+} from "../src/contextual-transducer.js";
 
 interface LoadedCompilation {
   readonly ids: readonly string[];
-  readonly runtime: LoadedProgram;
+  readonly runtime: ContextualTransducerProgram;
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -33,6 +24,8 @@ const compiledProgramPath = resolve(
   ".cache",
   "ueb-translator",
   "grade2-rules",
+  "rules",
+  "ueb-2024",
   "program.js",
 );
 const generatedProgramPath = resolve(
@@ -61,8 +54,69 @@ function isContextualGuardOpcode(value: unknown): value is ContextualGuardOpcode
   return isIntegerInRange(value, 0, 16);
 }
 
+function isNoOperandGuardOpcode(
+  value: ContextualGuardOpcode,
+): value is 1 | 2 | 3 | 8 | 9 | 10 | 12 | 13 | 14 | 15 | 16 {
+  return value === 1 || value === 2 || value === 3 || value === 8 ||
+    value === 9 || value === 10 || value === 12 || value === 13 ||
+    value === 14 || value === 15 || value === 16;
+}
+
+function isStringOperandGuardOpcode(
+  value: ContextualGuardOpcode,
+): value is 0 | 6 | 7 | 11 {
+  return value === 0 || value === 6 || value === 7 || value === 11;
+}
+
+function isBoundaryOperandGuardOpcode(
+  value: ContextualGuardOpcode,
+): value is 4 | 5 {
+  return value === 4 || value === 5;
+}
+
+function isContextualBoundaryMask(value: unknown): value is ContextualBoundaryMask {
+  return isIntegerInRange(value, 1, 31);
+}
+
 function isContextualPrecedence(value: unknown): value is ContextualPrecedence {
   return isIntegerInRange(value, 0, 9);
+}
+
+function integerArray(value: unknown, name: string): readonly number[] {
+  if (!Array.isArray(value)) {
+    throw new Error(`Compiled Grade 2 ${name} is not an array.`);
+  }
+  return value.map((entry): number => {
+    if (typeof entry !== "number" || !Number.isInteger(entry)) {
+      throw new Error(`Compiled Grade 2 ${name} contains a non-integer.`);
+    }
+    return entry;
+  });
+}
+
+function encodeCompactIntegers(
+  values: readonly number[],
+  name: string,
+): string {
+  let encoded = "";
+  for (const value of values) {
+    if (!isIntegerInRange(value, 0, 0xfeff)) {
+      throw new Error(`Compiled Grade 2 ${name} exceeds fixed-width encoding.`);
+    }
+    encoded += String.fromCharCode(value + 0x100);
+  }
+  return encoded;
+}
+
+function compactMatcher(matcher: CompiledContextualMatcher): CompactPrefixTable {
+  return [
+    matcher.inputs,
+    encodeCompactIntegers(matcher.initialInputOffsets, "matcher initial input offsets"),
+    encodeCompactIntegers(matcher.initialRuleOffsets, "matcher initial rule offsets"),
+    encodeCompactIntegers(matcher.initialGuardOffsets, "matcher initial guard offsets"),
+    encodeCompactIntegers(matcher.inputRuleCounts, "matcher input rule counts"),
+    encodeCompactIntegers(matcher.inputGuardCounts, "matcher input guard counts"),
+  ];
 }
 
 function loadCompilation(module: unknown): LoadedCompilation {
@@ -75,10 +129,12 @@ function loadCompilation(module: unknown): LoadedCompilation {
   const runtime = candidate["runtime"];
   const rawRules = runtime["rules"];
   const rawGuards = runtime["guards"];
+  const rawMatcher = runtime["matcher"];
   const rawOperands = runtime["stringOperands"];
   const rawProvenance = candidate["provenance"];
   if (
     !Array.isArray(rawRules) || !Array.isArray(rawGuards) ||
+    !isRecord(rawMatcher) ||
     !Array.isArray(rawOperands) || !Array.isArray(rawProvenance) ||
     !rawOperands.every((operand) => typeof operand === "string")
   ) {
@@ -91,29 +147,108 @@ function loadCompilation(module: unknown): LoadedCompilation {
     }
     return operand;
   });
-  const guards: LoadedGuard[] = rawGuards.map((guard): LoadedGuard => {
-    if (
-      !Array.isArray(guard) || guard.length !== 2 ||
-      !isContextualGuardOpcode(guard[0]) ||
-      !isIntegerInRange(guard[1], 0, operands.length - 1)
-    ) {
+  const guards: ContextualGuardTuple[] = rawGuards.map(
+    (guard): ContextualGuardTuple => {
+      if (!Array.isArray(guard) || !isContextualGuardOpcode(guard[0])) {
+        throw new Error("Compiled Grade 2 contextual program has a malformed guard.");
+      }
+      const opcode = guard[0];
+      if (isNoOperandGuardOpcode(opcode) && guard.length === 1) {
+        return [opcode];
+      }
+      if (
+        isStringOperandGuardOpcode(opcode) && guard.length === 2 &&
+        isIntegerInRange(guard[1], 0, operands.length - 1)
+      ) {
+        return [opcode, guard[1]];
+      }
+      if (
+        isBoundaryOperandGuardOpcode(opcode) && guard.length === 2 &&
+        isContextualBoundaryMask(guard[1])
+      ) {
+        return [opcode, guard[1]];
+      }
       throw new Error("Compiled Grade 2 contextual program has a malformed guard.");
-    }
-    return [guard[0], guard[1]];
-  });
-  const rules: LoadedRule[] = rawRules.map((rule): LoadedRule => {
+    },
+  );
+  const rules: ContextualRuleTuple[] = rawRules.map((rule): ContextualRuleTuple => {
     if (
-      !Array.isArray(rule) || rule.length !== 5 ||
+      !Array.isArray(rule) || rule.length !== 3 ||
       typeof rule[0] !== "string" || rule[0].length === 0 ||
-      typeof rule[1] !== "string" || rule[1].length === 0 ||
-      !isContextualPrecedence(rule[2]) ||
-      !isIntegerInRange(rule[3], 0, guards.length) ||
-      !isIntegerInRange(rule[4], 0, guards.length - rule[3])
+      !isContextualPrecedence(rule[1]) ||
+      !isIntegerInRange(rule[2], 0, guards.length)
     ) {
       throw new Error("Compiled Grade 2 contextual program has a malformed rule.");
     }
-    return [rule[0], rule[1], rule[2], rule[3], rule[4]];
+    return [rule[0], rule[1], rule[2]];
   });
+  const rawInputs = rawMatcher["inputs"];
+  if (!Array.isArray(rawInputs)) {
+    throw new Error("Compiled Grade 2 contextual matcher has no input table.");
+  }
+  const matcher: CompiledContextualMatcher = {
+    initialGuardOffsets: integerArray(
+      rawMatcher["initialGuardOffsets"],
+      "matcher initial guard offsets",
+    ),
+    initialInputOffsets: integerArray(
+      rawMatcher["initialInputOffsets"],
+      "matcher initial input offsets",
+    ),
+    initialRuleOffsets: integerArray(
+      rawMatcher["initialRuleOffsets"],
+      "matcher initial rule offsets",
+    ),
+    inputs: rawInputs.map((input): string => {
+      if (typeof input !== "string" || !/^[a-z]+$/u.test(input)) {
+        throw new Error("Compiled Grade 2 contextual matcher has a malformed input.");
+      }
+      return input;
+    }),
+    inputGuardCounts: integerArray(
+      rawMatcher["inputGuardCounts"],
+      "matcher input guard counts",
+    ),
+    inputRuleCounts: integerArray(
+      rawMatcher["inputRuleCounts"],
+      "matcher input rule counts",
+    ),
+  };
+  if (
+    matcher.initialInputOffsets.length !== 27 ||
+    matcher.initialRuleOffsets.length !== 27 ||
+    matcher.initialGuardOffsets.length !== 27 ||
+    matcher.initialInputOffsets[0] !== 0 ||
+    matcher.initialInputOffsets.at(-1) !== matcher.inputs.length ||
+    matcher.initialRuleOffsets[0] !== 0 ||
+    matcher.initialRuleOffsets.at(-1) !== rules.length ||
+    matcher.initialGuardOffsets[0] !== 0 ||
+    matcher.initialGuardOffsets.at(-1) !== guards.length ||
+    matcher.initialInputOffsets.some((offset, index, offsets) =>
+      !isIntegerInRange(offset, 0, matcher.inputs.length) ||
+      (index > 0 && offset < (offsets[index - 1] ?? 0))
+    ) ||
+    matcher.initialRuleOffsets.some((offset, index, offsets) =>
+      !isIntegerInRange(offset, 0, rules.length) ||
+      (index > 0 && offset < (offsets[index - 1] ?? 0))
+    ) ||
+    matcher.initialGuardOffsets.some((offset, index, offsets) =>
+      !isIntegerInRange(offset, 0, guards.length) ||
+      (index > 0 && offset < (offsets[index - 1] ?? 0))
+    ) ||
+    matcher.inputRuleCounts.length !== matcher.inputs.length ||
+    matcher.inputRuleCounts.some((count) => !isIntegerInRange(count, 1, rules.length)) ||
+    matcher.inputRuleCounts.reduce((total, count) => total + count, 0) !== rules.length ||
+    matcher.inputGuardCounts.length !== matcher.inputs.length ||
+    matcher.inputGuardCounts.some((count) => !isIntegerInRange(count, 0, guards.length)) ||
+    matcher.inputGuardCounts.reduce((total, count) => total + count, 0) !== guards.length ||
+    rules.reduce((total, rule) => total + rule[2], 0) !== guards.length ||
+    matcher.inputs.some((input, index, inputs) =>
+      index > 0 && input <= (inputs[index - 1] ?? "")
+    )
+  ) {
+    throw new Error("Compiled Grade 2 contextual matcher is malformed.");
+  }
   const ids = rawProvenance.map((source): string => {
     const id = isRecord(source) ? source["id"] : undefined;
     if (typeof id !== "string" || id.length === 0) {
@@ -126,18 +261,19 @@ function loadCompilation(module: unknown): LoadedCompilation {
   }
   return {
     ids,
-    runtime: { guards, rules, stringOperands: operands },
+    runtime: {
+      guards,
+      matcher: compactMatcher(matcher),
+      rules,
+      stringOperands: operands,
+    },
   };
 }
 
-function generatedProgram(program: LoadedProgram): string {
+function generatedProgram(program: ContextualTransducerProgram): string {
   return `// Generated by scripts/generate-grade2.mts. Do not edit.\n` +
-    `export type ContextualGuardOpcode = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;\n` +
-    `export type ContextualPrecedence = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;\n` +
-    `export type ContextualGuardTuple = readonly [opcode: ContextualGuardOpcode, operandIndex: number];\n` +
-    `export type ContextualRuleTuple = readonly [input: string, braille: string, precedence: ContextualPrecedence, guardOffset: number, guardCount: number];\n` +
-    `export interface Grade2RuntimeProgram { readonly guards: readonly ContextualGuardTuple[]; readonly rules: readonly ContextualRuleTuple[]; readonly stringOperands: readonly string[]; }\n` +
-    `export const GRADE2_PROGRAM: Grade2RuntimeProgram = ${JSON.stringify(program, undefined, 2)};\n`;
+    `import type { ContextualTransducerProgram } from "../contextual-transducer.js";\n` +
+    `export const GRADE2_PROGRAM: ContextualTransducerProgram = ${JSON.stringify(program, undefined, 2)};\n`;
 }
 
 function generatedProvenance(ids: readonly string[]): string {
