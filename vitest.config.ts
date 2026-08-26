@@ -5,12 +5,17 @@ const config: ViteUserConfigExport = defineConfig({
   test: {
     include: [
       "test/**/*.test.ts",
+      "tools/corpus-benchmark/test/**/*.test.ts",
       "tools/liblouis-oracle/test/**/*.test.ts",
       "tools/rule-compiler/test/**/*.test.ts",
     ],
     coverage: {
       enabled: true,
-      include: ["src/**/*.ts", "tools/rule-compiler/src/**/*.ts"],
+      include: [
+        "src/**/*.ts",
+        "tools/corpus-benchmark/src/**/*.ts",
+        "tools/rule-compiler/src/**/*.ts",
+      ],
       provider: "v8",
       reporter: ["text", "json-summary"],
       thresholds: {
