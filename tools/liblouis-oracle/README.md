@@ -10,8 +10,9 @@ never a source of normative rules.
   [`docs/SOURCES.md`](../../docs/SOURCES.md).
 - Do not copy or derive translator code, rules, tables, fixtures, tests,
   traces, or generated translations from Liblouis.
-- Do not commit oracle output. Differential results are ephemeral CI or local
-  diagnostics.
+- Do not copy oracle output into translator rules, tests, fixtures, or package
+  artifacts. The tracked disagreement ledger is the sole exception: it retains
+  exact differential evidence plus an ICEB/BANA-sourced adjudication verdict.
 - A disagreement is a report to adjudicate against ICEB. It is never an
   automatic change to `ueb-translator`.
 - The GPL-licensed `lou_translate` command runs as a separate process. Neither
@@ -81,13 +82,22 @@ and emits the input, both outputs, the local identifier, Liblouis version and
 tables, plus an instruction to adjudicate against ICEB. It never edits or
 accepts a fixture, test, rule, or translation.
 
-CI runs `oracle:differential:smoke` after the process smoke. That script obtains
-each local output from the current project translator at runtime, so no
-Liblouis-derived expected output or generated translation is committed. Its
-project-owned cases cover Grade 1, the generated Grade 2 rule identifier, and
-raw technical text. Each JSON result names the exact Liblouis version and table
-list. Any disagreement fails the job while preserving both outputs as CI
-evidence for ICEB adjudication.
+CI runs `oracle:inventory:check` after the process smoke. The inventory obtains
+each local output from the current project translator at runtime. Every authored
+Grade 2 provenance rule contributes a source example and a second context, and
+the inventory retains relevant official-example Grade 1, Grade 2, and raw
+technical fixtures. Construction fails below 1,000 uniquely identified cases or
+when a case does not exercise its claimed rule provenance.
+
+[`disagreements.json`](../disagreements.json) is a tracked, versioned report of
+the exact disagreements from the pinned release. Every entry records both
+outputs, rule/test evidence, the Liblouis version and tables, and one closed
+verdict: `our-bug`, `liblouis-bug`, or `permitted-alternative`. A verdict must
+include a rationale and official ICEB/BANA source URLs. CI fails when it sees a
+new or changed disagreement until that exact evidence is adjudicated and
+committed; it also fails when a ledger entry becomes stale, so resolved drift is
+reviewed rather than silently retained. Liblouis remains non-normative: only the
+cited official source decides the verdict.
 
 [release]: https://github.com/liblouis/liblouis/releases/tag/v3.38.0
 [g1]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g1.ctb
