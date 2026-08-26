@@ -128,6 +128,10 @@ the boundary where raw strings must not be treated as a visual notation tree.
 The [compiler architecture](https://github.com/ctoth/ueb-translator/blob/main/docs/ARCHITECTURE.md) documents the selected finite-state algorithms, source-rule provenance, and package boundary. Run `npm run size` for a reproducible raw, minified, gzip, and Brotli byte report.
 The [uncontracted contract](https://github.com/ctoth/ueb-translator/blob/main/docs/GRADE1.md)
 lists the Grade 1 surface, explicit semantic nodes, and failure boundary.
+The [corpus benchmark contract](https://github.com/ctoth/ueb-translator/blob/main/docs/CORPORA.md)
+documents optional Calibre, Project Gutenberg, and English Wikinews preparation,
+sealed holdouts, content hashes, licenses, and benchmark metrics. Corpus commands
+are development-only and never run during installation or ordinary checks.
 
 The legacy `translateBasicGrade1` entry point remains available while the full
 library is under construction.
