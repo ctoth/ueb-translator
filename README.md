@@ -3,12 +3,12 @@
 A tiny, browser-first, standards-driven Unified English Braille translator in
 strict TypeScript.
 
-This repository is under active construction. Its uncontracted API translates
-the deterministic print surface of UEB grade 1 and returns a typed failure for
-unsupported input instead of guessing.
+Its uncontracted API translates the deterministic print surface of UEB grade 1
+and returns a typed failure for unsupported input instead of guessing. Import a
+specific mode when bundle size matters:
 
 ```ts
-import { translateGrade1 } from "ueb-translator";
+import { translateGrade1 } from "ueb-translator/grade1";
 
 const result = translateGrade1("NASA 7a");
 if (result.ok) {
@@ -36,6 +36,21 @@ const document = {
 } satisfies Grade1Document;
 
 const result = translateGrade1(document);
+```
+
+The root entry point provides a closed, type-safe dispatcher when an application
+selects among forward modes at runtime. The request union prevents a technical
+document from being sent to a literary translator:
+
+```ts
+import { translateUeb, type UebTranslationRequest } from "ueb-translator";
+
+const request = {
+  input: { kind: "technical-text", text: "3+2=5" },
+  mode: "technical",
+} satisfies UebTranslationRequest;
+
+const result = translateUeb(request);
 ```
 
 Contracted literary UEB is a separate, tree-shakeable entry point:
@@ -83,7 +98,7 @@ matrices, chemistry, and significant computer layout use explicit structure:
 
 ```ts
 import {
-  translateTechnical,
+  translateTechnicalInput,
   type TechnicalDocument,
 } from "ueb-translator/technical";
 
@@ -104,7 +119,7 @@ const document = {
   }],
 } satisfies TechnicalDocument;
 
-const result = translateTechnical(document);
+const result = translateTechnicalInput(document);
 ```
 
 The [technical contract](https://github.com/ctoth/ueb-translator/blob/main/docs/TECHNICAL.md)
@@ -125,6 +140,24 @@ the boundary where raw strings must not be treated as a visual notation tree.
 - Property tests use `fast-check` only as a development dependency; generated
   cases are reproducible and shrink failing inputs without entering the package.
 
+## Browser entry points
+
+| Import | Runtime surface |
+| --- | --- |
+| `ueb-translator` | closed Grade 1, Grade 2, and technical dispatcher |
+| `ueb-translator/cells` | Unicode six-dot cell encoding |
+| `ueb-translator/grade1` | uncontracted literary UEB |
+| `ueb-translator/grade2` | contracted literary UEB |
+| `ueb-translator/grade2/diagnostics` | explicit Grade 2 rule traces |
+| `ueb-translator/technical` | raw and structured technical UEB |
+| `ueb-translator/backtranslation` | ambiguity-preserving Grade 1 and Grade 2 inverse relation |
+
+Every entry is a browser-native ECMAScript module with no runtime dependency.
+`npm run package:verify` builds and packs the library, installs the tarball into
+a clean fixture, compiles its declarations without Node types, bundles every
+export for a browser, executes each bundle in Chromium, and verifies that the
+Grade 1 graph retains no Grade 2 or technical module.
+
 The [compiler architecture](https://github.com/ctoth/ueb-translator/blob/main/docs/ARCHITECTURE.md) documents the selected finite-state algorithms, source-rule provenance, and package boundary. Run `npm run size` for a reproducible raw, minified, gzip, and Brotli byte report.
 The [uncontracted contract](https://github.com/ctoth/ueb-translator/blob/main/docs/GRADE1.md)
 lists the Grade 1 surface, explicit semantic nodes, and failure boundary.
@@ -132,9 +165,6 @@ The [corpus benchmark contract](https://github.com/ctoth/ueb-translator/blob/mai
 documents optional Calibre, Project Gutenberg, and English Wikinews preparation,
 sealed holdouts, content hashes, licenses, and benchmark metrics. Corpus commands
 are development-only and never run during installation or ordinary checks.
-
-The legacy `translateBasicGrade1` entry point remains available while the full
-library is under construction.
 
 ## License
 
