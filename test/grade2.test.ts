@@ -280,6 +280,22 @@ describe("translateGrade2", () => {
     });
   });
 
+  it("remaps a capitals terminator after a collapsed contraction", () => {
+    expect(translateGrade2("ANDx")).toEqual({
+      braille: "⠠⠠⠯⠠⠄⠭",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("terminates a restarted internal capitals word", () => {
+    expect(translateGrade2("aBCd")).toEqual({
+      braille: "⠁⠠⠠⠃⠉⠠⠄⠙",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
   it("contracts ASCII ranges without guarding a non-ASCII word", () => {
     const contracted = traceGrade2("caféhouse");
     expect(contracted.ok).toBe(true);
