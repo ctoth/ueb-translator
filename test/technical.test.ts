@@ -188,7 +188,7 @@ describe("ICEB GTM replacement Section 1.7 (approved July 2025)", () => {
     });
   });
 
-  it("uses a word indicator when one symbols-sequence needs two protections", () => {
+  it("does not count the radical close as Grade 1 protection (issue #34)", () => {
     const document: TechnicalDocument = {
       blocks: [
         {
@@ -214,7 +214,7 @@ describe("ICEB GTM replacement Section 1.7 (approved July 2025)", () => {
     };
 
     expect(translateTechnical(document)).toEqual({
-      braille: fromBrf(';;%X+ "7 #G'),
+      braille: fromBrf(';%X+ "7 #G'),
       mode: "technical",
       ok: true,
     });

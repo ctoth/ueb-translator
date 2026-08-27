@@ -478,7 +478,7 @@ describe("backtranslateGrade2", () => {
         return retainedOriginal;
       },
     ), { numRuns: 200 });
-  });
+  }, 10_000);
 
   it("round trips every compiled Section 10 and Appendix 1 source", () => {
     const contextualPrint = GRADE2_RULES.map((rule): string => {

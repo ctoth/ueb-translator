@@ -7,6 +7,7 @@ import {
   INITIAL_CONTRACTION_EXCEPTIONS,
 } from "../rules/ueb-2024/constraints.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
+import { GRADE2_INVENTORY_COUNTS } from "../rules/ueb-2024/inventory.js";
 import { SHORTFORMS } from "../rules/ueb-2024/shortforms.js";
 import { translateGrade1 } from "../src/grade1.js";
 import { traceGrade2 } from "../src/grade2-diagnostics.js";
@@ -14,7 +15,7 @@ import { translateGrade2, type Grade2Document } from "../src/grade2.js";
 
 describe("official Grade 2 source inventory", () => {
   it("cites every Section 10 contraction", () => {
-    expect(GRADE2_RULES).toHaveLength(107);
+    expect(GRADE2_RULES).toHaveLength(GRADE2_INVENTORY_COUNTS.rules);
     expect(
       Object.fromEntries(
         [
@@ -48,9 +49,11 @@ describe("official Grade 2 source inventory", () => {
     }
   });
 
-  it("represents Appendix 1's 75 base shortforms independently", () => {
-    expect(SHORTFORMS).toHaveLength(75);
-    expect(new Set(SHORTFORMS.map((rule) => rule.print)).size).toBe(75);
+  it("represents every Appendix 1 base shortform independently", () => {
+    expect(SHORTFORMS).toHaveLength(GRADE2_INVENTORY_COUNTS.shortforms);
+    expect(new Set(SHORTFORMS.map((rule) => rule.print)).size).toBe(
+      GRADE2_INVENTORY_COUNTS.shortforms,
+    );
     for (const rule of SHORTFORMS) {
       expect(rule.citation.locator).toBe("10.9 and Appendix 1");
       expect(rule.id).toMatch(/^UEB-10\.9-/u);
@@ -58,8 +61,12 @@ describe("official Grade 2 source inventory", () => {
   });
 
   it("represents every explicit Appendix 1 longer-word use independently", () => {
-    expect(APPENDIX1_LONGER_WORDS).toHaveLength(327);
-    expect(new Set(APPENDIX1_LONGER_WORDS.map((rule) => rule.id)).size).toBe(327);
+    expect(APPENDIX1_LONGER_WORDS).toHaveLength(
+      GRADE2_INVENTORY_COUNTS.appendix1LongerWords,
+    );
+    expect(new Set(APPENDIX1_LONGER_WORDS.map((rule) => rule.id)).size).toBe(
+      GRADE2_INVENTORY_COUNTS.appendix1LongerWords,
+    );
     for (const rule of APPENDIX1_LONGER_WORDS) {
       expect(rule.citation.locator).toBe("10.9 and Appendix 1");
       expect(rule.id).toMatch(/^UEB-Appendix-1-/u);

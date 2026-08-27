@@ -546,7 +546,7 @@ describe("preferred grade-1 scope edges", () => {
     ).toMatchObject({ braille: fromBrf(";(#A;A./#B)"), ok: true });
   });
 
-  it("keeps numeric protection under broad Grade 1 scope", () => {
+  it("protects a-j after numeric mode in every Grade 1 path (issue #34)", () => {
     const numericLetter: TechnicalExpression = {
       items: [
         { kind: "number", value: "1" },
@@ -554,6 +554,12 @@ describe("preferred grade-1 scope edges", () => {
       ],
       kind: "sequence",
     };
+    expect(translateTechnical({
+      blocks: [{ expression: numericLetter, kind: "expression" }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({ braille: "⠼⠁⠰⠁", ok: true });
+
     expect(translateTechnical({
       blocks: [{ expression: numericLetter, kind: "expression" }],
       kind: "technical-document",
@@ -579,6 +585,60 @@ describe("preferred grade-1 scope edges", () => {
       braille: "⠰⠰⠷⠼⠁⠰⠁⠨⠌⠼⠃⠾⠱",
       ok: true,
     });
+
+    expect(translateTechnical({
+      blocks: [{
+        columnGap: 1,
+        enclosure: "round",
+        kind: "matrix",
+        rows: [[numericLetter]],
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({
+      braille: "⠰⠰⠰⠠⠐⠣⠼⠁⠰⠁⠠⠐⠜⠰⠄",
+      ok: true,
+    });
+
+    const protectedPassage: TechnicalExpression = {
+      comparison: "equals",
+      kind: "comparison",
+      left: {
+        comparison: "equals",
+        kind: "comparison",
+        left: {
+          comparison: "equals",
+          kind: "comparison",
+          left: numericLetter,
+          right: { kind: "identifier", value: "X" },
+        },
+        right: { kind: "identifier", value: "Y" },
+      },
+      right: { kind: "identifier", value: "Z" },
+    };
+    expect(translateTechnical({
+      blocks: [{ expression: protectedPassage, kind: "expression" }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({
+      braille: fromBrf(';;;#A;A "7 ,X "7 ,Y "7 ,Z;\''),
+      ok: true,
+    });
+  });
+
+  it("uses the GTM-preferred Grade 1 scope for sqrt(9) (issue #34 probe)", () => {
+    expect(translateTechnical({
+      blocks: [{
+        expression: {
+          kind: "radical",
+          radicand: { kind: "number", value: "9" },
+          root: "square",
+        },
+        kind: "expression",
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({ braille: "⠰⠩⠼⠊⠬", ok: true });
   });
 
   it.each([
@@ -589,12 +649,33 @@ describe("preferred grade-1 scope edges", () => {
       enclosure: "round",
       kind: "group",
     }, "⠰⠰⠐⠣⠁⠃⠐⠜"],
-  ] as const)("protects a standing technical letter sequence", (expression, braille) => {
+  ] as const)("protects a standing technical letter sequence (issues #35/#36)", (expression, braille) => {
     expect(translateTechnical({
       blocks: [{ expression, kind: "expression" }],
       kind: "technical-document",
       profile: preferred,
     })).toMatchObject({ braille, ok: true });
+  });
+
+  it("distinguishes enclosed ab from Grade 2 (about) (issue #36 probe)", () => {
+    const technical = translateTechnical({
+      blocks: [{
+        expression: {
+          content: { kind: "identifier", value: "ab" },
+          enclosure: "round",
+          kind: "group",
+        },
+        kind: "expression",
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    });
+    const prose = translateGrade2("(about)");
+    expect(technical.ok).toBe(true);
+    expect(prose.ok).toBe(true);
+    if (technical.ok && prose.ok) {
+      expect(technical.braille).not.toBe(prose.braille);
+    }
   });
 
   it("shifts non-standing requirements through an enclosure", () => {
