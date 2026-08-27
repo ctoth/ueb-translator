@@ -11,10 +11,18 @@ import {
 } from "../rules/ueb-2024/contextual-compiler.js";
 import {
   compileGrade2RuleGuards,
+  GRADE2_AMBIGUOUS_LETTER_SEQUENCES,
   GRADE2_CONTEXTUAL_COMPILATION,
+  GRADE2_STANDING_LITERAL_INPUTS,
   requireAppendixShortformBase,
 } from "../rules/ueb-2024/program.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
+import { compose } from "../src/composition.js";
+import {
+  GRADE1_MODE_PROGRAM,
+  GRADE1_SYMBOL_PROGRAM,
+  UEB_COMPOSITION_POLICIES,
+} from "../src/generated/grade1-program.js";
 
 const runtimeSource = readFileSync(
   new URL("../src/grade2.ts", import.meta.url),
@@ -22,6 +30,10 @@ const runtimeSource = readFileSync(
 );
 const contextualRuntimeSource = readFileSync(
   new URL("../src/contextual-transducer.ts", import.meta.url),
+  "utf8",
+);
+const compositionRuntimeSource = readFileSync(
+  new URL("../src/composition.ts", import.meta.url),
   "utf8",
 );
 
@@ -146,6 +158,14 @@ describe("compileContextualRules", () => {
 });
 
 describe("Grade 2 source compilation", () => {
+  it("derives Grade 1 ambiguity and whole-word groupsign guards", () => {
+    expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["b", "⠃"]);
+    expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["ab", "⠁⠃"]);
+    expect(GRADE2_STANDING_LITERAL_INPUTS).toEqual([
+      "ch", "ou", "sh", "st", "th", "wh",
+    ]);
+  });
+
   it("keeps the lower groupsign whole-word guard limited to en and in", () => {
     expect(compileGrade2RuleGuards({
       braille: "⠢",
@@ -178,6 +198,19 @@ describe("Grade 2 source compilation", () => {
 });
 
 describe("Grade 2 runtime architecture", () => {
+  it("rejects an empty package at the composition boundary", () => {
+    expect(() => compose(
+      { symbols: [] },
+      GRADE1_MODE_PROGRAM,
+      UEB_COMPOSITION_POLICIES,
+    )).toThrow("requires compiled symbol and mode programs");
+    expect(() => compose(
+      GRADE1_SYMBOL_PROGRAM,
+      { modes: [] },
+      UEB_COMPOSITION_POLICIES,
+    )).toThrow("requires compiled symbol and mode programs");
+  });
+
   it("compiles contextual inputs into the deterministic prefix matcher", () => {
     const { matcher } = GRADE2_CONTEXTUAL_COMPILATION.runtime;
     expect(matcher.inputs.length).toBeGreaterThan(0);
@@ -190,8 +223,10 @@ describe("Grade 2 runtime architecture", () => {
 
   it("interprets only the compiled contextual program", () => {
     expect(runtimeSource).toContain('from "./generated/grade2-program.js"');
-    expect(runtimeSource).toContain('from "./contextual-transducer.js"');
-    expect(runtimeSource).not.toMatch(
+    expect(runtimeSource).toContain("compose(");
+    expect(runtimeSource).not.toContain("translateGrade1");
+    expect(compositionRuntimeSource).toContain('from "./contextual-transducer.js"');
+    expect(compositionRuntimeSource).not.toMatch(
       /GRADE2_RULE_DATA|GRADE2_SHORTFORM_DATA|APPENDIX1_SHORTFORM_DATA|INITIAL_CONTRACTION_EXCEPTION_DATA|FINAL_(?:ITY|NESS)_EXCEPTION|rankFor|permittedCandidate|permits(?:Initial|Final|LowerGroupsign)/u,
     );
   });
@@ -203,7 +238,7 @@ describe("Grade 2 runtime architecture", () => {
   });
 
   it("delegates matching, guard evaluation, and path selection", () => {
-    expect(runtimeSource).not.toMatch(
+    expect(compositionRuntimeSource).not.toMatch(
       /^function (?:guardAllows|permitsRule|candidatesAt|better|contractWord)\(/mu,
     );
   });

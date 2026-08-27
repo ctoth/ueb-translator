@@ -42,6 +42,13 @@ export interface ContextualTransducerProgram {
   readonly stringOperands: readonly string[];
 }
 
+export interface ComposedContractionProgram extends ContextualTransducerProgram {
+  readonly grade1Ambiguities: readonly (
+    readonly [print: string, braille: string]
+  )[];
+  readonly standingLiteralInputs: readonly string[];
+}
+
 export interface ContextualTransducerInput {
   readonly boundaries: readonly ContextualBoundary[];
   readonly eligibilityOffset: number;

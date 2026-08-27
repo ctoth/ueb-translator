@@ -546,6 +546,76 @@ describe("preferred grade-1 scope edges", () => {
     ).toMatchObject({ braille: fromBrf(";(#A;A./#B)"), ok: true });
   });
 
+  it("keeps numeric protection under broad Grade 1 scope", () => {
+    const numericLetter: TechnicalExpression = {
+      items: [
+        { kind: "number", value: "1" },
+        { kind: "identifier", value: "a" },
+      ],
+      kind: "sequence",
+    };
+    expect(translateTechnical({
+      blocks: [{ expression: numericLetter, kind: "expression" }],
+      kind: "technical-document",
+      profile: { ...preferred, grade1: "all-technical" },
+    })).toMatchObject({ braille: "⠰⠰⠰⠼⠁⠰⠁⠰⠄", ok: true });
+
+    expect(translateTechnical({
+      blocks: [{
+        expression: {
+          item: {
+            denominator: { kind: "number", value: "2" },
+            kind: "general-fraction",
+            numerator: numericLetter,
+          },
+          kind: "modifier",
+          modifier: "bar-above",
+        },
+        kind: "expression",
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({
+      braille: "⠰⠰⠷⠼⠁⠰⠁⠨⠌⠼⠃⠾⠱",
+      ok: true,
+    });
+  });
+
+  it.each([
+    [{ kind: "identifier", value: "X" }, "⠰⠠⠭"],
+    [{ kind: "chemical-element", symbol: "H" }, "⠰⠠⠓"],
+    [{
+      content: { kind: "identifier", value: "ab" },
+      enclosure: "round",
+      kind: "group",
+    }, "⠰⠰⠐⠣⠁⠃⠐⠜"],
+  ] as const)("protects a standing technical letter sequence", (expression, braille) => {
+    expect(translateTechnical({
+      blocks: [{ expression, kind: "expression" }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({ braille, ok: true });
+  });
+
+  it("shifts non-standing requirements through an enclosure", () => {
+    expect(translateTechnical({
+      blocks: [{
+        expression: {
+          content: {
+            denominator: { kind: "number", value: "2" },
+            kind: "general-fraction",
+            numerator: { kind: "identifier", value: "x" },
+          },
+          enclosure: "round",
+          kind: "group",
+        },
+        kind: "expression",
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({ braille: "⠐⠣⠰⠷⠭⠨⠌⠼⠃⠾⠐⠜", ok: true });
+  });
+
   it("spaces an international teaching operation and a lowercase function argument", () => {
     expect(
       translateTechnical({

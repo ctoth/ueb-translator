@@ -198,6 +198,43 @@ describe("translateGrade2", () => {
     });
   });
 
+  it.each([
+    ["b", "⠰⠃"],
+    ["ab", "⠰⠰⠁⠃"],
+    ["a al", "⠁⠀⠰⠰⠁⠇"],
+    ["st", "⠎⠞"],
+    ["3d", "⠼⠉⠰⠙"],
+    ["page 10a", "⠏⠁⠛⠑⠀⠼⠁⠚⠰⠁"],
+  ] as const)("protects the ambiguous Grade 1 sequence %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  it("resolves capitals around contractions with the shared mode program", () => {
+    expect(translateGrade2("THE CAT SAT ON")).toEqual({
+      braille: "⠠⠠⠠⠮⠀⠉⠁⠞⠀⠎⠁⠞⠀⠕⠝⠠⠄",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2("PowerPoint caféhouse")).toEqual({
+      braille: "⠠⠏⠪⠻⠠⠏⠕⠔⠞⠀⠉⠁⠋⠘⠌⠑⠓⠳⠎⠑",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("keeps separator context in the composed pass", () => {
+    expect(translateGrade2("was?")).toEqual({
+      braille: "⠺⠁⠎⠦",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2("?-190")).toEqual({
+      braille: "⠰⠦⠤⠼⠁⠊⠚",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
   it("applies the UEB 2.6 standing-alone punctuation rules", () => {
     expect(translateGrade2("(can) out-and-out")).toEqual({
       braille: "⠐⠣⠉⠐⠜⠀⠳⠤⠯⠤⠳",
@@ -406,6 +443,18 @@ describe("translateGrade2", () => {
         { end: 3, id: "UEB-10.1-can", print: "can", start: 0 },
         { end: 7, id: "UEB-10.3-and", print: "and", start: 4 },
       ],
+    });
+  });
+
+  it("applies shared typeform modes around contracted text", () => {
+    const document: Grade2Document = {
+      kind: "grade2-document",
+      runs: [{ kind: "text", text: "and", typeforms: ["italic"] }],
+    };
+    expect(translateGrade2(document)).toEqual({
+      braille: "⠨⠂⠯",
+      mode: "grade2",
+      ok: true,
     });
   });
 

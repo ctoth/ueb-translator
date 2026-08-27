@@ -59,7 +59,10 @@ Comparison signs remain spaced under the ordinary rules.
 replacement Section 1.7: one required protection uses a symbol indicator, more
 than one in a sequence uses a word indicator, and three protected sequences in
 one expression use a passage. `grade1: "all-technical"` selects the permitted
-whole-expression passage policy directly.
+whole-expression passage policy directly. Numeric-mode `a`-`j` protection is
+retained inside word and passage scopes because Grade 1 mode does not itself
+terminate numeric mode. Standing identifiers include capital letters, chemical
+elements, and letter sequences inside explicit enclosures.
 
 ## Deliberate boundary
 

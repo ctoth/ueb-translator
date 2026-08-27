@@ -542,6 +542,30 @@ function renderNumber(value: string): RenderResult {
   return renderPrintValue(value, "number", /^\d+(?:[,.]\d+)*$/u);
 }
 
+function renderStandingValue(
+  value: string,
+  kind: "chemical-element" | "identifier",
+  pattern: RegExp,
+): RenderResult {
+  const rendered = renderPrintValue(value, kind, pattern);
+  if (!rendered.ok) return rendered;
+  if (/^[b-hj-np-z]$/iu.test(value)) {
+    return renderSuccess(rendered.braille, [{
+      end: rendered.braille.length,
+      kind: "standing-symbol",
+      offset: 0,
+    }]);
+  }
+  if (/^\p{L}[\p{L}\p{M}\d]+$/u.test(value)) {
+    return renderSuccess(rendered.braille, [{
+      end: rendered.braille.length,
+      kind: "standing-word",
+      offset: 0,
+    }]);
+  }
+  return rendered;
+}
+
 function isOneItem(expression: TechnicalExpression): boolean {
   switch (expression.kind) {
     case "chemical-element":
@@ -612,7 +636,7 @@ function renderExpression(
 ): RenderResult {
   switch (expression.kind) {
     case "chemical-element":
-      return renderPrintValue(
+      return renderStandingValue(
         expression.symbol,
         "chemical-element",
         /^[A-Z][a-z]?$/u,
@@ -667,39 +691,33 @@ function renderExpression(
         return content;
       }
       const enclosure = enclosureCells(expression.enclosure);
+      const openLength = enclosure.open.length;
+      const totalLength = openLength + content.braille.length + enclosure.close.length;
+      const requirements: Grade1Requirement[] = [];
+      for (const requirement of content.requirements) {
+        requirements.push(
+          (requirement.kind === "standing-symbol" ||
+              requirement.kind === "standing-word") &&
+            requirement.offset === 0 && requirement.end === content.braille.length
+            ? { ...requirement, end: totalLength, offset: 0 }
+            : {
+                ...requirement,
+                end: requirement.end + openLength,
+                offset: requirement.offset + openLength,
+              },
+        );
+      }
       return renderSuccess(
         `${enclosure.open}${content.braille}${enclosure.close}`,
-        shiftRequirements(content.requirements, enclosure.open.length),
+        requirements,
       );
     }
     case "identifier": {
-      const rendered = renderPrintValue(
+      return renderStandingValue(
         expression.value,
         "identifier",
         /^\p{L}[\p{L}\p{M}\d]*$/u,
       );
-      if (!rendered.ok) {
-        return rendered;
-      }
-      if (/^[b-hj-np-z]$/u.test(expression.value)) {
-        return renderSuccess(rendered.braille, [
-          {
-            end: rendered.braille.length,
-            kind: "standing-symbol",
-            offset: 0,
-          },
-        ]);
-      }
-      if (/^\p{L}[\p{L}\p{M}\d]+$/u.test(expression.value)) {
-        return renderSuccess(rendered.braille, [
-          {
-            end: rendered.braille.length,
-            kind: "standing-word",
-            offset: 0,
-          },
-        ]);
-      }
-      return rendered;
     }
     case "function": {
       const name = renderPrintValue(
@@ -1028,7 +1046,7 @@ function renderMatrix(
       if (!rendered.ok) {
         return rendered;
       }
-      cells.push(rendered.braille);
+      cells.push(applyNumericGrade1(rendered).braille);
     }
     renderedRows.push(
       `${enclosure.open}${cells.join(gap)}${enclosure.close}`,
@@ -1123,6 +1141,23 @@ function applyInsertions(
   return result;
 }
 
+function numericGrade1Insertions(
+  requirements: readonly Grade1Requirement[],
+): readonly Grade1Insertion[] {
+  return requirements
+    .filter((requirement) => requirement.kind === "numeric-symbol")
+    .map((requirement) => ({
+      indicator: GRADE1_SYMBOL_INDICATOR,
+      offset: requirement.offset,
+    }));
+}
+
+function applyNumericGrade1(rendered: RenderSuccess): RenderSuccess {
+  return renderSuccess(
+    applyInsertions(rendered.braille, numericGrade1Insertions(rendered.requirements)),
+  );
+}
+
 function applyPreferredGrade1(
   rendered: RenderSuccess,
 ): RenderSuccess {
@@ -1158,6 +1193,10 @@ function applyPreferredGrade1(
         indicator: GRADE1_WORD_INDICATOR,
         offset: sequence.start,
       });
+      insertions.push(...numeric.map((requirement): Grade1Insertion => ({
+        indicator: GRADE1_SYMBOL_INDICATOR,
+        offset: requirement.offset,
+      })));
       continue;
     }
     insertions.push(
@@ -1175,8 +1214,12 @@ function applyPreferredGrade1(
     }
   }
   if (protectedSequenceCount >= 3) {
+    const numericProtected = applyInsertions(
+      braille,
+      numericGrade1Insertions(requirements),
+    );
     return renderSuccess(
-      `${GRADE1_PASSAGE_INDICATOR}${braille}${GRADE1_TERMINATOR}`,
+      `${GRADE1_PASSAGE_INDICATOR}${numericProtected}${GRADE1_TERMINATOR}`,
     );
   }
   return renderSuccess(applyInsertions(braille, insertions));
@@ -1198,7 +1241,7 @@ function renderBlock(
         return applyPreferredGrade1(rendered);
       }
       return renderSuccess(
-        `${GRADE1_PASSAGE_INDICATOR}${rendered.braille}${GRADE1_TERMINATOR}`,
+        `${GRADE1_PASSAGE_INDICATOR}${applyNumericGrade1(rendered).braille}${GRADE1_TERMINATOR}`,
       );
     }
     case "matrix":

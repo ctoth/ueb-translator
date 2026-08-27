@@ -226,7 +226,8 @@ export function resolveModes(
         continue;
       }
       const previous = units[index - 1];
-      const startsInsideSequence = previous !== undefined && (
+      const startsInsideSequence = previous !== undefined &&
+        !hasModeClass(previous, sequenceBoundaryClass) && (
         isModeMember(program, modeId, previous) ||
         terminatesMode(program, modeId, previous) ||
         continuesMode(program, modeId, previous)

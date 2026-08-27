@@ -35,3 +35,8 @@ classes remain in the development-only layer.
 Run `npm run grade1:generate` after changing either package. The normal
 `npm run check` gate begins with `grade1:generate:check`, which compiles into a
 temporary directory and rejects any non-reproducible generated artifact.
+
+Grade 2 compilation also derives its literal-letter ambiguity table and its
+standing groupsign exclusions from the cited contraction outputs plus the
+compiled Latin letter cells. `npm run grade2:generate` emits both beside the
+contextual program; neither table is maintained by hand.

@@ -209,26 +209,23 @@ describe("backtranslateGrade2", () => {
     }
   });
 
-  it("retains every canonical candidate for a shortform collision", () => {
+  it("uses the derived Grade 1 pass to make a shortform canonical", () => {
     const translated = translateGrade2("about");
     expect(translated.ok).toBe(true);
     if (!translated.ok) {
       return;
     }
     const result = backtranslateGrade2(translated.braille);
-    expect(result.kind).toBe("ambiguous");
-    if (result.kind === "ambiguous") {
-      expect(result.candidates.size).toBe(2n);
-      expect(result.candidates.first.print).toBe("ab");
-      expect(result.candidates.second.print).toBe("about");
-      expect(Array.from(result.candidates, (candidate) => candidate.print)).toEqual([
-        "ab",
-        "about",
-      ]);
-      expect(
-        result.candidates.find((candidate) => candidate.print === "about")?.rules,
-      ).toContain("UEB-10.9-about");
-    }
+    expect(result).toEqual({
+      candidate: {
+        mode: "grade2",
+        print: "about",
+        rules: ["UEB-10.9-about"],
+      },
+      kind: "unique",
+      mode: "grade2",
+    });
+    expect(translateGrade2("ab")).toMatchObject({ braille: "⠰⠰⠁⠃" });
   });
 
   it("returns a unique result when UEB determines one print expansion", () => {
@@ -249,12 +246,12 @@ describe("backtranslateGrade2", () => {
   });
 
   it("keeps optional caller selection outside standards decoding", () => {
-    const result = backtranslateGrade2("⠁⠃");
+    const result = backtranslateGrade2("⠨⠎");
     const selected = selectBacktranslation(
       result,
-      (candidates) => candidates.find((candidate) => candidate.print === "about"),
+      (candidates) => candidates.find((candidate) => candidate.print === "σ"),
     );
-    expect(selected?.print).toBe("about");
+    expect(selected?.print).toBe("σ");
     expect(selectBacktranslation(result, () => ({
       mode: "grade2",
       print: "fabricated",
@@ -263,14 +260,14 @@ describe("backtranslateGrade2", () => {
   });
 
   it("retains a multi-segment Cartesian product without eager expansion", () => {
-    const result = backtranslateGrade2("⠁⠃⠀⠁⠃");
+    const result = backtranslateGrade2("⠨⠎⠀⠨⠎");
     expect(result.kind).toBe("ambiguous");
     if (result.kind === "ambiguous") {
       expect(result.candidates.size).toBe(4n);
-      expect(result.candidates.first.print).toBe("ab ab");
-      expect(result.candidates.second.print).toBe("ab about");
+      expect(result.candidates.first.print).toBe("ς ς");
+      expect(result.candidates.second.print).toBe("ς σ");
       expect(result.candidates.at(0n)).toBe(result.candidates.first);
-      expect(result.candidates.at(2n)?.print).toBe("about ab");
+      expect(result.candidates.at(2n)?.print).toBe("σ ς");
       expect(result.candidates.at(-1n)).toBeUndefined();
       expect(result.candidates.at(4n)).toBeUndefined();
       expect(result.candidates.find(() => false)).toBeUndefined();
@@ -310,7 +307,7 @@ describe("backtranslateGrade2", () => {
   });
 
   it("does not ask Liblouis, a dictionary, or a corpus to resolve ambiguity", () => {
-    expect(backtranslateGrade2("⠁⠃").kind).toBe("ambiguous");
+    expect(backtranslateGrade2("⠨⠎").kind).toBe("ambiguous");
   });
 
   it("reports unsupported eight-dot cells as standards-invalid", () => {

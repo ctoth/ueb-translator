@@ -9,6 +9,7 @@ export type Grade2RuleLocator =
   | "10.8";
 
 export type ShortformLocator = "10.9 and Appendix 1";
+export type CompositionPolicyLocator = "2.6" | "10.5";
 export type Grade1RuleLocator =
   | "3"
   | "4.1.1"
@@ -40,6 +41,7 @@ export type IcebRuleLocator =
   | Grade1RuleLocator
   | Grade2ConstraintLocator
   | Grade2RuleLocator
+  | CompositionPolicyLocator
   | ShortformLocator;
 
 export interface IcebRuleCitation<

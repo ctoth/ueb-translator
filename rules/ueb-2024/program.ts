@@ -12,6 +12,7 @@ import {
 } from "./contextual-compiler.js";
 import { GRADE2_RULES, type Grade2RuleSource } from "./grade2-rules.js";
 import { SHORTFORMS, type ShortformSource } from "./shortforms.js";
+import { SYMBOL_RULES } from "./symbols/source.js";
 
 const NO_STRUCTURAL_CROSSING: ContextualRuleGuard = {
   boundaries: ["braille-line", "compound"],
@@ -236,6 +237,47 @@ export const GRADE2_CONTEXTUAL_RULES: readonly ContextualRuleSource[] = [
   ...longerShortforms,
   ...appendixRules,
 ];
+
+const LATIN_LETTER_BY_CELL: ReadonlyMap<string, string> = new Map(
+  SYMBOL_RULES
+    .filter((rule) => rule.kind === "letter" && /^[a-z]$/u.test(rule.print))
+    .map((rule): readonly [string, string] => [rule.braille, rule.print]),
+);
+
+/**
+ * Literal letter sequences whose cells are also a compiled contraction output.
+ * The source is the compiled inventory itself, so additions cannot bypass the
+ * Grade 1 disambiguation pass.
+ */
+export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
+  readonly [print: string, braille: string]
+)[] = [...new Map(
+  GRADE2_CONTEXTUAL_RULES.flatMap((rule) => {
+    const print = Array.from(rule.braille)
+      .map((cell) => LATIN_LETTER_BY_CELL.get(cell))
+      .join("");
+    return print.length === Array.from(rule.braille).length
+      ? [[print, rule.braille] as const]
+      : [];
+  }).map((entry) => [entry[0], entry] as const),
+).values()].sort((left, right) => left[0].localeCompare(right[0], "en"));
+
+const STANDING_WORD_OUTPUTS = new Set(
+  GRADE2_RULES
+    .filter((rule) =>
+      rule.kind === "alphabetic-wordsign" ||
+      rule.kind === "strong-wordsign"
+    )
+    .map((rule) => rule.braille),
+);
+
+/** Groupsigns that must be written literally when standing alone (UEB 10.4.2). */
+export const GRADE2_STANDING_LITERAL_INPUTS: readonly string[] = GRADE2_RULES
+  .filter((rule) =>
+    rule.kind === "strong-groupsign" && STANDING_WORD_OUTPUTS.has(rule.braille)
+  )
+  .map((rule) => rule.print)
+  .sort((left, right) => left.localeCompare(right, "en"));
 
 export const GRADE2_CONTEXTUAL_COMPILATION: ContextualCompilationResult =
   compileContextualRules(GRADE2_CONTEXTUAL_RULES);

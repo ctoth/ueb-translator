@@ -100,43 +100,50 @@ interface Letter {
   readonly uppercase: boolean;
 }
 
-interface LetterUnit extends Letter {
+export interface CompositionLetterUnit extends Letter {
   readonly kind: "letter";
+  readonly source: string;
 }
 
-interface DigitUnit {
+export interface CompositionDigitUnit {
   readonly cell: string;
   readonly kind: "digit";
+  readonly source: string;
 }
 
-interface SpaceUnit {
+export interface CompositionSpaceUnit {
   readonly kind: "space";
+  readonly source: " ";
 }
 
-interface LineBoundaryUnit {
+export interface CompositionLineBoundaryUnit {
   readonly kind: "line-boundary";
+  readonly source: "\n" | "\r" | "\r\n";
   readonly value: "\n" | "\r" | "\r\n";
 }
 
-interface SymbolUnit {
+export interface CompositionSymbolUnit {
   readonly braille: string;
   readonly kind: "symbol";
   readonly source: string;
 }
 
-type TranslatableUnit =
-  | DigitUnit
-  | LetterUnit
-  | LineBoundaryUnit
-  | SpaceUnit
-  | SymbolUnit;
+export type CompositionUnit =
+  | CompositionDigitUnit
+  | CompositionLetterUnit
+  | CompositionLineBoundaryUnit
+  | CompositionSpaceUnit
+  | CompositionSymbolUnit;
 
-interface ParsedText {
+type TranslatableUnit = CompositionUnit;
+
+export interface ParsedCompositionText {
   readonly ok: true;
-  readonly units: readonly TranslatableUnit[];
+  readonly units: readonly CompositionUnit[];
 }
 
-type ParseResult = Grade1UnsupportedCharacter | ParsedText;
+export type CompositionParseResult = Grade1UnsupportedCharacter | ParsedCompositionText;
+type ParseResult = CompositionParseResult;
 
 const BRAILLE_BLANK = "⠀";
 const LIGATURE_INDICATOR = "⠘⠖";
@@ -286,6 +293,7 @@ function parseAsciiText(text: string): ParseResult {
           kind: "letter",
           modifiers: "",
           numericAmbiguous: NUMERIC_LETTER_CELLS.has(entry.braille),
+          source: value,
           uppercase: code <= 90,
         });
         continue;
@@ -293,19 +301,19 @@ function parseAsciiText(text: string): ParseResult {
     }
     const digit = SYMBOL_RUNTIME.digits.get(value);
     if (digit !== undefined) {
-      units.push({ cell: digit.braille, kind: "digit" });
+      units.push({ cell: digit.braille, kind: "digit", source: value });
       continue;
     }
     if (value === " ") {
-      units.push({ kind: "space" });
+      units.push({ kind: "space", source: " " });
       continue;
     }
     if (value === "\r" || value === "\n") {
       if (value === "\r" && text.charAt(index + 1) === "\n") {
-        units.push({ kind: "line-boundary", value: "\r\n" });
+        units.push({ kind: "line-boundary", source: "\r\n", value: "\r\n" });
         index += 1;
       } else {
-        units.push({ kind: "line-boundary", value });
+        units.push({ kind: "line-boundary", source: value, value });
       }
       continue;
     }
@@ -339,25 +347,25 @@ function parseText(text: string): ParseResult {
     }
     const letter = analyseLetter(token.value);
     if (letter !== undefined) {
-      units.push({ ...letter, kind: "letter" });
+      units.push({ ...letter, kind: "letter", source: token.value });
       continue;
     }
     const digit = digitCell(token.value);
     if (digit !== undefined) {
-      units.push({ cell: digit, kind: "digit" });
+      units.push({ cell: digit, kind: "digit", source: token.value });
       continue;
     }
     if (token.value === " ") {
-      units.push({ kind: "space" });
+      units.push({ kind: "space", source: " " });
       continue;
     }
     if (isAsciiLineBoundary(token.value)) {
       const next = tokens.at(index + 1);
       if (token.value === "\r" && next?.value === "\n") {
-        units.push({ kind: "line-boundary", value: "\r\n" });
+        units.push({ kind: "line-boundary", source: "\r\n", value: "\r\n" });
         skipUntil = index + 2;
       } else {
-        units.push({ kind: "line-boundary", value: token.value });
+        units.push({ kind: "line-boundary", source: token.value, value: token.value });
       }
       continue;
     }
@@ -398,6 +406,7 @@ function emittedUnit(unit: TranslatableUnit): string {
 function addContextClasses(
   units: readonly TranslatableUnit[],
   baseModeUnits: readonly ModeUnit[],
+  additionalGrade1Required: ReadonlySet<number> = new Set(),
 ): readonly ModeUnit[] {
   const numericBefore = activeModeBefore(
     GRADE1_MODE_PROGRAM,
@@ -409,7 +418,7 @@ function addContextClasses(
     /* v8 ignore next -- map preserves the units array length. */
     if (unit === undefined) return modeUnit;
     const previous = index === 0 ? undefined : units[index - 1];
-    const grade1Required =
+    const grade1Required = additionalGrade1Required.has(index) ||
       (unit.kind === "letter" &&
         unit.numericAmbiguous &&
         !unit.uppercase &&
@@ -421,6 +430,34 @@ function addContextClasses(
       ? modeUnit | classMask(GRADE1_MODE_CLASS_IDS["grade1-required"])
       : modeUnit;
   });
+}
+
+export interface CompositionModePlan {
+  readonly prefixes: ReadonlyMap<number, string>;
+  readonly suffixes: ReadonlyMap<number, string>;
+}
+
+/** Parse once for either the uncontracted or contracted composition. */
+export function parseCompositionText(text: string): CompositionParseResult {
+  return parseText(text);
+}
+
+/** Resolve shared capitals, numeric, and Grade 1 modes around an emission pass. */
+export function resolveCompositionModes(
+  units: readonly CompositionUnit[],
+  additionalGrade1Required: ReadonlySet<number> = new Set(),
+): CompositionModePlan {
+  const baseModeUnits = units.map(unitModeClasses);
+  return resolveModes(
+    GRADE1_MODE_PROGRAM,
+    [CAPITALS_MODE, NUMERIC_MODE, GRADE1_MODE],
+    addContextClasses(units, baseModeUnits, additionalGrade1Required),
+    SEQUENCE_BOUNDARY_CLASS,
+  );
+}
+
+export function emitCompositionUnit(unit: CompositionUnit): string {
+  return emittedUnit(unit);
 }
 
 function translateUnits(units: readonly TranslatableUnit[]): string {
@@ -442,7 +479,7 @@ function translateUnits(units: readonly TranslatableUnit[]): string {
   return braille;
 }
 
-function translateText(text: string): Grade1Result {
+function translateText(text: string): Grade1TextResult {
   const parsed = parseText(text);
   return parsed.ok
     ? { braille: translateUnits(parsed.units), mode: "grade1", ok: true }
@@ -487,17 +524,20 @@ function indicatorsFor(
   return result;
 }
 
-function translateTypeformedRun(run: Grade1TextRun): Grade1Result {
+export function translateTypeformedText(
+  run: Grade1TextRun,
+  translate: (text: string) => Grade1TextResult,
+): Grade1TextResult {
   const typeforms = run.typeforms ?? [];
   if (typeforms.length === 0 || run.text.length === 0) {
-    return translateText(run.text);
+    return translate(run.text);
   }
 
   const sequenceCount = countSequences(run.text);
   const firstTypeform = typeforms[0];
   /* v8 ignore next -- the empty array returned above. */
   if (firstTypeform === undefined) {
-    return translateText(run.text);
+    return translate(run.text);
   }
   const selection = indicatorKind(
     GRADE1_MODE_PROGRAM,
@@ -506,7 +546,7 @@ function translateTypeformedRun(run: Grade1TextRun): Grade1Result {
     sequenceCount,
   );
   if (selection === "passage") {
-    const translated = translateText(run.text);
+    const translated = translate(run.text);
     return translated.ok
       ? {
           braille:
@@ -520,7 +560,7 @@ function translateTypeformedRun(run: Grade1TextRun): Grade1Result {
   }
 
   if (sequenceCount === 1) {
-    const translated = translateText(run.text);
+    const translated = translate(run.text);
     if (!translated.ok) {
       return translated;
     }
@@ -536,7 +576,7 @@ function translateTypeformedRun(run: Grade1TextRun): Grade1Result {
   for (const value of run.text) {
     if (value === " " || isAsciiLineBoundary(value)) {
       if (sequence.length > 0) {
-        const translated = translateText(sequence);
+        const translated = translate(sequence);
         if (!translated.ok) {
           return translated;
         }
@@ -555,7 +595,7 @@ function translateTypeformedRun(run: Grade1TextRun): Grade1Result {
     }
   }
   if (sequence.length > 0) {
-    const translated = translateText(sequence);
+    const translated = translate(sequence);
     if (!translated.ok) {
       return translated;
     }
@@ -570,8 +610,12 @@ function translateTypeformedRun(run: Grade1TextRun): Grade1Result {
   return { braille, mode: "grade1", ok: true };
 }
 
+function translateTypeformedRun(run: Grade1TextRun): Grade1Result {
+  return translateTypeformedText(run, translateText);
+}
+
 function translateLigature(run: Grade1Ligature): Grade1Result {
-  const letters: LetterUnit[] = [];
+  const letters: CompositionLetterUnit[] = [];
   for (const [letterIndex, value] of run.letters.entries()) {
     const parsed = parseText(value);
     const unit = parsed.ok ? parsed.units.at(0) : undefined;
@@ -647,9 +691,7 @@ function translateDocument(document: Grade1Document): Grade1Result {
   return { braille, mode: "grade1", ok: true };
 }
 
-/** Runtime composition used by the thin public Grade 1 orchestrator. */
-export function translateGrade1Runtime(input: string): Grade1TextResult;
-export function translateGrade1Runtime(input: Grade1Document): Grade1Result;
-export function translateGrade1Runtime(input: string | Grade1Document): Grade1Result {
-  return typeof input === "string" ? translateText(input) : translateDocument(input);
+/** Translate the explicit document nodes that cannot be recovered from text. */
+export function translateGrade1Runtime(input: Grade1Document): Grade1Result {
+  return translateDocument(input);
 }
