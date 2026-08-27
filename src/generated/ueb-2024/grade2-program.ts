@@ -1359,15 +1359,15 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
+      6,
+      89,
+      5
+    ],
+    [
       8
     ],
     [
       15
-    ],
-    [
-      17,
-      89,
-      5
     ],
     [
       12
@@ -1790,15 +1790,15 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
+      6,
+      124,
+      5
+    ],
+    [
       8
     ],
     [
       15
-    ],
-    [
-      17,
-      124,
-      5
     ],
     [
       0,
@@ -3176,7 +3176,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
-      17,
+      6,
       107,
       5
     ],
@@ -4099,7 +4099,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
-      17,
+      6,
       83,
       5
     ],
@@ -7392,13 +7392,13 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "altimeter\u0000centime\u0000centimeter\u0000mortimer\u0000multimedia\u0000sentiment",
     "anemone\u0000baroness\u0000baronet\u0000boone\u0000cantonese\u0000colonel\u0000conestoga\u0000crooner\u0000donegal\u0000erroneous\u0000hermione\u0000indonesia\u0000krone\u0000monet\u0000onerous\u0000phonetic\u0000pioneer\u0000poisoned\u0000rhône\u0000rooney\u0000sooner\u0000stoned",
     "ao",
-    "apartheid\u0000northeast",
+    "apartheid\u0000northeast\u0000northeastern",
     "apperceive",
     "apperceived",
     "apperceiver",
     "apperceiving",
     "archdeceiver",
-    "bead\u0000beauty",
+    "bead\u0000beads\u0000beauty",
     "beforehand",
     "beforementioned",
     "befriend",
@@ -7416,7 +7416,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "betweendeck",
     "betweentime",
     "betweenwhile",
-    "biofeedback\u0000microfilm\u0000twofold",
+    "biofeedback\u0000microfilm\u0000microfilms\u0000twofold\u0000twofolds",
     "biscuity\u0000dacoity\u0000fruity\u0000hoitytoity\u0000rabbity",
     "bloodletter",
     "blossomed\u0000gasometer\u0000isometric\u0000ransomed\u0000somersault\u0000somerset",

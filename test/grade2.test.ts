@@ -578,6 +578,7 @@ describe("translateGrade2", () => {
 
   it.each([
     ["concern", "⠒⠉⠻⠝"],
+    ["conestoga", "⠒⠑⠌⠕⠛⠁"],
     ["disturb", "⠲⠞⠥⠗⠃"],
     ["believe", "⠆⠇⠊⠑⠧⠑"],
   ] as const)("keeps the valid first-syllable contraction in %s", (text, braille) => {
