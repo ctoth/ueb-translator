@@ -1015,7 +1015,9 @@ function foreignCandidates(
         language,
         text: print,
       });
-      if (translated.ok && translated.braille === wrappedBraille) {
+      /* v8 ignore next -- the inverse emits only symbols accepted by this translator. */
+      if (!translated.ok) continue;
+      if (translated.braille === wrappedBraille) {
         candidates.set(print, { mode: "grade2", print, rules: [] });
       }
     }
@@ -1032,7 +1034,6 @@ function backtranslateMixedGrade2(
     fixedGrade2Segment(""),
   ];
   for (const segment of split) {
-    if (segment.braille.length === 0 && segment.kind === "ueb") continue;
     if (segment.kind === "foreign") {
       const present = nonEmpty(foreignCandidates(segment));
       if (present === undefined) {

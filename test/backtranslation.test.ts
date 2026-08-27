@@ -313,6 +313,24 @@ describe("backtranslateGrade2", () => {
     const word = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
     const passage = "⠐⠷⠄⠊⠇⠀⠽⠠⠐⠾";
     expect(backtranslateGrade2(word + passage).kind).not.toBe("invalid");
+    expect(backtranslateGrade2(passage + word).kind).not.toBe("invalid");
+  });
+
+  it("rejects unterminated and wrongly wrapped foreign segments", () => {
+    expect(backtranslateGrade2("⠘⠷⠁")).toEqual({
+      codeUnitIndex: 0,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: 0,
+    });
+    expect(backtranslateGrade2("⠘⠷⠁⠀⠃⠘⠾")).toEqual({
+      codeUnitIndex: 2,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: 2,
+    });
   });
 
   it("preserves every Grade 2 whitespace boundary exactly", () => {

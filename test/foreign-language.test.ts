@@ -142,6 +142,13 @@ describe("ICEB 2024 Section 13 foreign-language passages", () => {
     });
   });
 
+  it("leaves an empty foreign run unenclosed", () => {
+    expect(translateGrade2({
+      kind: "grade2-document",
+      runs: [{ code: "foreign", kind: "foreign", language: "fr", text: "" }],
+    })).toEqual({ braille: "", mode: "grade2", ok: true });
+  });
+
   it.each([
     ["fr", "je préfère", "⠘⠌"],
     ["de", "für uns", "⠘⠒"],
