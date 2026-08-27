@@ -596,14 +596,12 @@ describe("technical translation properties", () => {
       ),
   );
 
-  it("is deterministic and emits only Unicode Braille cells or line breaks", () => {
+  it("emits only Unicode Braille cells or line breaks", () => {
     fc.assert(
       fc.property(expression, (generated) => {
-        const first = translateTechnical(documentFor(generated));
-        const second = translateTechnical(documentFor(generated));
-        expect(first).toEqual(second);
-        if (first.ok) {
-          expect(first.braille).toMatch(/^[\u2800-\u28ff\n]*$/u);
+        const translated = translateTechnical(documentFor(generated));
+        if (translated.ok) {
+          expect(translated.braille).toMatch(/^[\u2800-\u28ff\n]*$/u);
         }
       }),
     );

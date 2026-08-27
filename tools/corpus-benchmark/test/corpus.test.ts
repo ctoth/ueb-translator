@@ -22,11 +22,12 @@ describe("sealed corpus partition", () => {
     expect(assignPartition(`ff${"f".repeat(62)}`)).toBe("training");
   });
 
-  it("is deterministic for every valid digest", () => {
+  it("maps every valid digest from its declared prefix boundary", () => {
     fc.assert(
       fc.property(fc.uint8Array({ minLength: 0, maxLength: 256 }), (bytes) => {
         const digest = createHash("sha256").update(bytes).digest("hex");
-        expect(assignPartition(digest)).toBe(assignPartition(digest));
+        const prefix = Number.parseInt(digest.slice(0, 2), 16);
+        expect(assignPartition(digest)).toBe(prefix < 51 ? "held-out" : "training");
       }),
     );
     expect(() => assignPartition("NOT-A-DIGEST")).toThrow("SHA-256");
