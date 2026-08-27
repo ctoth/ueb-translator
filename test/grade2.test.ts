@@ -217,6 +217,33 @@ describe("translateGrade2", () => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
+  it.each([
+    { allowed: [], forbidden: ["ed"], text: "ABEd" },
+    { allowed: [], forbidden: ["en"], text: "AEng" },
+    { allowed: ["ch"], forbidden: ["ar"], text: "BArch" },
+    { allowed: [], forbidden: ["be"], text: "BEd" },
+    { allowed: [], forbidden: ["in", "ed"], text: "BIndEd" },
+  ])("contracts only representable spans in $text", ({ allowed, forbidden, text }) => {
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      const prints = result.rules.map((rule) => rule.print);
+      expect(prints).toEqual(expect.arrayContaining(allowed));
+      for (const print of forbidden) expect(prints).not.toContain(print);
+    }
+  });
+
+  it("keeps non-ASCII lexical components literal and unguarded", () => {
+    const contracted = traceGrade2("Ardèche");
+    expect(contracted.ok).toBe(true);
+    if (contracted.ok) expect(contracted.rules).toEqual([]);
+    expect(translateGrade2("Asunción")).toEqual({
+      braille: "⠠⠁⠎⠥⠝⠉⠊⠘⠌⠕⠝",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
   it("resolves capitals around contractions with the shared mode program", () => {
     expect(translateGrade2("THE CAT SAT ON")).toEqual({
       braille: "⠠⠠⠠⠮⠀⠉⠁⠞⠀⠎⠁⠞⠀⠕⠝⠠⠄",

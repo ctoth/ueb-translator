@@ -72,6 +72,10 @@ function isLexicalJoiner(unit: CompositionUnit): boolean {
   return unit.kind === "symbol" && isOneOf(unit.source, "'’–—-");
 }
 
+function isDashJoiner(unit: CompositionUnit | undefined): boolean {
+  return unit?.kind === "symbol" && isOneOf(unit.source, "–—-");
+}
+
 function lexicalRanges(units: readonly CompositionUnit[]): readonly UnitRange[] {
   const ranges: UnitRange[] = [];
   let start: number | undefined;
@@ -192,16 +196,44 @@ function startsAfterApostrophe(
   return previous?.kind === "symbol" && isOneOf(previous.source, "'’");
 }
 
+function dashComponentAt(
+  units: readonly CompositionUnit[],
+  lexical: UnitRange,
+  range: UnitRange,
+): UnitRange {
+  let start = range.start;
+  while (start > lexical.start && !isDashJoiner(units[start - 1])) start -= 1;
+  let end = range.end;
+  while (end < lexical.end && !isDashJoiner(units[end])) end += 1;
+  return { end, start };
+}
+
+function hasOnlyAsciiLiteralLetters(
+  units: readonly CompositionUnit[],
+  range: UnitRange,
+): boolean {
+  return units.slice(range.start, range.end)
+    .every((unit) => unit.kind !== "letter" || asciiBase(unit) !== undefined);
+}
+
 function contractionPreservesCapitals(
   units: readonly CompositionUnit[],
   range: UnitRange,
 ): boolean {
-  const uppercase = units.slice(range.start, range.end).map((unit) =>
-    unit.kind === "letter" && unit.uppercase
-  );
+  const uppercase = units.slice(range.start, range.end)
+    .filter((unit) => unit.kind === "letter")
+    .map((unit) => unit.uppercase);
   return uppercase.every(Boolean) ||
     uppercase.every((value, index) => index === 0 ? value : !value) ||
     uppercase.every((value) => !value);
+}
+
+function contractionIsLowercase(
+  units: readonly CompositionUnit[],
+  range: UnitRange,
+): boolean {
+  return units.slice(range.start, range.end)
+    .every((unit) => unit.kind === "letter" && !unit.uppercase);
 }
 
 /**
@@ -246,9 +278,14 @@ export function compose(
             .map((unit) => asciiBase(unit) ?? unit.source.toLowerCase())
             .join("");
           for (const range of contractionRanges(units, lexical)) {
+            const component = dashComponentAt(units, lexical, range);
+            const asciiLiteralComponent = hasOnlyAsciiLiteralLetters(
+              units,
+              component,
+            );
             const exact = exactLetterPrint(units, range);
             if (
-              standing && ambiguityPrints.has(exact) &&
+              asciiLiteralComponent && standing && ambiguityPrints.has(exact) &&
               !startsAfterApostrophe(units, range)
             ) {
               const hasCapital = units.slice(range.start, range.end)
@@ -263,6 +300,7 @@ export function compose(
             if (standing && standingLiteralInputs.has(exact)) {
               continue;
             }
+            if (!asciiLiteralComponent) continue;
             const lowerContext = lowerSignContext(units, range, policies);
             const word = units.slice(range.start, range.end)
               .map((unit) => requiredValue(
@@ -307,7 +345,12 @@ export function compose(
               const rule = contractions.rules[applied.ruleIndex];
               /* v8 ignore next -- applied rules originate in this program. */
               if (rule === undefined) continue;
-              if (!contractionPreservesCapitals(units, { end, start })) continue;
+              const appliedRange = { end, start };
+              if (!contractionPreservesCapitals(units, appliedRange)) continue;
+              if (
+                !contractionPreservesCapitals(units, component) &&
+                !contractionIsLowercase(units, appliedRange)
+              ) continue;
               emissions[start] = rule[0];
               for (let index = start + 1; index < end; index += 1) emissions[index] = "";
               rules.push({
