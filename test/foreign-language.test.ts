@@ -138,6 +138,7 @@ describe("ICEB 2024 Section 13 foreign-language passages", () => {
       mode: "grade2",
       ok: false,
       reason: "unsupported-character",
+      runIndex: 0,
       scalarIndex: 2,
     });
   });

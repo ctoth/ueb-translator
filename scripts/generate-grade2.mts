@@ -2,8 +2,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { CompiledContextualMatcher } from "../rules/ueb-2024/contextual-compiler.js";
-import type { CompactPrefixTable } from "../src/transducer.js";
 import type {
+  CompactPrefixTable,
   ContextualBoundaryMask,
   ContextualGuardOpcode,
   ContextualGuardTuple,
