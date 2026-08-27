@@ -39,7 +39,7 @@ export const MODE_RULES: readonly ModeRuleSource[] = [
     "uppercase-letter",
     3,
     ["lowercase-letter"],
-    [],
+    ["capitals-continuation"],
   ),
   mode(
     "5",

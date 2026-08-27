@@ -277,10 +277,64 @@ function unitModeClasses(unit: TranslatableUnit): ModeUnit {
     case "space":
       return classMask(SEQUENCE_BOUNDARY_CLASS);
     case "symbol":
-      return unit.source === "," || unit.source === "."
-          ? classMask(GRADE1_MODE_CLASS_IDS["numeric-punctuation"])
-          : 0;
+      return classMask(
+        ...(unit.source === "," || unit.source === "."
+          ? [GRADE1_MODE_CLASS_IDS["numeric-punctuation"]]
+          : []),
+      );
   }
+}
+
+function capitalsContinuesAt(
+  units: readonly TranslatableUnit[],
+  index: number,
+): boolean {
+  const unit = units[index];
+  if (
+    unit?.kind !== "symbol" ||
+    (unit.source !== "'" && unit.source !== "’") ||
+    units[index - 1]?.kind !== "letter" ||
+    units[index + 1]?.kind !== "letter"
+  ) return false;
+
+  let uppercaseBefore = 0;
+  for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+    const previous = units[cursor];
+    if (previous?.kind === "letter" && previous.uppercase) {
+      uppercaseBefore += 1;
+      continue;
+    }
+    if (
+      previous?.kind === "symbol" &&
+      (previous.source === "'" || previous.source === "’")
+    ) continue;
+    break;
+  }
+  if (uppercaseBefore >= 2) return true;
+
+  let start = index - 1;
+  while (start > 0) {
+    const previous = units[start - 1];
+    if (
+      previous?.kind === "letter" ||
+      (previous?.kind === "symbol" &&
+        (previous.source === "'" || previous.source === "’"))
+    ) start -= 1;
+    else break;
+  }
+  let end = index + 1;
+  while (end + 1 < units.length) {
+    const following = units[end + 1];
+    if (
+      following?.kind === "letter" ||
+      (following?.kind === "symbol" &&
+        (following.source === "'" || following.source === "’"))
+    ) end += 1;
+    else break;
+  }
+  return units.slice(start, end + 1).every(
+    (member) => member.kind !== "letter" || member.uppercase,
+  );
 }
 
 function unsupported(token: ScalarToken): Grade1UnsupportedCharacter {
@@ -452,9 +506,11 @@ function addContextClasses(
       (unit.kind === "symbol" &&
         unit.source === "?" &&
         questionMarkNeedsGrade1(previous));
-    return grade1Required
-      ? modeUnit | classMask(GRADE1_MODE_CLASS_IDS["grade1-required"])
-      : modeUnit;
+    return modeUnit |
+      (grade1Required ? classMask(GRADE1_MODE_CLASS_IDS["grade1-required"]) : 0) |
+      (capitalsContinuesAt(units, index)
+        ? classMask(GRADE1_MODE_CLASS_IDS["capitals-continuation"])
+        : 0);
   });
 }
 
