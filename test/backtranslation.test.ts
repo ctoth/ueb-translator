@@ -299,6 +299,22 @@ describe("backtranslateGrade2", () => {
     });
   });
 
+  it("rejects undecodable foreign cells at their content offset", () => {
+    expect(backtranslateGrade2("⠘⠷⣿⠘⠾")).toEqual({
+      codeUnitIndex: 2,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: 2,
+    });
+  });
+
+  it("orders adjacent non-UEB word and passage indicators", () => {
+    const word = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    const passage = "⠐⠷⠄⠊⠇⠀⠽⠠⠐⠾";
+    expect(backtranslateGrade2(word + passage).kind).not.toBe("invalid");
+  });
+
   it("preserves every Grade 2 whitespace boundary exactly", () => {
     expect(backtranslateGrade2("⠀⠯\r\n⠯\r⠯\n⠯⠀")).toEqual({
       candidate: {

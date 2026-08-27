@@ -1045,9 +1045,6 @@ function backtranslateMixedGrade2(
     if ("kind" in decoded) {
       return offsetInvalidGrade2(decoded, braille, segment.start);
     }
-    if (decoded.size === 0n) {
-      return noParse(braille, "grade2", segment.start);
-    }
     candidates.push(decoded);
   }
   return candidateProduct(candidates, combineGrade2);
