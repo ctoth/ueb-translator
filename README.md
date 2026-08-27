@@ -72,6 +72,23 @@ const result = translateGrade2({
 } satisfies Grade2Document);
 ```
 
+ICEB Section 13 foreign-language extents are explicit document runs. `code:
+"ueb"` uses UEB modifiers without contractions or code-switch indicators;
+`code: "foreign"` selects the built-in French or German symbol package,
+suppresses UEB contractions, and encloses the non-UEB cells with the required
+word or passage indicators:
+
+```ts
+const result = translateGrade2({
+  kind: "grade2-document",
+  runs: [
+    { kind: "text", text: "I said " },
+    { code: "foreign", kind: "foreign", language: "fr", text: "je préfère" },
+    { kind: "text", text: " today." },
+  ],
+} satisfies Grade2Document);
+```
+
 Rule traces are intentionally separate from the ordinary browser path and are
 available from `ueb-translator/grade2/diagnostics` for conformance work.
 

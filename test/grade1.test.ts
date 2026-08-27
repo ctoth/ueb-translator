@@ -5,6 +5,11 @@ import {
   translateGrade1,
   type Grade1Document,
 } from "../src/grade1.js";
+import { parseCompositionText } from "../src/grade1-runtime.js";
+
+it("exposes the shared composition parser", () => {
+  expect(parseCompositionText("a").ok).toBe(true);
+});
 
 describe("ICEB 2024 4.1 and 8.3-8.6: letters and capitals", () => {
   it("translates the complete English alphabet in uncontracted mode", () => {

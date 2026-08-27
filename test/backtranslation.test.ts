@@ -268,10 +268,70 @@ describe("backtranslateGrade2", () => {
       expect(result.candidates.second.print).toBe("ς σ");
       expect(result.candidates.at(0n)).toBe(result.candidates.first);
       expect(result.candidates.at(2n)?.print).toBe("σ ς");
+      expect(result.candidates.at(3n)?.print).toBe("σ σ");
       expect(result.candidates.at(-1n)).toBeUndefined();
       expect(result.candidates.at(4n)).toBeUndefined();
       expect(result.candidates.find(() => false)).toBeUndefined();
     }
+  });
+
+  it("keeps a mixed foreign-language Cartesian product symbolic", () => {
+    const ambiguous = Array.from({ length: 40 }, () => "⠨⠎").join("⠀");
+    const frenchWord = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    const result = backtranslateGrade2(`${ambiguous}⠀${frenchWord}`);
+
+    expect(result.kind).toBe("ambiguous");
+    if (result.kind === "ambiguous") {
+      expect(result.candidates.size).toBe(1n << 40n);
+      expect(result.candidates.first.print).toMatch(/ école$/u);
+      expect(result.candidates.second.print).toMatch(/ école$/u);
+      expect(result.candidates.at((1n << 40n) - 1n)?.print).toMatch(/ école$/u);
+    }
+  });
+
+  it("offsets a nested mixed-UEB parse failure", () => {
+    const frenchWord = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    expect(backtranslateGrade2(`${frenchWord}⠁⣿`)).toEqual({
+      codeUnitIndex: frenchWord.length + 1,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: frenchWord.length + 1,
+    });
+  });
+
+  it("rejects undecodable foreign cells at their content offset", () => {
+    expect(backtranslateGrade2("⠘⠷⣿⠘⠾")).toEqual({
+      codeUnitIndex: 2,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: 2,
+    });
+  });
+
+  it("orders adjacent non-UEB word and passage indicators", () => {
+    const word = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    const passage = "⠐⠷⠄⠊⠇⠀⠽⠠⠐⠾";
+    expect(backtranslateGrade2(word + passage).kind).not.toBe("invalid");
+    expect(backtranslateGrade2(passage + word).kind).not.toBe("invalid");
+  });
+
+  it("rejects unterminated and wrongly wrapped foreign segments", () => {
+    expect(backtranslateGrade2("⠘⠷⠁")).toEqual({
+      codeUnitIndex: 0,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: 0,
+    });
+    expect(backtranslateGrade2("⠘⠷⠁⠀⠃⠘⠾")).toEqual({
+      codeUnitIndex: 2,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: 2,
+    });
   });
 
   it("preserves every Grade 2 whitespace boundary exactly", () => {

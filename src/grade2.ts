@@ -15,10 +15,20 @@ import {
 } from "./generated/ueb-2024/grade1-program.js";
 import { GRADE2_PROGRAM } from "./generated/ueb-2024/grade2-program.js";
 import {
+  translateForeignLanguageRun,
+  type ForeignLanguageRun,
+} from "./foreign-language.js";
+import {
   translateTypeformedText,
   type Grade1TextResult,
   type Grade1Typeform,
 } from "./grade1-runtime.js";
+
+export type {
+  ForeignLanguage,
+  ForeignLanguageCode,
+  ForeignLanguageRun,
+} from "./foreign-language.js";
 
 export type Grade2BoundaryKind = ContextualBoundaryKind;
 export type Grade2Boundary = ContextualBoundary;
@@ -37,7 +47,7 @@ export interface Grade2WordRun {
   readonly typeforms?: readonly Grade1Typeform[];
 }
 
-export type Grade2Run = Grade2TextRun | Grade2WordRun;
+export type Grade2Run = ForeignLanguageRun | Grade2TextRun | Grade2WordRun;
 
 export interface Grade2Document {
   readonly kind: "grade2-document";
@@ -106,6 +116,9 @@ function adaptedResult(
 }
 
 function translateRun(run: Grade2Run, globalOffset: number): Grade2InternalResult {
+  if (run.kind === "foreign") {
+    return adaptedResult(translateForeignLanguageRun(run), globalOffset);
+  }
   const options: CompositionTextOptions = run.kind === "word"
     ? {
         ...(run.boundaries === undefined ? {} : { boundaries: run.boundaries }),

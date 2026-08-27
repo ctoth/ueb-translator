@@ -6,14 +6,17 @@ import {
 } from "./contextual-transducer.js";
 import {
   emitCompositionUnit,
-  parseCompositionText,
+  parseCompositionTextWithSymbols,
   resolveCompositionModes,
   type CompositionModePlan,
   type CompositionUnit,
   type Grade1UnsupportedCharacter,
 } from "./grade1-runtime.js";
 import type { ModeProgram } from "./mode-engine.js";
-import type { SymbolProgram } from "./symbol-program.js";
+import {
+  loadSymbolProgram,
+  type SymbolProgram,
+} from "./symbol-program.js";
 
 export interface CompositionPolicies {
   readonly closingStandingPunctuation: string;
@@ -319,10 +322,11 @@ export function compose(
   if (symbols.symbols.length === 0 || modes.modes.length === 0) {
     throw new Error("A composition requires compiled symbol and mode programs.");
   }
+  const symbolRuntime = loadSymbolProgram(symbols);
 
   return {
     translate(text, options = {}) {
-      const parsed = parseCompositionText(text);
+      const parsed = parseCompositionTextWithSymbols(text, symbolRuntime);
       if (!parsed.ok) return parsed;
       const { units } = parsed;
       const emissions = units.map(emitCompositionUnit);
