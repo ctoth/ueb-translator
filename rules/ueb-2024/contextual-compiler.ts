@@ -20,6 +20,7 @@ export type ContextualRuleGuard =
       readonly kind: "not-crossing";
       readonly boundaries: readonly ContextualBoundaryKind[];
     }
+  | { readonly ignoredCharacters: string; readonly kind: "not-word-family"; readonly roots: readonly string[] }
   | { readonly ignoredCharacters: string; readonly kind: "not-word"; readonly words: readonly string[] }
   | { readonly kind: "not-word-ending"; readonly endings: readonly string[] }
   | { readonly kind: "not-word-end" }
@@ -140,6 +141,7 @@ const GUARD_OPCODE: Readonly<Record<ContextualRuleGuard["kind"], ContextualGuard
   "lower-sign": 3,
   "not-boundary": 4,
   "not-crossing": 5,
+  "not-word-family": 17,
   "not-word": 6,
   "not-word-ending": 7,
   "not-word-end": 8,
@@ -166,6 +168,8 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
       return [guard.characters];
     case "not-word":
       return [[...guard.words].sort(compareText).join("\u0000"), guard.ignoredCharacters];
+    case "not-word-family":
+      return [[...guard.roots].sort(compareText).join("\u0000"), guard.ignoredCharacters];
     case "not-word-ending":
       return [[...guard.endings].sort(compareText).join("\u0000")];
     case "first-syllable":
@@ -266,6 +270,15 @@ function compileGuard(
         ),
         requireContextualOperandIndex(guard.ignoredCharacters, operandIndexes),
       ];
+    case "not-word-family":
+      return [
+        17,
+        requireContextualOperandIndex(
+          [...guard.roots].sort(compareText).join("\u0000"),
+          operandIndexes,
+        ),
+        requireContextualOperandIndex(guard.ignoredCharacters, operandIndexes),
+      ];
     case "not-word-ending":
       return [7, requireContextualOperandIndex(
         [...guard.endings].sort(compareText).join("\u0000"),
@@ -309,6 +322,12 @@ function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
         ignoredCharacters: guard.ignoredCharacters,
         kind: guard.kind,
         words: [...guard.words],
+      };
+    case "not-word-family":
+      return {
+        ignoredCharacters: guard.ignoredCharacters,
+        kind: guard.kind,
+        roots: [...guard.roots],
       };
     case "not-word-ending":
       return { endings: [...guard.endings], kind: guard.kind };

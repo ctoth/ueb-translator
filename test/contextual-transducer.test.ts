@@ -96,6 +96,13 @@ describe("runContextualTransducer", () => {
     expect(translateGuard("zab", [15])).toBe("ZAB");
   });
 
+  it("blocks every suffix-derived member of an exception family", () => {
+    expect(translateGuard("ab", [17, 0, 1], ["ab", "-"])).toBe("AB");
+    expect(translateGuard("abs", [17, 0, 1], ["ab", "-"])).toBe("ABS");
+    expect(translateGuard("ab-s", [17, 0, 1], ["ab", "-"])).toBe("AB-S");
+    expect(translateGuard("cab", [17, 0, 1], ["ab", "-"])).toBe("CX");
+  });
+
   it("fails closed for malformed cross-array references", () => {
     expect(() => translate(false, {
       ...suffixGuardProgram,

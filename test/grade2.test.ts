@@ -549,9 +549,10 @@ describe("translateGrade2", () => {
   });
 
   it.each([
-    ["cone", "⠉⠕⠝⠑"],
+    ["cone", "⠉⠐⠕"],
     ["beauty", "⠃⠂⠥⠞⠽"],
     ["bead", "⠃⠂⠙"],
+    ["beads", "⠃⠂⠙⠎"],
   ] as const)(
     "does not use a first-syllable groupsign in the official %s counterexample",
     (text, braille) => {
@@ -560,9 +561,14 @@ describe("translateGrade2", () => {
   );
 
   it.each([
+    ["apartheid", "⠁⠐⠏⠓⠑⠊⠙"],
+    ["biofeedback", "⠃⠊⠕⠋⠑⠫⠃⠁⠉⠅"],
     ["twofold", "⠞⠺⠕⠋⠕⠇⠙"],
+    ["twofolds", "⠞⠺⠕⠋⠕⠇⠙⠎"],
     ["northeast", "⠝⠕⠗⠹⠂⠌"],
+    ["northeastern", "⠝⠕⠗⠹⠂⠌⠻⠝"],
     ["microfilm", "⠍⠊⠉⠗⠕⠋⠊⠇⠍"],
+    ["microfilms", "⠍⠊⠉⠗⠕⠋⠊⠇⠍⠎"],
   ] as const)(
     "does not bridge the implicit compound in the official %s counterexample",
     (text, braille) => {

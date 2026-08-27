@@ -27,22 +27,28 @@ function initialExceptionWords(print: string): readonly string[] {
     .flatMap((constraint) => constraint.words);
 }
 
-function compoundExceptionWords(print: string): readonly string[] {
+function compoundExceptionFamilyRoots(print: string): readonly string[] {
   return COMPOUND_CONTRACTION_EXCEPTIONS
     .filter((constraint) => constraint.contraction === print)
-    .flatMap((constraint) => constraint.words);
+    .flatMap((constraint) => constraint.familyRoots);
 }
 
-function firstSyllableExceptionWords(print: string): readonly string[] {
+function firstSyllableExceptionFamilyRoots(print: string): readonly string[] {
   return FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS
     .filter((constraint) => constraint.contraction === print)
-    .flatMap((constraint) => constraint.words);
+    .flatMap((constraint) => constraint.familyRoots);
 }
 
 function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
   return words.length === 0
     ? []
     : [{ ignoredCharacters: "-", kind: "not-word", words }];
+}
+
+function exceptionWordFamilyGuard(roots: readonly string[]): readonly ContextualRuleGuard[] {
+  return roots.length === 0
+    ? []
+    : [{ ignoredCharacters: "-", kind: "not-word-family", roots }];
 }
 
 function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
@@ -109,7 +115,7 @@ export function compileGrade2RuleGuards(
     case "strong-contraction":
       return [
         NO_STRUCTURAL_CROSSING,
-        ...exceptionWordGuard(compoundExceptionWords(rule.print)),
+        ...exceptionWordFamilyGuard(compoundExceptionFamilyRoots(rule.print)),
       ];
     case "strong-groupsign":
       return rule.print === "ing"
@@ -120,7 +126,7 @@ export function compileGrade2RuleGuards(
         return [
           { kind: "first-syllable" },
           NO_STRUCTURAL_CROSSING,
-          ...exceptionWordGuard(firstSyllableExceptionWords(rule.print)),
+          ...exceptionWordFamilyGuard(firstSyllableExceptionFamilyRoots(rule.print)),
           { kind: "not-word-end" },
           { kind: "word-start" },
         ];

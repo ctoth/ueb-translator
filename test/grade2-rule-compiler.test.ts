@@ -91,6 +91,11 @@ describe("compileContextualRules", () => {
         words: ["cat"],
       }]),
       rule("test-not-whole", "d", 4, [{ kind: "not-whole-word" }]),
+      rule("test-families", "e", 5, [{
+        ignoredCharacters: "-",
+        kind: "not-word-family",
+        roots: ["microfilm"],
+      }]),
     ]);
 
     expect(compilation.runtime.guards).toEqual([
@@ -98,8 +103,9 @@ describe("compileContextualRules", () => {
       [5, 31],
       [6, 1, 0],
       [10],
+      [17, 2, 0],
     ]);
-    expect(compilation.runtime.stringOperands).toEqual(["-", "cat"]);
+    expect(compilation.runtime.stringOperands).toEqual(["-", "cat", "microfilm"]);
   });
 
   it("fails closed when a collected guard operand is missing", () => {
