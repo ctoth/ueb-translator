@@ -7,6 +7,7 @@ import {
 import {
   emitCompositionUnit,
   parseCompositionTextWithSymbols,
+  resolveAsciiDoubleQuotes,
   resolveCompositionModes,
   type CompositionModePlan,
   type CompositionUnit,
@@ -329,7 +330,10 @@ export function compose(
       const parsed = parseCompositionTextWithSymbols(text, symbolRuntime);
       if (!parsed.ok) return parsed;
       const { units } = parsed;
-      const emissions = units.map(emitCompositionUnit);
+      const asciiDoubleQuotes = resolveAsciiDoubleQuotes(units);
+      const emissions = units.map((unit, index) =>
+        asciiDoubleQuotes[index] ?? emitCompositionUnit(unit)
+      );
       const required = new Set<number>();
       const rules: ContextualAppliedRule[] = [];
       const collapsedRanges: UnitRange[] = [];
