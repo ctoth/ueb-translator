@@ -36,6 +36,8 @@ function translate(
       eligibilityWord: "ab",
       hasLowerPunctuation: false,
       hasUpperPunctuation: false,
+      positionalOffset: 0,
+      positionalWord: "ab",
       standing: true,
       word: "ab",
     },

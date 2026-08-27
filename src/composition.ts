@@ -328,6 +328,9 @@ export function compose(
               continue;
             }
             const lowerContext = lowerSignContext(units, range, policies);
+            const positionalWord = units.slice(component.start, component.end)
+              .map((unit) => asciiBase(unit) ?? unit.source.toLowerCase())
+              .join("");
             const word = units.slice(range.start, range.end)
               .map((unit) => requiredValue(
                 asciiBase(unit),
@@ -355,6 +358,9 @@ export function compose(
                 eligibilityWord,
                 hasLowerPunctuation: lowerContext.hasLowerPunctuation,
                 hasUpperPunctuation: lowerContext.hasUpperPunctuation,
+                positionalOffset: units.slice(component.start, range.start)
+                  .reduce((total, unit) => total + unit.source.length, 0),
+                positionalWord,
                 standing,
                 word,
               },

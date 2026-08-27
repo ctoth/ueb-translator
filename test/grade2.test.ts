@@ -128,6 +128,13 @@ describe("translateGrade2", () => {
     }
   });
 
+  it.each([
+    ["do-it-yourselfer", "⠙⠤⠭⠤⠽⠗⠋⠻"],
+    ["Do-it-yourselfer", "⠠⠙⠤⠭⠤⠽⠗⠋⠻"],
+  ] as const)("preserves standing shortforms in %s", (print, braille) => {
+    expect(translateGrade2(print)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it.each(
     INITIAL_CONTRACTION_EXCEPTIONS.flatMap((constraint) =>
       constraint.words.map((word) => ({
