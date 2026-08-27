@@ -180,6 +180,39 @@ type CandidateCombiner<Candidate> = (
   parts: readonly Candidate[],
 ) => Candidate;
 
+interface CandidateSource<Candidate> {
+  readonly first: Candidate;
+  readonly size: bigint;
+  at(index: bigint): Candidate | undefined;
+}
+
+type CandidateSegment<Candidate> =
+  | CandidateSource<Candidate>
+  | NonEmpty<Candidate>;
+
+function isCandidateArray<Candidate>(
+  segment: CandidateSegment<Candidate>,
+): segment is NonEmpty<Candidate> {
+  return Array.isArray(segment);
+}
+
+function candidateSource<Candidate>(
+  segment: CandidateSegment<Candidate>,
+): CandidateSource<Candidate> {
+  if (!isCandidateArray(segment)) {
+    return segment;
+  }
+  const candidates = segment;
+  return {
+    first: candidates[0],
+    size: BigInt(candidates.length),
+    at: (index) =>
+      index >= 0n && index < BigInt(candidates.length)
+        ? candidates[Number(index)]
+        : undefined,
+  };
+}
+
 class CompactAmbiguousCandidates<Candidate>
 implements AmbiguousCandidates<Candidate> {
   public readonly first: Candidate;
@@ -188,10 +221,10 @@ implements AmbiguousCandidates<Candidate> {
   readonly #cache = new Map<bigint, Candidate>();
   readonly #combiner: CandidateCombiner<Candidate>;
   readonly #known = new Set<Candidate>();
-  readonly #segments: NonEmpty<NonEmpty<Candidate>>;
+  readonly #segments: NonEmpty<CandidateSource<Candidate>>;
 
   public constructor(
-    segments: NonEmpty<NonEmpty<Candidate>>,
+    segments: NonEmpty<CandidateSource<Candidate>>,
     combiner: CandidateCombiner<Candidate>,
     size: bigint,
   ) {
@@ -210,13 +243,8 @@ implements AmbiguousCandidates<Candidate> {
     let remaining = index;
     const reversedParts: Candidate[] = [];
     for (const candidates of [...this.#segments].reverse()) {
-      const radix = BigInt(candidates.length);
-      const selectedIndex = Number(remaining % radix);
-      const selected = candidates.reduce(
-        (current, candidate, candidateIndex) =>
-          candidateIndex === selectedIndex ? candidate : current,
-        candidates[0],
-      );
+      const radix = candidates.size;
+      const selected = candidates.at(remaining % radix) ?? candidates.first;
       reversedParts.push(selected);
       remaining /= radix;
     }
@@ -716,21 +744,25 @@ function nonEmpty<Candidate>(
 }
 
 function candidateProduct<Candidate extends BacktranslationCandidate>(
-  segments: NonEmpty<NonEmpty<Candidate>>,
+  segments: NonEmpty<CandidateSegment<Candidate>>,
   combiner: CandidateCombiner<Candidate>,
 ):
   | AmbiguousBacktranslation<Candidate>
   | UniqueBacktranslation<Candidate> {
-  const size = segments.reduce(
-    (product, segment) => product * BigInt(segment.length),
+  const sources = [
+    candidateSource(segments[0]),
+    ...segments.slice(1).map(candidateSource),
+  ] satisfies NonEmpty<CandidateSource<Candidate>>;
+  const size = sources.reduce(
+    (product, segment) => product * segment.size,
     1n,
   );
-  const first = combiner(segments.map((segment) => segment[0]));
+  const first = combiner(sources.map((segment) => segment.first));
   if (size === 1n) {
     return { candidate: first, kind: "unique", mode: first.mode };
   }
   return {
-    candidates: new CompactAmbiguousCandidates(segments, combiner, size),
+    candidates: new CompactAmbiguousCandidates(sources, combiner, size),
     kind: "ambiguous",
     mode: first.mode,
   };
@@ -941,17 +973,31 @@ function splitCodeSwitchedGrade2(
   return segments;
 }
 
-function grade2ResultCandidates(
+function grade2ResultSource(
   result: BacktranslationResult<Grade2BacktranslationCandidate>,
-): readonly Grade2BacktranslationCandidate[] {
+): CandidateSource<Grade2BacktranslationCandidate> |
+  InvalidBacktranslation<"grade2"> {
   switch (result.kind) {
     case "unique":
-      return [result.candidate];
+      return candidateSource([result.candidate]);
     case "ambiguous":
-      return [...result.candidates];
+      return result.candidates;
     case "invalid":
-      return [];
+      return result;
   }
+}
+
+function offsetInvalidGrade2(
+  result: InvalidBacktranslation<"grade2">,
+  input: string,
+  segmentStart: number,
+): InvalidBacktranslation<"grade2"> {
+  const codeUnitIndex = segmentStart + result.codeUnitIndex;
+  return {
+    ...result,
+    codeUnitIndex,
+    scalarIndex: scalarIndexAt(input, codeUnitIndex),
+  };
 }
 
 function foreignCandidates(
@@ -982,19 +1028,27 @@ function backtranslateMixedGrade2(
 ): BacktranslationResult<Grade2BacktranslationCandidate> {
   const split = splitCodeSwitchedGrade2(braille);
   if (!Array.isArray(split)) return split;
-  const candidates: MutableNonEmpty<NonEmpty<Grade2BacktranslationCandidate>> = [
+  const candidates: MutableNonEmpty<CandidateSegment<Grade2BacktranslationCandidate>> = [
     fixedGrade2Segment(""),
   ];
   for (const segment of split) {
     if (segment.braille.length === 0 && segment.kind === "ueb") continue;
-    const decoded = segment.kind === "foreign"
-      ? foreignCandidates(segment)
-      : grade2ResultCandidates(backtranslatePlainGrade2(segment.braille));
-    const present = nonEmpty(decoded);
-    if (present === undefined) {
+    if (segment.kind === "foreign") {
+      const present = nonEmpty(foreignCandidates(segment));
+      if (present === undefined) {
+        return noParse(braille, "grade2", segment.start);
+      }
+      candidates.push(present);
+      continue;
+    }
+    const decoded = grade2ResultSource(backtranslatePlainGrade2(segment.braille));
+    if ("kind" in decoded) {
+      return offsetInvalidGrade2(decoded, braille, segment.start);
+    }
+    if (decoded.size === 0n) {
       return noParse(braille, "grade2", segment.start);
     }
-    candidates.push(present);
+    candidates.push(decoded);
   }
   return candidateProduct(candidates, combineGrade2);
 }

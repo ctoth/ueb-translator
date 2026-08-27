@@ -274,6 +274,31 @@ describe("backtranslateGrade2", () => {
     }
   });
 
+  it("keeps a mixed foreign-language Cartesian product symbolic", () => {
+    const ambiguous = Array.from({ length: 40 }, () => "⠨⠎").join("⠀");
+    const frenchWord = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    const result = backtranslateGrade2(`${ambiguous}⠀${frenchWord}`);
+
+    expect(result.kind).toBe("ambiguous");
+    if (result.kind === "ambiguous") {
+      expect(result.candidates.size).toBe(1n << 40n);
+      expect(result.candidates.first.print).toMatch(/ école$/u);
+      expect(result.candidates.second.print).toMatch(/ école$/u);
+      expect(result.candidates.at((1n << 40n) - 1n)?.print).toMatch(/ école$/u);
+    }
+  });
+
+  it("offsets a nested mixed-UEB parse failure", () => {
+    const frenchWord = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    expect(backtranslateGrade2(`${frenchWord}⠁⣿`)).toEqual({
+      codeUnitIndex: frenchWord.length + 1,
+      kind: "invalid",
+      mode: "grade2",
+      reason: "no-standards-parse",
+      scalarIndex: frenchWord.length + 1,
+    });
+  });
+
   it("preserves every Grade 2 whitespace boundary exactly", () => {
     expect(backtranslateGrade2("⠀⠯\r\n⠯\r⠯\n⠯⠀")).toEqual({
       candidate: {

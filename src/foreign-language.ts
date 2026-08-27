@@ -41,8 +41,12 @@ function letter(
     kind: "letter",
     numericDigit: null,
     print,
-    uppercasePrint: print.toUpperCase(),
+    uppercasePrint: uppercaseForeignPrint(print),
   };
+}
+
+function uppercaseForeignPrint(print: string): string {
+  return print === "ß" ? "ẞ" : print.toUpperCase();
 }
 
 const LATIN = GRADE1_SYMBOL_PROGRAM.symbols.filter((symbol) =>
@@ -73,12 +77,19 @@ const FOREIGN_CODE_PACKAGES = {
   ]),
   fr: foreignPackage([
     letter("à", "⠷"),
+    letter("â", "⠡"),
     letter("ç", "⠯"),
     letter("é", "⠿"),
     letter("è", "⠮"),
     letter("ê", "⠣"),
+    letter("ë", "⠫"),
     letter("î", "⠩"),
+    letter("ï", "⠻"),
     letter("ô", "⠹"),
+    letter("œ", "⠪"),
+    letter("ù", "⠾"),
+    letter("û", "⠱"),
+    letter("ü", "⠳"),
   ]),
 } satisfies Readonly<Record<ForeignLanguage, ForeignCodePackage>>;
 
@@ -200,7 +211,8 @@ export function decodeForeignLanguageBraille(
     candidates = candidates.flatMap((candidate) =>
       prints.map((print) => ({
         capital: false,
-        print: candidate.print + (candidate.capital ? print.toUpperCase() : print),
+        print: candidate.print +
+          (candidate.capital ? uppercaseForeignPrint(print) : print),
       }))
     );
   }

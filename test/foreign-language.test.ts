@@ -93,6 +93,42 @@ describe("ICEB 2024 Section 13 foreign-language passages", () => {
   });
 
   it.each([
+    ["où", "⠕⠾"],
+    ["Noël", "⠨⠝⠕⠫⠇"],
+    ["août", "⠁⠕⠱⠞"],
+    ["àâçéèêëîïôœùûü", "⠷⠡⠯⠿⠮⠣⠫⠩⠻⠹⠪⠾⠱⠳"],
+  ] as const)("round-trips the complete French letter inventory in %s", (text, cells) => {
+    const translated = translateGrade2({
+      kind: "grade2-document",
+      runs: [{ code: "foreign", kind: "foreign", language: "fr", text }],
+    });
+    expect(translated).toEqual({
+      braille: `⠘⠷${cells}⠘⠾`,
+      mode: "grade2",
+      ok: true,
+    });
+    if (translated.ok) {
+      expect(candidatePrints(backtranslateGrade2(translated.braille))).toContain(text);
+    }
+  });
+
+  it("round-trips capital sharp S as one German scalar", () => {
+    const translated = translateGrade2({
+      kind: "grade2-document",
+      runs: [{ code: "foreign", kind: "foreign", language: "de", text: "ẞ" }],
+    });
+    expect(translated).toEqual({
+      braille: "⠘⠷⠠⠮⠘⠾",
+      mode: "grade2",
+      ok: true,
+    });
+    if (translated.ok) {
+      expect(candidatePrints(backtranslateGrade2(translated.braille))).toContain("ẞ");
+      expect(candidatePrints(backtranslateGrade2(translated.braille))).not.toContain("SS");
+    }
+  });
+
+  it.each([
     ["fr", "je préfère", "⠘⠌"],
     ["de", "für uns", "⠘⠒"],
   ] as const)(
