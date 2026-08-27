@@ -9,16 +9,17 @@ general rule engine or hand-maintaining opaque generated tables.
 
 - Define an original, human-readable intermediate representation for UEB rules.
 - Attach an ICEB/BANA source and rule identifier to every normative rule.
-- Compile the rule representation into a deterministic forward transducer.
-- Evaluate and cite the selected construction/minimization algorithms before
-  implementing them.
+- Compile the rule representation into deterministic contextual prefix tables,
+  typed guard tuples, and closed symbol/mode programs.
+- Evaluate and cite the selected contextual matching and path-selection
+  algorithms before implementing them.
 - Reject ambiguous, unreachable, conflicting, or uncited rules at build time.
 - Keep the compiler and readable rules out of browser entry points.
 
 ## Acceptance criteria
 
 - Generated runtime data is byte-for-byte reproducible.
-- Every generated state/output is traceable to repository-authored source rules.
+- Every generated runtime rule/output is traceable to repository-authored source rules.
 - The npm artifact contains no Liblouis code, tables, fixtures, traces, rules,
   or generated translations.
 - Raw, minified, Brotli, and gzip sizes are reported by a repeatable command;

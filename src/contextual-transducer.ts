@@ -1,7 +1,94 @@
-import {
-  matchPrefixTable,
-  type CompactPrefixTable,
-} from "./transducer.js";
+/** Sorted contextual inputs plus fixed-width initial and rule-range offsets. */
+export type CompactPrefixTable = readonly [
+  bucketAlphabet: readonly string[],
+  inputs: readonly string[],
+  initialInputOffsets: string,
+  initialRuleOffsets: string,
+  initialGuardOffsets: string,
+  inputRuleCounts: string,
+  inputGuardCounts: string,
+];
+
+export interface PrefixTableMatch {
+  readonly endCodeUnitIndex: number;
+  readonly ruleCount: number;
+  readonly guardOffset: number;
+  readonly ruleOffset: number;
+}
+
+function isScalarBoundary(input: string, codeUnitIndex: number): boolean {
+  if (!Number.isInteger(codeUnitIndex) || codeUnitIndex < 0 || codeUnitIndex > input.length) {
+    return false;
+  }
+  if (codeUnitIndex === 0 || codeUnitIndex === input.length) {
+    return true;
+  }
+  const current = input.charCodeAt(codeUnitIndex);
+  const previous = input.charCodeAt(codeUnitIndex - 1);
+  return !(current >= 0xdc00 && current <= 0xdfff &&
+    previous >= 0xd800 && previous <= 0xdbff);
+}
+
+function compactInteger(values: string, index: number): number | undefined {
+  const encoded = values.charCodeAt(index);
+  return Number.isNaN(encoded) ? undefined : encoded - 0x100;
+}
+
+/** Match every compiled contextual prefix in the lowercase input bucket. */
+export function matchPrefixTable(
+  table: CompactPrefixTable,
+  input: string,
+  startCodeUnitIndex: number,
+): readonly PrefixTableMatch[] {
+  if (!isScalarBoundary(input, startCodeUnitIndex)) {
+    return [];
+  }
+  const [
+    bucketAlphabet,
+    inputs,
+    initialInputOffsets,
+    initialRuleOffsets,
+    initialGuardOffsets,
+    inputRuleCounts,
+    inputGuardCounts,
+  ] = table;
+  const codePoint = input.codePointAt(startCodeUnitIndex);
+  if (codePoint === undefined) {
+    return [];
+  }
+  const initial = bucketAlphabet.indexOf(String.fromCodePoint(codePoint));
+  if (initial < 0) return [];
+  const inputStart = compactInteger(initialInputOffsets, initial);
+  const inputEnd = compactInteger(initialInputOffsets, initial + 1);
+  let ruleOffset = compactInteger(initialRuleOffsets, initial);
+  let guardOffset = compactInteger(initialGuardOffsets, initial);
+  if (
+    inputStart === undefined || inputEnd === undefined ||
+    ruleOffset === undefined || guardOffset === undefined
+  ) {
+    return [];
+  }
+  const matches: PrefixTableMatch[] = [];
+  for (let inputIndex = inputStart; inputIndex < inputEnd; inputIndex += 1) {
+    const print = inputs[inputIndex];
+    const ruleCount = compactInteger(inputRuleCounts, inputIndex);
+    const guardCount = compactInteger(inputGuardCounts, inputIndex);
+    if (print === undefined || ruleCount === undefined || guardCount === undefined) {
+      return [];
+    }
+    if (input.startsWith(print, startCodeUnitIndex)) {
+      matches.push({
+        endCodeUnitIndex: startCodeUnitIndex + print.length,
+        guardOffset,
+        ruleCount,
+        ruleOffset,
+      });
+    }
+    ruleOffset += ruleCount;
+    guardOffset += guardCount;
+  }
+  return matches;
+}
 
 export type ContextualBoundaryKind =
   | "braille-line"
@@ -353,11 +440,6 @@ export function runContextualTransducer(
   return result ?? { braille: "", rules: [] };
 }
 
-function compactCount(values: string, index: number): number | undefined {
-  const encoded = values.charCodeAt(index);
-  return Number.isNaN(encoded) ? undefined : encoded - 0x100;
-}
-
 /**
  * Invert the compiled rule edges without duplicating their print strings.
  * The caller still applies the complete forward transducer to validate context.
@@ -369,7 +451,7 @@ export function invertContextualProgram(
   const inverse: ContextualInverseRule[] = [];
   let ruleIndex = 0;
   for (const [inputIndex, print] of inputs.entries()) {
-    const ruleCount = compactCount(inputRuleCounts, inputIndex);
+    const ruleCount = compactInteger(inputRuleCounts, inputIndex);
     if (ruleCount === undefined) {
       throw new Error("Generated contextual program has a malformed rule count.");
     }

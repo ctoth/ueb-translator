@@ -109,7 +109,7 @@ export const UEB_COMPOSITION_POLICIES: UebProgram<CompositionPolicies> = {
   "closingStandingPunctuation": ",;:.…!?)]}”’\"'»",
   "dashJoiners": "–—-",
   "elisionPunctuation": "'’",
-  "lowerPunctuation": ",;:.…?\"'“”‘’–—-",
+  "lowerPunctuation": ",;:.…!?\"'“”‘’–—-",
   "openingStandingPunctuation": "([{“‘\"'«",
   "standingBoundaries": " \n\r–—-"
 };
