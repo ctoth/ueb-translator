@@ -15,6 +15,7 @@ export type {
   Grade1BrailleGroup,
   Grade1Document,
   Grade1InvalidLigature,
+  Grade1InvalidRun,
   Grade1Ligature,
   Grade1Paragraph,
   Grade1Result,
