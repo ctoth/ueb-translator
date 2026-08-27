@@ -198,6 +198,33 @@ describe("Grade 2 source compilation", () => {
 });
 
 describe("Grade 2 runtime architecture", () => {
+  it("remaps modes after a single-unit contraction", () => {
+    const compiled = compileContextualRules([rule("test-single", "x", 0)]).runtime;
+    const encode = (values: readonly number[]): string =>
+      String.fromCharCode(...values.map((value) => value + 0x100));
+    const contractions = {
+      ...compiled,
+      grade1Ambiguities: [],
+      matcher: [
+        compiled.matcher.inputs,
+        encode(compiled.matcher.initialInputOffsets),
+        encode(compiled.matcher.initialRuleOffsets),
+        encode(compiled.matcher.initialGuardOffsets),
+        encode(compiled.matcher.inputRuleCounts),
+        encode(compiled.matcher.inputGuardCounts),
+      ] as const,
+      standingLiteralInputs: [],
+    };
+    const translator = compose(
+      GRADE1_SYMBOL_PROGRAM,
+      GRADE1_MODE_PROGRAM,
+      UEB_COMPOSITION_POLICIES,
+      contractions,
+    );
+
+    expect(translator.translate("x")).toMatchObject({ braille: "⠁", ok: true });
+  });
+
   it("rejects an empty package at the composition boundary", () => {
     expect(() => compose(
       { symbols: [] },
