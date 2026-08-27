@@ -311,6 +311,48 @@ describe("backtranslateGrade1", () => {
 });
 
 describe("backtranslateGrade2", () => {
+  it("accepts a valid noncanonical capitals passage", () => {
+    expect(grade2CandidatePrints(
+      backtranslateGrade2("⠠⠠⠠⠁⠃⠉⠀⠙⠑⠋⠠⠄"),
+    )).toContain("ABC DEF");
+  });
+
+  it("validates an attached capitals passage in one lexical segment", () => {
+    expect(grade2CandidatePrints(
+      backtranslateGrade2("⠁⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄"),
+    )).toContain("aA BUT CAN");
+  });
+
+  it("rejects an unterminated capitals passage", () => {
+    expect(backtranslateGrade2("⠠⠠⠠⠁").kind).toBe("invalid");
+  });
+
+  it("keeps a passage and adjacent trailing content in one segment", () => {
+    expect(grade2CandidatePrints(
+      backtranslateGrade2("⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄⠁"),
+    )).toContain("A BUT Ca");
+  });
+
+  it("accepts the Grade 1 word indicator", () => {
+    expect(grade2CandidatePrints(backtranslateGrade2("⠰⠰⠁⠃")))
+      .toContain("ab");
+  });
+
+  it.each(["and", "one two three"])(
+    "validates typeformed Grade 2 by its lexical content: %s",
+    (print) => {
+      const translated = translateGrade2({
+        kind: "grade2-document",
+        runs: [{ kind: "text", text: print, typeforms: ["italic"] }],
+      });
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(grade2CandidatePrints(backtranslateGrade2(translated.braille)))
+          .toContain(print);
+      }
+    },
+  );
+
   it.each(["DON'T", "B'S"])(
     "round trips canonical Grade 2 capitals word mode through an apostrophe in %s",
     (print) => {

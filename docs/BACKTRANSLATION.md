@@ -32,9 +32,16 @@ arbitrarily many equivalent run segmentations can emit the same cells.
 
 The inverse lattice uses the same 519 compiled, cited contextual rules as the
 forward translator. It derives each rule's print input from the compact matcher
-instead of shipping a duplicate reverse table. A candidate is retained only if
-`traceGrade2(candidate.print)` reproduces the complete input. Its `rules` field
-is the resulting ordered list of generated ICEB rule IDs.
+instead of shipping a duplicate reverse table.
+
+This API chooses the extended-decoder contract (Option B): it accepts valid
+capitals-passage scopes, the Grade 1 word indicator, and typeform indicators
+even when the forward translator would choose a different indicator scope.
+The decoder removes typeform controls and does not reconstruct their original
+run boundaries. It still retains a candidate only when each lexical segment
+recomposes through `traceGrade2`; alternate capitals scopes are compared after
+their indicators are removed. The candidate's `rules` field is the resulting
+ordered list of generated ICEB rule IDs.
 
 This makes ambiguity observable without retaining readings that the forward
 rules disambiguate. For example, `⠁⠃` is uniquely `about`: literal `ab` is
