@@ -282,6 +282,7 @@ describe("Grade 2 runtime architecture", () => {
 
   it("compiles contextual inputs into the deterministic prefix matcher", () => {
     const { matcher } = GRADE2_CONTEXTUAL_COMPILATION.runtime;
+    expect(matcher.bucketAlphabet).toEqual(Array.from("abcdefghijklmnopqrstuvwxyz"));
     expect(matcher.inputs.length).toBeGreaterThan(0);
     expect(matcher.initialInputOffsets).toHaveLength(matcher.bucketAlphabet.length + 1);
     expect(matcher.inputRuleCounts).toHaveLength(matcher.inputs.length);

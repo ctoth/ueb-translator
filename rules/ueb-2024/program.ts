@@ -285,7 +285,5 @@ export const GRADE2_STANDING_LITERAL_INPUTS: readonly string[] = GRADE2_RULES
 export const GRADE2_CONTEXTUAL_COMPILATION: ContextualCompilationResult =
   compileContextualRules(
     GRADE2_CONTEXTUAL_RULES,
-    SYMBOL_RULES
-      .filter((rule) => rule.kind === "letter" && rule.uppercasePrint !== null)
-      .map((rule) => rule.print),
+    [...LATIN_LETTER_BY_CELL.values()],
   );
