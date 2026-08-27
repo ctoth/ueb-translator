@@ -218,25 +218,45 @@ describe("translateGrade2", () => {
   });
 
   it.each([
-    { allowed: [], forbidden: ["ed"], text: "ABEd" },
-    { allowed: [], forbidden: ["en"], text: "AEng" },
-    { allowed: ["ch"], forbidden: ["ar"], text: "BArch" },
-    { allowed: [], forbidden: ["be"], text: "BEd" },
-    { allowed: [], forbidden: ["in", "ed"], text: "BIndEd" },
-  ])("contracts only representable spans in $text", ({ allowed, forbidden, text }) => {
+    { allowed: ["ed"], text: "ABEd" },
+    { allowed: ["en"], text: "AEng" },
+    { allowed: ["ar", "ch"], text: "BArch" },
+    { allowed: ["be"], text: "BEd" },
+    { allowed: ["ar"], text: "ARel" },
+    { allowed: ["in"], text: "AmerInd" },
+    { allowed: ["ed"], text: "BAMusEd" },
+    { allowed: ["in", "ed"], text: "BIndEd" },
+  ])("contracts spans without an internal mode prefix in $text", ({ allowed, text }) => {
     const result = traceGrade2(text);
     expect(result.ok).toBe(true);
     if (result.ok) {
       const prints = result.rules.map((rule) => rule.print);
       expect(prints).toEqual(expect.arrayContaining(allowed));
-      for (const print of forbidden) expect(prints).not.toContain(print);
     }
   });
 
-  it("keeps non-ASCII lexical components literal and unguarded", () => {
-    const contracted = traceGrade2("Ardèche");
+  it("rejects a contraction with a mode prefix strictly inside it", () => {
+    const contracted = traceGrade2("aND");
     expect(contracted.ok).toBe(true);
-    if (contracted.ok) expect(contracted.rules).toEqual([]);
+    if (contracted.ok) {
+      expect(contracted.rules.map((rule) => rule.print)).not.toContain("and");
+    }
+  });
+
+  it("remaps collapsed capitalization suffixes onto emitted cells", () => {
+    expect(translateGrade2("BIndEd")).toEqual({
+      braille: "⠠⠠⠃⠔⠠⠄⠙⠠⠫",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("contracts ASCII ranges without guarding a non-ASCII word", () => {
+    const contracted = traceGrade2("caféhouse");
+    expect(contracted.ok).toBe(true);
+    if (contracted.ok) {
+      expect(contracted.rules.map((rule) => rule.print)).toContain("ou");
+    }
     expect(translateGrade2("Asunción")).toEqual({
       braille: "⠠⠁⠎⠥⠝⠉⠊⠘⠌⠕⠝",
       mode: "grade2",

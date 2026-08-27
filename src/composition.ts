@@ -8,6 +8,7 @@ import {
   emitCompositionUnit,
   parseCompositionText,
   resolveCompositionModes,
+  type CompositionModePlan,
   type CompositionUnit,
   type Grade1UnsupportedCharacter,
 } from "./grade1-runtime.js";
@@ -216,24 +217,33 @@ function hasOnlyAsciiLiteralLetters(
     .every((unit) => unit.kind !== "letter" || asciiBase(unit) !== undefined);
 }
 
-function contractionPreservesCapitals(
-  units: readonly CompositionUnit[],
+function canCollapseModeSpan(
+  plan: CompositionModePlan,
   range: UnitRange,
 ): boolean {
-  const uppercase = units.slice(range.start, range.end)
-    .filter((unit) => unit.kind === "letter")
-    .map((unit) => unit.uppercase);
-  return uppercase.every(Boolean) ||
-    uppercase.every((value, index) => index === 0 ? value : !value) ||
-    uppercase.every((value) => !value);
+  for (let index = range.start + 1; index < range.end; index += 1) {
+    if ((plan.prefixes.get(index) ?? "").length > 0) return false;
+  }
+  return true;
 }
 
-function contractionIsLowercase(
-  units: readonly CompositionUnit[],
-  range: UnitRange,
-): boolean {
-  return units.slice(range.start, range.end)
-    .every((unit) => unit.kind === "letter" && !unit.uppercase);
+function remapCollapsedModes(
+  plan: CompositionModePlan,
+  ranges: readonly UnitRange[],
+): CompositionModePlan {
+  if (ranges.length === 0) return plan;
+  const prefixes = new Map(plan.prefixes);
+  const suffixes = new Map(plan.suffixes);
+  for (const range of ranges) {
+    let suffix = "";
+    for (let index = range.start; index < range.end; index += 1) {
+      suffix += suffixes.get(index) ?? "";
+      suffixes.delete(index);
+      if (index > range.start) prefixes.delete(index);
+    }
+    if (suffix.length > 0) suffixes.set(range.start, suffix);
+  }
+  return { prefixes, suffixes };
 }
 
 /**
@@ -260,6 +270,10 @@ export function compose(
       const emissions = units.map(emitCompositionUnit);
       const required = new Set<number>();
       const rules: ContextualAppliedRule[] = [];
+      const collapsedRanges: UnitRange[] = [];
+      const contractionModePlan = contractions === undefined
+        ? undefined
+        : resolveCompositionModes(units, new Set(), true);
       const offsets: number[] = [];
       let offset = 0;
       for (const unit of units) {
@@ -300,7 +314,6 @@ export function compose(
             if (standing && standingLiteralInputs.has(exact)) {
               continue;
             }
-            if (!asciiLiteralComponent) continue;
             const lowerContext = lowerSignContext(units, range, policies);
             const word = units.slice(range.start, range.end)
               .map((unit) => requiredValue(
@@ -346,13 +359,13 @@ export function compose(
               /* v8 ignore next -- applied rules originate in this program. */
               if (rule === undefined) continue;
               const appliedRange = { end, start };
-              if (!contractionPreservesCapitals(units, appliedRange)) continue;
               if (
-                !contractionPreservesCapitals(units, component) &&
-                !contractionIsLowercase(units, appliedRange)
+                contractionModePlan === undefined ||
+                !canCollapseModeSpan(contractionModePlan, appliedRange)
               ) continue;
               emissions[start] = rule[0];
               for (let index = start + 1; index < end; index += 1) emissions[index] = "";
+              collapsedRanges.push(appliedRange);
               rules.push({
                 ...applied,
                 end: (options.globalOffset ?? 0) + (offsets[end] ?? text.length),
@@ -364,10 +377,13 @@ export function compose(
         }
       }
 
-      const modePlan = resolveCompositionModes(
-        units,
-        required,
-        contractions !== undefined,
+      const modePlan = remapCollapsedModes(
+        resolveCompositionModes(
+          units,
+          required,
+          contractions !== undefined,
+        ),
+        collapsedRanges,
       );
       let braille = "";
       for (const [index] of units.entries()) {
