@@ -7,8 +7,8 @@ function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-describe("first stable npm release metadata", () => {
-  it("identifies the public 1.0.0 package and its canonical repository", () => {
+describe("breaking public-surface release metadata", () => {
+  it("identifies the public 2.0.0 package and its canonical repository", () => {
     const parsed: unknown = JSON.parse(
       readFileSync(resolve(import.meta.dirname, "..", "package.json"), "utf8"),
     );
@@ -18,7 +18,7 @@ describe("first stable npm release metadata", () => {
     }
 
     expect(parsed["name"]).toBe("ueb-translator");
-    expect(parsed["version"]).toBe("1.0.0");
+    expect(parsed["version"]).toBe("2.0.0");
     expect(parsed["license"]).toBe("MIT");
     expect(parsed["homepage"]).toBe(
       "https://github.com/ctoth/ueb-translator#readme",

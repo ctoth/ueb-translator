@@ -10,7 +10,6 @@ const config: ViteUserConfigExport = defineConfig({
       "test/**/*.test.ts",
       "tools/corpus-benchmark/test/**/*.test.ts",
       "tools/liblouis-oracle/test/**/*.test.ts",
-      "tools/rule-compiler/test/**/*.test.ts",
     ],
     coverage: {
       enabled: true,
