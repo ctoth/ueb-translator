@@ -21,17 +21,13 @@ official rule or symbol being exercised.
 1. The Unicode Consortium, *The Unicode Standard*, Braille Patterns block,
    U+2800-U+28FF. Dot `n` is represented by bit `n - 1` in the code point's
    low byte. <https://www.unicode.org/charts/PDF/U2800.pdf>
-2. Jan Daciuk, Stoyan Mihov, Bruce W. Watson, and Richard E. Watson,
-   *Incremental Construction of Minimal Acyclic Finite-State Automata*, 2000.
-   The sorted incremental construction and its terminal-output transducer
-   extension define the rule compiler. <https://aclanthology.org/J00-1002/>
-3. Mehryar Mohri, *Finite-State Transducers in Language and Speech Processing*,
-   1997. Sequential transducer semantics and the determinization/minimization
-   boundary define the browser runtime model. <https://aclanthology.org/J97-2003/>
-4. Richard Bellman, *On the Theory of Dynamic Programming*, 1952. Bellman's
+2. Mehryar Mohri, *Finite-State Transducers in Language and Speech Processing*,
+   1997. Finite-state relation and composition semantics define canonical
+   forward validation of inverse candidates. <https://aclanthology.org/J97-2003/>
+3. Richard Bellman, *On the Theory of Dynamic Programming*, 1952. Bellman's
    optimality recurrence defines contracted-rule selection over the acyclic
    segmentation graph. <https://doi.org/10.1073/pnas.38.8.716>
-5. National Institute of Standards and Technology, *Secure Hash Standard
+4. National Institute of Standards and Technology, *Secure Hash Standard
    (SHS)*, FIPS PUB 180-4. SHA-256 content digests define the immutable corpus
    records and the sealed train/holdout partition.
    <https://csrc.nist.gov/pubs/fips/180-4/upd1/final>

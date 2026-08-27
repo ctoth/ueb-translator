@@ -2,14 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   invertContextualProgram,
+  matchPrefixTable,
   runContextualTransducer,
+  type CompactPrefixTable,
   type ContextualGuardTuple,
   type ContextualTransducerProgram,
 } from "../src/contextual-transducer.js";
-import {
-  matchPrefixTable,
-  type CompactPrefixTable,
-} from "../src/transducer.js";
 
 function encode(values: readonly number[]): string {
   return String.fromCharCode(...values.map((value) => value + 0x100));
@@ -123,6 +121,49 @@ describe("matchPrefixTable", () => {
     encode([1]),
     encode([0]),
   ];
+
+  const multiPrefixTable: CompactPrefixTable = [
+    ["a", "b"],
+    ["a", "ab", "b"],
+    encode([0, 2, 3]),
+    encode([0, 2, 3]),
+    encode([0, 0, 0]),
+    encode([1, 1, 1]),
+    encode([0, 0, 0]),
+  ];
+
+  it("returns every exact prefix with its compiled rule range", () => {
+    expect(matchPrefixTable(multiPrefixTable, "xab", 1)).toEqual([
+      { endCodeUnitIndex: 2, guardOffset: 0, ruleCount: 1, ruleOffset: 0 },
+      { endCodeUnitIndex: 3, guardOffset: 0, ruleCount: 1, ruleOffset: 1 },
+    ]);
+  });
+
+  it("fails closed at invalid scalar boundaries, buckets, and encoded ranges", () => {
+    expect(matchPrefixTable(multiPrefixTable, "😀", 1)).toEqual([]);
+    expect(matchPrefixTable(multiPrefixTable, "😀", -1)).toEqual([]);
+    expect(matchPrefixTable(multiPrefixTable, "😀", 0.5)).toEqual([]);
+    expect(matchPrefixTable(multiPrefixTable, "😀", 3)).toEqual([]);
+    expect(matchPrefixTable(multiPrefixTable, "A", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      multiPrefixTable[0],
+      multiPrefixTable[1],
+      "",
+      multiPrefixTable[3],
+      multiPrefixTable[4],
+      multiPrefixTable[5],
+      multiPrefixTable[6],
+    ], "a", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      multiPrefixTable[0],
+      multiPrefixTable[1],
+      multiPrefixTable[2],
+      multiPrefixTable[3],
+      "",
+      multiPrefixTable[5],
+      multiPrefixTable[6],
+    ], "a", 0)).toEqual([]);
+  });
 
   it("returns no match at the end of input", () => {
     expect(matchPrefixTable(table, "", 0)).toEqual([]);
