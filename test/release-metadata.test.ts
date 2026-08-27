@@ -31,6 +31,6 @@ describe("first stable npm release metadata", () => {
       url: "https://github.com/ctoth/ueb-translator/issues",
     });
     expect(parsed["publishConfig"]).toEqual({ access: "public" });
-    expect(parsed["engines"]).toBeUndefined();
+    expect(parsed["engines"]).toEqual({ node: ">=22.18.0" });
   });
 });
