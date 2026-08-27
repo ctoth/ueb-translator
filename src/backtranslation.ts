@@ -121,19 +121,38 @@ interface DecodeState {
 }
 
 interface DecodePath extends DecodeState {
+  readonly forwardBraille: string;
   readonly index: number;
   readonly print: string;
   readonly semanticFormatting: boolean;
+  readonly validationBoundaries: readonly ValidationBoundary[];
 }
 
 interface DecodedPrint {
+  readonly forwardBraille: string;
   readonly print: string;
   readonly semanticFormatting: boolean;
+  readonly validationBoundaries: readonly ValidationBoundary[];
+}
+
+interface ValidationBoundary {
+  readonly forwardBrailleIndex: number;
+  readonly printIndex: number;
 }
 
 interface DecodeResult {
   readonly candidates: readonly DecodedPrint[];
   readonly furthestCodeUnitIndex: number;
+}
+
+function validationBoundariesKey(
+  boundaries: readonly ValidationBoundary[],
+): string {
+  return boundaries
+    .map((boundary) =>
+      `${String(boundary.printIndex)}:${String(boundary.forwardBrailleIndex)}`
+    )
+    .join(",");
 }
 
 interface LetterToken {
@@ -414,8 +433,29 @@ function pathKey(path: DecodePath): string {
     path.modifiers,
     path.numeric ? "1" : "0",
     path.semanticFormatting ? "1" : "0",
+    validationBoundariesKey(path.validationBoundaries),
+    path.forwardBraille,
     path.print,
   ].join("\u0000");
+}
+
+function withValidationBoundary(path: DecodePath): DecodePath {
+  const boundary: ValidationBoundary = {
+    forwardBrailleIndex: path.forwardBraille.length,
+    printIndex: path.print.length,
+  };
+  const previous = path.validationBoundaries.at(-1);
+  return previous?.forwardBrailleIndex === boundary.forwardBrailleIndex &&
+      previous.printIndex === boundary.printIndex
+    ? path
+    : {
+        ...path,
+        validationBoundaries: [...path.validationBoundaries, boundary],
+      };
+}
+
+function withSemanticValidationBoundary(path: DecodePath): DecodePath {
+  return path.semanticFormatting ? withValidationBoundary(path) : path;
 }
 
 function capitalizeWord(print: string, mode: CapitalsMode): string {
@@ -443,12 +483,14 @@ function decode(
 ): DecodeResult {
   const initialPath: DecodePath = {
     capitals: "none",
+    forwardBraille: "",
     grade1Next: false,
     index: 0,
     modifiers: "",
     numeric: false,
     print: "",
     semanticFormatting: false,
+    validationBoundaries: [],
   };
   const queue: DecodePath[] = [initialPath];
   const seen = new Set<string>([pathKey(initialPath)]);
@@ -470,11 +512,18 @@ function decode(
         path.capitals !== "next" && path.capitals !== "passage" &&
         !path.grade1Next && path.modifiers.length === 0
       ) {
-        const previous = completed.get(path.print);
-        completed.set(path.print, {
+        const completedKey = [
+          path.print,
+          path.forwardBraille,
+          validationBoundariesKey(path.validationBoundaries),
+        ].join("\u0000");
+        const previous = completed.get(completedKey);
+        completed.set(completedKey, {
+          forwardBraille: path.forwardBraille,
           print: path.print,
           semanticFormatting:
             path.semanticFormatting || previous?.semanticFormatting === true,
+          validationBoundaries: path.validationBoundaries,
         });
       }
       continue;
@@ -484,6 +533,7 @@ function decode(
       enqueue({
         ...path,
         capitals: capitalAfterBoundary(path.capitals),
+        forwardBraille: `${path.forwardBraille}\r\n`,
         grade1Next: false,
         index: path.index + 2,
         modifiers: "",
@@ -497,6 +547,7 @@ function decode(
       enqueue({
         ...path,
         capitals: capitalAfterBoundary(path.capitals),
+        forwardBraille: path.forwardBraille + current,
         grade1Next: false,
         index: path.index + 1,
         modifiers: "",
@@ -511,29 +562,33 @@ function decode(
       input.startsWith(CAPITALS_TERMINATOR, path.index)
     ) {
       enqueue({
-        ...path,
+        ...withSemanticValidationBoundary(path),
         capitals: "none",
+        forwardBraille: path.forwardBraille + CAPITALS_TERMINATOR,
         index: path.index + CAPITALS_TERMINATOR.length,
       });
     } else if (path.modifiers.length === 0 && path.capitals === "none") {
       if (input.startsWith(CAPITALS_PASSAGE_INDICATOR, path.index)) {
         enqueue({
-          ...path,
+          ...withSemanticValidationBoundary(path),
           capitals: "passage",
+          forwardBraille: path.forwardBraille + CAPITALS_PASSAGE_INDICATOR,
           index: path.index + CAPITALS_PASSAGE_INDICATOR.length,
           numeric: false,
         });
       } else if (input.startsWith(CAPITALS_WORD_INDICATOR, path.index)) {
         enqueue({
-          ...path,
+          ...withSemanticValidationBoundary(path),
           capitals: "word",
+          forwardBraille: path.forwardBraille + CAPITALS_WORD_INDICATOR,
           index: path.index + CAPITALS_WORD_INDICATOR.length,
           numeric: false,
         });
       } else if (input.startsWith(CAPITAL_INDICATOR, path.index)) {
         enqueue({
-          ...path,
+          ...withSemanticValidationBoundary(path),
           capitals: "next",
+          forwardBraille: path.forwardBraille + CAPITAL_INDICATOR,
           index: path.index + CAPITAL_INDICATOR.length,
           numeric: false,
         });
@@ -545,7 +600,8 @@ function decode(
       input.startsWith(GRADE1_INDICATOR, path.index)
     ) {
       enqueue({
-        ...path,
+        ...withSemanticValidationBoundary(path),
+        forwardBraille: path.forwardBraille + GRADE1_INDICATOR,
         grade1Next: true,
         index: path.index + GRADE1_INDICATOR.length,
         numeric: false,
@@ -556,8 +612,9 @@ function decode(
       input.startsWith(NUMERIC_INDICATOR, path.index)
     ) {
       enqueue({
-        ...path,
+        ...withSemanticValidationBoundary(path),
         capitals: capitalAfterBoundary(path.capitals),
+        forwardBraille: path.forwardBraille + NUMERIC_INDICATOR,
         grade1Next: false,
         index: path.index + NUMERIC_INDICATOR.length,
         numeric: true,
@@ -569,15 +626,18 @@ function decode(
       if (digit !== undefined) {
         enqueue({
           ...path,
+          forwardBraille: path.forwardBraille + current,
           index: path.index + 1,
           print: path.print + digit,
         });
       } else if (current === "⠂" || current === "⠲") {
         enqueue({
           ...path,
+          forwardBraille: path.forwardBraille + current,
           index: path.index + 1,
           print: path.print + (current === "⠂" ? "," : "."),
         });
+        enqueue({ ...path, numeric: false });
       } else {
         enqueue({ ...path, numeric: false });
       }
@@ -598,6 +658,7 @@ function decode(
           enqueue({
             ...path,
             capitals: capitalAfterWord(path.capitals),
+            forwardBraille: path.forwardBraille + token.braille,
             grade1Next: false,
             index: nextIndex,
             modifiers: "",
@@ -608,13 +669,14 @@ function decode(
         case "modifier":
           enqueue({
             ...path,
+            forwardBraille: path.forwardBraille + token.braille,
             index: nextIndex,
             modifiers: path.modifiers + token.print,
           });
           break;
         case "semantic-control":
           enqueue({
-            ...path,
+            ...withValidationBoundary(path),
             index: nextIndex,
             numeric: false,
             semanticFormatting: true,
@@ -625,6 +687,7 @@ function decode(
             enqueue({
               ...path,
               capitals: capitalAfterBoundary(path.capitals),
+              forwardBraille: path.forwardBraille + token.braille,
               grade1Next: false,
               index: nextIndex,
               numeric: false,
@@ -637,6 +700,7 @@ function decode(
             enqueue({
               ...path,
               capitals: capitalAfterWord(path.capitals),
+              forwardBraille: path.forwardBraille + token.braille,
               index: nextIndex,
               print: path.print + capitalizeWord(token.print, path.capitals),
             });
@@ -646,10 +710,10 @@ function decode(
     }
   }
 
+  const completedEntries = [...completed.entries()];
+  completedEntries.sort();
   return {
-    candidates: [...completed.values()].sort((left, right) =>
-      left.print < right.print ? -1 : 1
-    ),
+    candidates: completedEntries.map(([, candidate]) => candidate),
     furthestCodeUnitIndex,
   };
 }
@@ -695,21 +759,36 @@ function noParse<Mode extends BacktranslationMode>(
 }
 
 function grade1Candidates(
-  input: string,
   decoded: DecodeResult,
 ): readonly Grade1BacktranslationCandidate[] {
-  return decoded.candidates
-    .filter((candidate) => {
-      if (candidate.semanticFormatting) {
-        return true;
-      }
-      const translated = translateGrade1(candidate.print);
-      return translated.ok && translated.braille === input;
-    })
-    .map((candidate): Grade1BacktranslationCandidate => ({
-      mode: "grade1",
-      print: candidate.print,
-    }));
+  const candidates = new Map<string, Grade1BacktranslationCandidate>();
+  for (const candidate of decoded.candidates) {
+    const boundaries = [
+      ...candidate.validationBoundaries,
+      {
+        forwardBrailleIndex: candidate.forwardBraille.length,
+        printIndex: candidate.print.length,
+      },
+    ];
+    let forwardBrailleIndex = 0;
+    let printIndex = 0;
+    const valid = boundaries.every((boundary) => {
+      const translated = translateGrade1(
+        candidate.print.slice(printIndex, boundary.printIndex),
+      );
+      const expected = candidate.forwardBraille.slice(
+        forwardBrailleIndex,
+        boundary.forwardBrailleIndex,
+      );
+      forwardBrailleIndex = boundary.forwardBrailleIndex;
+      printIndex = boundary.printIndex;
+      return translated.ok && translated.braille === expected;
+    });
+    if (valid) {
+      candidates.set(candidate.print, { mode: "grade1", print: candidate.print });
+    }
+  }
+  return [...candidates.values()];
 }
 
 function grade2Candidates(
@@ -819,7 +898,7 @@ export function backtranslateGrade1(
   }
   if (braille.includes(CAPITALS_PASSAGE_INDICATOR)) {
     const decoded = decode(braille, GRADE1_BUCKETS);
-    const candidates = nonEmpty(grade1Candidates(braille, decoded));
+    const candidates = nonEmpty(grade1Candidates(decoded));
     return candidates === undefined
       ? noParse(braille, "grade1", decoded.furthestCodeUnitIndex)
       : candidateProduct([candidates], combineGrade1);
@@ -838,7 +917,7 @@ export function backtranslateGrade1(
     if (segmentStart < index) {
       const segmentBraille = braille.slice(segmentStart, index);
       const decoded = decode(segmentBraille, GRADE1_BUCKETS);
-      const candidates = nonEmpty(grade1Candidates(segmentBraille, decoded));
+      const candidates = nonEmpty(grade1Candidates(decoded));
       if (candidates === undefined) {
         return noParse(
           braille,
@@ -855,7 +934,7 @@ export function backtranslateGrade1(
   if (segmentStart < braille.length) {
     const segmentBraille = braille.slice(segmentStart);
     const decoded = decode(segmentBraille, GRADE1_BUCKETS);
-    const candidates = nonEmpty(grade1Candidates(segmentBraille, decoded));
+    const candidates = nonEmpty(grade1Candidates(decoded));
     if (candidates === undefined) {
       return noParse(
         braille,

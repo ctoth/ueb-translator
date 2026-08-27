@@ -23,7 +23,11 @@ const example = {
 };
 ```
 
-The compiler rejects empty inputs, duplicate inputs, duplicate identifiers, and missing or unofficial citations. Its output separates tiny runtime arrays from development-only provenance. Rule files, citations, and compiler code are excluded from the npm artifact by the package allowlist.
+The compilers reject empty or conflicting inputs, duplicate identifiers,
+unresolved contextual precedence, and missing or unofficial citations. Their
+output separates tiny runtime arrays from development-only provenance. Rule
+files, citations, and compiler code are excluded from the npm artifact by the
+package allowlist.
 
 `ueb-2024/symbols/` maps every supported print scalar to cells and a closed
 character class. `ueb-2024/modes/` declares capitals, numeric, grade-1, and
@@ -32,7 +36,8 @@ termination classes, and continuation classes. Their compilers lower those
 sources to the opaque tuples consumed by the browser runtime; UEB names and
 classes remain in the development-only layer.
 
-Run `npm run grade1:generate` after changing either package. The normal
+Run `npm run grade1:generate` after changing either package. `npm run
+rules:typecheck` checks this live compiler tree. The normal
 `npm run check` gate begins with `grade1:generate:check`, which compiles into a
 temporary directory and rejects any non-reproducible generated artifact.
 
