@@ -45,6 +45,34 @@ function outputAt(entry: Record<string, unknown>, side: "local" | "oracle"): str
 }
 
 describe("grouped empirical ledger", () => {
+  it("retains the reconciled corpus evidence and issue 61 classifications", () => {
+    const rawLedger: unknown = JSON.parse(readFileSync(
+      new URL("../empirical-corpus-disagreements.json", import.meta.url),
+      "utf8",
+    ));
+    const parsed = parseEmpiricalLedger(rawLedger);
+    expect(parsed.ok).toBe(true);
+    expect(isRecord(rawLedger)).toBe(true);
+    if (!isRecord(rawLedger)) return;
+    const disagreements = rawLedger["disagreements"];
+    expect(isUnknownArray(disagreements)).toBe(true);
+    if (!isUnknownArray(disagreements)) return;
+    expect(disagreements).toHaveLength(137_904);
+    const unsupportedForeign = disagreements.filter((entry) =>
+      isRecord(entry) && entry["groupId"] === "corpus-unsupported-foreign"
+    );
+    expect(unsupportedForeign).toHaveLength(3_064);
+    const groups = rawLedger["groups"];
+    expect(isUnknownArray(groups)).toBe(true);
+    if (!isUnknownArray(groups)) return;
+    expect(groups.find((value) =>
+      isRecord(value) && value["id"] === "corpus-unsupported-foreign"
+    )).toMatchObject({
+      id: "corpus-unsupported-foreign",
+      verdict: { issues: [61], kind: "our-bug" },
+    });
+  });
+
   it("records Grade 1 word scope separately from symbol insertion defects", () => {
     const rawLedger: unknown = JSON.parse(readFileSync(
       new URL("../empirical-disagreements.json", import.meta.url),
