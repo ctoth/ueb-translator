@@ -251,7 +251,10 @@ export function compose(
               standing && ambiguityPrints.has(exact) &&
               !startsAfterApostrophe(units, range)
             ) {
-              for (let index = range.start; index < range.end; index += 1) {
+              const hasCapital = units.slice(range.start, range.end)
+                .some((unit) => unit.kind === "letter" && unit.uppercase);
+              const requiredEnd = hasCapital ? range.start + 1 : range.end;
+              for (let index = range.start; index < requiredEnd; index += 1) {
                 requiredValue(units[index], "Missing lexical unit.");
                 required.add(index);
               }
@@ -318,7 +321,11 @@ export function compose(
         }
       }
 
-      const modePlan = resolveCompositionModes(units, required);
+      const modePlan = resolveCompositionModes(
+        units,
+        required,
+        contractions !== undefined,
+      );
       let braille = "";
       for (const [index] of units.entries()) {
         braille += (modePlan.prefixes.get(index) ?? "") +

@@ -446,13 +446,17 @@ export function parseCompositionText(text: string): CompositionParseResult {
 export function resolveCompositionModes(
   units: readonly CompositionUnit[],
   additionalGrade1Required: ReadonlySet<number> = new Set(),
+  contracted = false,
 ): CompositionModePlan {
   const baseModeUnits = units.map(unitModeClasses);
   return resolveModes(
     GRADE1_MODE_PROGRAM,
-    [CAPITALS_MODE, NUMERIC_MODE, GRADE1_MODE],
+    contracted
+      ? [GRADE1_MODE, CAPITALS_MODE, NUMERIC_MODE]
+      : [CAPITALS_MODE, NUMERIC_MODE, GRADE1_MODE],
     addContextClasses(units, baseModeUnits, additionalGrade1Required),
     SEQUENCE_BOUNDARY_CLASS,
+    contracted ? [CAPITALS_MODE] : [],
   );
 }
 

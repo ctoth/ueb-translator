@@ -203,6 +203,7 @@ export function resolveModes(
   modeIds: readonly ModeId[],
   units: readonly ModeUnit[],
   sequenceBoundaryClass: ModeClassId,
+  inlineWordTerminatorModeIds: readonly ModeId[] = [],
 ): ModeResolution {
   const prefixes = new Map<number, string>();
   const suffixes = new Map<number, string>();
@@ -274,12 +275,21 @@ export function resolveModes(
         units,
         index,
         sequenceBoundaryClass,
-        modeIndicator(program, modeId, "symbol") ===
-          modeIndicator(program, modeId, "word"),
+        inlineWordTerminatorModeIds.includes(modeId) ||
+          modeIndicator(program, modeId, "symbol") ===
+            modeIndicator(program, modeId, "word"),
       );
       if (word !== undefined) {
         const kind = indicatorKind(program, modeId, word.memberCount, 1);
         append(prefixes, index, modeIndicator(program, modeId, kind));
+        const following = units[word.end];
+        if (
+          kind === "word" && inlineWordTerminatorModeIds.includes(modeId) &&
+          following !== undefined && terminatesMode(program, modeId, following) &&
+          !hasModeClass(following, sequenceBoundaryClass)
+        ) {
+          append(suffixes, word.end - 1, modeIndicator(program, modeId, "terminator"));
+        }
         index = word.end;
         continue;
       }

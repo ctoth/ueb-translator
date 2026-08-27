@@ -209,6 +209,14 @@ describe("translateGrade2", () => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
+  it.each([
+    ["AB", "⠰⠠⠠⠁⠃"],
+    ["Ab", "⠰⠠⠁⠃"],
+    ["AATech", "⠠⠠⠁⠁⠞⠠⠄⠑⠡"],
+  ] as const)("orders and preserves composed modes in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it("resolves capitals around contractions with the shared mode program", () => {
     expect(translateGrade2("THE CAT SAT ON")).toEqual({
       braille: "⠠⠠⠠⠮⠀⠉⠁⠞⠀⠎⠁⠞⠀⠕⠝⠠⠄",
