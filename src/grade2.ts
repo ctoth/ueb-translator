@@ -66,7 +66,13 @@ export interface Grade2UnsupportedCharacter {
   readonly mode: "grade2";
   readonly ok: false;
   readonly reason: "unsupported-character";
+  readonly runIndex?: number;
   readonly scalarIndex: number;
+}
+
+export interface Grade2DocumentUnsupportedCharacter
+  extends Grade2UnsupportedCharacter {
+  readonly runIndex: number;
 }
 
 export interface Grade2InvalidBoundary {
@@ -81,6 +87,10 @@ export type Grade2Result =
   | Grade2InvalidBoundary
   | Grade2Success
   | Grade2UnsupportedCharacter;
+export type Grade2DocumentResult =
+  | Grade2DocumentUnsupportedCharacter
+  | Grade2InvalidBoundary
+  | Grade2Success;
 export type Grade2TextResult = Grade2Success | Grade2UnsupportedCharacter;
 export type Grade2AppliedRule = ContextualAppliedRule;
 
@@ -92,6 +102,13 @@ export type Grade2InternalResult =
   | Grade2InternalSuccess
   | Grade2InvalidBoundary
   | Grade2UnsupportedCharacter;
+export type Grade2InternalTextResult =
+  | Grade2InternalSuccess
+  | Grade2UnsupportedCharacter;
+export type Grade2InternalDocumentResult =
+  | Grade2DocumentUnsupportedCharacter
+  | Grade2InternalSuccess
+  | Grade2InvalidBoundary;
 
 const GRADE2_TRANSLATOR = compose(
   GRADE1_SYMBOL_PROGRAM,
@@ -100,35 +117,43 @@ const GRADE2_TRANSLATOR = compose(
   GRADE2_PROGRAM,
 );
 
+interface Grade2Offsets {
+  readonly codeUnit: number;
+  readonly scalar: number;
+}
+
 function adaptedResult(
   result: CompositionResult,
-  globalOffset: number,
-): Grade2InternalResult {
+  offsets: Grade2Offsets,
+): Grade2InternalTextResult {
   if (!result.ok) {
     return {
       ...result,
-      codeUnitIndex: globalOffset + result.codeUnitIndex,
+      codeUnitIndex: offsets.codeUnit + result.codeUnitIndex,
       mode: "grade2",
-      scalarIndex: globalOffset + result.scalarIndex,
+      scalarIndex: offsets.scalar + result.scalarIndex,
     };
   }
   return { braille: result.braille, mode: "grade2", ok: true, rules: result.rules };
 }
 
-function translateRun(run: Grade2Run, globalOffset: number): Grade2InternalResult {
+function translateRun(
+  run: Grade2Run,
+  offsets: Grade2Offsets,
+): Grade2InternalTextResult {
   if (run.kind === "foreign") {
-    return adaptedResult(translateForeignLanguageRun(run), globalOffset);
+    return adaptedResult(translateForeignLanguageRun(run), offsets);
   }
   const options: CompositionTextOptions = run.kind === "word"
     ? {
         ...(run.boundaries === undefined ? {} : { boundaries: run.boundaries }),
-        globalOffset,
+        globalOffset: offsets.codeUnit,
         standing: run.standing === "alone",
       }
-    : { globalOffset };
+    : { globalOffset: offsets.codeUnit };
   const raw = adaptedResult(
     GRADE2_TRANSLATOR.translate(run.text, options),
-    globalOffset,
+    offsets,
   );
   const typeforms = run.typeforms ?? [];
   if (!raw.ok || typeforms.length === 0) return raw;
@@ -148,7 +173,7 @@ function translateRun(run: Grade2Run, globalOffset: number): Grade2InternalResul
       const translated = GRADE2_TRANSLATOR.translate(text, {
         ...options,
         ...(boundaries === undefined ? {} : { boundaries }),
-        globalOffset: globalOffset + codeUnitOffset,
+        globalOffset: offsets.codeUnit + codeUnitOffset,
       });
       /* v8 ignore next -- the same complete run parsed successfully above. */
       if (!translated.ok) return translated;
@@ -160,9 +185,12 @@ function translateRun(run: Grade2Run, globalOffset: number): Grade2InternalResul
   return { ...raw, braille: typed.braille };
 }
 
-function translateDocument(document: Grade2Document): Grade2InternalResult {
+function translateDocument(
+  document: Grade2Document,
+): Grade2InternalDocumentResult {
   let braille = "";
-  let globalOffset = 0;
+  let codeUnitOffset = 0;
+  let scalarOffset = 0;
   const rules: Grade2AppliedRule[] = [];
   for (const [runIndex, run] of document.runs.entries()) {
     if (run.kind === "word") {
@@ -178,26 +206,39 @@ function translateDocument(document: Grade2Document): Grade2InternalResult {
         }
       }
     }
-    const translated = translateRun(run, globalOffset);
-    if (!translated.ok) return translated;
+    const translated = translateRun(run, {
+      codeUnit: codeUnitOffset,
+      scalar: scalarOffset,
+    });
+    if (!translated.ok) {
+      return { ...translated, runIndex };
+    }
     braille += translated.braille;
     rules.push(...translated.rules);
-    globalOffset += run.text.length;
+    codeUnitOffset += run.text.length;
+    scalarOffset += Array.from(run.text).length;
   }
   return { braille, mode: "grade2", ok: true, rules };
 }
 
+export function translateGrade2Internal(input: string): Grade2InternalTextResult;
+export function translateGrade2Internal(
+  input: Grade2Document,
+): Grade2InternalDocumentResult;
+export function translateGrade2Internal(
+  input: string | Grade2Document,
+): Grade2InternalResult;
 export function translateGrade2Internal(
   input: string | Grade2Document,
 ): Grade2InternalResult {
   return typeof input === "string"
-    ? adaptedResult(GRADE2_TRANSLATOR.translate(input), 0)
+    ? adaptedResult(GRADE2_TRANSLATOR.translate(input), { codeUnit: 0, scalar: 0 })
     : translateDocument(input);
 }
 
 /** Translate print with the compiled Grade 1 packages plus contractions. */
 export function translateGrade2(input: string): Grade2TextResult;
-export function translateGrade2(input: Grade2Document): Grade2Result;
+export function translateGrade2(input: Grade2Document): Grade2DocumentResult;
 export function translateGrade2(input: string | Grade2Document): Grade2Result {
   const result = translateGrade2Internal(input);
   return result.ok
