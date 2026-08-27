@@ -2,7 +2,7 @@ import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 const runtimeSourceBoundaries = [{
-  group: ["../rules/**", "../tools/**"],
+  regex: "^(?:\\.\\./)+(?:rules|tools)(?:/|$)",
   message: "Published runtime modules must not import development-only rules or tools.",
 }];
 
