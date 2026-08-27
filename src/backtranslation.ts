@@ -121,12 +121,14 @@ interface DecodeState {
 }
 
 interface DecodePath extends DecodeState {
+  readonly forwardBraille: string;
   readonly index: number;
   readonly print: string;
   readonly semanticFormatting: boolean;
 }
 
 interface DecodedPrint {
+  readonly forwardBraille: string;
   readonly print: string;
   readonly semanticFormatting: boolean;
 }
@@ -414,6 +416,7 @@ function pathKey(path: DecodePath): string {
     path.modifiers,
     path.numeric ? "1" : "0",
     path.semanticFormatting ? "1" : "0",
+    path.forwardBraille,
     path.print,
   ].join("\u0000");
 }
@@ -443,6 +446,7 @@ function decode(
 ): DecodeResult {
   const initialPath: DecodePath = {
     capitals: "none",
+    forwardBraille: "",
     grade1Next: false,
     index: 0,
     modifiers: "",
@@ -470,8 +474,10 @@ function decode(
         path.capitals !== "next" && path.capitals !== "passage" &&
         !path.grade1Next && path.modifiers.length === 0
       ) {
-        const previous = completed.get(path.print);
-        completed.set(path.print, {
+        const completedKey = `${path.print}\u0000${path.forwardBraille}`;
+        const previous = completed.get(completedKey);
+        completed.set(completedKey, {
+          forwardBraille: path.forwardBraille,
           print: path.print,
           semanticFormatting:
             path.semanticFormatting || previous?.semanticFormatting === true,
@@ -484,6 +490,7 @@ function decode(
       enqueue({
         ...path,
         capitals: capitalAfterBoundary(path.capitals),
+        forwardBraille: `${path.forwardBraille}\r\n`,
         grade1Next: false,
         index: path.index + 2,
         modifiers: "",
@@ -497,6 +504,7 @@ function decode(
       enqueue({
         ...path,
         capitals: capitalAfterBoundary(path.capitals),
+        forwardBraille: path.forwardBraille + current,
         grade1Next: false,
         index: path.index + 1,
         modifiers: "",
@@ -513,6 +521,7 @@ function decode(
       enqueue({
         ...path,
         capitals: "none",
+        forwardBraille: path.forwardBraille + CAPITALS_TERMINATOR,
         index: path.index + CAPITALS_TERMINATOR.length,
       });
     } else if (path.modifiers.length === 0 && path.capitals === "none") {
@@ -520,6 +529,7 @@ function decode(
         enqueue({
           ...path,
           capitals: "passage",
+          forwardBraille: path.forwardBraille + CAPITALS_PASSAGE_INDICATOR,
           index: path.index + CAPITALS_PASSAGE_INDICATOR.length,
           numeric: false,
         });
@@ -527,6 +537,7 @@ function decode(
         enqueue({
           ...path,
           capitals: "word",
+          forwardBraille: path.forwardBraille + CAPITALS_WORD_INDICATOR,
           index: path.index + CAPITALS_WORD_INDICATOR.length,
           numeric: false,
         });
@@ -534,6 +545,7 @@ function decode(
         enqueue({
           ...path,
           capitals: "next",
+          forwardBraille: path.forwardBraille + CAPITAL_INDICATOR,
           index: path.index + CAPITAL_INDICATOR.length,
           numeric: false,
         });
@@ -546,6 +558,7 @@ function decode(
     ) {
       enqueue({
         ...path,
+        forwardBraille: path.forwardBraille + GRADE1_INDICATOR,
         grade1Next: true,
         index: path.index + GRADE1_INDICATOR.length,
         numeric: false,
@@ -558,6 +571,7 @@ function decode(
       enqueue({
         ...path,
         capitals: capitalAfterBoundary(path.capitals),
+        forwardBraille: path.forwardBraille + NUMERIC_INDICATOR,
         grade1Next: false,
         index: path.index + NUMERIC_INDICATOR.length,
         numeric: true,
@@ -569,15 +583,18 @@ function decode(
       if (digit !== undefined) {
         enqueue({
           ...path,
+          forwardBraille: path.forwardBraille + current,
           index: path.index + 1,
           print: path.print + digit,
         });
       } else if (current === "⠂" || current === "⠲") {
         enqueue({
           ...path,
+          forwardBraille: path.forwardBraille + current,
           index: path.index + 1,
           print: path.print + (current === "⠂" ? "," : "."),
         });
+        enqueue({ ...path, numeric: false });
       } else {
         enqueue({ ...path, numeric: false });
       }
@@ -598,6 +615,7 @@ function decode(
           enqueue({
             ...path,
             capitals: capitalAfterWord(path.capitals),
+            forwardBraille: path.forwardBraille + token.braille,
             grade1Next: false,
             index: nextIndex,
             modifiers: "",
@@ -608,6 +626,7 @@ function decode(
         case "modifier":
           enqueue({
             ...path,
+            forwardBraille: path.forwardBraille + token.braille,
             index: nextIndex,
             modifiers: path.modifiers + token.print,
           });
@@ -625,6 +644,7 @@ function decode(
             enqueue({
               ...path,
               capitals: capitalAfterBoundary(path.capitals),
+              forwardBraille: path.forwardBraille + token.braille,
               grade1Next: false,
               index: nextIndex,
               numeric: false,
@@ -637,6 +657,7 @@ function decode(
             enqueue({
               ...path,
               capitals: capitalAfterWord(path.capitals),
+              forwardBraille: path.forwardBraille + token.braille,
               index: nextIndex,
               print: path.print + capitalizeWord(token.print, path.capitals),
             });
@@ -648,7 +669,13 @@ function decode(
 
   return {
     candidates: [...completed.values()].sort((left, right) =>
-      left.print < right.print ? -1 : 1
+      left.print < right.print
+        ? -1
+        : left.print > right.print
+        ? 1
+        : left.forwardBraille < right.forwardBraille
+        ? -1
+        : 1
     ),
     furthestCodeUnitIndex,
   };
@@ -695,21 +722,16 @@ function noParse<Mode extends BacktranslationMode>(
 }
 
 function grade1Candidates(
-  input: string,
   decoded: DecodeResult,
 ): readonly Grade1BacktranslationCandidate[] {
-  return decoded.candidates
-    .filter((candidate) => {
-      if (candidate.semanticFormatting) {
-        return true;
-      }
-      const translated = translateGrade1(candidate.print);
-      return translated.ok && translated.braille === input;
-    })
-    .map((candidate): Grade1BacktranslationCandidate => ({
-      mode: "grade1",
-      print: candidate.print,
-    }));
+  const candidates = new Map<string, Grade1BacktranslationCandidate>();
+  for (const candidate of decoded.candidates) {
+    const translated = translateGrade1(candidate.print);
+    if (translated.ok && translated.braille === candidate.forwardBraille) {
+      candidates.set(candidate.print, { mode: "grade1", print: candidate.print });
+    }
+  }
+  return [...candidates.values()];
 }
 
 function grade2Candidates(
@@ -819,7 +841,7 @@ export function backtranslateGrade1(
   }
   if (braille.includes(CAPITALS_PASSAGE_INDICATOR)) {
     const decoded = decode(braille, GRADE1_BUCKETS);
-    const candidates = nonEmpty(grade1Candidates(braille, decoded));
+    const candidates = nonEmpty(grade1Candidates(decoded));
     return candidates === undefined
       ? noParse(braille, "grade1", decoded.furthestCodeUnitIndex)
       : candidateProduct([candidates], combineGrade1);
@@ -838,7 +860,7 @@ export function backtranslateGrade1(
     if (segmentStart < index) {
       const segmentBraille = braille.slice(segmentStart, index);
       const decoded = decode(segmentBraille, GRADE1_BUCKETS);
-      const candidates = nonEmpty(grade1Candidates(segmentBraille, decoded));
+      const candidates = nonEmpty(grade1Candidates(decoded));
       if (candidates === undefined) {
         return noParse(
           braille,
@@ -855,7 +877,7 @@ export function backtranslateGrade1(
   if (segmentStart < braille.length) {
     const segmentBraille = braille.slice(segmentStart);
     const decoded = decode(segmentBraille, GRADE1_BUCKETS);
-    const candidates = nonEmpty(grade1Candidates(segmentBraille, decoded));
+    const candidates = nonEmpty(grade1Candidates(decoded));
     if (candidates === undefined) {
       return noParse(
         braille,
