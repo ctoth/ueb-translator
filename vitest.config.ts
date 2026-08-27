@@ -12,6 +12,7 @@ const config: ViteUserConfigExport = defineConfig({
     ],
     coverage: {
       enabled: true,
+      exclude: ["tools/liblouis-oracle/src/**/*.ts"],
       include: [
         "src/**/*.ts",
         "tools/corpus-benchmark/src/**/*.ts",

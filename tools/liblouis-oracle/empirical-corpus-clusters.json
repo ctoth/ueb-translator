@@ -1,0 +1,200 @@
+{
+  "groups": [
+    {
+      "count": 7455,
+      "id": "corpus-unsupported-symbol",
+      "representatives": [
+        {
+          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000012",
+          "evidenceDigest": "0ba19b28e0b3110579e854a4c232c16f63f55482547eb98e936a33ecc0b98604",
+          "groupId": "corpus-unsupported-symbol",
+          "repro": {
+            "input": "{| class=\"wikitable sortable\" border=\"1\" |+ Flu prevelance by state !",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠸⠣⠸⠳⠀⠉⠇⠁⠎⠎⠐⠶⠠⠶⠺⠊⠅⠊⠞⠁⠃⠇⠑⠀"
+          }
+        },
+        {
+          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000016",
+          "evidenceDigest": "10e3085a343bf3eecb7b2cf0954a5062e18012ba76809b93e3d70cc76b516f86",
+          "groupId": "corpus-unsupported-symbol",
+          "repro": {
+            "input": "The Weather Channel |- | Alabama || Moderate || Local || Localized |- | ",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠠⠮⠀⠠⠺⠂⠮⠗⠀⠠⠡⠁⠝⠝⠑⠇⠀⠸⠳⠤⠀⠸⠳⠀"
+          }
+        },
+        {
+          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000017",
+          "evidenceDigest": "af8513572f11f3a3a80f7d6fae77edadb860f33c62842c354c8d4758852c7d99",
+          "groupId": "corpus-unsupported-symbol",
+          "repro": {
+            "input": "activity || |- | Illinois || Moderate || Sporadic || |- | Indiana || Low",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠁⠉⠞⠊⠧⠰⠽⠀⠸⠳⠸⠳⠀⠸⠳⠤⠀⠸⠳⠀⠠⠊⠇⠇"
+          }
+        },
+        {
+          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000018",
+          "evidenceDigest": "076920092061af89ab687593ae1b3f9546f0b700e9815a538bb8c62939cc29a9",
+          "groupId": "corpus-unsupported-symbol",
+          "repro": {
+            "input": "Mississippi || Moderate || Local || Sporadic |- | Missouri || Moderate |",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠠⠍⠊⠎⠎⠊⠎⠎⠊⠏⠏⠊⠀⠸⠳⠸⠳⠀⠠⠍⠕⠙⠻⠁"
+          }
+        },
+        {
+          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000019",
+          "evidenceDigest": "0d5b83c053e435411ec83e1cad16c561f79cbb830974119f914c16c55373ab14",
+          "groupId": "corpus-unsupported-symbol",
+          "repro": {
+            "input": "|| Sporadic |- | Oklahoma || Moderate || No activity || |- | Oregon || L",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠸⠳⠸⠳⠀⠠⠎⠏⠕⠗⠁⠙⠊⠉⠀⠸⠳⠤⠀⠸⠳⠀⠠⠕"
+          }
+        }
+      ],
+      "verdict": {
+        "issues": [
+          58
+        ],
+        "kind": "our-bug",
+        "rationale": "The retained corpus sentence reaches an unsupported ASCII print symbol. ICEB 2024 Sections 3-7 require a Grade 1 symbol representation; issue 58 owns the compiled Grade 1 symbol and mode package.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 2958,
+      "id": "corpus-unsupported-foreign",
+      "representatives": [
+        {
+          "caseId": "corpus:000adfbe46a80709068029c558cb5a01d7a32396fd95464a5ac7df0dd05578ba:00000002",
+          "evidenceDigest": "8c2e9e068fbc185050b263ea45fd5a494c24f1dca911a0f65b3817836afdf80b",
+          "groupId": "corpus-unsupported-foreign",
+          "repro": {
+            "input": "The Pope arrived at Okęcie airport in Warsaw on May 25.",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠠⠮⠀⠠⠏⠕⠏⠑⠀⠜⠗⠊⠧⠫⠀⠁⠞⠀⠠⠕⠅⠄⡳⠭"
+          }
+        },
+        {
+          "caseId": "corpus:000adfbe46a80709068029c558cb5a01d7a32396fd95464a5ac7df0dd05578ba:00000004",
+          "evidenceDigest": "5f9da23f684774958ecb1103b89c2434f979d0363a5cd9b9f6693aa50465b4ea",
+          "groupId": "corpus-unsupported-foreign",
+          "repro": {
+            "input": "The following day he said mass at Piłsudski Square, mirroring a preceden",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠠⠮⠀⠋⠕⠇⠇⠪⠬⠀⠐⠙⠀⠓⠑⠀⠎⠙⠀⠍⠁⠎⠎⠀"
+          }
+        },
+        {
+          "caseId": "corpus:000adfbe46a80709068029c558cb5a01d7a32396fd95464a5ac7df0dd05578ba:00000006",
+          "evidenceDigest": "d01a1c8863629df5cfadfd5264445af89f817a930bef8254cbb0b79772ca41a7",
+          "groupId": "corpus-unsupported-foreign",
+          "repro": {
+            "input": "Later that day he went to Częstochowa.",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠠⠇⠁⠞⠻⠀⠞⠀⠐⠙⠀⠓⠑⠀⠺⠢⠞⠀⠞⠕⠀⠠⠉⠵"
+          }
+        },
+        {
+          "caseId": "corpus:000adfbe46a80709068029c558cb5a01d7a32396fd95464a5ac7df0dd05578ba:00000008",
+          "evidenceDigest": "f4c4bae438fb7152f90732db12a64dcccaba6de89b0e9d3dcb2ae8ca274a8da3",
+          "groupId": "corpus-unsupported-foreign",
+          "repro": {
+            "input": "Crowds of people gathered on the Błonia meadows.",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠠⠉⠗⠪⠙⠎⠀⠷⠀⠏⠀⠛⠁⠮⠗⠫⠀⠕⠝⠀⠮⠀⠠⠃"
+          }
+        },
+        {
+          "caseId": "corpus:00365439f2a35c00979286c62b531849a96614f4d41014d1e511d5690acb9177:00000019",
+          "evidenceDigest": "3d092b2eddb120ec52cb0e30f020d3eb4e4a5a0bc6c27a5aecc379635f239a65",
+          "groupId": "corpus-unsupported-foreign",
+          "repro": {
+            "input": "ca:El Parlament europeu rebutja el projecte ACTA fr:Union européenne : A",
+            "localChanged": "[[unsupported:unsupporte",
+            "oracleChanged": "⠉⠁⠰⠒⠠⠑⠇⠀⠠⠏⠜⠇⠁⠰⠞⠀⠑⠥⠗⠕⠏⠑⠥⠀"
+          }
+        }
+      ],
+      "verdict": {
+        "issues": [
+          61
+        ],
+        "kind": "our-bug",
+        "rationale": "The retained corpus sentence reaches unsupported non-ASCII foreign-language print. ICEB 2024 Sections 4.2 and 4.6 require explicit foreign-letter or passage treatment; issue 61 owns that package.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 150248,
+      "id": "corpus-context-dependent",
+      "representatives": [
+        {
+          "caseId": "corpus:00041b3504ed916a96edf40d523a87b81713142ac89178beb1ca10aba96c3686:00000000",
+          "evidenceDigest": "7615ee51108122a84dd123f83e19b22c8b5ed8ade824d1eb170a641ef350c33e",
+          "groupId": "corpus-context-dependent",
+          "repro": {
+            "input": "Exactly one year since the popular Suprnova BitTorrent link site went of",
+            "localChanged": "⠑⠝⠞⠀⠇⠔⠅⠀⠎⠊⠞⠑⠀⠺⠢⠞⠀⠷⠋⠇⠔⠑⠂⠀",
+            "oracleChanged": "⠢⠞⠀⠇⠔⠅⠀⠎⠊⠞⠑⠀⠺⠢⠞⠀⠷⠋⠇⠔⠑⠂⠀⠭"
+          }
+        },
+        {
+          "caseId": "corpus:00041b3504ed916a96edf40d523a87b81713142ac89178beb1ca10aba96c3686:00000001",
+          "evidenceDigest": "8b364ffec2e9b3fa0c0451f777b5a1eff80c06d7e27a67b28719f6da9bc2a15a",
+          "groupId": "corpus-context-dependent",
+          "repro": {
+            "input": "After twelve months of speculation amongst former users and many sites p",
+            "localChanged": "⠠⠶⠭⠀⠊⠎⠀⠐⠞⠀⠿⠀⠐⠑⠽⠃⠕⠙⠽⠀⠞⠕⠀⠐",
+            "oracleChanged": "⠦⠭⠀⠊⠎⠀⠐⠞⠀⠿⠀⠐⠑⠽⠃⠕⠙⠽⠀⠞⠕⠀⠐⠅"
+          }
+        },
+        {
+          "caseId": "corpus:00041b3504ed916a96edf40d523a87b81713142ac89178beb1ca10aba96c3686:00000002",
+          "evidenceDigest": "2f2c0edcd278f3bdf015a2fa4f66227d6d5dfce692db73a40debf3bf5bda1166",
+          "groupId": "corpus-context-dependent",
+          "repro": {
+            "input": "According to Preston his nightmare began in November, 2004 when he recei",
+            "localChanged": "⠆",
+            "oracleChanged": "⠃⠑"
+          }
+        },
+        {
+          "caseId": "corpus:00041b3504ed916a96edf40d523a87b81713142ac89178beb1ca10aba96c3686:00000012",
+          "evidenceDigest": "006e61947ab0ca522c15d8533c61d488342b376b348c21d37f4fc2712e09cde7",
+          "groupId": "corpus-context-dependent",
+          "repro": {
+            "input": "Upon receiving the notice Preston says that he \"became completely depres",
+            "localChanged": "⠠⠶⠆⠉⠁⠍⠑⠀⠉⠕⠍⠏⠇⠑⠞⠑⠇⠽⠀⠙⠑⠏⠗⠑",
+            "oracleChanged": "⠦⠆⠉⠁⠍⠑⠀⠉⠕⠍⠏⠇⠑⠞⠑⠇⠽⠀⠙⠑⠏⠗⠑⠎"
+          }
+        },
+        {
+          "caseId": "corpus:00041b3504ed916a96edf40d523a87b81713142ac89178beb1ca10aba96c3686:00000013",
+          "evidenceDigest": "d65a297e4307c20c3b03e703a8d7f3dcf4b576df8da8242e7fba3100ce8aa350",
+          "groupId": "corpus-context-dependent",
+          "repro": {
+            "input": "Preston however was greeted with good news at the post office when he op",
+            "localChanged": "⠆",
+            "oracleChanged": "⠃⠑"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "This exact whole-sentence comparison contains one or more contraction choices whose isolated changed window does not mechanically prove a violation. ICEB 2024 Rule 10.12 explicitly requires pronunciation, syllabification, unfamiliar-word, and consistency judgment, so the comparator remains non-normative.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    }
+  ],
+  "total": 160661
+}

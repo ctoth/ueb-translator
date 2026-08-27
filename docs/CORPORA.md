@@ -9,6 +9,15 @@ All downloads, private EPUBs, extracted text, manifests, and benchmark inputs
 live below `.corpus-cache/`. That directory is ignored by git and absent from
 the npm package.
 
+The empirical oracle lane additionally pins Gutenberg ebook 1342 by retained
+archive bytes and SHA-256
+`74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806`.
+This is the byte-repeatable CI mechanism required because live Gutenberg
+snapshots are mutable. Wikinews snapshot 20260801 is reacquired and verified
+from the official dated dump. Corpus sentence cases normalize line separators
+and split overlong sentences into deterministic 512-character, whitespace-
+preferred chunks so the line-oriented comparator cannot wrap a case silently.
+
 ## Prepare a corpus
 
 Each source has one explicit, discriminated command. Snapshot identifiers are

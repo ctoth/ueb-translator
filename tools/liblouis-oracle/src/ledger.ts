@@ -9,8 +9,10 @@ export type DisagreementVerdictKind =
   | "permitted-alternative";
 
 export interface DisagreementVerdict {
+  readonly issues?: readonly number[];
   readonly kind: DisagreementVerdictKind;
   readonly rationale: string;
+  readonly references?: readonly string[];
   readonly sources: readonly string[];
 }
 
@@ -54,7 +56,7 @@ const oracleFields = new Set([
   "tables",
   "version",
 ]);
-const verdictFields = new Set(["kind", "rationale", "sources"]);
+const verdictFields = new Set(["issues", "kind", "rationale", "references", "sources"]);
 
 function invalid(error: string): InvalidDisagreementLedger {
   return { error, ok: false };
@@ -84,6 +86,16 @@ function isOfficialSource(value: string): boolean {
       url.hostname === "brailleauthority.org" ||
       url.hostname.endsWith(".brailleauthority.org")
     );
+  } catch {
+    return false;
+  }
+}
+
+function isUpstreamReference(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname === "github.com" &&
+      url.pathname.startsWith("/liblouis/liblouis/");
   } catch {
     return false;
   }
@@ -181,7 +193,35 @@ function parseVerdict(
   ) {
     return invalid("verdict.sources must contain only official ICEB or BANA URLs");
   }
-  return { kind, rationale, sources };
+  const issues = value["issues"];
+  if (
+    issues !== undefined &&
+    (!Array.isArray(issues) || issues.length === 0 ||
+      !issues.every((issue) => Number.isSafeInteger(issue) && issue > 0))
+  ) {
+    return invalid("verdict.issues must contain positive GitHub issue numbers");
+  }
+  const references = value["references"];
+  if (
+    references !== undefined &&
+    (!Array.isArray(references) || references.length === 0 ||
+      !references.every((reference) =>
+        typeof reference === "string" && isUpstreamReference(reference)
+      ))
+  ) {
+    return invalid("verdict.references must contain Liblouis upstream URLs");
+  }
+  return {
+    // The predicates above narrow every retained element; TypeScript does not carry `.every` narrowing.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    ...(issues === undefined ? {} : { issues: issues as number[] }),
+    kind,
+    rationale,
+    // The predicates above narrow every retained element; TypeScript does not carry `.every` narrowing.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    ...(references === undefined ? {} : { references: references as string[] }),
+    sources,
+  };
 }
 
 function parseEntry(
@@ -250,7 +290,7 @@ export function parseDisagreementLedger(
   return { ledger: { disagreements, version: 1 }, ok: true };
 }
 
-function evidenceKey(evidence: ComparisonEvidence): string {
+export function comparisonEvidenceKey(evidence: ComparisonEvidence): string {
   const local = evidence.local.kind === "rule"
     ? ["rule", evidence.local.ruleId, evidence.local.output]
     : ["test", evidence.local.testId, evidence.local.output];
@@ -266,6 +306,10 @@ function evidenceKey(evidence: ComparisonEvidence): string {
   ]);
 }
 
+export function comparisonEvidenceDigest(evidence: ComparisonEvidence): string {
+  return createHash("sha256").update(comparisonEvidenceKey(evidence)).digest("hex");
+}
+
 export function reconcileDisagreements(
   comparisons: readonly OracleComparison[],
   ledger: DisagreementLedger,
@@ -273,11 +317,13 @@ export function reconcileDisagreements(
   const actual = comparisons
     .filter((comparison) => !comparison.ok)
     .map((comparison) => comparison.evidence);
-  const actualKeys = new Set(actual.map(evidenceKey));
-  const ledgerKeys = new Set(ledger.disagreements.map(evidenceKey));
-  const untriaged = actual.filter((evidence) => !ledgerKeys.has(evidenceKey(evidence)));
+  const actualKeys = new Set(actual.map(comparisonEvidenceKey));
+  const ledgerKeys = new Set(ledger.disagreements.map(comparisonEvidenceKey));
+  const untriaged = actual.filter(
+    (evidence) => !ledgerKeys.has(comparisonEvidenceKey(evidence)),
+  );
   const stale = ledger.disagreements.filter(
-    (entry) => !actualKeys.has(evidenceKey(entry)),
+    (entry) => !actualKeys.has(comparisonEvidenceKey(entry)),
   );
   return {
     ok: untriaged.length === 0 && stale.length === 0,
@@ -285,3 +331,4 @@ export function reconcileDisagreements(
     untriaged,
   };
 }
+import { createHash } from "node:crypto";

@@ -7,5 +7,5 @@
     "rootDir": "../..",
     "types": ["node"]
   },
-  "include": ["../../src/**/*.ts", "*.mts", "src/**/*.ts", "test/**/*.ts"]
+  "include": ["../../rules/ueb-2024/**/*.ts", "../../src/**/*.ts", "*.mts", "src/**/*.ts", "test/**/*.ts"]
 }

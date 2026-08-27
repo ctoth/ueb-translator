@@ -54,6 +54,10 @@ Every additional algorithm must be cited here and at its implementation site.
   dumps. Its text is public domain, CC BY 2.5, or CC BY 4.0 according to the
   article's publication date. Corpus snapshots and attribution remain outside
   the npm artifact. <https://en.wikinews.org/wiki/Wikinews:Copyright>
+- SCOWL 2020.12.07 level 95 supplies the pinned empirical dictionary only. Its
+  archive digest, upstream Git commit, and copyright notices are verified and
+  retained in the ignored development cache; SCOWL never defines Braille.
+  <https://downloads.sourceforge.net/project/wordlist/SCOWL/2020.12.07/>
 
 Corpora never establish expected Braille. Rule-linked tests from normative
 sources do.
