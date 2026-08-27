@@ -117,17 +117,24 @@ function validateAreTypesWrong(
     ],
     repositoryRoot,
   ));
-  if (!isRecord(report) || !isRecord(report["problems"])) {
+  if (
+    !isRecord(report) ||
+    !isRecord(report["analysis"]) ||
+    !Array.isArray(report["analysis"]["problems"]) ||
+    !isRecord(report["problems"])
+  ) {
     throw new Error("ATTW did not return a structured problems report.");
   }
-  const cjsProblems = report["problems"]["CJSResolvesToESM"];
-  const cjsResolvesToEsm = Array.isArray(cjsProblems) ? cjsProblems.length : 0;
-  const noResolution = report["problems"]["NoResolution"];
-  const legacyNodeNoResolution = Array.isArray(noResolution)
-    ? noResolution.filter((problem) =>
-      isRecord(problem) && problem["resolutionKind"] === "node10"
-    ).length
-    : 0;
+  const problems = report["analysis"]["problems"];
+  if (!problems.every(isRecord)) {
+    throw new Error("ATTW returned an invalid analysis problems array.");
+  }
+  const cjsResolvesToEsm = problems.filter((problem) =>
+    problem["kind"] === "CJSResolvesToESM"
+  ).length;
+  const legacyNodeNoResolution = problems.filter((problem) =>
+    problem["kind"] === "NoResolution" && problem["resolutionKind"] === "node10"
+  ).length;
   if (cjsResolvesToEsm > 0 || legacyNodeNoResolution > 0) {
     throw new Error(
       `ATTW found ${String(cjsResolvesToEsm)} CJSResolvesToESM and ${String(legacyNodeNoResolution)} node10 NoResolution problems.`,
