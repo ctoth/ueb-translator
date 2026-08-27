@@ -7,6 +7,7 @@ import { translateGrade2 } from "../../src/grade2.js";
 import { benchmarkDocuments } from "./src/benchmark.js";
 import { parseCommand } from "./src/command.js";
 import { parseManifest } from "./src/manifest.js";
+import { findRepositoryRoot } from "./src/repository.js";
 import {
   prepareEpub,
   prepareGutenberg,
@@ -14,8 +15,12 @@ import {
 } from "./prepare.mjs";
 
 function packageSizes(): unknown {
-  const script = resolve(process.cwd(), "scripts/report-size.mts");
-  const json = execFileSync(process.execPath, [script], { encoding: "utf8" });
+  const repositoryRoot = findRepositoryRoot(import.meta.url);
+  const script = resolve(repositoryRoot, "scripts/report-size.mts");
+  const json = execFileSync(process.execPath, [script], {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+  });
   return JSON.parse(json);
 }
 

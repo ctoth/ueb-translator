@@ -16,6 +16,7 @@ import {
   GRADE2_STANDING_LITERAL_INPUTS,
   requireAppendixShortformBase,
 } from "../rules/ueb-2024/program.js";
+import { GRADE2_INVENTORY_COUNTS } from "../rules/ueb-2024/inventory.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
 import { compose } from "../src/composition.js";
 import {
@@ -160,11 +161,15 @@ describe("compileContextualRules", () => {
   });
 
   it("compiles the complete official inventory without unresolved precedence", () => {
-    expect(GRADE2_CONTEXTUAL_COMPILATION.runtime.rules).toHaveLength(519);
-    expect(GRADE2_CONTEXTUAL_COMPILATION.provenance).toHaveLength(519);
+    expect(GRADE2_CONTEXTUAL_COMPILATION.runtime.rules).toHaveLength(
+      GRADE2_INVENTORY_COUNTS.contextualRules,
+    );
+    expect(GRADE2_CONTEXTUAL_COMPILATION.provenance).toHaveLength(
+      GRADE2_INVENTORY_COUNTS.contextualRules,
+    );
     expect(new Set(
       GRADE2_CONTEXTUAL_COMPILATION.provenance.map((source) => source.id),
-    ).size).toBe(519);
+    ).size).toBe(GRADE2_INVENTORY_COUNTS.contextualRules);
   });
 });
 

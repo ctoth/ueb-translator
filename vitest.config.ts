@@ -3,6 +3,8 @@ import type { ViteUserConfigExport } from "vitest/config";
 
 const config: ViteUserConfigExport = defineConfig({
   test: {
+    // Property-based suites have strict wall-clock budgets and contend under
+    // file-level concurrency. Build and package checks run outside Vitest.
     fileParallelism: false,
     include: [
       "test/**/*.test.ts",
