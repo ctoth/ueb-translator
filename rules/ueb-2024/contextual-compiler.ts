@@ -332,7 +332,7 @@ function cloneRule(rule: ContextualRuleSource): ContextualRuleSource {
       compareText(guardKey(left), guardKey(right))
     ),
     id: rule.id,
-    input: rule.input,
+    input: rule.input.toLowerCase(),
     precedence: rule.precedence,
   };
 }
@@ -411,12 +411,13 @@ function validateAndSort(
 /** Compile declarative contextual rules into a deterministic compact program. */
 export function compileContextualRules(
   sourceRules: readonly ContextualRuleSource[],
-  alphabet: readonly string[] = [...new Set(
-    sourceRules.flatMap((rule) => Array.from(rule.input)),
-  )].sort(compareText),
+  alphabet?: readonly string[],
 ): ContextualCompilationResult {
   const provenance = validateAndSort(sourceRules);
-  const bucketAlphabet = [...alphabet].sort(compareText);
+  const bucketAlphabet = [...new Set(
+    (alphabet ?? provenance.flatMap((rule) => Array.from(rule.input)))
+      .map((entry) => entry.toLowerCase()),
+  )].sort(compareText);
   if (
     bucketAlphabet.length === 0 ||
     bucketAlphabet.some((entry) => Array.from(entry).length !== 1) ||

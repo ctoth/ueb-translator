@@ -121,12 +121,13 @@ describe("compileContextualRules", () => {
       .toThrow(expect.objectContaining({ code: "unreachable-rule" }));
   });
 
-  it("derives a non-English matcher alphabet from rule inputs", () => {
+  it("derives a lowercase non-English matcher alphabet from rule inputs", () => {
     const matcher = compileContextualRules([
       rule("test-uppercase-input", "A", 1),
       rule("test-greek-input", "α", 2),
     ]).runtime.matcher;
-    expect(matcher.bucketAlphabet).toEqual(["A", "α"]);
+    expect(matcher.bucketAlphabet).toEqual(["a", "α"]);
+    expect(matcher.inputs).toEqual(["a", "α"]);
   });
 
   it("rejects duplicate guards", () => {
@@ -201,6 +202,34 @@ describe("Grade 2 source compilation", () => {
 });
 
 describe("Grade 2 runtime architecture", () => {
+  it("reaches canonically lowercase rules from uppercase composition input", () => {
+    const compiled = compileContextualRules([rule("test-uppercase", "A", 0)]).runtime;
+    const encode = (values: readonly number[]): string =>
+      String.fromCharCode(...values.map((value) => value + 0x100));
+    const translator = compose(
+      GRADE1_SYMBOL_PROGRAM,
+      GRADE1_MODE_PROGRAM,
+      UEB_COMPOSITION_POLICIES,
+      {
+        ...compiled,
+        code: "ueb-2024",
+        grade1Ambiguities: [],
+        matcher: [
+          compiled.matcher.bucketAlphabet,
+          compiled.matcher.inputs,
+          encode(compiled.matcher.initialInputOffsets),
+          encode(compiled.matcher.initialRuleOffsets),
+          encode(compiled.matcher.initialGuardOffsets),
+          encode(compiled.matcher.inputRuleCounts),
+          encode(compiled.matcher.inputGuardCounts),
+        ],
+        standingLiteralInputs: [],
+      },
+    );
+
+    expect(translator.translate("A")).toMatchObject({ braille: "⠠⠁", ok: true });
+  });
+
   it("remaps modes after a single-unit contraction", () => {
     const compiled = compileContextualRules([rule("test-single", "x", 0)]).runtime;
     const encode = (values: readonly number[]): string =>
