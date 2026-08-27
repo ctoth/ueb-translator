@@ -206,10 +206,7 @@ function candidateSource<Candidate>(
   return {
     first: candidates[0],
     size: BigInt(candidates.length),
-    at: (index) =>
-      index >= 0n && index < BigInt(candidates.length)
-        ? candidates[Number(index)]
-        : undefined,
+    at: (index) => candidates[Number(index)],
   };
 }
 
@@ -244,6 +241,7 @@ implements AmbiguousCandidates<Candidate> {
     const reversedParts: Candidate[] = [];
     for (const candidates of [...this.#segments].reverse()) {
       const radix = candidates.size;
+      /* v8 ignore next -- the index is reduced modulo this positive radix. */
       const selected = candidates.at(remaining % radix) ?? candidates.first;
       reversedParts.push(selected);
       remaining /= radix;

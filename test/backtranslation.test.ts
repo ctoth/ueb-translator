@@ -268,6 +268,7 @@ describe("backtranslateGrade2", () => {
       expect(result.candidates.second.print).toBe("ς σ");
       expect(result.candidates.at(0n)).toBe(result.candidates.first);
       expect(result.candidates.at(2n)?.print).toBe("σ ς");
+      expect(result.candidates.at(3n)?.print).toBe("σ σ");
       expect(result.candidates.at(-1n)).toBeUndefined();
       expect(result.candidates.at(4n)).toBeUndefined();
       expect(result.candidates.find(() => false)).toBeUndefined();
