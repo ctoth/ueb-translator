@@ -49,13 +49,9 @@ export function translateUeb(
 ): UebTranslationResult {
   switch (request.mode) {
     case "grade1":
-      return typeof request.input === "string"
-        ? translateGrade1(request.input)
-        : translateGrade1(request.input);
+      return translateGrade1(request.input);
     case "grade2":
-      return typeof request.input === "string"
-        ? translateGrade2(request.input)
-        : translateGrade2(request.input);
+      return translateGrade2(request.input);
     case "technical":
       return translateTechnicalInput(request.input);
   }

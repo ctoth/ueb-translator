@@ -318,12 +318,10 @@ export interface TechnicalUnsupportedCharacter {
   readonly scalarIndex: number;
 }
 
-export interface TechnicalInvalidBoundary {
-  readonly at: number;
-  readonly mode: "technical";
-  readonly ok: false;
-  readonly reason: "invalid-boundary";
-  readonly runIndex: number;
+export interface TechnicalComputerUnsupportedCharacter
+  extends TechnicalUnsupportedCharacter {
+  readonly blockIndex: number;
+  readonly lineIndex: number;
 }
 
 export interface TechnicalRaggedMatrix {
@@ -345,7 +343,7 @@ export interface TechnicalTextUnsupportedCharacter {
 }
 
 export type TechnicalFailure =
-  | TechnicalInvalidBoundary
+  | TechnicalComputerUnsupportedCharacter
   | TechnicalInvalidValue
   | TechnicalRaggedMatrix
   | TechnicalUnsupportedCharacter;
@@ -363,6 +361,7 @@ interface RenderSuccess {
 }
 
 type RenderResult = RenderSuccess | TechnicalFailure;
+type ComputerPrintResult = RenderSuccess | TechnicalUnsupportedCharacter;
 
 function renderSuccess(
   braille: string,
@@ -944,7 +943,7 @@ function translateComputerPrint(
   translator: (input: string) => Grade1TextResult | Grade2TextResult,
   codeUnitOffset: number,
   scalarOffset: number,
-): RenderResult {
+): ComputerPrintResult {
   const translated = translator(text);
   if (translated.ok) {
     return renderSuccess(translated.braille);
@@ -960,7 +959,7 @@ function translateComputerPrint(
 function renderSignificantComputerLine(
   line: string,
   translator: (input: string) => Grade1TextResult | Grade2TextResult,
-): RenderResult {
+): ComputerPrintResult {
   let braille = "";
   let cursor = 0;
   while (cursor < line.length) {
@@ -998,17 +997,20 @@ function renderSignificantComputerLine(
   return renderSuccess(braille);
 }
 
-function renderComputer(block: TechnicalComputerBlock): RenderResult {
+function renderComputer(
+  block: TechnicalComputerBlock,
+  blockIndex: number,
+): RenderSuccess | TechnicalComputerUnsupportedCharacter {
   const translator =
     block.grade === "grade1" ? translateGrade1 : block.translator;
   const translatedLines: string[] = [];
-  for (const line of block.lines) {
+  for (const [lineIndex, line] of block.lines.entries()) {
     const translated =
       block.spacing === "significant"
         ? renderSignificantComputerLine(line, translator)
         : translateComputerPrint(line, translator, 0, 0);
     if (!translated.ok) {
-      return translated;
+      return { ...translated, blockIndex, lineIndex };
     }
     translatedLines.push(translated.braille);
   }
@@ -1222,10 +1224,11 @@ function applyGrade1Protection(
 function renderBlock(
   block: TechnicalBlock,
   profile: TechnicalProfile,
+  blockIndex: number,
 ): RenderResult {
   switch (block.kind) {
     case "computer":
-      return renderComputer(block);
+      return renderComputer(block, blockIndex);
     case "expression": {
       const rendered = renderExpression(block.expression, profile);
       if (!rendered.ok) {
@@ -1251,8 +1254,8 @@ export function translateTechnicalText(input: string): TechnicalTextResult {
 }
 
 export function translateTechnical(document: TechnicalDocument): TechnicalResult {
-  const rendered = document.blocks.map((block) =>
-    renderBlock(block, document.profile),
+  const rendered = document.blocks.map((block, blockIndex) =>
+    renderBlock(block, document.profile, blockIndex),
   );
   const joined = joinRendered(
     rendered.map((result, index) => {
