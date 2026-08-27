@@ -11,6 +11,8 @@ export const GRADE1_MODE_RULE_IDS: readonly string[] = [
 ];
 export const COMPOSITION_POLICY_RULE_IDS: readonly string[] = [
   "UEB-policy-closing-standing-punctuation",
+  "UEB-policy-dash-joiners",
+  "UEB-policy-elision-punctuation",
   "UEB-policy-lower-punctuation",
   "UEB-policy-opening-standing-punctuation",
   "UEB-policy-standing-boundaries"

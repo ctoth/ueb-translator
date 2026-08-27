@@ -34,10 +34,11 @@ function encode(values: readonly number[]): string {
 }
 
 const prefixTable: CompactPrefixTable = [
+  ["a", "b"],
   ["a", "ab", "b"],
-  encode([0, 2, ...Array.from({ length: 25 }, () => 3)]),
-  encode([0, 2, ...Array.from({ length: 25 }, () => 3)]),
-  encode(Array.from({ length: 27 }, () => 0)),
+  encode([0, 2, 3]),
+  encode([0, 2, 3]),
+  encode([0, 0, 0]),
   encode([1, 1, 1]),
   encode([0, 0, 0]),
 ];
@@ -210,6 +211,7 @@ describe("matchPrefixTable", () => {
     expect(matchPrefixTable(prefixTable, "A", 0)).toEqual([]);
     expect(matchPrefixTable([
       prefixTable[0],
+      prefixTable[1],
       "",
       prefixTable[2],
       prefixTable[3],
@@ -223,6 +225,7 @@ describe("matchPrefixTable", () => {
       prefixTable[3],
       "",
       prefixTable[5],
+      prefixTable[6],
     ], "a", 0)).toEqual([]);
   });
 });

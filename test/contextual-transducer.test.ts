@@ -35,6 +35,7 @@ function translateGuard(
 const suffixGuardProgram: ContextualTransducerProgram = {
   guards: [[5, 8]],
   matcher: [
+    ["a"],
     ["ab"],
     encode([0, ...Array.from({ length: 26 }, () => 1)]),
     encode([0, ...Array.from({ length: 26 }, () => 1)]),
@@ -73,8 +74,8 @@ describe("runContextualTransducer", () => {
   });
 
   it("uses local start, end, previous, and following positions", () => {
-    expect(translateGuard("aba", [2])).toBe("ABA");
-    expect(translateGuard("abz", [2])).toBe("XZ");
+    expect(translateGuard("aba", [2, 0], ["aeiouy"])).toBe("ABA");
+    expect(translateGuard("abz", [2, 0], ["aeiouy"])).toBe("XZ");
     expect(translateGuard("ab", [8])).toBe("AB");
     expect(translateGuard("abz", [8])).toBe("XZ");
     expect(translateGuard("ab", [9])).toBe("AB");
@@ -94,7 +95,7 @@ describe("runContextualTransducer", () => {
   it("fails closed for malformed cross-array references", () => {
     expect(() => translate(false, {
       ...suffixGuardProgram,
-      guards: [[6, 0]],
+      guards: [[6, 0, 1]],
       stringOperands: [],
     })).toThrow(/missing operand/u);
     expect(() => translate(false, {
@@ -113,12 +114,13 @@ describe("invertContextualProgram", () => {
     expect(() => invertContextualProgram({
       ...suffixGuardProgram,
       matcher: [
+        suffixGuardProgram.matcher[0],
         ["ab"],
-        suffixGuardProgram.matcher[1],
         suffixGuardProgram.matcher[2],
         suffixGuardProgram.matcher[3],
+        suffixGuardProgram.matcher[4],
         "",
-        suffixGuardProgram.matcher[5],
+        suffixGuardProgram.matcher[6],
       ],
     })).toThrow(/malformed rule count/u);
 
@@ -131,11 +133,12 @@ describe("invertContextualProgram", () => {
       ...suffixGuardProgram,
       matcher: [
         [],
-        suffixGuardProgram.matcher[1],
+        [],
         suffixGuardProgram.matcher[2],
         suffixGuardProgram.matcher[3],
+        suffixGuardProgram.matcher[4],
         "",
-        suffixGuardProgram.matcher[5],
+        suffixGuardProgram.matcher[6],
       ],
     })).toThrow(/unindexed inverse rules/u);
   });

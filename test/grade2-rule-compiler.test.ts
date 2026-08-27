@@ -22,7 +22,7 @@ import {
   GRADE1_MODE_PROGRAM,
   GRADE1_SYMBOL_PROGRAM,
   UEB_COMPOSITION_POLICIES,
-} from "../src/generated/grade1-program.js";
+} from "../src/generated/ueb-2024/grade1-program.js";
 
 const runtimeSource = readFileSync(
   new URL("../src/grade2.ts", import.meta.url),
@@ -84,17 +84,21 @@ describe("compileContextualRules", () => {
         boundaries: ["braille-line", "compound", "prefix", "suffix", "syllable"],
         kind: "not-crossing",
       }]),
-      rule("test-words", "c", 3, [{ kind: "not-word", words: ["cat"] }]),
+      rule("test-words", "c", 3, [{
+        ignoredCharacters: "-",
+        kind: "not-word",
+        words: ["cat"],
+      }]),
       rule("test-not-whole", "d", 4, [{ kind: "not-whole-word" }]),
     ]);
 
     expect(compilation.runtime.guards).toEqual([
       [12],
       [5, 31],
-      [6, 0],
+      [6, 1, 0],
       [10],
     ]);
-    expect(compilation.runtime.stringOperands).toEqual(["cat"]);
+    expect(compilation.runtime.stringOperands).toEqual(["-", "cat"]);
   });
 
   it("fails closed when a collected guard operand is missing", () => {
@@ -117,13 +121,12 @@ describe("compileContextualRules", () => {
       .toThrow(expect.objectContaining({ code: "unreachable-rule" }));
   });
 
-  it("rejects inputs outside the matcher's lowercase ASCII alphabet", () => {
-    expect(() => compileContextualRules([
+  it("derives a non-English matcher alphabet from rule inputs", () => {
+    const matcher = compileContextualRules([
       rule("test-uppercase-input", "A", 1),
-    ])).toThrow(expect.objectContaining({
-      code: "unreachable-rule",
-      ruleIds: ["test-uppercase-input"],
-    }));
+      rule("test-greek-input", "α", 2),
+    ]).runtime.matcher;
+    expect(matcher.bucketAlphabet).toEqual(["A", "α"]);
   });
 
   it("rejects duplicate guards", () => {
@@ -204,8 +207,10 @@ describe("Grade 2 runtime architecture", () => {
       String.fromCharCode(...values.map((value) => value + 0x100));
     const contractions = {
       ...compiled,
+      code: "ueb-2024",
       grade1Ambiguities: [],
       matcher: [
+        compiled.matcher.bucketAlphabet,
         compiled.matcher.inputs,
         encode(compiled.matcher.initialInputOffsets),
         encode(compiled.matcher.initialRuleOffsets),
@@ -241,7 +246,7 @@ describe("Grade 2 runtime architecture", () => {
   it("compiles contextual inputs into the deterministic prefix matcher", () => {
     const { matcher } = GRADE2_CONTEXTUAL_COMPILATION.runtime;
     expect(matcher.inputs.length).toBeGreaterThan(0);
-    expect(matcher.initialInputOffsets).toHaveLength(27);
+    expect(matcher.initialInputOffsets).toHaveLength(matcher.bucketAlphabet.length + 1);
     expect(matcher.inputRuleCounts).toHaveLength(matcher.inputs.length);
     expect(matcher.inputRuleCounts.reduce((total, count) => total + count, 0)).toBe(
       GRADE2_CONTEXTUAL_COMPILATION.runtime.rules.length,
@@ -249,7 +254,7 @@ describe("Grade 2 runtime architecture", () => {
   });
 
   it("interprets only the compiled contextual program", () => {
-    expect(runtimeSource).toContain('from "./generated/grade2-program.js"');
+    expect(runtimeSource).toContain('from "./generated/ueb-2024/grade2-program.js"');
     expect(runtimeSource).toContain("compose(");
     expect(runtimeSource).not.toContain("translateGrade1");
     expect(compositionRuntimeSource).toContain('from "./contextual-transducer.js"');

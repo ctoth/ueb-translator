@@ -23,12 +23,18 @@ export type ContextualBoundaryMask =
   | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
   | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20
   | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31;
-type NoOperandGuardOpcode = 1 | 2 | 3 | 8 | 9 | 10 | 12 | 13 | 14 | 15 | 16;
-type StringOperandGuardOpcode = 0 | 6 | 7 | 11;
+type NoOperandGuardOpcode = 1 | 3 | 8 | 9 | 10 | 12 | 13 | 14 | 15 | 16;
+type StringOperandGuardOpcode = 2 | 7 | 11;
+type TwoStringOperandGuardOpcode = 0 | 6;
 type BoundaryOperandGuardOpcode = 4 | 5;
 export type ContextualGuardTuple =
   | readonly [opcode: NoOperandGuardOpcode]
   | readonly [opcode: StringOperandGuardOpcode, stringOperandIndex: number]
+  | readonly [
+      opcode: TwoStringOperandGuardOpcode,
+      stringOperandIndex: number,
+      secondStringOperandIndex: number,
+    ]
   | readonly [opcode: BoundaryOperandGuardOpcode, boundaryMask: ContextualBoundaryMask];
 export type ContextualRuleTuple = readonly [
   braille: string,
@@ -43,6 +49,7 @@ export interface ContextualTransducerProgram {
 }
 
 export interface ComposedContractionProgram extends ContextualTransducerProgram {
+  readonly code: string;
   readonly grade1Ambiguities: readonly (
     readonly [print: string, braille: string]
   )[];
@@ -140,9 +147,10 @@ function guardAllows(
   switch (guard[0]) {
     case 0: {
       const operand = operandAt(program, guard[1]);
+      const suffix = operandAt(program, guard[2]);
       const eligible = eligibilityWord === operand ||
-        (eligibilityWord.endsWith("s") &&
-          eligibilityWord.slice(0, -1) === operand);
+        (suffix.length > 0 && eligibilityWord.endsWith(suffix) &&
+          eligibilityWord.slice(0, -suffix.length) === operand);
       return eligible && operand.startsWith(
         print,
         eligibilityStart,
@@ -157,7 +165,7 @@ function guardAllows(
     }
     case 2: {
       const following = context.word.charAt(end);
-      return following === "" || !"aeiouy".includes(following);
+      return following === "" || !operandAt(program, guard[1]).includes(following);
     }
     case 3:
       return !context.hasRestrictingLowerPunctuation || context.hasUpperPunctuation;
@@ -166,7 +174,11 @@ function guardAllows(
       return !crossesBoundaryMask(start, end, context.boundaries, guard[1]);
     case 6: {
       const operand = operandAt(program, guard[1]);
-      return !operand.split("\u0000").includes(eligibilityWord.replaceAll("-", ""));
+      const ignored = operandAt(program, guard[2]);
+      const normalized = Array.from(eligibilityWord)
+        .filter((character) => !ignored.includes(character))
+        .join("");
+      return !operand.split("\u0000").includes(normalized);
     }
     case 7: {
       const operand = operandAt(program, guard[1]);
@@ -353,7 +365,7 @@ function compactCount(values: string, index: number): number | undefined {
 export function invertContextualProgram(
   program: ContextualTransducerProgram,
 ): readonly ContextualInverseRule[] {
-  const [inputs, , , , inputRuleCounts] = program.matcher;
+  const [, inputs, , , , inputRuleCounts] = program.matcher;
   const inverse: ContextualInverseRule[] = [];
   let ruleIndex = 0;
   for (const [inputIndex, print] of inputs.entries()) {

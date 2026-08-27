@@ -32,12 +32,14 @@ const generatedProgramPath = resolve(
   repositoryRoot,
   "src",
   "generated",
+  "ueb-2024",
   "grade2-program.ts",
 );
 const generatedProvenancePath = resolve(
   repositoryRoot,
   "src",
   "generated",
+  "ueb-2024",
   "grade2-provenance.ts",
 );
 
@@ -56,16 +58,22 @@ function isContextualGuardOpcode(value: unknown): value is ContextualGuardOpcode
 
 function isNoOperandGuardOpcode(
   value: ContextualGuardOpcode,
-): value is 1 | 2 | 3 | 8 | 9 | 10 | 12 | 13 | 14 | 15 | 16 {
-  return value === 1 || value === 2 || value === 3 || value === 8 ||
+): value is 1 | 3 | 8 | 9 | 10 | 12 | 13 | 14 | 15 | 16 {
+  return value === 1 || value === 3 || value === 8 ||
     value === 9 || value === 10 || value === 12 || value === 13 ||
     value === 14 || value === 15 || value === 16;
 }
 
 function isStringOperandGuardOpcode(
   value: ContextualGuardOpcode,
-): value is 0 | 6 | 7 | 11 {
-  return value === 0 || value === 6 || value === 7 || value === 11;
+): value is 2 | 7 | 11 {
+  return value === 2 || value === 7 || value === 11;
+}
+
+function isTwoStringOperandGuardOpcode(
+  value: ContextualGuardOpcode,
+): value is 0 | 6 {
+  return value === 0 || value === 6;
 }
 
 function isBoundaryOperandGuardOpcode(
@@ -110,6 +118,7 @@ function encodeCompactIntegers(
 
 function compactMatcher(matcher: CompiledContextualMatcher): CompactPrefixTable {
   return [
+    matcher.bucketAlphabet,
     matcher.inputs,
     encodeCompactIntegers(matcher.initialInputOffsets, "matcher initial input offsets"),
     encodeCompactIntegers(matcher.initialRuleOffsets, "matcher initial rule offsets"),
@@ -170,6 +179,13 @@ function loadCompilation(module: unknown): LoadedCompilation {
         return [opcode, guard[1]];
       }
       if (
+        isTwoStringOperandGuardOpcode(opcode) && guard.length === 3 &&
+        isIntegerInRange(guard[1], 0, operands.length - 1) &&
+        isIntegerInRange(guard[2], 0, operands.length - 1)
+      ) {
+        return [opcode, guard[1], guard[2]];
+      }
+      if (
         isBoundaryOperandGuardOpcode(opcode) && guard.length === 2 &&
         isContextualBoundaryMask(guard[1])
       ) {
@@ -190,10 +206,17 @@ function loadCompilation(module: unknown): LoadedCompilation {
     return [rule[0], rule[1], rule[2]];
   });
   const rawInputs = rawMatcher["inputs"];
-  if (!Array.isArray(rawInputs)) {
+  const rawBucketAlphabet = rawMatcher["bucketAlphabet"];
+  if (!Array.isArray(rawInputs) || !Array.isArray(rawBucketAlphabet)) {
     throw new Error("Compiled Grade 2 contextual matcher has no input table.");
   }
   const matcher: CompiledContextualMatcher = {
+    bucketAlphabet: rawBucketAlphabet.map((initial): string => {
+      if (typeof initial !== "string" || Array.from(initial).length !== 1) {
+        throw new Error("Compiled Grade 2 contextual matcher has a malformed alphabet.");
+      }
+      return initial;
+    }),
     initialGuardOffsets: integerArray(
       rawMatcher["initialGuardOffsets"],
       "matcher initial guard offsets",
@@ -207,7 +230,7 @@ function loadCompilation(module: unknown): LoadedCompilation {
       "matcher initial rule offsets",
     ),
     inputs: rawInputs.map((input): string => {
-      if (typeof input !== "string" || !/^[a-z]+$/u.test(input)) {
+      if (typeof input !== "string" || input.length === 0) {
         throw new Error("Compiled Grade 2 contextual matcher has a malformed input.");
       }
       return input;
@@ -222,9 +245,11 @@ function loadCompilation(module: unknown): LoadedCompilation {
     ),
   };
   if (
-    matcher.initialInputOffsets.length !== 27 ||
-    matcher.initialRuleOffsets.length !== 27 ||
-    matcher.initialGuardOffsets.length !== 27 ||
+    matcher.bucketAlphabet.length === 0 ||
+    new Set(matcher.bucketAlphabet).size !== matcher.bucketAlphabet.length ||
+    matcher.initialInputOffsets.length !== matcher.bucketAlphabet.length + 1 ||
+    matcher.initialRuleOffsets.length !== matcher.bucketAlphabet.length + 1 ||
+    matcher.initialGuardOffsets.length !== matcher.bucketAlphabet.length + 1 ||
     matcher.initialInputOffsets[0] !== 0 ||
     matcher.initialInputOffsets.at(-1) !== matcher.inputs.length ||
     matcher.initialRuleOffsets[0] !== 0 ||
@@ -252,6 +277,9 @@ function loadCompilation(module: unknown): LoadedCompilation {
     rules.reduce((total, rule) => total + rule[2], 0) !== guards.length ||
     matcher.inputs.some((input, index, inputs) =>
       index > 0 && input <= (inputs[index - 1] ?? "")
+    ) ||
+    matcher.inputs.some((input) =>
+      !matcher.bucketAlphabet.includes(Array.from(input)[0] ?? "")
     )
   ) {
     throw new Error("Compiled Grade 2 contextual matcher is malformed.");
@@ -285,6 +313,7 @@ function loadCompilation(module: unknown): LoadedCompilation {
   return {
     ids,
     runtime: {
+      code: "ueb-2024",
       grade1Ambiguities,
       guards,
       matcher: compactMatcher(matcher),
@@ -297,7 +326,7 @@ function loadCompilation(module: unknown): LoadedCompilation {
 
 function generatedProgram(program: ComposedContractionProgram): string {
   return `// Generated by scripts/generate-grade2.mts. Do not edit.\n` +
-    `import type { ComposedContractionProgram } from "../contextual-transducer.js";\n` +
+    `import type { ComposedContractionProgram } from "../../contextual-transducer.js";\n` +
     `export const GRADE2_PROGRAM: ComposedContractionProgram = ${JSON.stringify(program, undefined, 2)};\n`;
 }
 

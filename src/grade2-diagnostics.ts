@@ -1,7 +1,7 @@
 import {
   GRADE2_RULE_IDS,
   type Grade2RuleId,
-} from "./generated/grade2-provenance.js";
+} from "./generated/ueb-2024/grade2-provenance.js";
 import {
   translateGrade2Internal,
   type Grade2Document,
