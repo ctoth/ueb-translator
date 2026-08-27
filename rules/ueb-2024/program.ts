@@ -25,6 +25,13 @@ function initialExceptionWords(print: string): readonly string[] {
     .flatMap((constraint) => constraint.words);
 }
 
+function optionalFinalExceptionGuard(
+  values: readonly string[],
+  guard: ContextualRuleGuard,
+): readonly ContextualRuleGuard[] {
+  return values.length === 0 ? [] : [guard];
+}
+
 function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
   const constraint = FINAL_GROUPSIGN_EXCEPTIONS.find(
     (candidate) => candidate.groupsign === print,
@@ -33,12 +40,15 @@ function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
     return [];
   }
   return [
-    ...(constraint.words.length === 0
-      ? []
-      : [{ ignoredCharacters: "-", kind: "not-word", words: constraint.words } as const]),
-    ...(constraint.endings.length === 0
-      ? []
-      : [{ endings: constraint.endings, kind: "not-word-ending" } as const]),
+    ...optionalFinalExceptionGuard(constraint.words, {
+      ignoredCharacters: "-",
+      kind: "not-word",
+      words: constraint.words,
+    }),
+    ...optionalFinalExceptionGuard(constraint.endings, {
+      endings: constraint.endings,
+      kind: "not-word-ending",
+    }),
   ];
 }
 

@@ -94,6 +94,12 @@ describe("runContextualTransducer", () => {
     expect(translateGuard("zab", [15])).toBe("ZAB");
   });
 
+  it("rejects only the configured final groupsign endings", () => {
+    const endings = ["eness\u0000iness"];
+    expect(translateGuard("abiness", [7, 0], endings)).toBe("ABINESS");
+    expect(translateGuard("abness", [7, 0], endings)).toBe("XNESS");
+  });
+
   it("fails closed for malformed cross-array references", () => {
     expect(() => translate(false, {
       ...suffixGuardProgram,

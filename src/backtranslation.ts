@@ -995,10 +995,6 @@ export function backtranslateGrade1(
           index = passageEnd;
           continue;
         }
-        if (segmentStart < index) {
-          const invalid = appendDecoded(braille.slice(segmentStart, index), segmentStart);
-          if (invalid !== undefined) return invalid;
-        }
         const invalid = appendDecoded(braille.slice(index, passageEnd), index);
         if (invalid !== undefined) return invalid;
         index = passageEnd;

@@ -87,6 +87,22 @@ describe("compileContextualRules", () => {
     expect(compilation.runtime.stringOperands).toEqual(["-", "cat"]);
   });
 
+  it("encodes and preserves final groupsign ending guards", () => {
+    const compilation = compileContextualRules([
+      rule("test-endings", "a", 1, [{
+        endings: ["iness", "eness"],
+        kind: "not-word-ending",
+      }]),
+    ]);
+
+    expect(compilation.runtime.guards).toEqual([[7, 0]]);
+    expect(compilation.runtime.stringOperands).toEqual(["eness\u0000iness"]);
+    expect(compilation.provenance[0]?.guards).toEqual([{
+      endings: ["iness", "eness"],
+      kind: "not-word-ending",
+    }]);
+  });
+
   it("fails closed when a collected guard operand is missing", () => {
     const operands: ReadonlyMap<string, number> = new Map([["cat", 0]]);
     expect(requireContextualOperandIndex("cat", operands)).toBe(0);

@@ -404,6 +404,16 @@ describe("translateGrade2", () => {
     } as const;
     expect(translateGrade1("DON'T")).toMatchObject({ ...expected, mode: "grade1" });
     expect(translateGrade2("DON'T")).toMatchObject({ ...expected, mode: "grade2" });
+    expect(translateGrade1("O'NEIL'S")).toMatchObject({
+      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      mode: "grade1",
+      ok: true,
+    });
+    expect(translateGrade2("O'NEIL'S")).toMatchObject({
+      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      mode: "grade2",
+      ok: true,
+    });
   });
 
   it.each([translateGrade1, translateGrade2])(
