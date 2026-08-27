@@ -296,7 +296,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       6,
-      264
+      268
     ],
     [
       12
@@ -304,7 +304,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       7,
-      264
+      268
     ],
     [
       12
@@ -312,7 +312,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       8,
-      264
+      268
     ],
     [
       12
@@ -320,7 +320,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       9,
-      264
+      268
     ],
     [
       12
@@ -328,7 +328,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       10,
-      264
+      268
     ],
     [
       12
@@ -336,143 +336,143 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       11,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      139,
-      264
+      144,
+      268
     ],
     [
       12
     ],
     [
       0,
-      150,
-      264
+      154,
+      268
     ],
     [
       12
     ],
     [
       0,
-      168,
-      264
+      172,
+      268
     ],
     [
       12
     ],
     [
       0,
-      184,
-      264
+      188,
+      268
     ],
     [
       12
     ],
     [
       0,
-      186,
-      264
+      190,
+      268
     ],
     [
       12
     ],
     [
       0,
-      218,
-      264
+      222,
+      268
     ],
     [
       12
     ],
     [
       0,
-      260,
-      264
+      264,
+      268
     ],
     [
       12
     ],
     [
       0,
-      261,
-      264
+      265,
+      268
     ],
     [
       12
     ],
     [
       0,
-      262,
-      264
+      266,
+      268
     ],
     [
       12
     ],
     [
       0,
-      263,
-      264
+      267,
+      268
     ],
     [
       12
     ],
     [
       0,
-      279,
-      264
+      283,
+      268
     ],
     [
       12
     ],
     [
       0,
-      281,
-      264
+      285,
+      268
     ],
     [
       12
     ],
     [
       0,
-      286,
-      264
+      290,
+      268
     ],
     [
       12
     ],
     [
       0,
-      293,
-      264
+      297,
+      268
     ],
     [
       12
     ],
     [
       0,
-      330,
-      264
+      334,
+      268
     ],
     [
       12
     ],
     [
       0,
-      332,
-      264
+      336,
+      268
     ],
     [
       12
     ],
     [
       0,
-      333,
-      264
+      337,
+      268
     ],
     [
       12
@@ -489,7 +489,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       12,
-      264
+      268
     ],
     [
       12
@@ -497,7 +497,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       13,
-      264
+      268
     ],
     [
       12
@@ -505,15 +505,15 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       14,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      172,
-      264
+      176,
+      268
     ],
     [
       12
@@ -530,23 +530,23 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       15,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      294,
-      264
+      298,
+      268
     ],
     [
       12
     ],
     [
       0,
-      295,
-      264
+      299,
+      268
     ],
     [
       12
@@ -562,8 +562,8 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      246,
-      264
+      250,
+      268
     ],
     [
       12
@@ -580,7 +580,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       20,
-      264
+      268
     ],
     [
       12
@@ -588,7 +588,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       21,
-      264
+      268
     ],
     [
       12
@@ -596,7 +596,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       22,
-      264
+      268
     ],
     [
       12
@@ -604,7 +604,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       23,
-      264
+      268
     ],
     [
       12
@@ -612,7 +612,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       24,
-      264
+      268
     ],
     [
       12
@@ -620,7 +620,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       25,
-      264
+      268
     ],
     [
       12
@@ -628,7 +628,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       26,
-      264
+      268
     ],
     [
       12
@@ -636,7 +636,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       27,
-      264
+      268
     ],
     [
       12
@@ -644,7 +644,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       28,
-      264
+      268
     ],
     [
       12
@@ -652,7 +652,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       29,
-      264
+      268
     ],
     [
       12
@@ -660,7 +660,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       30,
-      264
+      268
     ],
     [
       12
@@ -668,7 +668,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       31,
-      264
+      268
     ],
     [
       12
@@ -676,7 +676,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       32,
-      264
+      268
     ],
     [
       12
@@ -684,7 +684,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       33,
-      264
+      268
     ],
     [
       12
@@ -692,7 +692,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       34,
-      264
+      268
     ],
     [
       12
@@ -700,7 +700,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       35,
-      264
+      268
     ],
     [
       12
@@ -708,7 +708,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       36,
-      264
+      268
     ],
     [
       12
@@ -716,7 +716,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       37,
-      264
+      268
     ],
     [
       12
@@ -724,7 +724,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       38,
-      264
+      268
     ],
     [
       12
@@ -732,7 +732,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       39,
-      264
+      268
     ],
     [
       12
@@ -740,7 +740,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       40,
-      264
+      268
     ],
     [
       12
@@ -748,7 +748,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       41,
-      264
+      268
     ],
     [
       12
@@ -756,7 +756,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       42,
-      264
+      268
     ],
     [
       12
@@ -764,7 +764,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       43,
-      264
+      268
     ],
     [
       12
@@ -772,7 +772,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       44,
-      264
+      268
     ],
     [
       12
@@ -780,7 +780,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       45,
-      264
+      268
     ],
     [
       12
@@ -788,7 +788,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       46,
-      264
+      268
     ],
     [
       12
@@ -796,7 +796,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       47,
-      264
+      268
     ],
     [
       12
@@ -804,7 +804,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       48,
-      264
+      268
     ],
     [
       12
@@ -812,7 +812,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       49,
-      264
+      268
     ],
     [
       12
@@ -820,7 +820,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       50,
-      264
+      268
     ],
     [
       12
@@ -828,7 +828,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       51,
-      264
+      268
     ],
     [
       12
@@ -836,7 +836,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       52,
-      264
+      268
     ],
     [
       12
@@ -844,7 +844,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       53,
-      264
+      268
     ],
     [
       12
@@ -852,7 +852,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       54,
-      264
+      268
     ],
     [
       12
@@ -860,7 +860,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       56,
-      264
+      268
     ],
     [
       12
@@ -868,7 +868,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       57,
-      264
+      268
     ],
     [
       12
@@ -876,7 +876,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       58,
-      264
+      268
     ],
     [
       12
@@ -884,7 +884,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       59,
-      264
+      268
     ],
     [
       12
@@ -892,7 +892,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       60,
-      264
+      268
     ],
     [
       12
@@ -900,7 +900,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       61,
-      264
+      268
     ],
     [
       12
@@ -908,7 +908,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       62,
-      264
+      268
     ],
     [
       12
@@ -916,7 +916,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       63,
-      264
+      268
     ],
     [
       12
@@ -924,7 +924,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       64,
-      264
+      268
     ],
     [
       12
@@ -932,7 +932,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       65,
-      264
+      268
     ],
     [
       12
@@ -940,7 +940,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       66,
-      264
+      268
     ],
     [
       12
@@ -948,7 +948,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       67,
-      264
+      268
     ],
     [
       12
@@ -956,7 +956,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       68,
-      264
+      268
     ],
     [
       12
@@ -964,7 +964,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       69,
-      264
+      268
     ],
     [
       12
@@ -972,7 +972,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       70,
-      264
+      268
     ],
     [
       12
@@ -980,7 +980,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       71,
-      264
+      268
     ],
     [
       12
@@ -988,7 +988,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       72,
-      264
+      268
     ],
     [
       12
@@ -996,7 +996,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       73,
-      264
+      268
     ],
     [
       12
@@ -1004,7 +1004,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       74,
-      264
+      268
     ],
     [
       12
@@ -1012,7 +1012,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       75,
-      264
+      268
     ],
     [
       12
@@ -1020,7 +1020,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       76,
-      264
+      268
     ],
     [
       12
@@ -1028,7 +1028,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       77,
-      264
+      268
     ],
     [
       12
@@ -1036,7 +1036,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       78,
-      264
+      268
     ],
     [
       12
@@ -1044,7 +1044,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       79,
-      264
+      268
     ],
     [
       12
@@ -1052,15 +1052,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       80,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      169,
-      264
+      268
     ],
     [
       12
@@ -1068,47 +1060,55 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       173,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      201,
-      264
+      177,
+      268
     ],
     [
       12
     ],
     [
       0,
-      287,
-      264
+      205,
+      268
     ],
     [
       12
     ],
     [
       0,
-      290,
-      264
+      291,
+      268
     ],
     [
       12
     ],
     [
       0,
-      334,
-      264
+      294,
+      268
     ],
     [
       12
     ],
     [
       0,
-      337,
-      264
+      338,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      341,
+      268
     ],
     [
       12
@@ -1125,23 +1125,23 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       55,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      156,
-      264
+      160,
+      268
     ],
     [
       12
     ],
     [
       0,
-      195,
-      264
+      199,
+      268
     ],
     [
       12
@@ -1163,51 +1163,51 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       15
-    ],
-    [
-      0,
-      170,
-      264
-    ],
-    [
-      12
     ],
     [
       0,
       174,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      288,
-      264
+      178,
+      268
     ],
     [
       12
     ],
     [
       0,
-      291,
-      264
+      292,
+      268
     ],
     [
       12
     ],
     [
       0,
-      335,
-      264
+      295,
+      268
     ],
     [
       12
     ],
     [
       0,
-      338,
-      264
+      339,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      342,
+      268
     ],
     [
       12
@@ -1223,24 +1223,24 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      171,
-      264
+      175,
+      268
     ],
     [
       12
     ],
     [
       0,
-      289,
-      264
+      293,
+      268
     ],
     [
       12
     ],
     [
       0,
-      336,
-      264
+      340,
+      268
     ],
     [
       12
@@ -1359,6 +1359,11 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
+      6,
+      90,
+      5
+    ],
+    [
       8
     ],
     [
@@ -1375,33 +1380,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      89,
-      264
+      91,
+      268
     ],
     [
       12
-    ],
-    [
-      0,
-      90,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
     ],
     [
       0,
       92,
-      264
+      268
     ],
     [
       12
@@ -1417,41 +1405,33 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      98,
-      264
+      94,
+      268
     ],
     [
       12
     ],
     [
-      0,
-      99,
-      264
+      12
     ],
     [
-      12
+      13
+    ],
+    [
+      15
     ],
     [
       0,
       100,
-      264
+      268
     ],
     [
       12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
     ],
     [
       0,
       101,
-      264
+      268
     ],
     [
       12
@@ -1459,19 +1439,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       102,
-      264
+      268
     ],
     [
       12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
     ],
     [
       12
@@ -1485,7 +1456,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       103,
-      264
+      268
     ],
     [
       12
@@ -1493,15 +1464,49 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       104,
-      264
+      268
     ],
     [
       12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
     ],
     [
       0,
       105,
-      264
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      106,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      107,
+      268
     ],
     [
       12
@@ -1523,43 +1528,11 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       15
-    ],
-    [
-      0,
-      114,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      115,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      116,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      117,
-      264
-    ],
-    [
-      12
     ],
     [
       0,
       118,
-      264
+      268
     ],
     [
       12
@@ -1567,111 +1540,143 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       119,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      129,
-      264
+      120,
+      268
     ],
     [
       12
     ],
     [
       0,
-      130,
-      264
+      121,
+      268
     ],
     [
       12
     ],
     [
       0,
-      131,
-      264
+      122,
+      268
     ],
     [
       12
     ],
     [
       0,
-      232,
-      264
+      123,
+      268
     ],
     [
       12
     ],
     [
       0,
-      233,
-      264
+      134,
+      268
     ],
     [
       12
     ],
     [
       0,
-      234,
-      264
+      135,
+      268
     ],
     [
       12
     ],
     [
       0,
-      235,
-      264
+      136,
+      268
     ],
     [
       12
     ],
     [
       0,
-      275,
-      264
+      236,
+      268
     ],
     [
       12
     ],
     [
       0,
-      276,
-      264
+      237,
+      268
     ],
     [
       12
     ],
     [
       0,
-      277,
-      264
+      238,
+      268
     ],
     [
       12
     ],
     [
       0,
-      296,
-      264
+      239,
+      268
     ],
     [
       12
     ],
     [
       0,
-      297,
-      264
+      279,
+      268
     ],
     [
       12
     ],
     [
       0,
-      298,
-      264
+      280,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      281,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      300,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      301,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      302,
+      268
     ],
     [
       12
@@ -1755,8 +1760,8 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      113,
-      264
+      117,
+      268
     ],
     [
       12
@@ -1785,6 +1790,11 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
+      6,
+      126,
+      5
+    ],
+    [
       8
     ],
     [
@@ -1792,58 +1802,8 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      120,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      121,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      122,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      123,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
       124,
-      264
+      268
     ],
     [
       12
@@ -1851,23 +1811,73 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       125,
-      264
+      268
     ],
     [
       12
     ],
     [
-      0,
-      126,
-      264
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
     ],
     [
       12
+    ],
+    [
+      13
+    ],
+    [
+      15
     ],
     [
       0,
       127,
-      264
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      128,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      129,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      130,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      131,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      132,
+      268
     ],
     [
       12
@@ -1887,90 +1897,24 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      88,
-      264
+      89,
+      268
     ],
     [
       12
     ],
     [
       0,
-      132,
-      264
+      137,
+      268
     ],
     [
       12
     ],
     [
       0,
-      133,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      299,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      300,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      301,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      302,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      134,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      135,
-      264
+      138,
+      268
     ],
     [
       12
@@ -1978,7 +1922,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       303,
-      264
+      268
     ],
     [
       12
@@ -1986,7 +1930,73 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       304,
-      264
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      305,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      306,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      139,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      140,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      307,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      308,
+      268
     ],
     [
       12
@@ -2102,12 +2112,12 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      93,
+      95,
       5
     ],
     [
       11,
-      140
+      145
     ],
     [
       12
@@ -2131,40 +2141,40 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      144,
-      264
+      148,
+      268
     ],
     [
       12
     ],
     [
       0,
-      145,
-      264
+      149,
+      268
     ],
     [
       12
     ],
     [
       0,
-      146,
-      264
+      150,
+      268
     ],
     [
       12
     ],
     [
       0,
-      167,
-      264
+      171,
+      268
     ],
     [
       12
     ],
     [
       0,
-      285,
-      264
+      289,
+      268
     ],
     [
       12
@@ -2194,136 +2204,104 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      91,
-      264
+      93,
+      268
     ],
     [
       12
     ],
     [
       0,
-      110,
-      264
+      113,
+      268
     ],
     [
       12
     ],
     [
       0,
-      136,
-      264
+      141,
+      268
     ],
     [
       12
     ],
     [
       0,
-      152,
-      264
+      156,
+      268
     ],
     [
       12
     ],
     [
       0,
-      153,
-      264
+      157,
+      268
     ],
     [
       12
     ],
     [
       0,
-      154,
-      264
+      158,
+      268
     ],
     [
       12
     ],
     [
       0,
-      155,
-      264
+      159,
+      268
     ],
     [
       12
     ],
     [
       0,
-      165,
-      264
+      169,
+      268
     ],
     [
       12
     ],
     [
       0,
-      185,
-      264
+      189,
+      268
     ],
     [
       12
     ],
     [
       0,
-      193,
-      264
+      197,
+      268
     ],
     [
       12
     ],
     [
       0,
-      194,
-      264
+      198,
+      268
     ],
     [
       12
     ],
     [
       0,
-      222,
-      264
+      226,
+      268
     ],
     [
       12
     ],
     [
       0,
-      268,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      306,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      307,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      308,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      309,
-      264
+      272,
+      268
     ],
     [
       12
@@ -2331,7 +2309,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       310,
-      264
+      268
     ],
     [
       12
@@ -2339,23 +2317,55 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       311,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      340,
-      264
+      312,
+      268
     ],
     [
       12
     ],
     [
       0,
-      341,
-      264
+      313,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      314,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      315,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      344,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      345,
+      268
     ],
     [
       12
@@ -2417,40 +2427,8 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      143,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      156,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      157,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      158,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      159,
-      264
+      147,
+      268
     ],
     [
       12
@@ -2458,7 +2436,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       160,
-      264
+      268
     ],
     [
       12
@@ -2466,7 +2444,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       161,
-      264
+      268
     ],
     [
       12
@@ -2474,7 +2452,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       162,
-      264
+      268
     ],
     [
       12
@@ -2482,7 +2460,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       163,
-      264
+      268
     ],
     [
       12
@@ -2490,23 +2468,55 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       164,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      267,
-      264
+      165,
+      268
     ],
     [
       12
     ],
     [
       0,
-      283,
-      264
+      166,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      167,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      168,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      271,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      287,
+      268
     ],
     [
       12
@@ -2548,7 +2558,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      111,
+      115,
       5
     ],
     [
@@ -2580,16 +2590,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      176,
-      264
+      180,
+      268
     ],
     [
       12
     ],
     [
       0,
-      177,
-      264
+      181,
+      268
     ],
     [
       12
@@ -2626,16 +2636,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      180,
-      264
+      184,
+      268
     ],
     [
       12
     ],
     [
       0,
-      181,
-      264
+      185,
+      268
     ],
     [
       12
@@ -2708,7 +2718,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      106,
+      109,
       5
     ],
     [
@@ -2745,56 +2755,24 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      107,
-      264
+      110,
+      268
     ],
     [
       12
     ],
     [
       0,
-      112,
-      264
+      116,
+      268
     ],
     [
       12
     ],
     [
       0,
-      166,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      187,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      188,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      189,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      190,
-      264
+      170,
+      268
     ],
     [
       12
@@ -2802,465 +2780,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       191,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      215,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      256,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      257,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      258,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      312,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      2,
-      18
-    ],
-    [
-      12
-    ],
-    [
-      15
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      94,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      95,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      96,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      97,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      2,
-      18
-    ],
-    [
-      12
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      5,
-      19
-    ],
-    [
-      9
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      0,
-      148,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      182,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      183,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      202,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      203,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      220,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      204,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      205,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      206,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      207,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      208,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      209,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      210,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      211,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      212,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      213,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      214,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      6,
-      141,
-      5
-    ],
-    [
-      0,
-      313,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      19
-    ],
-    [
-      7,
-      142
-    ],
-    [
-      9
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      6,
-      82,
-      5
-    ],
-    [
-      11,
-      219
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      19
-    ],
-    [
-      9
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      5,
-      19
-    ],
-    [
-      9
-    ],
-    [
-      5,
-      19
-    ],
-    [
-      9
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      0,
-      175,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      179,
-      264
+      268
     ],
     [
       12
@@ -3268,173 +2788,63 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       192,
-      264
+      268
     ],
     [
       12
     ],
     [
       0,
-      221,
-      264
+      193,
+      268
     ],
     [
       12
     ],
     [
       0,
-      226,
-      264
+      194,
+      268
     ],
     [
       12
     ],
     [
       0,
-      227,
-      264
+      195,
+      268
     ],
     [
       12
     ],
     [
       0,
-      231,
-      264
+      219,
+      268
     ],
     [
       12
     ],
     [
       0,
-      259,
-      264
+      260,
+      268
     ],
     [
       12
     ],
     [
       0,
-      305,
-      264
+      261,
+      268
     ],
     [
       12
     ],
     [
       0,
-      314,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      328,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      331,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      84,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      85,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      86,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      196,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      197,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      198,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      223,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      224,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      315,
-      264
+      262,
+      268
     ],
     [
       12
@@ -3442,174 +2852,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       316,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      87,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      199,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      317,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      225,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      0,
-      138,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      236,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      237,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      238,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      239,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      240,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      241,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      242,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      243,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      244,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      245,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      284,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      318,
-      264
+      268
     ],
     [
       12
@@ -3643,58 +2886,33 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       15
     ],
     [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
       0,
-      228,
-      264
+      96,
+      268
     ],
     [
       12
     ],
     [
       0,
-      229,
-      264
+      97,
+      268
     ],
     [
       12
     ],
     [
       0,
-      247,
-      264
+      98,
+      268
     ],
     [
       12
     ],
     [
       0,
-      248,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      249,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      319,
-      264
+      99,
+      268
     ],
     [
       12
@@ -3709,142 +2927,29 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       15
     ],
     [
-      0,
-      230,
-      264
+      2,
+      18
     ],
     [
       12
-    ],
-    [
-      12
-    ],
-    [
-      13
     ],
     [
       15
     ],
     [
-      0,
-      250,
-      264
+      5,
+      3
     ],
     [
-      12
+      5,
+      3
     ],
     [
-      0,
-      251,
-      264
+      5,
+      19
     ],
     [
-      12
-    ],
-    [
-      0,
-      252,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      253,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      254,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      320,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      321,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      322,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      323,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      324,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      325,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      0,
-      255,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      326,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      327,
-      264
-    ],
-    [
-      12
+      9
     ],
     [
       12
@@ -3861,59 +2966,157 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      19,
-      264
+      152,
+      268
     ],
     [
       12
     ],
     [
       0,
-      149,
-      264
+      186,
+      268
     ],
     [
       12
     ],
     [
       0,
-      151,
-      264
+      187,
+      268
     ],
     [
       12
     ],
     [
       0,
-      200,
-      264
+      206,
+      268
     ],
     [
       12
     ],
     [
       0,
-      265,
-      264
+      207,
+      268
     ],
     [
       12
     ],
     [
       0,
-      266,
-      264
+      224,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      208,
+      268
     ],
     [
       12
     ],
     [
       0,
-      329,
-      264
+      209,
+      268
     ],
     [
       12
+    ],
+    [
+      0,
+      210,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      211,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      212,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      213,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      214,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      215,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      216,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      217,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      218,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
     ],
     [
       12
@@ -3929,6 +3132,19 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
+      6,
+      146,
+      5
+    ],
+    [
+      0,
+      317,
+      268
+    ],
+    [
+      12
+    ],
+    [
       12
     ],
     [
@@ -3936,54 +3152,6 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       15
-    ],
-    [
-      0,
-      269,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      270,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      271,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      272,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      273,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      274,
-      264
-    ],
-    [
-      12
     ],
     [
       12
@@ -3997,6 +3165,11 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       5,
       19
+    ],
+    [
+      6,
+      114,
+      5
     ],
     [
       9
@@ -4024,6 +3197,180 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       3
     ],
     [
+      6,
+      82,
+      5
+    ],
+    [
+      11,
+      223
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      19
+    ],
+    [
+      9
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      5,
+      19
+    ],
+    [
+      9
+    ],
+    [
+      5,
+      19
+    ],
+    [
+      9
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      0,
+      179,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      183,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      196,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      225,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      230,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      231,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      235,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      263,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      309,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      318,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      332,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      335,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
       5,
       3
     ],
@@ -4038,16 +3385,610 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      216,
-      264
+      85,
+      268
     ],
     [
       12
     ],
     [
       0,
-      217,
-      264
+      86,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      87,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      200,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      201,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      202,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      227,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      228,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      319,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      320,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      88,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      203,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      321,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      229,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      0,
+      143,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      240,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      241,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      242,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      243,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      244,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      245,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      246,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      247,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      248,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      249,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      288,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      322,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      2,
+      18
+    ],
+    [
+      12
+    ],
+    [
+      15
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      232,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      233,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      251,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      252,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      253,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      323,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      234,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      254,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      255,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      256,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      257,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      258,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      324,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      325,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      326,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      327,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      328,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      329,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      259,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      330,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      331,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      0,
+      19,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      153,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      155,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      204,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      269,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      270,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      333,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      273,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      274,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      275,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      276,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      277,
+      268
     ],
     [
       12
@@ -4055,7 +3996,74 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       278,
-      264
+      268
+    ],
+    [
+      12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      19
+    ],
+    [
+      9
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      6,
+      111,
+      5
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      0,
+      220,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      221,
+      268
     ],
     [
       12
@@ -4063,7 +4071,15 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       282,
-      264
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      286,
+      268
     ],
     [
       12
@@ -4076,23 +4092,6 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       15
-    ],
-    [
-      5,
-      3
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      5,
-      3
     ],
     [
       5,
@@ -4113,7 +4112,29 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      109,
+      84,
+      5
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      6,
+      112,
       5
     ],
     [
@@ -4122,7 +4143,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      178,
+      182,
       5
     ],
     [
@@ -4140,7 +4161,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      280,
+      284,
       5
     ],
     [
@@ -4183,8 +4204,8 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      292,
-      264
+      296,
+      268
     ],
     [
       12
@@ -4222,7 +4243,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      147,
+      151,
       5
     ],
     [
@@ -4235,7 +4256,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      128,
+      133,
       5
     ],
     [
@@ -4303,7 +4324,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      339,
+      343,
       5
     ],
     [
@@ -4334,7 +4355,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       0,
-      264
+      268
     ],
     [
       12
@@ -4342,7 +4363,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       1,
-      264
+      268
     ],
     [
       12
@@ -4350,7 +4371,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       2,
-      264
+      268
     ],
     [
       12
@@ -4358,7 +4379,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       3,
-      264
+      268
     ],
     [
       12
@@ -4366,39 +4387,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       4,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      342,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      343,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      344,
-      264
-    ],
-    [
-      12
-    ],
-    [
-      0,
-      345,
-      264
+      268
     ],
     [
       12
@@ -4406,7 +4395,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       346,
-      264
+      268
     ],
     [
       12
@@ -4414,7 +4403,39 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       347,
-      264
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      348,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      349,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      350,
+      268
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      351,
+      268
     ],
     [
       12
@@ -4452,8 +4473,8 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      137,
-      264
+      142,
+      268
     ],
     [
       12
@@ -4690,9 +4711,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     "ĀēĠīĲĻłŇŎŕŖŘŝŤũŴźŽƃƎƟƢƣƯƯƴƴ",
     "ĀƁƯǄǖǠȃȖȟȩȪȬɄɜɢɭʍʞʹ˕˧˪˫̂̂̈̈",
-    "ĀȐɻʪ˔˭̶͞ͶΑΔΘόϾЎФѨҌӆԁԩԱԴգգղղ",
+    "ĀȐɼʬ˖˯̸͠͸ΓΖΚώЀАЧѫҏӉԄԭԵԸէէնն",
     "ĘąĄĂńĄāćĄāāāāāāāāāāāĂāăĂĄăāĄāĕĂāāāāāāāăāăāćāćĂąāāāāāāāĂāāāāāāćāėāāāāāĎĂāāāāăāāăĂāāāāāāāāāďāĆāāāāāćČāāĂāāāāāāāāāāāāāāčāāċĄĂāďāāćĂČĄāĈāāćāāāāāāąāāāāāāāāāāāāāāĂāāāāāāāāāāāāāāāāāČāāāĂā",
-    "ıċĉąƉĉăďĉăăăăăăĂāāăĂĈăćąĉćăĉăĬĄăăāĂāāăćĄćăďāďąċăĄăăāăĂąĄāăăāĂĐāİăĂĂāăĞĄĂăĂăćăĄćĆĂăăăăăāăĂĠăĎāāĂăāďęăĂąăăăāăăĂāāĂĂăăāěāăėĉąāĠăăďąęĉāđāăďĂăĂāāăċāăāāăĂĂăĂāăĂĂăąăăăĂăăĄĄāāăĂăāāāāęăāăąă"
+    "ıċĉąƉĉăďĉăăăăăăĂāāăĂĉăćąĉćăĉăĬĄăăāĂāāăćąćăďāďąċăĄăăāăĂąĄāăăāĂĐāİăĂĂāăĞĄĂăĂăćăĄćĆĂăăăăăāăĂĠăĎāāĂăāďęăĂąăăăĂăăĂāāĂĂăăāěāăėĉąāĠăăďąęĉāđāăďĂăĂāāăċāăĂāăĂĂăĂāăĂĂăąăăăĂăăĄĄāāăĂăāāāāęăāăąă"
   ],
   "rules": [
     [
@@ -5353,7 +5374,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠆",
       1,
-      4
+      5
     ],
     [
       "⠆⠉",
@@ -5618,7 +5639,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠒",
       1,
-      4
+      5
     ],
     [
       "⠒⠉⠧",
@@ -6468,7 +6489,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠷",
       0,
-      1
+      2
     ],
     [
       "⠐⠕",
@@ -7053,7 +7074,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠮",
       0,
-      1
+      2
     ],
     [
       "⠸⠮",
@@ -7389,11 +7410,13 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "altimeter\u0000centime\u0000centimeter\u0000mortimer\u0000multimedia\u0000sentiment",
     "anemone\u0000baroness\u0000baronet\u0000boone\u0000cantonese\u0000colonel\u0000conestoga\u0000crooner\u0000donegal\u0000erroneous\u0000hermione\u0000indonesia\u0000krone\u0000monet\u0000onerous\u0000phonetic\u0000pioneer\u0000poisoned\u0000rhône\u0000rooney\u0000sooner\u0000stoned",
     "ao",
+    "apartheid\u0000northeast\u0000northeastern",
     "apperceive",
     "apperceived",
     "apperceiver",
     "apperceiving",
     "archdeceiver",
+    "bead\u0000beads\u0000beauty",
     "beforehand",
     "beforementioned",
     "befriend",
@@ -7411,11 +7434,13 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "betweendeck",
     "betweentime",
     "betweenwhile",
+    "biofeedback\u0000microfilm\u0000microfilms\u0000twofold\u0000twofolds",
     "biscuity\u0000dacoity\u0000fruity\u0000hoitytoity\u0000rabbity",
     "bloodletter",
     "blossomed\u0000gasometer\u0000isometric\u0000ransomed\u0000somersault\u0000somerset",
     "bothered\u0000ethereal\u0000isothere\u0000smithereens\u0000theresa",
     "boyfriend",
+    "captainess\u0000chieftainess\u0000citizeness\u0000heatheness\u0000villainess",
     "chad\u0000hades\u0000hadrian\u0000menhaden\u0000shadow\u0000thaddeus",
     "chainletter",
     "children'swear",
@@ -7427,6 +7452,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "colourblindnesses",
     "conceived",
     "conceiver",
+    "cone",
     "could've",
     "coulda",
     "couldest",
@@ -7447,7 +7473,6 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "eastabout",
     "ei",
     "enamel\u0000ornament\u0000unamended\u0000vietnamese",
-    "eness\u0000iness",
     "feelgood",
     "feetfirst",
     "firstaid",

@@ -773,6 +773,143 @@ describe("preferred grade-1 scope edges", () => {
       }),
     ).toMatchObject({ braille: fromBrf('#A "6 SIN ;X'), ok: true });
   });
+
+  it("applies GTM 9.3 spacing at both function-name boundaries (issue #38)", () => {
+    expect(translateTechnical({
+      blocks: [{
+        expression: {
+          argument: {
+            items: [
+              { kind: "identifier", value: "x" },
+              { kind: "identifier", value: "y" },
+            ],
+            kind: "sequence",
+          },
+          kind: "function",
+          name: "sin",
+        },
+        kind: "expression",
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({ braille: fromBrf("SIN XY"), ok: true });
+
+    expect(translateTechnical({
+      blocks: [{
+        expression: {
+          argument: { kind: "identifier", value: "θ" },
+          kind: "function",
+          name: "sin",
+        },
+        kind: "expression",
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({ braille: fromBrf("SIN.?"), ok: true });
+
+    expect(translateTechnical({
+      blocks: [{
+        expression: {
+          items: [
+            { kind: "identifier", value: "x" },
+            {
+              argument: { kind: "number", value: "60" },
+              kind: "function",
+              name: "sin",
+            },
+          ],
+          kind: "sequence",
+        },
+        kind: "expression",
+      }],
+      kind: "technical-document",
+      profile: preferred,
+    })).toMatchObject({ braille: fromBrf(";X SIN#FJ"), ok: true });
+  });
+
+  it.each([
+    [
+      "comparison",
+      {
+        comparison: "equals",
+        kind: "comparison",
+        left: { kind: "number", value: "1" },
+        right: { kind: "identifier", value: "x" },
+      },
+    ],
+    [
+      "function argument",
+      {
+        argument: { kind: "identifier", value: "x" },
+        kind: "function",
+        name: "cos",
+      },
+    ],
+    [
+      "negation operand",
+      {
+        kind: "negation",
+        operand: { kind: "identifier", value: "x" },
+      },
+    ],
+    [
+      "operation",
+      {
+        kind: "operation",
+        left: { kind: "number", value: "1" },
+        operation: "plus",
+        right: { kind: "identifier", value: "x" },
+      },
+    ],
+    [
+      "nested sequence",
+      {
+        items: [
+          { kind: "number", value: "1" },
+          {
+            kind: "negation",
+            operand: { kind: "identifier", value: "x" },
+          },
+        ],
+        kind: "sequence",
+      },
+    ],
+    [
+      "left script base",
+      {
+        base: { kind: "identifier", value: "x" },
+        kind: "script",
+        placement: "left-subscript",
+        script: { kind: "number", value: "1" },
+      },
+    ],
+    [
+      "right script value",
+      {
+        base: { kind: "number", value: "1" },
+        kind: "script",
+        placement: "right-subscript",
+        script: { kind: "identifier", value: "x" },
+      },
+    ],
+  ] satisfies readonly (readonly [string, TechnicalExpression])[])(
+    "spaces a function name after a composite %s",
+    (_label, previous) => {
+      const functionExpression: TechnicalExpression = {
+        argument: { kind: "number", value: "60" },
+        kind: "function",
+        name: "sin",
+      };
+      const expression: TechnicalExpression = {
+        items: [previous, functionExpression],
+        kind: "sequence",
+      };
+
+      expect(expressionBraille(expression)).toBe(
+        `${expressionBraille(previous)}${fromBrf(" ")}${expressionBraille(functionExpression)}`,
+      );
+    },
+  );
 });
 
 describe("technical translation properties", () => {
