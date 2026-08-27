@@ -22,7 +22,10 @@ import {
   resolveModes,
   type ModeUnit,
 } from "./mode-engine.js";
-import { loadSymbolProgram } from "./symbol-program.js";
+import {
+  loadSymbolProgram,
+  type SymbolRuntime,
+} from "./symbol-program.js";
 
 export type Grade1Typeform =
   | "bold"
@@ -196,14 +199,18 @@ function tokenize(text: string): readonly ScalarToken[] {
   return tokens;
 }
 
-function analyseLetter(value: string): Letter | undefined {
+function analyseLetter(
+  value: string,
+  symbols: SymbolRuntime,
+  numericLetterCells: ReadonlySet<string>,
+): Letter | undefined {
   const lowercase = value.toLowerCase();
-  const direct = SYMBOL_RUNTIME.letters.get(lowercase);
+  const direct = symbols.letters.get(lowercase);
   if (direct !== undefined) {
     return {
       cell: direct.braille,
       modifiers: "",
-      numericAmbiguous: NUMERIC_LETTER_CELLS.has(direct.braille),
+      numericAmbiguous: numericLetterCells.has(direct.braille),
       uppercase: value !== lowercase,
     };
   }
@@ -211,7 +218,7 @@ function analyseLetter(value: string): Letter | undefined {
   const decomposition = value.normalize("NFD");
   const first = decomposition.charAt(0);
   const base = first.toLowerCase();
-  const entry = SYMBOL_RUNTIME.letters.get(base);
+  const entry = symbols.letters.get(base);
   if (
     entry === undefined ||
     first.toUpperCase() === first.toLowerCase()
@@ -221,7 +228,7 @@ function analyseLetter(value: string): Letter | undefined {
   let modifiers = "";
 
   for (const component of decomposition.slice(first.length)) {
-    const modifier = SYMBOL_RUNTIME.modifiers.get(component);
+    const modifier = symbols.modifiers.get(component);
     if (modifier === undefined) {
       return undefined;
     }
@@ -231,13 +238,13 @@ function analyseLetter(value: string): Letter | undefined {
   return {
     cell: entry.braille,
     modifiers,
-    numericAmbiguous: NUMERIC_LETTER_CELLS.has(entry.braille),
+    numericAmbiguous: numericLetterCells.has(entry.braille),
     uppercase: first === first.toUpperCase(),
   };
 }
 
-function digitCell(value: string): string | undefined {
-  return SYMBOL_RUNTIME.digits.get(value)?.braille;
+function digitCell(value: string, symbols: SymbolRuntime): string | undefined {
+  return symbols.digits.get(value)?.braille;
 }
 
 function isAsciiLineBoundary(value: string): value is "\n" | "\r" {
@@ -278,28 +285,32 @@ function unsupported(token: ScalarToken): Grade1UnsupportedCharacter {
   };
 }
 
-function parseAsciiText(text: string): ParseResult {
+function parseAsciiText(
+  text: string,
+  symbols: SymbolRuntime,
+  numericLetterCells: ReadonlySet<string>,
+): ParseResult {
   const units: TranslatableUnit[] = [];
   for (let index = 0; index < text.length; index += 1) {
     const code = text.charCodeAt(index);
     const value = text.charAt(index);
     if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) {
       const lowercase = code <= 90 ? String.fromCharCode(code + 32) : value;
-      const entry = SYMBOL_RUNTIME.letters.get(lowercase);
+      const entry = symbols.letters.get(lowercase);
       /* v8 ignore next -- generated inventory contains all ASCII letters. */
       if (entry !== undefined) {
         units.push({
           cell: entry.braille,
           kind: "letter",
           modifiers: "",
-          numericAmbiguous: NUMERIC_LETTER_CELLS.has(entry.braille),
+          numericAmbiguous: numericLetterCells.has(entry.braille),
           source: value,
           uppercase: code <= 90,
         });
         continue;
       }
     }
-    const digit = SYMBOL_RUNTIME.digits.get(value);
+    const digit = symbols.digits.get(value);
     if (digit !== undefined) {
       units.push({ cell: digit.braille, kind: "digit", source: value });
       continue;
@@ -317,7 +328,7 @@ function parseAsciiText(text: string): ParseResult {
       }
       continue;
     }
-    const symbol = SYMBOL_RUNTIME.symbols.get(value)?.braille;
+    const symbol = symbols.symbols.get(value)?.braille;
     if (symbol === undefined) {
       return unsupported({ codeUnitIndex: index, scalarIndex: index, value });
     }
@@ -333,9 +344,15 @@ function isAsciiText(text: string): boolean {
   return true;
 }
 
-function parseText(text: string): ParseResult {
+function parseText(
+  text: string,
+  symbols: SymbolRuntime = SYMBOL_RUNTIME,
+): ParseResult {
+  const numericLetterCells = symbols === SYMBOL_RUNTIME
+    ? NUMERIC_LETTER_CELLS
+    : new Set([...symbols.digits.values()].map((entry) => entry.braille));
   if (isAsciiText(text)) {
-    return parseAsciiText(text);
+    return parseAsciiText(text, symbols, numericLetterCells);
   }
   const tokens = tokenize(text);
   const units: TranslatableUnit[] = [];
@@ -345,12 +362,12 @@ function parseText(text: string): ParseResult {
     if (index < skipUntil) {
       continue;
     }
-    const letter = analyseLetter(token.value);
+    const letter = analyseLetter(token.value, symbols, numericLetterCells);
     if (letter !== undefined) {
       units.push({ ...letter, kind: "letter", source: token.value });
       continue;
     }
-    const digit = digitCell(token.value);
+    const digit = digitCell(token.value, symbols);
     if (digit !== undefined) {
       units.push({ cell: digit, kind: "digit", source: token.value });
       continue;
@@ -369,7 +386,7 @@ function parseText(text: string): ParseResult {
       }
       continue;
     }
-    const symbol = SYMBOL_RUNTIME.symbols.get(token.value)?.braille;
+    const symbol = symbols.symbols.get(token.value)?.braille;
     if (symbol === undefined) {
       return unsupported(token);
     }
@@ -440,6 +457,14 @@ export interface CompositionModePlan {
 /** Parse once for either the uncontracted or contracted composition. */
 export function parseCompositionText(text: string): CompositionParseResult {
   return parseText(text);
+}
+
+/** Parse with an explicitly composed symbol package. */
+export function parseCompositionTextWithSymbols(
+  text: string,
+  symbols: SymbolRuntime,
+): CompositionParseResult {
+  return parseText(text, symbols);
 }
 
 /** Resolve shared capitals, numeric, and Grade 1 modes around an emission pass. */

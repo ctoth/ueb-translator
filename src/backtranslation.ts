@@ -31,6 +31,15 @@ import {
   type CompiledSymbol,
 } from "./symbol-program.js";
 import { traceGrade2 } from "./grade2-diagnostics.js";
+import {
+  decodeForeignLanguageBraille,
+  NON_UEB_PASSAGE_INDICATOR,
+  NON_UEB_PASSAGE_TERMINATOR,
+  NON_UEB_WORD_INDICATOR,
+  NON_UEB_WORD_TERMINATOR,
+  translateForeignLanguageRun,
+  type ForeignLanguage,
+} from "./foreign-language.js";
 
 export type BacktranslationMode = "grade1" | "grade2";
 
@@ -829,14 +838,9 @@ export function backtranslateGrade1(
   return candidateProduct(segments, combineGrade1);
 }
 
-/** Backtranslate contracted UEB without selecting among valid print paths. */
-export function backtranslateGrade2(
+function backtranslatePlainGrade2(
   braille: string,
 ): BacktranslationResult<Grade2BacktranslationCandidate> {
-  const invalid = firstInvalidCharacter(braille, "grade2");
-  if (invalid !== undefined) {
-    return invalid;
-  }
   const segments: MutableNonEmpty<NonEmpty<Grade2BacktranslationCandidate>> = [
     fixedGrade2Segment(""),
   ];
@@ -879,6 +883,132 @@ export function backtranslateGrade2(
     segments.push(candidates);
   }
   return candidateProduct(segments, combineGrade2);
+}
+
+interface MixedGrade2Segment {
+  readonly braille: string;
+  readonly kind: "foreign" | "ueb";
+  readonly start: number;
+  readonly wrappedBraille?: string;
+}
+
+function splitCodeSwitchedGrade2(
+  braille: string,
+): MixedGrade2Segment[] | NoStandardsParse<"grade2"> {
+  const segments: MixedGrade2Segment[] = [];
+  const indicators = [
+    {
+      opening: NON_UEB_PASSAGE_INDICATOR,
+      closing: NON_UEB_PASSAGE_TERMINATOR,
+    },
+    {
+      opening: NON_UEB_WORD_INDICATOR,
+      closing: NON_UEB_WORD_TERMINATOR,
+    },
+  ] as const;
+  let cursor = 0;
+  while (cursor < braille.length) {
+    const next = indicators
+      .map((indicator) => ({
+        ...indicator,
+        index: braille.indexOf(indicator.opening, cursor),
+      }))
+      .filter((indicator) => indicator.index >= 0)
+      .sort((left, right) => left.index - right.index)[0];
+    if (next === undefined) {
+      segments.push({ braille: braille.slice(cursor), kind: "ueb", start: cursor });
+      break;
+    }
+    if (cursor < next.index) {
+      segments.push({
+        braille: braille.slice(cursor, next.index),
+        kind: "ueb",
+        start: cursor,
+      });
+    }
+    const contentStart = next.index + next.opening.length;
+    const contentEnd = braille.indexOf(next.closing, contentStart);
+    if (contentEnd < 0) return noParse(braille, "grade2", next.index);
+    const end = contentEnd + next.closing.length;
+    segments.push({
+      braille: braille.slice(contentStart, contentEnd),
+      kind: "foreign",
+      start: contentStart,
+      wrappedBraille: braille.slice(next.index, end),
+    });
+    cursor = end;
+  }
+  return segments;
+}
+
+function grade2ResultCandidates(
+  result: BacktranslationResult<Grade2BacktranslationCandidate>,
+): readonly Grade2BacktranslationCandidate[] {
+  switch (result.kind) {
+    case "unique":
+      return [result.candidate];
+    case "ambiguous":
+      return [...result.candidates];
+    case "invalid":
+      return [];
+  }
+}
+
+function foreignCandidates(
+  segment: MixedGrade2Segment,
+): readonly Grade2BacktranslationCandidate[] {
+  const wrappedBraille = segment.wrappedBraille;
+  /* v8 ignore next -- only foreign segments call this function. */
+  if (wrappedBraille === undefined) return [];
+  const candidates = new Map<string, Grade2BacktranslationCandidate>();
+  for (const language of ["de", "fr"] satisfies readonly ForeignLanguage[]) {
+    for (const print of decodeForeignLanguageBraille(segment.braille, language)) {
+      const translated = translateForeignLanguageRun({
+        code: "foreign",
+        kind: "foreign",
+        language,
+        text: print,
+      });
+      if (translated.ok && translated.braille === wrappedBraille) {
+        candidates.set(print, { mode: "grade2", print, rules: [] });
+      }
+    }
+  }
+  return [...candidates.values()];
+}
+
+function backtranslateMixedGrade2(
+  braille: string,
+): BacktranslationResult<Grade2BacktranslationCandidate> {
+  const split = splitCodeSwitchedGrade2(braille);
+  if (!Array.isArray(split)) return split;
+  const candidates: MutableNonEmpty<NonEmpty<Grade2BacktranslationCandidate>> = [
+    fixedGrade2Segment(""),
+  ];
+  for (const segment of split) {
+    if (segment.braille.length === 0 && segment.kind === "ueb") continue;
+    const decoded = segment.kind === "foreign"
+      ? foreignCandidates(segment)
+      : grade2ResultCandidates(backtranslatePlainGrade2(segment.braille));
+    const present = nonEmpty(decoded);
+    if (present === undefined) {
+      return noParse(braille, "grade2", segment.start);
+    }
+    candidates.push(present);
+  }
+  return candidateProduct(candidates, combineGrade2);
+}
+
+/** Backtranslate contracted UEB without selecting among valid print paths. */
+export function backtranslateGrade2(
+  braille: string,
+): BacktranslationResult<Grade2BacktranslationCandidate> {
+  const invalid = firstInvalidCharacter(braille, "grade2");
+  if (invalid !== undefined) return invalid;
+  return braille.includes(NON_UEB_PASSAGE_INDICATOR) ||
+      braille.includes(NON_UEB_WORD_INDICATOR)
+    ? backtranslateMixedGrade2(braille)
+    : backtranslatePlainGrade2(braille);
 }
 
 /**
