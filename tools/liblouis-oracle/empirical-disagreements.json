@@ -153,44 +153,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00000715",
-      "input": "Abencerrages",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠁⠃⠢⠉⠻⠗⠁⠛⠑⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠁⠃⠰⠑⠗⠗⠁⠛⠑⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00000716",
-      "input": "Abencerrages's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠁⠃⠢⠉⠻⠗⠁⠛⠑⠎⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠁⠃⠰⠑⠗⠗⠁⠛⠑⠎⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00001516",
       "input": "Actinonema",
       "local": {
@@ -50028,310 +49990,6 @@
       "groupId": "traced-strong-contraction"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00132272",
-      "input": "Spencer",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132273",
-      "input": "Spencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132274",
-      "input": "Spencerian",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠁⠝",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠁⠝"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132275",
-      "input": "Spencerian's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠁⠝⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠁⠝⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132276",
-      "input": "Spencerianism",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠁⠝⠊⠎⠍",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠁⠝⠊⠎⠍"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132277",
-      "input": "Spencerianism's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠁⠝⠊⠎⠍⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠁⠝⠊⠎⠍⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132278",
-      "input": "Spencerianisms",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠁⠝⠊⠎⠍⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠁⠝⠊⠎⠍⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132279",
-      "input": "Spencerians",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠁⠝⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠁⠝⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132280",
-      "input": "Spencerism",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠎⠍",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠎⠍"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132281",
-      "input": "Spencerisms",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠊⠎⠍⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠊⠎⠍⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132282",
-      "input": "Spencerport",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠏⠕⠗⠞",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠏⠕⠗⠞"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132283",
-      "input": "Spencerport's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠏⠕⠗⠞⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠏⠕⠗⠞⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132284",
-      "input": "Spencertown",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠞⠪⠝",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠞⠪⠝"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132285",
-      "input": "Spencertown's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠞⠪⠝⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠞⠪⠝⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132286",
-      "input": "Spencerville",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠧⠊⠇⠇⠑",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠧⠊⠇⠇⠑"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00132287",
-      "input": "Spencerville's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠎⠏⠢⠉⠻⠧⠊⠇⠇⠑⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠎⠏⠰⠑⠗⠧⠊⠇⠇⠑⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00132526",
       "input": "Spinnerstown",
       "local": {
@@ -59602,25 +59260,6 @@
         "output": "⠁⠞⠐⠕⠁⠃⠇⠑"
       },
       "groupId": "traced-ea"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00183788",
-      "input": "audiencer",
-      "local": {
-        "kind": "test",
-        "output": "⠁⠥⠙⠊⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠁⠥⠙⠊⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00184063",
@@ -107674,25 +107313,6 @@
       "groupId": "traced-strong-contraction"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00212931",
-      "input": "cadenced",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠁⠙⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠁⠙⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00213959",
       "input": "calistheneum",
       "local": {
@@ -108717,44 +108337,6 @@
         "output": "⠰⠉⠙⠄⠎"
       },
       "groupId": "grade1-word-scope-liblouis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00221403",
-      "input": "cencerro",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠢⠉⠻⠗⠕",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠰⠑⠗⠗⠕"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00221404",
-      "input": "cencerros",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠢⠉⠻⠗⠕⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠰⠑⠗⠗⠕⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00221408",
@@ -111493,25 +111075,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00235485",
-      "input": "coexperiencer",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠕⠑⠭⠏⠻⠊⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠕⠑⠭⠏⠻⠊⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00235499",
       "input": "cofactor",
       "local": {
@@ -112536,82 +112099,6 @@
         "output": "⠉⠕⠍⠑⠙⠪⠝⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00237928",
-      "input": "commenced",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠕⠍⠍⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠕⠍⠍⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00237932",
-      "input": "commencer",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠕⠍⠍⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠕⠍⠍⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00237933",
-      "input": "commencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠕⠍⠍⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠕⠍⠍⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00237934",
-      "input": "commencers",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠕⠍⠍⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠕⠍⠍⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00238264",
@@ -114552,25 +114039,6 @@
       "groupId": "traced-be-con-dis"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00240628",
-      "input": "conferenced",
-      "local": {
-        "kind": "test",
-        "output": "⠒⠋⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠒⠋⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00241325",
       "input": "congéing",
       "local": {
@@ -114892,44 +114360,6 @@
         "output": "⠉⠕⠝⠎"
       },
       "groupId": "traced-be-con-dis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00241939",
-      "input": "consequenced",
-      "local": {
-        "kind": "test",
-        "output": "⠒⠎⠑⠟⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠒⠎⠑⠟⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00243734",
-      "input": "convenienced",
-      "local": {
-        "kind": "test",
-        "output": "⠒⠧⠢⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠒⠧⠢⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00243841",
@@ -115386,25 +114816,6 @@
         "output": "⠉⠨⠞⠻⠢⠁⠍⠑⠇"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00248045",
-      "input": "counterinfluenced",
-      "local": {
-        "kind": "test",
-        "output": "⠉⠨⠞⠻⠔⠋⠇⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠨⠞⠻⠔⠋⠇⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00248359",
@@ -120043,25 +119454,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00265204",
-      "input": "dereferenced",
-      "local": {
-        "kind": "test",
-        "output": "⠙⠻⠑⠋⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠙⠻⠑⠋⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00265247",
       "input": "derencephalocele",
       "local": {
@@ -120839,25 +120231,6 @@
         "output": "⠙⠊⠢⠉⠑⠏⠓⠁⠇⠕⠝⠎"
       },
       "groupId": "untraced-final-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00269575",
-      "input": "differenced",
-      "local": {
-        "kind": "test",
-        "output": "⠙⠊⠖⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠙⠊⠖⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00269935",
@@ -122929,25 +122302,6 @@
         "output": "⠙⠊⠎⠏"
       },
       "groupId": "traced-be-con-dis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00274404",
-      "input": "dispenced",
-      "local": {
-        "kind": "test",
-        "output": "⠲⠏⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠲⠏⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00274515",
@@ -126598,25 +125952,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00295009",
-      "input": "equivalenced",
-      "local": {
-        "kind": "test",
-        "output": "⠑⠟⠥⠊⠧⠁⠇⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠑⠟⠥⠊⠧⠁⠇⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00295615",
       "input": "erroneously",
       "local": {
@@ -126729,25 +126064,6 @@
         "output": "⠑⠎⠕⠝⠑⠥⠗⠁⠇"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00296449",
-      "input": "essenced",
-      "local": {
-        "kind": "test",
-        "output": "⠑⠎⠎⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠑⠎⠎⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00296599",
@@ -127168,25 +126484,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00298628",
-      "input": "evidenced",
-      "local": {
-        "kind": "test",
-        "output": "⠑⠧⠊⠙⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠑⠧⠊⠙⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00299775",
       "input": "exencephalia",
       "local": {
@@ -127413,82 +126710,6 @@
         "output": "⠑⠭⠏⠁⠝⠎⠕⠍⠑⠞⠻"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00300673",
-      "input": "experienced",
-      "local": {
-        "kind": "test",
-        "output": "⠑⠭⠏⠻⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠑⠭⠏⠻⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00300676",
-      "input": "experiencer",
-      "local": {
-        "kind": "test",
-        "output": "⠑⠭⠏⠻⠊⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠑⠭⠏⠻⠊⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00300677",
-      "input": "experiencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠑⠭⠏⠻⠊⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠑⠭⠏⠻⠊⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00300678",
-      "input": "experiencers",
-      "local": {
-        "kind": "test",
-        "output": "⠑⠭⠏⠻⠊⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠑⠭⠏⠻⠊⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00301405",
@@ -128287,158 +127508,6 @@
         "output": "⠋⠑⠇⠎⠏⠁⠹⠕⠎⠑"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305819",
-      "input": "fenced",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305832",
-      "input": "fencer",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305833",
-      "input": "fencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305834",
-      "input": "fenceress",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠻⠑⠎⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠗⠑⠎⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305835",
-      "input": "fencerow",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠻⠪",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠗⠪"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305836",
-      "input": "fencerow's",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠻⠪⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠗⠪⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305837",
-      "input": "fencerows",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠻⠪⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠗⠪⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00305838",
-      "input": "fencers",
-      "local": {
-        "kind": "test",
-        "output": "⠋⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠋⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00306847",
@@ -129275,25 +128344,6 @@
         "output": "⠿⠑⠗⠥⠝⠝⠻⠩⠊⠏"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00314082",
-      "input": "forespencer",
-      "local": {
-        "kind": "test",
-        "output": "⠿⠑⠎⠏⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠿⠑⠎⠏⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00315709",
@@ -137029,25 +136079,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00359419",
-      "input": "inconvenienced",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠉⠕⠝⠧⠢⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠉⠕⠝⠧⠢⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00360706",
       "input": "indonesian",
       "local": {
@@ -137084,25 +136115,6 @@
         "output": "⠔⠙⠕⠝⠑⠎⠊⠁⠝⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00360831",
-      "input": "indulgenced",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠙⠥⠇⠛⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠙⠥⠇⠛⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00361154",
@@ -137295,25 +136307,6 @@
       "groupId": "untraced-final-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00361316",
-      "input": "inexperienced",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠑⠭⠏⠻⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠑⠭⠏⠻⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00361481",
       "input": "infanthood",
       "local": {
@@ -137369,101 +136362,6 @@
         "output": "⠔⠋⠁⠝⠞⠓⠕⠕⠙⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00361621",
-      "input": "inferenced",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠋⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠋⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00361974",
-      "input": "influenced",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠋⠇⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠋⠇⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00361975",
-      "input": "influencer",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠋⠇⠥⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠋⠇⠥⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00361976",
-      "input": "influencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠋⠇⠥⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠋⠇⠥⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00361977",
-      "input": "influencers",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠋⠇⠥⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠋⠇⠥⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00362185",
@@ -137730,101 +136628,6 @@
         "output": "⠔⠎⠏⠓⠻⠫"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00364915",
-      "input": "intelligenced",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00364916",
-      "input": "intelligencer",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00364917",
-      "input": "intelligencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00364918",
-      "input": "intelligencers",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠞⠑⠇⠇⠊⠛⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00365955",
-      "input": "interinfluenced",
-      "local": {
-        "kind": "test",
-        "output": "⠔⠞⠻⠔⠋⠇⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠔⠞⠻⠔⠋⠇⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00366892",
@@ -141112,63 +139915,6 @@
         "output": "⠇⠑⠥⠉⠕⠢⠉⠑⠏⠓⠁⠇⠊⠞⠊⠎"
       },
       "groupId": "untraced-final-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00387904",
-      "input": "licencer",
-      "local": {
-        "kind": "test",
-        "output": "⠇⠊⠉⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠇⠊⠉⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00387905",
-      "input": "licencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠇⠊⠉⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠇⠊⠉⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00387906",
-      "input": "licencers",
-      "local": {
-        "kind": "test",
-        "output": "⠇⠊⠉⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠇⠊⠉⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00388409",
@@ -150633,25 +149379,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00429572",
-      "input": "noncadenced",
-      "local": {
-        "kind": "test",
-        "output": "⠝⠕⠝⠉⠁⠙⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠝⠕⠝⠉⠁⠙⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00429888",
       "input": "noncoherency",
       "local": {
@@ -158902,7 +157629,7 @@
       "input": "nonexperienced",
       "local": {
         "kind": "test",
-        "output": "⠝⠐⠕⠭⠏⠻⠊⠢⠉⠫",
+        "output": "⠝⠐⠕⠭⠏⠻⠊⠰⠑⠙",
         "testId": "SCOWL-2020.12.07-level-95"
       },
       "oracle": {
@@ -167676,25 +166403,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00448349",
-      "input": "outfenced",
-      "local": {
-        "kind": "test",
-        "output": "⠳⠞⠋⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠳⠞⠋⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00448601",
       "input": "outheart",
       "local": {
@@ -167883,25 +166591,6 @@
         "output": "⠕⠧⠻⠋⠥⠇⠇⠰⠎⠑⠎"
       },
       "groupId": "untraced-final-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00452604",
-      "input": "overinfluenced",
-      "local": {
-        "kind": "test",
-        "output": "⠕⠧⠻⠔⠋⠇⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠕⠧⠻⠔⠋⠇⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00452890",
@@ -169631,25 +168320,6 @@
         "output": "⠏⠫⠁⠝⠞⠓⠕⠕⠙"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00465712",
-      "input": "penitencer",
-      "local": {
-        "kind": "test",
-        "output": "⠏⠢⠊⠞⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠏⠢⠊⠞⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00465942",
@@ -183693,25 +182363,6 @@
       "groupId": "traced-ea"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00489065",
-      "input": "preexperienced",
-      "local": {
-        "kind": "test",
-        "output": "⠏⠗⠑⠑⠭⠏⠻⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠏⠗⠑⠑⠭⠏⠻⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00489738",
       "input": "preinhered",
       "local": {
@@ -183902,44 +182553,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00491460",
-      "input": "presenced",
-      "local": {
-        "kind": "test",
-        "output": "⠏⠗⠑⠎⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠏⠗⠑⠎⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00491500",
-      "input": "presentenced",
-      "local": {
-        "kind": "test",
-        "output": "⠏⠗⠑⠎⠢⠞⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠏⠗⠑⠎⠢⠞⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00491515",
       "input": "presentiment",
       "local": {
@@ -184014,25 +182627,6 @@
         "output": "⠏⠗⠑⠎⠢⠞⠊⠰⠞⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00492146",
-      "input": "pretenced",
-      "local": {
-        "kind": "test",
-        "output": "⠏⠗⠑⠞⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠏⠗⠑⠞⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00492327",
@@ -201610,44 +200204,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00511371",
-      "input": "recommenced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠉⠕⠍⠍⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠉⠕⠍⠍⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00511375",
-      "input": "recommencer",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠉⠕⠍⠍⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠉⠕⠍⠍⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00512053",
       "input": "recruithood",
       "local": {
@@ -201665,120 +200221,6 @@
         "output": "⠗⠑⠉⠗⠥⠊⠞⠓⠕⠕⠙"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00513670",
-      "input": "reevidenced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠑⠧⠊⠙⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠑⠧⠊⠙⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00513712",
-      "input": "reexperienced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠑⠭⠏⠻⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠑⠭⠏⠻⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00513839",
-      "input": "refenced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠋⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠋⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00513854",
-      "input": "referenced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠋⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠋⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00513855",
-      "input": "referencer",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠋⠻⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠋⠻⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00515578",
-      "input": "reinfluenced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠔⠋⠇⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠔⠋⠇⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00516015",
@@ -201857,25 +200299,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00516989",
-      "input": "reminiscencer",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠍⠔⠊⠎⠉⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠍⠔⠊⠎⠉⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00517831",
       "input": "reornament",
       "local": {
@@ -201895,25 +200318,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00519666",
-      "input": "resentenced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠎⠢⠞⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠎⠢⠞⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00519679",
       "input": "resentiment",
       "local": {
@@ -201931,25 +200335,6 @@
         "output": "⠗⠑⠎⠢⠞⠊⠰⠞"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00519858",
-      "input": "residencer",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠑⠎⠊⠙⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠑⠎⠊⠙⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00520549",
@@ -203052,82 +201437,6 @@
         "output": "⠗⠑⠧⠻⠑⠑"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00522474",
-      "input": "reverenced",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠐⠑⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠐⠑⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00522475",
-      "input": "reverencer",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠐⠑⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠐⠑⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00522476",
-      "input": "reverencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠐⠑⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠐⠑⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00522477",
-      "input": "reverencers",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠐⠑⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠐⠑⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00522492",
@@ -206227,25 +204536,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00535936",
-      "input": "scienced",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠉⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠉⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00536214",
       "input": "sclerencephalia",
       "local": {
@@ -206683,82 +204973,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00542499",
-      "input": "sentenced",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠢⠞⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠢⠞⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00542500",
-      "input": "sentencer",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠢⠞⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠢⠞⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00542501",
-      "input": "sentencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠢⠞⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠢⠞⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00542502",
-      "input": "sentencers",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠢⠞⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠢⠞⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00542536",
       "input": "sentimental",
       "local": {
@@ -207194,82 +205408,6 @@
         "output": "⠎⠢⠞⠊⠰⠞⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00542964",
-      "input": "sequenced",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠑⠟⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠑⠟⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00542965",
-      "input": "sequencer",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠑⠟⠥⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠑⠟⠥⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00542966",
-      "input": "sequencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠑⠟⠥⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠑⠟⠥⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00542967",
-      "input": "sequencers",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠑⠟⠥⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠑⠟⠥⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00543389",
@@ -208524,82 +206662,6 @@
         "output": "⠎⠊⠣⠞⠓⠕⠇⠑"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00549319",
-      "input": "silenced",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠊⠇⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠊⠇⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00549320",
-      "input": "silencer",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠊⠇⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠊⠇⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00549321",
-      "input": "silencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠊⠇⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠊⠇⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00549322",
-      "input": "silencers",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠊⠇⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠊⠇⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00550546",
@@ -210348,120 +208410,6 @@
         "output": "⠎⠏⠁⠞⠓⠊⠇⠇⠁⠑"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00560660",
-      "input": "spencer",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠏⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠏⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00560661",
-      "input": "spencer's",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠏⠢⠉⠻⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠏⠰⠑⠗⠄⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00560662",
-      "input": "spencerian",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠏⠢⠉⠻⠊⠁⠝",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠏⠰⠑⠗⠊⠁⠝"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00560663",
-      "input": "spencerianism",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠏⠢⠉⠻⠊⠁⠝⠊⠎⠍",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠏⠰⠑⠗⠊⠁⠝⠊⠎⠍"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00560664",
-      "input": "spencerite",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠏⠢⠉⠻⠊⠞⠑",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠏⠰⠑⠗⠊⠞⠑"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00560665",
-      "input": "spencers",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠏⠢⠉⠻⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠏⠰⠑⠗⠎"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00561056",
@@ -212687,25 +210635,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00578915",
-      "input": "superinfluenced",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠥⠏⠻⠔⠋⠇⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠎⠥⠏⠻⠔⠋⠇⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00579321",
       "input": "superornament",
       "local": {
@@ -213768,25 +211697,6 @@
         "output": "⠞⠂⠗⠕⠕⠍⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00589162",
-      "input": "teleconferenced",
-      "local": {
-        "kind": "test",
-        "output": "⠞⠑⠇⠑⠉⠕⠝⠋⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠞⠑⠇⠑⠉⠕⠝⠋⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00589313",
@@ -215706,25 +213616,6 @@
         "output": "⠞⠕⠝⠑⠞⠞⠑⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00598933",
-      "input": "tonguefencer",
-      "local": {
-        "kind": "test",
-        "output": "⠞⠰⠛⠥⠑⠋⠢⠉⠻",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠞⠰⠛⠥⠑⠋⠰⠑⠗"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00598989",
@@ -217988,25 +215879,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00613007",
-      "input": "unaudienced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠁⠥⠙⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠁⠥⠙⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00613224",
       "input": "unbaronet",
       "local": {
@@ -218100,25 +215972,6 @@
         "output": "⠥⠝⠃⠕⠎⠕⠍⠻⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00614055",
-      "input": "uncadenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠉⠁⠙⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠉⠁⠙⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00614643",
@@ -218216,25 +216069,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00615069",
-      "input": "uncommenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠉⠕⠍⠍⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠉⠕⠍⠍⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00615104",
       "input": "uncommonest",
       "local": {
@@ -218252,25 +216086,6 @@
         "output": "⠥⠝⠉⠕⠍⠍⠕⠝⠑⠌"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00615489",
-      "input": "unconscienced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠉⠕⠝⠎⠉⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠉⠕⠝⠎⠉⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00615857",
@@ -218539,25 +216354,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00618695",
-      "input": "undifferenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠙⠊⠖⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠙⠊⠖⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00618888",
       "input": "undisheartened",
       "local": {
@@ -218691,25 +216487,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00619930",
-      "input": "unessenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠰⠎⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠰⠎⠰⠑⠙"
-      },
-      "groupId": "ness-pattern"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00620011",
       "input": "uneversible",
       "local": {
@@ -218746,82 +216523,6 @@
         "output": "⠥⠝⠑⠧⠻⠞⠫"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00620014",
-      "input": "unevidenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠑⠧⠊⠙⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠑⠧⠊⠙⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00620222",
-      "input": "unexperienced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠑⠭⠏⠻⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠑⠭⠏⠻⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00620223",
-      "input": "unexperiencedness",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠑⠭⠏⠻⠊⠢⠉⠫⠰⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠑⠭⠏⠻⠊⠰⠑⠙⠰⠎"
-      },
-      "groupId": "ness-pattern"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00620624",
-      "input": "unfenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠋⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠋⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00621219",
@@ -218917,44 +216618,6 @@
         "output": "⠥⠝⠊⠍⠃⠕⠎⠕⠍⠫"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00623058",
-      "input": "uninconvenienced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠔⠉⠕⠝⠧⠢⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠔⠉⠕⠝⠧⠢⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00623161",
-      "input": "uninfluenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠔⠋⠇⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠔⠋⠇⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00623203",
@@ -219088,25 +216751,6 @@
         "output": "⠥⠝⠊⠞⠓⠕⠇⠙⠻⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00624334",
-      "input": "unlicenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠇⠊⠉⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠇⠊⠉⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00625018",
@@ -219375,25 +217019,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00627673",
-      "input": "unprovidenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠏⠗⠕⠧⠊⠙⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠏⠗⠕⠧⠊⠙⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00627994",
       "input": "unransomed",
       "local": {
@@ -219489,25 +217114,6 @@
       "groupId": "traced-ea"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00628269",
-      "input": "unreferenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠗⠑⠋⠻⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠗⠑⠋⠻⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00628880",
       "input": "unreverberant",
       "local": {
@@ -219601,25 +217207,6 @@
         "output": "⠥⠝⠗⠑⠧⠻⠫"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00628886",
-      "input": "unreverenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠗⠐⠑⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠗⠐⠑⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00628894",
@@ -219774,44 +217361,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00629555",
-      "input": "unscienced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠎⠉⠊⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠎⠉⠊⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00629859",
-      "input": "unsentenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠎⠢⠞⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠎⠢⠞⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00629865",
       "input": "unsentimental",
       "local": {
@@ -219926,25 +217475,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00629890",
-      "input": "unsequenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠎⠑⠟⠥⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠎⠑⠟⠥⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00629946",
       "input": "unsevere",
       "local": {
@@ -220002,25 +217532,6 @@
       "groupId": "ness-pattern"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00630251",
-      "input": "unsilenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠎⠊⠇⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠎⠊⠇⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00630816",
       "input": "unsphered",
       "local": {
@@ -220057,25 +217568,6 @@
         "output": "⠥⠝⠌⠐⠕⠁⠃⠇⠑"
       },
       "groupId": "traced-ea"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00633155",
-      "input": "unviolenced",
-      "local": {
-        "kind": "test",
-        "output": "⠥⠝⠧⠊⠕⠇⠢⠉⠫",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠥⠝⠧⠊⠕⠇⠰⠑⠙"
-      },
-      "groupId": "traced-other-lower-groupsign"
     },
     {
       "caseId": "scowl:2020.12.07:95:00634665",

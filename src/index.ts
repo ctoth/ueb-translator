@@ -6,6 +6,7 @@ export type {
   Grade1Document,
   Grade1BrailleGroup,
   Grade1InvalidLigature,
+  Grade1InvalidRun,
   Grade1Ligature,
   Grade1Paragraph,
   Grade1Result,

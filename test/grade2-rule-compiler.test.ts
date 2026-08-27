@@ -103,6 +103,14 @@ describe("compileContextualRules", () => {
     }]);
   });
 
+  it("encodes an exact following-character guard", () => {
+    const compilation = compileContextualRules([
+      rule("test-following", "a", 1, [{ characters: "dr", kind: "following" }]),
+    ]);
+    expect(compilation.runtime.guards).toEqual([[17, 0]]);
+    expect(compilation.runtime.stringOperands).toEqual(["dr"]);
+  });
+
   it("fails closed when a collected guard operand is missing", () => {
     const operands: ReadonlyMap<string, number> = new Map([["cat", 0]]);
     expect(requireContextualOperandIndex("cat", operands)).toBe(0);

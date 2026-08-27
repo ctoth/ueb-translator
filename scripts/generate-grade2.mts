@@ -1,7 +1,14 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { CompiledContextualMatcher } from "../rules/ueb-2024/contextual-compiler.js";
+import {
+  CONTEXTUAL_BOUNDARY_MASKS,
+  CONTEXTUAL_GUARD_SCHEMA,
+  CONTEXTUAL_PRECEDENCES,
+  type ContextualGuardOperandKind,
+  type ContextualGuardOpcodeWith,
+} from "../src/contextual-schema.ts";
 import type {
   CompactPrefixTable,
   ContextualBoundaryMask,
@@ -11,6 +18,10 @@ import type {
   ContextualRuleTuple,
   ComposedContractionProgram,
 } from "../src/contextual-transducer.js";
+import {
+  encodeCompactIntegers,
+  readGeneratedFile,
+} from "./generate-grade2-support.mts";
 
 interface LoadedCompilation {
   readonly ids: readonly string[];
@@ -53,41 +64,24 @@ function isIntegerInRange(value: unknown, minimum: number, maximum: number): val
 }
 
 function isContextualGuardOpcode(value: unknown): value is ContextualGuardOpcode {
-  return isIntegerInRange(value, 0, 16);
+  return Object.values(CONTEXTUAL_GUARD_SCHEMA).some((guard) => guard.opcode === value);
 }
 
-function isNoOperandGuardOpcode(
+function guardHasOperands<OperandKind extends ContextualGuardOperandKind>(
   value: ContextualGuardOpcode,
-): value is 1 | 3 | 8 | 9 | 10 | 12 | 13 | 14 | 15 | 16 {
-  return value === 1 || value === 3 || value === 8 ||
-    value === 9 || value === 10 || value === 12 || value === 13 ||
-    value === 14 || value === 15 || value === 16;
-}
-
-function isStringOperandGuardOpcode(
-  value: ContextualGuardOpcode,
-): value is 2 | 7 | 11 {
-  return value === 2 || value === 7 || value === 11;
-}
-
-function isTwoStringOperandGuardOpcode(
-  value: ContextualGuardOpcode,
-): value is 0 | 6 {
-  return value === 0 || value === 6;
-}
-
-function isBoundaryOperandGuardOpcode(
-  value: ContextualGuardOpcode,
-): value is 4 | 5 {
-  return value === 4 || value === 5;
+  operands: OperandKind,
+): value is ContextualGuardOpcodeWith<OperandKind> {
+  return Object.values(CONTEXTUAL_GUARD_SCHEMA).some((guard) =>
+    guard.opcode === value && guard.operands === operands
+  );
 }
 
 function isContextualBoundaryMask(value: unknown): value is ContextualBoundaryMask {
-  return isIntegerInRange(value, 1, 31);
+  return CONTEXTUAL_BOUNDARY_MASKS.some((candidate) => candidate === value);
 }
 
 function isContextualPrecedence(value: unknown): value is ContextualPrecedence {
-  return isIntegerInRange(value, 0, 9);
+  return CONTEXTUAL_PRECEDENCES.some((candidate) => candidate === value);
 }
 
 function integerArray(value: unknown, name: string): readonly number[] {
@@ -100,20 +94,6 @@ function integerArray(value: unknown, name: string): readonly number[] {
     }
     return entry;
   });
-}
-
-function encodeCompactIntegers(
-  values: readonly number[],
-  name: string,
-): string {
-  let encoded = "";
-  for (const value of values) {
-    if (!isIntegerInRange(value, 0, 0xfeff)) {
-      throw new Error(`Compiled Grade 2 ${name} exceeds fixed-width encoding.`);
-    }
-    encoded += String.fromCharCode(value + 0x100);
-  }
-  return encoded;
 }
 
 function compactMatcher(matcher: CompiledContextualMatcher): CompactPrefixTable {
@@ -169,24 +149,24 @@ function loadCompilation(module: unknown): LoadedCompilation {
         throw new Error("Compiled Grade 2 contextual program has a malformed guard.");
       }
       const opcode = guard[0];
-      if (isNoOperandGuardOpcode(opcode) && guard.length === 1) {
+      if (guardHasOperands(opcode, "none") && guard.length === 1) {
         return [opcode];
       }
       if (
-        isStringOperandGuardOpcode(opcode) && guard.length === 2 &&
+        guardHasOperands(opcode, "string") && guard.length === 2 &&
         isIntegerInRange(guard[1], 0, operands.length - 1)
       ) {
         return [opcode, guard[1]];
       }
       if (
-        isTwoStringOperandGuardOpcode(opcode) && guard.length === 3 &&
+        guardHasOperands(opcode, "two-string") && guard.length === 3 &&
         isIntegerInRange(guard[1], 0, operands.length - 1) &&
         isIntegerInRange(guard[2], 0, operands.length - 1)
       ) {
         return [opcode, guard[1], guard[2]];
       }
       if (
-        isBoundaryOperandGuardOpcode(opcode) && guard.length === 2 &&
+        guardHasOperands(opcode, "boundary") && guard.length === 2 &&
         isContextualBoundaryMask(guard[1])
       ) {
         return [opcode, guard[1]];
@@ -338,7 +318,7 @@ function generatedProvenance(ids: readonly string[]): string {
 
 async function emit(path: string, content: string, check: boolean): Promise<void> {
   if (check) {
-    const current = await readFile(path, "utf8");
+    const current = await readGeneratedFile(path);
     if (current !== content) {
       throw new Error(`${path} is not reproducible; run npm run grade2:generate.`);
     }

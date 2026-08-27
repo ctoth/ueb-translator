@@ -86,6 +86,9 @@ describe("runContextualTransducer", () => {
     expect(translateGuard("abz", [10])).toBe("XZ");
     expect(translateGuard("cab", [11, 0], ["c"])).toBe("CAB");
     expect(translateGuard("yab", [11, 0], ["c"])).toBe("YX");
+    expect(translateGuard("abz", [17, 0], ["z"])).toBe("XZ");
+    expect(translateGuard("abc", [17, 0], ["z"])).toBe("ABC");
+    expect(translateGuard("ab", [17, 0], ["z"])).toBe("AB");
     expect(translateGuard("ab", [13])).toBe("X");
     expect(translateGuard("abz", [13])).toBe("ABZ");
     expect(translateGuard("zabz", [14])).toBe("ZXZ");

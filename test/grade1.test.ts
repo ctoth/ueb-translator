@@ -164,6 +164,23 @@ describe("ICEB 2024 4.3: explicit ligatures", () => {
       value,
     });
   });
+
+  it("rejects a sparse ligature letters array", () => {
+    const letters = new Array<string>(2);
+    letters[0] = "a";
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ kind: "ligature", letters }] }],
+    };
+
+    // @ts-expect-error Exercise malformed JavaScript input at the typed boundary.
+    expect(translateGrade1(document)).toEqual({
+      mode: "grade1",
+      ok: false,
+      reason: "invalid-run",
+      runIndex: 0,
+    });
+  });
 });
 
 describe("ICEB 2024 6.1-6.5: numeric mode", () => {
@@ -283,6 +300,71 @@ describe("ICEB 2024 3.23: explicit whitespace contract", () => {
 });
 
 describe("ICEB 2024 3.4: explicit braille grouping", () => {
+  it("accepts text runs with the shared document-model discriminator", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ kind: "text", text: "hi" }, { text: "!" }] }],
+    } satisfies Grade1Document;
+
+    expect(translateGrade1(document)).toEqual({
+      braille: "⠓⠊⠖",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
+  it("rejects a sparse typeforms array", () => {
+    const typeforms = new Array<"italic">(1);
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ text: "a", typeforms }] }],
+    } satisfies Grade1Document;
+
+    expect(translateGrade1(document)).toEqual({
+      mode: "grade1",
+      ok: false,
+      reason: "invalid-run",
+      runIndex: 0,
+    });
+  });
+
+  it("rejects a non-array typeforms value", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ text: "a", typeforms: "italic" }] }],
+    };
+
+    // @ts-expect-error Exercise malformed JavaScript input at the typed boundary.
+    expect(translateGrade1(document)).toEqual({
+      mode: "grade1",
+      ok: false,
+      reason: "invalid-run",
+      runIndex: 0,
+    });
+  });
+
+  it.each([
+    { kind: "text" },
+    { kind: "ligature" },
+    { kind: "braille-group" },
+    { kind: "unknown" },
+    { text: 1 },
+    null,
+  ])("returns a typed error for a malformed run: %j", (run) => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [run] }],
+    };
+
+    // @ts-expect-error Exercise malformed JavaScript input at the typed boundary.
+    expect(translateGrade1(document)).toEqual({
+      mode: "grade1",
+      ok: false,
+      reason: "invalid-run",
+      runIndex: 0,
+    });
+  });
+
   it("groups only when the typed input requests semantic braille grouping", () => {
     const document = {
       kind: "grade1-document",

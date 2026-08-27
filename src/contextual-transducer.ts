@@ -1,3 +1,15 @@
+import type {
+  ContextualBoundaryMask,
+  ContextualGuardOpcodeWith,
+  ContextualPrecedence,
+} from "./contextual-schema.js";
+
+export type {
+  ContextualBoundaryMask,
+  ContextualGuardOpcode,
+  ContextualPrecedence,
+} from "./contextual-schema.js";
+
 /** Sorted contextual inputs plus fixed-width initial and rule-range offsets. */
 export type CompactPrefixTable = readonly [
   bucketAlphabet: readonly string[],
@@ -102,18 +114,10 @@ export interface ContextualBoundary {
   readonly kind: ContextualBoundaryKind;
 }
 
-export type ContextualGuardOpcode =
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
-  | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
-export type ContextualPrecedence = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-export type ContextualBoundaryMask =
-  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
-  | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20
-  | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31;
-type NoOperandGuardOpcode = 1 | 3 | 8 | 9 | 10 | 12 | 13 | 14 | 15 | 16;
-type StringOperandGuardOpcode = 2 | 7 | 11;
-type TwoStringOperandGuardOpcode = 0 | 6;
-type BoundaryOperandGuardOpcode = 4 | 5;
+type NoOperandGuardOpcode = ContextualGuardOpcodeWith<"none">;
+type StringOperandGuardOpcode = ContextualGuardOpcodeWith<"string">;
+type TwoStringOperandGuardOpcode = ContextualGuardOpcodeWith<"two-string">;
+type BoundaryOperandGuardOpcode = ContextualGuardOpcodeWith<"boundary">;
 export type ContextualGuardTuple =
   | readonly [opcode: NoOperandGuardOpcode]
   | readonly [opcode: StringOperandGuardOpcode, stringOperandIndex: number]
@@ -291,6 +295,10 @@ function guardAllows(
       return start === 0;
     case 16:
       return !context.hasLowerPunctuation;
+    case 17: {
+      const following = context.word.charAt(end);
+      return following !== "" && operandAt(program, guard[1]).includes(following);
+    }
   }
 }
 
