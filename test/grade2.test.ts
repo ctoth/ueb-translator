@@ -252,7 +252,10 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
-    for (const [text, print] of [["Abarbarea's", "ea"], ["Acuff's", "ff"]]) {
+    for (const [text, print] of [
+      ["Abarbarea's", "ea"],
+      ["Acuff's", "ff"],
+    ] as const) {
       const result = traceGrade2(text);
       expect(result.ok).toBe(true);
       if (result.ok) {
