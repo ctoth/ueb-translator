@@ -96,7 +96,7 @@ function compileMatcher(
     const found = initial === undefined
       ? inputs.length
       : inputs.findIndex((input) =>
-          compareText(Array.from(input)[0] ?? "", initial) >= 0
+          compareText(Array.from(input)[0] as string, initial) >= 0
         );
     const cursor = found < 0 ? inputs.length : found;
     initialInputOffsets.push(cursor);

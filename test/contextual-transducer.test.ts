@@ -6,6 +6,10 @@ import {
   type ContextualGuardTuple,
   type ContextualTransducerProgram,
 } from "../src/contextual-transducer.js";
+import {
+  matchPrefixTable,
+  type CompactPrefixTable,
+} from "../src/transducer.js";
 
 function encode(values: readonly number[]): string {
   return String.fromCharCode(...values.map((value) => value + 0x100));
@@ -106,6 +110,52 @@ describe("runContextualTransducer", () => {
       ...suffixGuardProgram,
       rules: [],
     })).toThrow(/missing rule/u);
+  });
+});
+
+describe("matchPrefixTable", () => {
+  const table: CompactPrefixTable = [
+    ["a"],
+    ["a"],
+    encode([0, 1]),
+    encode([0, 1]),
+    encode([0, 0]),
+    encode([1]),
+    encode([0]),
+  ];
+
+  it("returns no match at the end of input", () => {
+    expect(matchPrefixTable(table, "", 0)).toEqual([]);
+  });
+
+  it("fails closed for malformed per-input compact arrays", () => {
+    expect(matchPrefixTable([
+      table[0],
+      [],
+      table[2],
+      table[3],
+      table[4],
+      table[5],
+      table[6],
+    ], "a", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      table[0],
+      table[1],
+      table[2],
+      table[3],
+      table[4],
+      "",
+      table[6],
+    ], "a", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      table[0],
+      table[1],
+      table[2],
+      table[3],
+      table[4],
+      table[5],
+      "",
+    ], "a", 0)).toEqual([]);
   });
 });
 
