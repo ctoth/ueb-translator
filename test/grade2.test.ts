@@ -217,22 +217,25 @@ describe("translateGrade2", () => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
-  it.each([
-    { allowed: ["ed"], text: "ABEd" },
-    { allowed: ["en"], text: "AEng" },
-    { allowed: ["ar", "ch"], text: "BArch" },
-    { allowed: ["be"], text: "BEd" },
-    { allowed: ["ar"], text: "ARel" },
-    { allowed: ["in"], text: "AmerInd" },
-    { allowed: ["ed"], text: "BAMusEd" },
-    { allowed: ["in", "ed"], text: "BIndEd" },
-  ])("contracts spans without an internal mode prefix in $text", ({ allowed, text }) => {
-    const result = traceGrade2(text);
+  it("rejects a contraction that crosses a capitals terminator", () => {
+    expect(translateGrade2("ABEd")).toEqual({
+      braille: "⠠⠠⠁⠃⠑⠠⠄⠙",
+      mode: "grade2",
+      ok: true,
+    });
+    const result = traceGrade2("ABEd");
     expect(result.ok).toBe(true);
     if (result.ok) {
-      const prints = result.rules.map((rule) => rule.print);
-      expect(prints).toEqual(expect.arrayContaining(allowed));
+      expect(result.rules.map((rule) => rule.print)).not.toContain("ed");
     }
+  });
+
+  it("uses full lexical coordinates for contractions after an apostrophe", () => {
+    expect(translateGrade2("D'Arcy")).toEqual({
+      braille: "⠠⠙⠄⠠⠜⠉⠽",
+      mode: "grade2",
+      ok: true,
+    });
   });
 
   it("rejects a contraction with a mode prefix strictly inside it", () => {
@@ -243,9 +246,9 @@ describe("translateGrade2", () => {
     }
   });
 
-  it("remaps collapsed capitalization suffixes onto emitted cells", () => {
-    expect(translateGrade2("BIndEd")).toEqual({
-      braille: "⠠⠠⠃⠔⠠⠄⠙⠠⠫",
+  it("uses a capital word indicator for an internal uppercase run", () => {
+    expect(translateGrade2("PowerPC")).toEqual({
+      braille: "⠠⠏⠪⠻⠠⠠⠏⠉",
       mode: "grade2",
       ok: true,
     });
@@ -264,6 +267,23 @@ describe("translateGrade2", () => {
     });
   });
 
+  it("does not treat a trailing ASCII segment as the whole non-ASCII word", () => {
+    const grade1 = translateGrade1("madroñas");
+    const grade2 = translateGrade2("madroñas");
+    expect(grade1.ok).toBe(true);
+    expect(grade2.ok).toBe(true);
+    if (grade1.ok && grade2.ok) expect(grade2.braille).toBe(grade1.braille);
+  });
+
+  it.each(["alt's", "cd's", "hm's", "yr's"])(
+    "retains ambiguity protection for the possessive %s",
+    (text) => {
+      const result = translateGrade2(text);
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.braille.startsWith("⠰⠰")).toBe(true);
+    },
+  );
+
   it("resolves capitals around contractions with the shared mode program", () => {
     expect(translateGrade2("THE CAT SAT ON")).toEqual({
       braille: "⠠⠠⠠⠮⠀⠉⠁⠞⠀⠎⠁⠞⠀⠕⠝⠠⠄",
@@ -276,7 +296,7 @@ describe("translateGrade2", () => {
       ok: true,
     });
     expect(translateGrade2("aND")).toEqual({
-      braille: "⠁⠠⠝⠠⠙",
+      braille: "⠁⠠⠠⠝⠙",
       mode: "grade2",
       ok: true,
     });

@@ -189,12 +189,18 @@ function contractionRanges(
   return ranges;
 }
 
-function startsAfterApostrophe(
+function isCompleteAmbiguityLiteral(
   units: readonly CompositionUnit[],
   range: UnitRange,
+  component: UnitRange,
 ): boolean {
-  const previous = units[range.start - 1];
-  return previous?.kind === "symbol" && isOneOf(previous.source, "'’");
+  if (range.start !== component.start) return false;
+  if (range.end === component.end) return true;
+  if (range.end + 2 !== component.end) return false;
+  const apostrophe = units[range.end];
+  const suffix = units[range.end + 1];
+  return apostrophe?.kind === "symbol" && isOneOf(apostrophe.source, "'’") &&
+    suffix !== undefined && asciiBase(suffix) === "s";
 }
 
 function dashComponentAt(
@@ -224,6 +230,9 @@ function canCollapseModeSpan(
   for (let index = range.start + 1; index < range.end; index += 1) {
     if ((plan.prefixes.get(index) ?? "").length > 0) return false;
   }
+  for (let index = range.start; index < range.end - 1; index += 1) {
+    if ((plan.suffixes.get(index) ?? "").length > 0) return false;
+  }
   return true;
 }
 
@@ -235,13 +244,17 @@ function remapCollapsedModes(
   const prefixes = new Map(plan.prefixes);
   const suffixes = new Map(plan.suffixes);
   for (const range of ranges) {
-    let suffix = "";
-    for (let index = range.start; index < range.end; index += 1) {
-      suffix += suffixes.get(index) ?? "";
-      suffixes.delete(index);
-      if (index > range.start) prefixes.delete(index);
+    for (let index = range.start + 1; index < range.end; index += 1) {
+      prefixes.delete(index);
     }
-    if (suffix.length > 0) suffixes.set(range.start, suffix);
+    const finalIndex = range.end - 1;
+    if (finalIndex !== range.start) {
+      const suffix = suffixes.get(finalIndex) ?? "";
+      suffixes.delete(finalIndex);
+      if (suffix.length > 0) {
+        suffixes.set(range.start, (suffixes.get(range.start) ?? "") + suffix);
+      }
+    }
   }
   return { prefixes, suffixes };
 }
@@ -300,7 +313,7 @@ export function compose(
             const exact = exactLetterPrint(units, range);
             if (
               asciiLiteralComponent && standing && ambiguityPrints.has(exact) &&
-              !startsAfterApostrophe(units, range)
+              isCompleteAmbiguityLiteral(units, range, component)
             ) {
               const hasCapital = units.slice(range.start, range.end)
                 .some((unit) => unit.kind === "letter" && unit.uppercase);

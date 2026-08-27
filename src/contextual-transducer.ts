@@ -134,15 +134,18 @@ function guardAllows(
   context: ContextualTransducerInput,
 ): boolean {
   const end = start + print.length;
+  const eligibilityStart = context.eligibilityOffset + start;
+  const eligibilityEnd = context.eligibilityOffset + end;
+  const eligibilityWord = context.eligibilityWord;
   switch (guard[0]) {
     case 0: {
       const operand = operandAt(program, guard[1]);
-      const eligible = context.eligibilityWord === operand ||
-        (context.eligibilityWord.endsWith("s") &&
-          context.eligibilityWord.slice(0, -1) === operand);
+      const eligible = eligibilityWord === operand ||
+        (eligibilityWord.endsWith("s") &&
+          eligibilityWord.slice(0, -1) === operand);
       return eligible && operand.startsWith(
         print,
-        context.eligibilityOffset + start,
+        eligibilityStart,
       );
     }
     case 1: {
@@ -153,7 +156,7 @@ function guardAllows(
         syllableBoundaries.some((boundary) => boundary.at === end);
     }
     case 2: {
-      const following = context.word.charAt(end);
+      const following = eligibilityWord.charAt(eligibilityEnd);
       return following === "" || !"aeiouy".includes(following);
     }
     case 3:
@@ -163,30 +166,31 @@ function guardAllows(
       return !crossesBoundaryMask(start, end, context.boundaries, guard[1]);
     case 6: {
       const operand = operandAt(program, guard[1]);
-      return !operand.split("\u0000").includes(context.word.replaceAll("-", ""));
+      return !operand.split("\u0000").includes(eligibilityWord.replaceAll("-", ""));
     }
     case 7: {
       const operand = operandAt(program, guard[1]);
-      return !operand.split("\u0000").some((ending) => context.word.endsWith(ending));
+      return !operand.split("\u0000").some((ending) => eligibilityWord.endsWith(ending));
     }
     case 8:
-      return end !== context.word.length;
+      return eligibilityEnd !== eligibilityWord.length;
     case 9:
-      return start !== 0;
+      return eligibilityStart !== 0;
     case 10:
-      return start !== 0 || end !== context.word.length;
+      return eligibilityStart !== 0 || eligibilityEnd !== eligibilityWord.length;
     case 11: {
       const operand = operandAt(program, guard[1]);
-      return start === 0 || !operand.includes(context.word.charAt(start - 1));
+      return eligibilityStart === 0 ||
+        !operand.includes(eligibilityWord.charAt(eligibilityStart - 1));
     }
     case 12:
       return context.standing;
     case 13:
-      return end === context.word.length;
+      return eligibilityEnd === eligibilityWord.length;
     case 14:
-      return start !== 0 && end !== context.word.length;
+      return eligibilityStart !== 0 && eligibilityEnd !== eligibilityWord.length;
     case 15:
-      return start === 0;
+      return eligibilityStart === 0;
     case 16:
       return !context.hasLowerPunctuation;
   }

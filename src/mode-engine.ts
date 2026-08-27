@@ -240,10 +240,26 @@ export function resolveModes(
       ) {
         const symbol = modeIndicator(program, modeId, "symbol");
         const word = modeIndicator(program, modeId, "word");
-        const continuing = symbol === word
+        const inlineTerminator = inlineWordTerminatorModeIds.includes(modeId);
+        const continuing = symbol === word || inlineTerminator
           ? wordSpan(program, modeId, units, index, sequenceBoundaryClass, true)
           : undefined;
-        append(prefixes, index, symbol);
+        const kind = continuing === undefined
+          ? "symbol"
+          : indicatorKind(program, modeId, continuing.memberCount, 1);
+        append(prefixes, index, modeIndicator(program, modeId, kind));
+        const following = continuing === undefined ? undefined : units[continuing.end];
+        if (
+          kind === "word" && inlineTerminator && continuing !== undefined &&
+          following !== undefined && terminatesMode(program, modeId, following) &&
+          !hasModeClass(following, sequenceBoundaryClass)
+        ) {
+          append(
+            suffixes,
+            continuing.end - 1,
+            modeIndicator(program, modeId, "terminator"),
+          );
+        }
         index = continuing?.end ?? index + 1;
         continue;
       }
