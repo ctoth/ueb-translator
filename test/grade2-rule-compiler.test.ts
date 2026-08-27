@@ -324,6 +324,45 @@ describe("Grade 2 runtime architecture", () => {
     expect(translator.translate("b")).toMatchObject({ braille: "⠃", ok: true });
   });
 
+  it("falls back to the source character when elision punctuation is empty", () => {
+    const compilation = compileContextualRules([
+      rule("test-empty-elision", "a", 0, [{
+        kind: "eligibility-word",
+        pluralSuffix: "",
+        word: "a-b",
+      }]),
+    ]);
+    const compiled = compilation.runtime;
+    const encode = (values: readonly number[]): string =>
+      String.fromCharCode(...values.map((value) => value + 0x100));
+    const translator = compose(
+      GRADE1_SYMBOL_PROGRAM,
+      GRADE1_MODE_PROGRAM,
+      { ...UEB_COMPOSITION_POLICIES, elisionPunctuation: "" },
+      {
+        ...compiled,
+        code: "ueb-2024",
+        grade1Ambiguities: [],
+        matcher: [
+          compiled.matcher.bucketAlphabet,
+          compiled.matcher.inputs,
+          encode(compiled.matcher.initialInputOffsets),
+          encode(compiled.matcher.initialRuleOffsets),
+          encode(compiled.matcher.initialGuardOffsets),
+          encode(compiled.matcher.inputRuleCounts),
+          encode(compiled.matcher.inputGuardCounts),
+        ],
+        standingLiteralInputs: [],
+      },
+    );
+
+    const result = translator.translate("a-b");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.rules.map((applied) => applied.ruleIndex)).toContain(0);
+    }
+  });
+
   it("remaps modes after a single-unit contraction", () => {
     const compiled = compileContextualRules([rule("test-single", "x", 0)]).runtime;
     const encode = (values: readonly number[]): string =>

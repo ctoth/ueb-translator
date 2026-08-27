@@ -99,9 +99,12 @@ function eligibilityCharacter(
 ): string {
   const base = programBase(unit, bucketAlphabet);
   if (base !== undefined) return base;
-  if (unit.kind === "symbol" && isOneOf(unit.source, policies.elisionPunctuation)) {
-    const canonicalElision = Array.from(policies.elisionPunctuation)[0];
-    if (canonicalElision !== undefined) return canonicalElision;
+  const canonicalElision = Array.from(policies.elisionPunctuation)[0];
+  if (
+    canonicalElision !== undefined && unit.kind === "symbol" &&
+    isOneOf(unit.source, policies.elisionPunctuation)
+  ) {
+    return canonicalElision;
   }
   return unit.source.toLowerCase();
 }
