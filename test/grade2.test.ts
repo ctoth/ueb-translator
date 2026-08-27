@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { APPENDIX1_LONGER_WORDS } from "../rules/ueb-2024/appendix1.js";
 import {
@@ -11,7 +11,11 @@ import { GRADE2_INVENTORY_COUNTS } from "../rules/ueb-2024/inventory.js";
 import { SHORTFORMS } from "../rules/ueb-2024/shortforms.js";
 import { translateGrade1 } from "../src/grade1.js";
 import { traceGrade2 } from "../src/grade2-diagnostics.js";
-import { translateGrade2, type Grade2Document } from "../src/grade2.js";
+import {
+  translateGrade2,
+  type Grade2Document,
+  type Grade2DocumentResult,
+} from "../src/grade2.js";
 
 describe("official Grade 2 source inventory", () => {
   it("cites every Section 10 contraction", () => {
@@ -415,6 +419,20 @@ describe("translateGrade2", () => {
   });
 
   it.each([
+    ["in,", "⠊⠝⠂"],
+    ["in;", "⠊⠝⠆"],
+    ["in:", "⠊⠝⠒"],
+    ["in.", "⠊⠝⠲"],
+    ["in!", "⠊⠝⠖"],
+    ["enough!", "⠢⠳⠣⠖"],
+  ] as const)(
+    "avoids an all-lower sequence before lower punctuation in %s",
+    (text, braille) => {
+      expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+    },
+  );
+
+  it.each([
     ["Ch'in", "in"],
     ["Ch'in's", "in"],
     ["ch'in", "in"],
@@ -630,6 +648,24 @@ describe("translateGrade2", () => {
     },
   );
 
+  it.each([
+    ["hello ʤ", "ʤ", 6, 6],
+    ["hello ☃", "☃", 6, 6],
+    ["hello 😀", "😀", 6, 6],
+  ] as const)(
+    "reports global UTF-16 and scalar positions through the %s path",
+    (text, character, codeUnitIndex, scalarIndex) => {
+      expect(translateGrade2(text)).toEqual({
+        character,
+        codeUnitIndex,
+        mode: "grade2",
+        ok: false,
+        reason: "unsupported-character",
+        scalarIndex,
+      });
+    },
+  );
+
   it("propagates unsupported input from a document text run", () => {
     const document: Grade2Document = {
       kind: "grade2-document",
@@ -638,7 +674,36 @@ describe("translateGrade2", () => {
         { kind: "text", text: "😀" },
       ],
     };
-    expect(translateGrade2(document).ok).toBe(false);
+    const result = translateGrade2(document);
+    expectTypeOf(result).toEqualTypeOf<Grade2DocumentResult>();
+    expect(result).toEqual({
+      character: "😀",
+      codeUnitIndex: 3,
+      mode: "grade2",
+      ok: false,
+      reason: "unsupported-character",
+      runIndex: 1,
+      scalarIndex: 3,
+    });
+  });
+
+  it("reports an astral failure after a supported prefix in a later word run", () => {
+    const result = translateGrade2({
+      kind: "grade2-document",
+      runs: [
+        { kind: "text", text: "go " },
+        { kind: "word", standing: "alone", text: "a😀" },
+      ],
+    });
+    expect(result).toEqual({
+      character: "😀",
+      codeUnitIndex: 4,
+      mode: "grade2",
+      ok: false,
+      reason: "unsupported-character",
+      runIndex: 1,
+      scalarIndex: 4,
+    });
   });
 
   it("combines structured word and text runs with global rule offsets", () => {

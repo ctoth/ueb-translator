@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-
 import { describe, expect, it } from "vitest";
 
 import {
@@ -34,15 +32,6 @@ import {
   scanModeSpan,
   type ModeProgram,
 } from "../src/mode-engine.js";
-
-const engineSource = readFileSync(
-  new URL("../src/mode-engine.ts", import.meta.url),
-  "utf8",
-);
-const runtimeSource = readFileSync(
-  new URL("../src/grade1-runtime.ts", import.meta.url),
-  "utf8",
-);
 
 function symbol(id: string, print: string): SymbolRuleSource {
   return {
@@ -156,18 +145,6 @@ describe("compiled closed mode engine", () => {
     expect(GRADE1_MODE_RULE_IDS).toHaveLength(
       GRADE1_MODE_COMPILATION.provenance.length,
     );
-  });
-
-  it("keeps UEB vocabulary out of the generic interpreter", () => {
-    expect(engineSource).not.toMatch(
-      /capitals|grade1-required|numeric-ambiguous|typeform|uppercase-letter/u,
-    );
-  });
-
-  it("routes mode transitions without the former recursive state machine", () => {
-    expect(runtimeSource).toContain("resolveModes(");
-    expect(runtimeSource).not.toMatch(/numericMode|capitalsPassageEnd|units\.slice\(/u);
-    expect(runtimeSource.match(/translateUnits\(/gu)).toHaveLength(2);
   });
 
   it("interprets opaque ids without a per-mode hook", () => {

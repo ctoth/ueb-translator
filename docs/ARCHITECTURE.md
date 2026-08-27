@@ -4,41 +4,42 @@
 
 The repository contains two deliberately separate layers:
 
-1. `rules/` and `tools/rule-compiler/` hold readable, cited source rules, validation, construction, and provenance. They are development-only.
-2. `src/` holds browser runtime contracts and deterministic walkers. Published
-   grade entry points import only generated compact programs and runtime code.
+1. `rules/ueb-2024/` holds readable, cited source rules plus the live symbol,
+   mode, policy, and contextual compilers. It is development-only.
+2. `src/` holds generated compact programs, browser runtime contracts, and
+   deterministic interpreters. Published entry points cannot import authored
+   rules or compiler modules; ESLint enforces that boundary.
 
 The `files` allowlist in `package.json` publishes `dist`, `LICENSE`, and `README.md`. It cannot include readable rules, compiler code, research papers, Liblouis tooling, fixtures, traces, or oracle output.
 
-## Selected construction
+## Live rule compilation
 
-The compiler follows Daciuk, Mihov, Watson, and Watson's lexicographically sorted incremental construction of a minimal deterministic acyclic finite-state automaton. After each input's common prefix, the previous word's mutable suffix is registered bottom-up. A state is merged only when its final output and every sorted input-label-to-canonical-child edge agree. This is the paper's final-output transducer extension, specialized to one output per accepted rule.
+`rules/ueb-2024/contextual-compiler.ts` compiles the cited Grade 2 inventory used
+by the product. It canonicalizes inputs, sorts each initial-character bucket,
+deduplicates guard operands, and flattens typed rules and guards into compact
+tuples. Compilation rejects missing citations, conflicting identifiers,
+duplicate guards, unreachable inputs, and unresolved precedence before any
+generated program reaches `src/generated/ueb-2024/`.
 
-This avoids first materializing a full trie. Sorting by Unicode scalar value and deterministic breadth-first flattening make the emitted arrays reproducible regardless of source order.
-
-Mohri's sequential transducer model supplies the runtime contract: at most one outgoing transition exists for an input scalar at a state, so application is linear in examined input and emitted output rather than rule-set size. General powerset determinization is unnecessary because the source is already a finite function and the graph is acyclic. General output pushing is also omitted: whole outputs on final states make rule provenance direct, and final-output identity is part of the chosen state equivalence.
-
-Sources:
-
-- Jan Daciuk, Stoyan Mihov, Bruce W. Watson, and Richard E. Watson, [Incremental Construction of Minimal Acyclic Finite-State Automata](https://aclanthology.org/J00-1002/), 2000, sections 3 and 4.1.
-- Mehryar Mohri, [Finite-State Transducers in Language and Speech Processing](https://aclanthology.org/J97-2003/), 1997, sections 2 and 3.7.
+The Grade 1 symbol, mode, and composition-policy compilers use the same
+source-to-runtime boundary. Generated modules contain only opaque runtime data
+and stable provenance identifiers. There is no second development compiler and
+no public general-purpose transducer runner.
 
 ## Runtime layout
 
-The generated graph uses five arrays:
-
-- `stateEdgeOffsets`: CSR-style edge ranges with a final sentinel;
-- `edgeLabels`: sorted Unicode scalar values;
-- `edgeTargets`: parallel destination state indexes;
-- `stateOutputIndexes`: final-output index or `-1`;
-- `outputs`: deduplicated Unicode Braille strings.
-
-The walker binary-searches each state's edge range and remembers the most recent final state, giving deterministic longest matching. Failures report the first unmatched Unicode scalar using both scalar and UTF-16 code-unit offsets and return no partial output.
+The contextual matcher stores a sorted input table with a compact initial
+index. Fixed-width strings encode per-initial input, rule, and guard offsets
+and per-input counts. Aligned rule tuples carry Braille, precedence, and guard
+count; guard tuples reference a deduplicated operand pool. The browser runtime
+selects a single initial bucket, checks its exact prefixes, evaluates typed
+guards, and applies Bellman's backward recurrence to the resulting acyclic
+segmentation graph.
 
 ## Contracted contextual program
 
-Grade 2 source rules compile their 180 distinct print inputs once into a sorted
-prefix table in the shared transducer runtime layer. A 26-way initial index
+Grade 2 source rules compile their 180 distinct print inputs once into the
+contextual runtime's sorted prefix table. A 26-way initial index
 limits each exact `startsWith` match to one lowercase-letter bucket. Fixed-width
 input rule counts, input guard counts, and per-initial offsets locate contiguous
 rule and guard ranges without repeating each input across contextual variants or
@@ -153,11 +154,12 @@ Sources:
 
 ## Provenance and rejection
 
-Compilation returns a separate provenance object containing normalized source rules plus the rule identifiers responsible for every state and every output. It is never part of the runtime object. Compilation fails for:
+Compilation returns a separate provenance object containing normalized source
+rules aligned with the generated runtime rules. It is never part of the runtime
+object. Compilation fails for:
 
 - an empty rule set or empty input, which cannot produce a traceable reachable rule;
-- duplicate input, which would make the source relation ambiguous;
-- duplicate rule identifier, which would make provenance conflicting;
+- conflicting print entries or rule identifiers in closed symbol and mode data;
 - a missing document/locator or a URL outside the named official authority.
 - duplicate contextual guards or contextual rules with unresolved precedence.
 

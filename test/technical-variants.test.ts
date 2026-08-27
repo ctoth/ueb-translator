@@ -329,7 +329,7 @@ describe("closed technical layouts and failures", () => {
     ).toMatchObject({ ok: false, reason: "invalid-value" });
   });
 
-  it("handles indexed roots and recursively scoped modifier/script items", () => {
+  it("handles indexed roots and groups non-item script arguments", () => {
     expect(
       expressionBraille({
         index: { kind: "number", value: "3" },
@@ -338,31 +338,84 @@ describe("closed technical layouts and failures", () => {
         root: "indexed",
       }),
     ).toBe(fromBrf("%9#C#H+"));
-    expect(
-      expressionBraille({
-        base: { kind: "identifier", value: "x" },
-        kind: "script",
-        placement: "right-superscript",
-        script: {
+    const cases: readonly (readonly [string, TechnicalExpression, string])[] = [
+      [
+        "multi-symbol identifier",
+        { kind: "identifier", value: "ab" },
+        "X9<AB>",
+      ],
+      [
+        "modified item",
+        {
           item: { kind: "identifier", value: "y" },
           kind: "modifier",
           modifier: "bar-above",
         },
-      }),
-    ).toBe(fromBrf("X9Y:"));
-    expect(
-      expressionBraille({
-        base: { kind: "identifier", value: "x" },
-        kind: "script",
-        placement: "right-superscript",
-        script: {
+        "X9<Y:>",
+      ],
+      [
+        "nested script",
+        {
           base: { kind: "identifier", value: "y" },
           kind: "script",
           placement: "right-subscript",
           script: { kind: "number", value: "2" },
         },
-      }),
-    ).toBe(fromBrf("X9Y5#B"));
+        "X9<Y5#B>",
+      ],
+    ];
+
+    for (const [name, script, expected] of cases) {
+      expect(
+        expressionBraille({
+          base: { kind: "identifier", value: "x" },
+          kind: "script",
+          placement: "right-superscript",
+          script,
+        }),
+        name,
+      ).toBe(fromBrf(expected));
+    }
+  });
+
+  it("matches GTM 7.1 item scope in the cited 7.3-7.4 examples", () => {
+    const examples: readonly (readonly [string, TechnicalExpression, string])[] = [
+      [
+        "GTM 7.3: x to the 2y",
+        {
+          base: { kind: "identifier", value: "x" },
+          kind: "script",
+          placement: "right-superscript",
+          script: {
+            items: [
+              { kind: "number", value: "2" },
+              { kind: "identifier", value: "y" },
+            ],
+            kind: "sequence",
+          },
+        },
+        "X9<#BY>",
+      ],
+      [
+        "GTM 7.4: e to the x squared",
+        {
+          base: { kind: "identifier", value: "e" },
+          kind: "script",
+          placement: "right-superscript",
+          script: {
+            base: { kind: "identifier", value: "x" },
+            kind: "script",
+            placement: "right-superscript",
+            script: { kind: "number", value: "2" },
+          },
+        },
+        "E9<X9#B>",
+      ],
+    ];
+
+    for (const [citation, expression, expected] of examples) {
+      expect(expressionBraille(expression), citation).toBe(fromBrf(expected));
+    }
   });
 
   it("classifies every closed expression variant as an item or group", () => {

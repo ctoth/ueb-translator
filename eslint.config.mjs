@@ -1,6 +1,24 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 
+const runtimeSourceBoundaries = [{
+  regex: "^(?:\\.\\./)+(?:rules|tools)(?:/|$)",
+  message: "Published runtime modules must not import development-only rules or tools.",
+}];
+
+const genericRuntimeBoundaries = [
+  ...runtimeSourceBoundaries,
+  {
+    group: [
+      "./generated/**",
+      "./grade1.js",
+      "./grade2.js",
+      "./technical.js",
+    ],
+    message: "Generic runtime modules must not depend on generated UEB packages or public mode entry points.",
+  },
+];
+
 export default tseslint.config(
   {
     ignores: [
@@ -40,6 +58,50 @@ export default tseslint.config(
       "@typescript-eslint/no-non-null-assertion": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/prefer-readonly": "error"
+    },
+  },
+  {
+    files: ["src/**/*.ts"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: runtimeSourceBoundaries }],
+    },
+  },
+  {
+    files: [
+      "src/composition.ts",
+      "src/contextual-transducer.ts",
+      "src/mode-engine.ts",
+      "src/symbol-program.ts",
+    ],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: genericRuntimeBoundaries }],
+    },
+  },
+  {
+    files: ["src/grade2.ts"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        paths: [{
+          message: "Grade 2 must compose generated programs instead of calling the Grade 1 entry point.",
+          name: "./grade1.js",
+        }],
+        patterns: runtimeSourceBoundaries,
+      }],
+    },
+  },
+  {
+    files: ["rules/ueb-2024/**/*.ts"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [{
+        group: [
+          "**/src/generated/**",
+          "**/src/grade1.js",
+          "**/src/grade2.js",
+          "**/src/index.js",
+          "**/src/technical.js",
+        ],
+        message: "Rule compilers may depend on runtime contracts, never generated output or public entry points.",
+      }] }],
     },
   },
 );

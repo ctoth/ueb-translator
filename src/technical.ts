@@ -575,23 +575,22 @@ function isOneItem(expression: TechnicalExpression): boolean {
     case "chemical-element":
     case "general-fraction":
     case "group":
-    case "identifier":
     case "number":
     case "radical":
     case "simple-arrow":
     case "simple-fraction":
     case "shape":
       return true;
+    case "identifier":
+      return /^\p{L}\p{M}*$/u.test(expression.value);
     case "comparison":
+    case "modifier":
     case "negation":
     case "operation":
     case "sequence":
     case "function":
-      return false;
-    case "modifier":
-      return isOneItem(expression.item);
     case "script":
-      return isOneItem(expression.base);
+      return false;
   }
 }
 
