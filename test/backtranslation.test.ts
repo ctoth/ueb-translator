@@ -94,10 +94,11 @@ describe("backtranslateGrade1", () => {
     const equivalentPrints = ["3...", "3…"] as const;
     const translated = equivalentPrints.map((print) => translateGrade1(print));
     expect(translated.every((result) => result.ok)).toBe(true);
-    if (!translated.every((result) => result.ok)) {
+    const first = translated.at(0);
+    if (first === undefined || !first.ok || !translated.every((result) => result.ok)) {
       return;
     }
-    const braille = translated[0]!.braille;
+    const braille = first.braille;
     expect(translated.map((result) => result.braille)).toEqual([braille, braille]);
 
     const candidates = candidatePrints(backtranslateGrade1(braille));
@@ -128,6 +129,28 @@ describe("backtranslateGrade1", () => {
     expect(candidatePrints(backtranslateGrade1(translated.braille))).toContain(
       "mass oe three words here",
     );
+  });
+
+  it("preserves adjacent formatted-run boundaries during validation", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{
+        runs: [
+          { text: "a" },
+          { text: "a", typeforms: ["italic"] },
+          { text: "ABC" },
+        ],
+      }],
+    } satisfies Grade1Document;
+    const translated = translateGrade1(document);
+    expect(translated).toEqual({
+      braille: "⠁⠨⠆⠁⠠⠠⠁⠃⠉",
+      mode: "grade1",
+      ok: true,
+    });
+    if (!translated.ok) return;
+
+    expect(candidatePrints(backtranslateGrade1(translated.braille))).toContain("aaABC");
   });
 
   it("rejects an illegal sequence behind a typeform prefix", () => {
@@ -308,6 +331,12 @@ describe("backtranslateGrade2", () => {
       expect(result.candidates.second.print).toMatch(/ école$/u);
       expect(result.candidates.at((1n << 40n) - 1n)?.print).toMatch(/ école$/u);
     }
+  });
+
+  it("combines a unique UEB segment with a foreign-language segment", () => {
+    const frenchWord = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    expect(grade2CandidatePrints(backtranslateGrade2(`⠯⠀${frenchWord}`)))
+      .toContain("and école");
   });
 
   it("offsets a nested mixed-UEB parse failure", () => {
