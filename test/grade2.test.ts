@@ -133,6 +133,15 @@ describe("translateGrade2", () => {
     ["Do-it-yourselfer", "⠠⠙⠤⠭⠤⠽⠗⠋⠻"],
   ] as const)("preserves standing shortforms in %s", (print, braille) => {
     expect(translateGrade2(print)).toEqual({ braille, mode: "grade2", ok: true });
+    const traced = traceGrade2(print);
+    expect(traced.ok).toBe(true);
+    if (traced.ok) {
+      expect(traced.rules.map((rule) => rule.id)).toEqual(expect.arrayContaining([
+        "UEB-10.1-do",
+        "UEB-10.1-it",
+        "UEB-Appendix-1-yourself-do-it-yourselfer",
+      ]));
+    }
   });
 
   it.each(
@@ -243,6 +252,13 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
+    for (const [text, print] of [["Abarbarea's", "ea"], ["Acuff's", "ff"]]) {
+      const result = traceGrade2(text);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.rules.map((rule) => rule.print)).not.toContain(print);
+      }
+    }
   });
 
   it("rejects a contraction with a mode prefix strictly inside it", () => {
@@ -606,12 +622,22 @@ describe("translateGrade2", () => {
     });
   });
 
-  it.each(["'twould", "AB", "aBc"])(
+  it.each(["AB", "aBc"])(
     "handles capitalization and apostrophe structure through the generic path: %s",
     (text) => {
       expect(translateGrade2(text).ok).toBe(true);
     },
   );
+
+  it.each([
+    ["couldn't", "UEB-Appendix-1-could-couldn't"],
+    ["couldn't've", "UEB-Appendix-1-could-couldn't've"],
+    ["'twould", "UEB-Appendix-1-would-'twould"],
+  ] as const)("retains the Appendix shortform in %s", (text, id) => {
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.id)).toContain(id);
+  });
 
   it("keeps rule diagnostics out of the ordinary result", () => {
     expect(translateGrade2("and")).toEqual({

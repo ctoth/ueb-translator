@@ -55,8 +55,6 @@ export interface ContextualTransducerInput {
   readonly eligibilityWord: string;
   readonly hasLowerPunctuation: boolean;
   readonly hasUpperPunctuation: boolean;
-  readonly positionalOffset: number;
-  readonly positionalWord: string;
   readonly standing: boolean;
   readonly word: string;
 }
@@ -138,9 +136,6 @@ function guardAllows(
   const end = start + print.length;
   const eligibilityStart = context.eligibilityOffset + start;
   const eligibilityWord = context.eligibilityWord;
-  const positionalStart = context.positionalOffset + start;
-  const positionalEnd = context.positionalOffset + end;
-  const positionalWord = context.positionalWord;
   switch (guard[0]) {
     case 0: {
       const operand = operandAt(program, guard[1]);
@@ -160,7 +155,7 @@ function guardAllows(
         syllableBoundaries.some((boundary) => boundary.at === end);
     }
     case 2: {
-      const following = positionalWord.charAt(positionalEnd);
+      const following = context.word.charAt(end);
       return following === "" || !"aeiouy".includes(following);
     }
     case 3:
@@ -177,24 +172,23 @@ function guardAllows(
       return !operand.split("\u0000").some((ending) => eligibilityWord.endsWith(ending));
     }
     case 8:
-      return positionalEnd !== positionalWord.length;
+      return end !== context.word.length;
     case 9:
-      return positionalStart !== 0;
+      return start !== 0;
     case 10:
-      return positionalStart !== 0 || positionalEnd !== positionalWord.length;
+      return start !== 0 || end !== context.word.length;
     case 11: {
       const operand = operandAt(program, guard[1]);
-      return positionalStart === 0 ||
-        !operand.includes(positionalWord.charAt(positionalStart - 1));
+      return start === 0 || !operand.includes(context.word.charAt(start - 1));
     }
     case 12:
       return context.standing;
     case 13:
-      return positionalEnd === positionalWord.length;
+      return end === context.word.length;
     case 14:
-      return positionalStart !== 0 && positionalEnd !== positionalWord.length;
+      return start !== 0 && end !== context.word.length;
     case 15:
-      return positionalStart === 0;
+      return start === 0;
     case 16:
       return !context.hasLowerPunctuation;
   }
