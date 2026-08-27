@@ -328,6 +328,21 @@ describe("ICEB 2024 3.4: explicit braille grouping", () => {
     });
   });
 
+  it("rejects a non-array typeforms value", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ text: "a", typeforms: "italic" }] }],
+    };
+
+    // @ts-expect-error Exercise malformed JavaScript input at the typed boundary.
+    expect(translateGrade1(document)).toEqual({
+      mode: "grade1",
+      ok: false,
+      reason: "invalid-run",
+      runIndex: 0,
+    });
+  });
+
   it.each([
     { kind: "text" },
     { kind: "ligature" },
