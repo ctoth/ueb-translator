@@ -9,7 +9,7 @@ import {
   GRADE1_MODE_PROGRAM,
   GRADE1_SYMBOL_PROGRAM,
   UEB_COMPOSITION_POLICIES,
-} from "./generated/grade1-program.js";
+} from "./generated/ueb-2024/grade1-program.js";
 
 export type {
   Grade1BrailleGroup,

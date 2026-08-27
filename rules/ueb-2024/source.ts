@@ -44,14 +44,26 @@ export type IcebRuleLocator =
   | CompositionPolicyLocator
   | ShortformLocator;
 
-export interface IcebRuleCitation<
-  Locator extends IcebRuleLocator = IcebRuleLocator,
+export interface RuleCitation<
+  Authority extends string = string,
+  Document extends string = string,
+  Locator extends string = string,
+  Url extends string = string,
 > {
-  readonly authority: "ICEB";
-  readonly document: "Rules of Unified English Braille, Third Edition (2024)";
+  readonly authority: Authority;
+  readonly document: Document;
   readonly locator: Locator;
-  readonly url: "https://iceb.org/publications/ueb/";
+  readonly url: Url;
 }
+
+export type IcebRuleCitation<
+  Locator extends IcebRuleLocator = IcebRuleLocator,
+> = RuleCitation<
+  "ICEB",
+  "Rules of Unified English Braille, Third Edition (2024)",
+  Locator,
+  "https://iceb.org/publications/ueb/"
+>;
 
 export function citeIceb<const Locator extends IcebRuleLocator>(
   locator: Locator,

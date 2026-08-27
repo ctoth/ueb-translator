@@ -4,6 +4,18 @@ import type { CompositionPolicySource } from "./compiler.js";
 export const COMPOSITION_POLICY_RULES: readonly CompositionPolicySource[] = [
   {
     citation: citeIceb("2.6"),
+    id: "UEB-policy-dash-joiners",
+    members: Array.from("–—-"),
+    name: "dashJoiners",
+  },
+  {
+    citation: citeIceb("2.6"),
+    id: "UEB-policy-elision-punctuation",
+    members: Array.from("'’"),
+    name: "elisionPunctuation",
+  },
+  {
+    citation: citeIceb("2.6"),
     id: "UEB-policy-closing-standing-punctuation",
     members: Array.from(",;:.…!?)]}”’\"'»"),
     name: "closingStandingPunctuation",

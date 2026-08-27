@@ -31,6 +31,7 @@ export interface TransducerPrefixMatch {
 
 /** Sorted rule inputs plus fixed-width initial and rule-range offsets. */
 export type CompactPrefixTable = readonly [
+  bucketAlphabet: readonly string[],
   inputs: readonly string[],
   initialInputOffsets: string,
   initialRuleOffsets: string,
@@ -167,6 +168,7 @@ export function matchPrefixTable(
     return [];
   }
   const [
+    bucketAlphabet,
     inputs,
     initialInputOffsets,
     initialRuleOffsets,
@@ -174,10 +176,12 @@ export function matchPrefixTable(
     inputRuleCounts,
     inputGuardCounts,
   ] = table;
-  const initial = input.charCodeAt(startCodeUnitIndex) - 97;
-  if (initial < 0 || initial >= 26) {
+  const codePoint = input.codePointAt(startCodeUnitIndex);
+  if (codePoint === undefined) {
     return [];
   }
+  const initial = bucketAlphabet.indexOf(String.fromCodePoint(codePoint));
+  if (initial < 0) return [];
   const inputStart = compactInteger(initialInputOffsets, initial);
   const inputEnd = compactInteger(initialInputOffsets, initial + 1);
   let ruleOffset = compactInteger(initialRuleOffsets, initial);

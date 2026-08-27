@@ -17,6 +17,8 @@ import type { SymbolProgram } from "./symbol-program.js";
 
 export interface CompositionPolicies {
   readonly closingStandingPunctuation: string;
+  readonly dashJoiners: string;
+  readonly elisionPunctuation: string;
   readonly lowerPunctuation: string;
   readonly openingStandingPunctuation: string;
   readonly standingBoundaries: string;
@@ -69,21 +71,34 @@ function isStandingBoundary(
     isOneOf(unit.source, policies.standingBoundaries);
 }
 
-function isLexicalJoiner(unit: CompositionUnit): boolean {
-  return unit.kind === "symbol" && isOneOf(unit.source, "'’–—-");
+function isLexicalJoiner(
+  unit: CompositionUnit,
+  policies: CompositionPolicies,
+): boolean {
+  return unit.kind === "symbol" && (
+    isOneOf(unit.source, policies.elisionPunctuation) ||
+    isOneOf(unit.source, policies.dashJoiners)
+  );
 }
 
-function isDashJoiner(unit: CompositionUnit | undefined): boolean {
-  return unit?.kind === "symbol" && isOneOf(unit.source, "–—-");
+function isDashJoiner(
+  unit: CompositionUnit | undefined,
+  policies: CompositionPolicies,
+): boolean {
+  return unit?.kind === "symbol" && isOneOf(unit.source, policies.dashJoiners);
 }
 
-function lexicalRanges(units: readonly CompositionUnit[]): readonly UnitRange[] {
+function lexicalRanges(
+  units: readonly CompositionUnit[],
+  policies: CompositionPolicies,
+): readonly UnitRange[] {
   const ranges: UnitRange[] = [];
   let start: number | undefined;
   let hasLetter = false;
   for (let index = 0; index <= units.length; index += 1) {
     const unit = units[index];
-    if (unit?.kind === "letter" || (unit !== undefined && isLexicalJoiner(unit))) {
+    if (unit?.kind === "letter" ||
+      (unit !== undefined && isLexicalJoiner(unit, policies))) {
       start ??= index;
       hasLetter ||= unit.kind === "letter";
       continue;
@@ -143,7 +158,7 @@ function lowerSignContext(
         unit.kind === "space" || unit.kind === "line-boundary") break;
       if (isOneOf(unit.source, policies.lowerPunctuation)) {
         hasLowerPunctuation = true;
-        const joinsLetters = isOneOf(unit.source, "'’") &&
+        const joinsLetters = isOneOf(unit.source, policies.elisionPunctuation) &&
           units[index - 1]?.kind === "letter" && units[index + 1]?.kind === "letter";
         hasRestrictingLowerPunctuation ||= !joinsLetters;
       } else {
@@ -161,23 +176,26 @@ function lowerSignContext(
   };
 }
 
-function asciiBase(unit: CompositionUnit): string | undefined {
+function programBase(
+  unit: CompositionUnit,
+  bucketAlphabet: readonly string[],
+): string | undefined {
   if (unit.kind !== "letter" || unit.modifiers.length > 0) return undefined;
   const base = unit.source.normalize("NFD").charAt(0).toLowerCase();
-  /* v8 ignore next -- supported non-ASCII letters are literal span breaks. */
-  return /^[a-z]$/u.test(base) ? base : undefined;
+  return bucketAlphabet.includes(base) ? base : undefined;
 }
 
 function exactLetterPrint(
   units: readonly CompositionUnit[],
   range: UnitRange,
+  bucketAlphabet: readonly string[],
 ): string {
   let print = "";
   for (let index = range.start; index < range.end; index += 1) {
     const unit = requiredValue(units[index], "Missing contraction unit.");
     print += requiredValue(
-      asciiBase(unit),
-      "Contraction range contains a non-ASCII letter.",
+      programBase(unit, bucketAlphabet),
+      "Contraction range contains a letter outside the program alphabet.",
     );
   }
   return print;
@@ -186,12 +204,13 @@ function exactLetterPrint(
 function contractionRanges(
   units: readonly CompositionUnit[],
   lexical: UnitRange,
+  bucketAlphabet: readonly string[],
 ): readonly UnitRange[] {
   const ranges: UnitRange[] = [];
   let start: number | undefined;
   for (let index = lexical.start; index <= lexical.end; index += 1) {
     const unit = units[index];
-    if (unit !== undefined && asciiBase(unit) !== undefined) {
+    if (unit !== undefined && programBase(unit, bucketAlphabet) !== undefined) {
       start ??= index;
       continue;
     }
@@ -205,34 +224,41 @@ function isCompleteAmbiguityLiteral(
   units: readonly CompositionUnit[],
   range: UnitRange,
   component: UnitRange,
+  policies: CompositionPolicies,
+  bucketAlphabet: readonly string[],
 ): boolean {
   if (range.start !== component.start) return false;
   if (range.end === component.end) return true;
   if (range.end + 2 !== component.end) return false;
   const apostrophe = units[range.end];
   const suffix = units[range.end + 1];
-  return apostrophe?.kind === "symbol" && isOneOf(apostrophe.source, "'’") &&
-    suffix !== undefined && asciiBase(suffix) === "s";
+  return apostrophe?.kind === "symbol" &&
+    isOneOf(apostrophe.source, policies.elisionPunctuation) &&
+    suffix !== undefined && programBase(suffix, bucketAlphabet) === "s";
 }
 
 function dashComponentAt(
   units: readonly CompositionUnit[],
   lexical: UnitRange,
   range: UnitRange,
+  policies: CompositionPolicies,
 ): UnitRange {
   let start = range.start;
-  while (start > lexical.start && !isDashJoiner(units[start - 1])) start -= 1;
+  while (start > lexical.start && !isDashJoiner(units[start - 1], policies)) start -= 1;
   let end = range.end;
-  while (end < lexical.end && !isDashJoiner(units[end])) end += 1;
+  while (end < lexical.end && !isDashJoiner(units[end], policies)) end += 1;
   return { end, start };
 }
 
-function hasOnlyAsciiLiteralLetters(
+function hasOnlyProgramLiteralLetters(
   units: readonly CompositionUnit[],
   range: UnitRange,
+  bucketAlphabet: readonly string[],
 ): boolean {
   return units.slice(range.start, range.end)
-    .every((unit) => unit.kind !== "letter" || asciiBase(unit) !== undefined);
+    .every((unit) =>
+      unit.kind !== "letter" || programBase(unit, bucketAlphabet) !== undefined
+    );
 }
 
 function canCollapseModeSpan(
@@ -314,25 +340,33 @@ export function compose(
       }
 
       if (contractions !== undefined) {
+        const [bucketAlphabet] = contractions.matcher;
         const ambiguityPrints = new Set(
           contractions.grade1Ambiguities.map(([print]) => print),
         );
         const standingLiteralInputs = new Set(contractions.standingLiteralInputs);
-        for (const lexical of lexicalRanges(units)) {
+        for (const lexical of lexicalRanges(units, policies)) {
           const standing = options.standing ?? standingAt(units, lexical, policies);
           const eligibilityWord = units.slice(lexical.start, lexical.end)
-            .map((unit) => asciiBase(unit) ?? unit.source.toLowerCase())
+            .map((unit) => programBase(unit, bucketAlphabet) ?? unit.source.toLowerCase())
             .join("");
-          for (const range of contractionRanges(units, lexical)) {
-            const component = dashComponentAt(units, lexical, range);
-            const asciiLiteralComponent = hasOnlyAsciiLiteralLetters(
+          for (const range of contractionRanges(units, lexical, bucketAlphabet)) {
+            const component = dashComponentAt(units, lexical, range, policies);
+            const programLiteralComponent = hasOnlyProgramLiteralLetters(
               units,
               component,
+              bucketAlphabet,
             );
-            const exact = exactLetterPrint(units, range);
+            const exact = exactLetterPrint(units, range, bucketAlphabet);
             if (
-              asciiLiteralComponent && standing && ambiguityPrints.has(exact) &&
-              isCompleteAmbiguityLiteral(units, range, component)
+              programLiteralComponent && standing && ambiguityPrints.has(exact) &&
+              isCompleteAmbiguityLiteral(
+                units,
+                range,
+                component,
+                policies,
+                bucketAlphabet,
+              )
             ) {
               const hasCapital = units.slice(range.start, range.end)
                 .some((unit) => unit.kind === "letter" && unit.uppercase);
@@ -349,8 +383,8 @@ export function compose(
             const lowerContext = lowerSignContext(units, range, policies);
             const word = units.slice(range.start, range.end)
               .map((unit) => requiredValue(
-                asciiBase(unit),
-                "Contraction range contains a non-ASCII letter.",
+                programBase(unit, bucketAlphabet),
+                "Contraction range contains a letter outside the program alphabet.",
               ))
               .join("");
             const eligibilityOffset = units.slice(lexical.start, range.start)
@@ -376,7 +410,7 @@ export function compose(
                 hasRestrictingLowerPunctuation:
                   lowerContext.hasRestrictingLowerPunctuation,
                 hasUpperPunctuation: lowerContext.hasUpperPunctuation,
-                standing: standing && asciiLiteralComponent,
+                standing: standing && programLiteralComponent,
                 word,
               },
               (character) => {

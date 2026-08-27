@@ -317,6 +317,19 @@ describe("translateGrade2", () => {
     if (grade1.ok && grade2.ok) expect(grade2.braille).toBe(grade1.braille);
   });
 
+  it("keeps letters outside the contraction program alphabet as span breaks", () => {
+    expect(translateGrade2("de:Tornados hinterließen")).toEqual({
+      braille: "⠙⠑⠒⠠⠞⠕⠗⠝⠁⠙⠕⠎⠀⠓⠔⠞⠻⠇⠊⠑⠨⠮⠑⠝",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2("Roßberg")).toEqual({
+      braille: "⠠⠗⠕⠨⠮⠃⠑⠗⠛",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
   it.each(["alt's", "cd's", "hm's", "yr's"])(
     "retains ambiguity protection for the possessive %s",
     (text) => {

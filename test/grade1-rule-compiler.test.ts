@@ -11,7 +11,7 @@ import {
   COMPOSITION_POLICY_RULE_IDS,
   GRADE1_MODE_RULE_IDS,
   GRADE1_SYMBOL_RULE_IDS,
-} from "../src/generated/grade1-provenance.js";
+} from "../src/generated/ueb-2024/grade1-provenance.js";
 import {
   compileCompositionPolicies,
   type CompositionPolicySource,
@@ -63,7 +63,9 @@ describe("compiled composition policies", () => {
     expect(runtime.lowerPunctuation).toContain("?");
     expect(runtime.openingStandingPunctuation).toContain("(");
     expect(runtime.standingBoundaries).toContain(" ");
-    expect(COMPOSITION_POLICY_RULE_IDS).toHaveLength(4);
+    expect(runtime.dashJoiners).toContain("-");
+    expect(runtime.elisionPunctuation).toContain("’");
+    expect(COMPOSITION_POLICY_RULE_IDS).toHaveLength(6);
   });
 
   it("rejects duplicate, missing, malformed, and uncited policies", () => {

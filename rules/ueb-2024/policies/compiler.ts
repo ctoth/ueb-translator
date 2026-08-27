@@ -17,6 +17,8 @@ export interface CompositionPolicyCompilation {
 
 const POLICY_NAMES = [
   "closingStandingPunctuation",
+  "dashJoiners",
+  "elisionPunctuation",
   "lowerPunctuation",
   "openingStandingPunctuation",
   "standingBoundaries",
@@ -44,18 +46,21 @@ export function compileCompositionPolicies(
     if (rule === undefined) throw new Error(`Composition policy ${name} is missing.`);
     return rule;
   });
-  const [closing, lower, opening, standing] = provenance;
-  /* v8 ignore next -- POLICY_NAMES fixes the four-element result above. */
-  if (closing === undefined || lower === undefined || opening === undefined || standing === undefined) {
-    throw new Error("Composition policy compilation is incomplete.");
-  }
+  const compiled = (name: CompositionPolicyName): string => {
+    const rule = byName.get(name);
+    /* v8 ignore next -- the complete-name check above established every entry. */
+    if (rule === undefined) throw new Error(`Composition policy ${name} is missing.`);
+    return rule.members.join("");
+  };
   return {
     provenance,
     runtime: {
-      closingStandingPunctuation: closing.members.join(""),
-      lowerPunctuation: lower.members.join(""),
-      openingStandingPunctuation: opening.members.join(""),
-      standingBoundaries: standing.members.join(""),
+      closingStandingPunctuation: compiled("closingStandingPunctuation"),
+      dashJoiners: compiled("dashJoiners"),
+      elisionPunctuation: compiled("elisionPunctuation"),
+      lowerPunctuation: compiled("lowerPunctuation"),
+      openingStandingPunctuation: compiled("openingStandingPunctuation"),
+      standingBoundaries: compiled("standingBoundaries"),
     },
   };
 }

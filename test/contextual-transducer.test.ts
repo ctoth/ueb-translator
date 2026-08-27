@@ -6,6 +6,10 @@ import {
   type ContextualGuardTuple,
   type ContextualTransducerProgram,
 } from "../src/contextual-transducer.js";
+import {
+  matchPrefixTable,
+  type CompactPrefixTable,
+} from "../src/transducer.js";
 
 function encode(values: readonly number[]): string {
   return String.fromCharCode(...values.map((value) => value + 0x100));
@@ -35,6 +39,7 @@ function translateGuard(
 const suffixGuardProgram: ContextualTransducerProgram = {
   guards: [[5, 8]],
   matcher: [
+    ["a"],
     ["ab"],
     encode([0, ...Array.from({ length: 26 }, () => 1)]),
     encode([0, ...Array.from({ length: 26 }, () => 1)]),
@@ -73,8 +78,8 @@ describe("runContextualTransducer", () => {
   });
 
   it("uses local start, end, previous, and following positions", () => {
-    expect(translateGuard("aba", [2])).toBe("ABA");
-    expect(translateGuard("abz", [2])).toBe("XZ");
+    expect(translateGuard("aba", [2, 0], ["aeiouy"])).toBe("ABA");
+    expect(translateGuard("abz", [2, 0], ["aeiouy"])).toBe("XZ");
     expect(translateGuard("ab", [8])).toBe("AB");
     expect(translateGuard("abz", [8])).toBe("XZ");
     expect(translateGuard("ab", [9])).toBe("AB");
@@ -94,7 +99,7 @@ describe("runContextualTransducer", () => {
   it("fails closed for malformed cross-array references", () => {
     expect(() => translate(false, {
       ...suffixGuardProgram,
-      guards: [[6, 0]],
+      guards: [[6, 0, 1]],
       stringOperands: [],
     })).toThrow(/missing operand/u);
     expect(() => translate(false, {
@@ -108,17 +113,64 @@ describe("runContextualTransducer", () => {
   });
 });
 
+describe("matchPrefixTable", () => {
+  const table: CompactPrefixTable = [
+    ["a"],
+    ["a"],
+    encode([0, 1]),
+    encode([0, 1]),
+    encode([0, 0]),
+    encode([1]),
+    encode([0]),
+  ];
+
+  it("returns no match at the end of input", () => {
+    expect(matchPrefixTable(table, "", 0)).toEqual([]);
+  });
+
+  it("fails closed for malformed per-input compact arrays", () => {
+    expect(matchPrefixTable([
+      table[0],
+      [],
+      table[2],
+      table[3],
+      table[4],
+      table[5],
+      table[6],
+    ], "a", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      table[0],
+      table[1],
+      table[2],
+      table[3],
+      table[4],
+      "",
+      table[6],
+    ], "a", 0)).toEqual([]);
+    expect(matchPrefixTable([
+      table[0],
+      table[1],
+      table[2],
+      table[3],
+      table[4],
+      table[5],
+      "",
+    ], "a", 0)).toEqual([]);
+  });
+});
+
 describe("invertContextualProgram", () => {
   it("fails closed when compact inverse arrays disagree", () => {
     expect(() => invertContextualProgram({
       ...suffixGuardProgram,
       matcher: [
+        suffixGuardProgram.matcher[0],
         ["ab"],
-        suffixGuardProgram.matcher[1],
         suffixGuardProgram.matcher[2],
         suffixGuardProgram.matcher[3],
+        suffixGuardProgram.matcher[4],
         "",
-        suffixGuardProgram.matcher[5],
+        suffixGuardProgram.matcher[6],
       ],
     })).toThrow(/malformed rule count/u);
 
@@ -131,11 +183,12 @@ describe("invertContextualProgram", () => {
       ...suffixGuardProgram,
       matcher: [
         [],
-        suffixGuardProgram.matcher[1],
+        [],
         suffixGuardProgram.matcher[2],
         suffixGuardProgram.matcher[3],
+        suffixGuardProgram.matcher[4],
         "",
-        suffixGuardProgram.matcher[5],
+        suffixGuardProgram.matcher[6],
       ],
     })).toThrow(/unindexed inverse rules/u);
   });

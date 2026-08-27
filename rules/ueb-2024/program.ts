@@ -35,7 +35,7 @@ function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
   return [
     ...(constraint.words.length === 0
       ? []
-      : [{ kind: "not-word", words: constraint.words } as const]),
+      : [{ ignoredCharacters: "-", kind: "not-word", words: constraint.words } as const]),
     ...(constraint.endings.length === 0
       ? []
       : [{ endings: constraint.endings, kind: "not-word-ending" } as const]),
@@ -122,7 +122,7 @@ export function compileGrade2RuleGuards(
         NO_STRUCTURAL_CROSSING,
         ...(exceptionWords.length === 0
           ? []
-          : [{ kind: "not-word", words: exceptionWords } as const]),
+          : [{ ignoredCharacters: "-", kind: "not-word", words: exceptionWords } as const]),
         ...(rule.print === "ever"
           ? [{ characters: "ei", kind: "previous-not" } as const]
           : rule.print === "one"
@@ -181,9 +181,12 @@ function longerShortform(rule: ShortformSource): ContextualRuleSource | undefine
   }
   const guards: ContextualRuleGuard[] = [{ kind: "standing-alone" }];
   if (rule.print === "children") {
-    guards.push({ kind: "following-not-vowel-y" });
+    guards.push({ characters: "aeiouy", kind: "following-not-vowel-y" });
   } else if (rule.print !== "braille" && rule.print !== "great") {
-    guards.push({ kind: "following-not-vowel-y" }, { kind: "word-start" });
+    guards.push(
+      { characters: "aeiouy", kind: "following-not-vowel-y" },
+      { kind: "word-start" },
+    );
   }
   return {
     braille: rule.braille,
@@ -218,7 +221,7 @@ const appendixRules: readonly ContextualRuleSource[] = APPENDIX1_LONGER_WORDS.ma
       citation: word.citation,
       guards: [
         { kind: "standing-alone" },
-        { kind: "eligibility-word", word: word.print },
+        { kind: "eligibility-word", pluralSuffix: "s", word: word.print },
       ],
       id: word.id,
       input: word.base,
@@ -280,4 +283,7 @@ export const GRADE2_STANDING_LITERAL_INPUTS: readonly string[] = GRADE2_RULES
   .sort((left, right) => left.localeCompare(right, "en"));
 
 export const GRADE2_CONTEXTUAL_COMPILATION: ContextualCompilationResult =
-  compileContextualRules(GRADE2_CONTEXTUAL_RULES);
+  compileContextualRules(
+    GRADE2_CONTEXTUAL_RULES,
+    [...LATIN_LETTER_BY_CELL.values()],
+  );

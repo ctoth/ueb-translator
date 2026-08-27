@@ -13,7 +13,7 @@ import {
   GRADE1_MODE_IDS,
   GRADE1_MODE_PROGRAM,
   GRADE1_SYMBOL_PROGRAM,
-} from "./generated/grade1-program.js";
+} from "./generated/ueb-2024/grade1-program.js";
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 
