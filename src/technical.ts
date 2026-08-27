@@ -804,11 +804,6 @@ function renderExpression(
         return renderSuccess(braille, [
           { end: RADICAL_OPEN.length, kind: "symbol", offset: 0 },
           ...shiftRequirements(radicand.requirements, RADICAL_OPEN.length),
-          {
-            end: braille.length,
-            kind: "symbol",
-            offset: braille.length - RADICAL_CLOSE.length,
-          },
         ]);
       }
       const index = renderScriptValue(expression.index, profile);
@@ -823,11 +818,6 @@ function renderExpression(
         { end: indexOffset, kind: "symbol", offset: RADICAL_OPEN.length },
         ...shiftRequirements(index.requirements, indexOffset),
         ...shiftRequirements(radicand.requirements, radicandOffset),
-        {
-          end: braille.length,
-          kind: "symbol",
-          offset: braille.length - RADICAL_CLOSE.length,
-        },
       ]);
     }
     case "script": {
@@ -888,7 +878,7 @@ function renderExpression(
         ) {
           requirements.push({
             end: offset + 1,
-            kind: "numeric-symbol",
+            kind: "numeric-mode",
             offset,
           });
         }
@@ -1028,7 +1018,8 @@ function renderMatrix(
   const expectedColumns = block.rows[0].length;
   const enclosure = matrixEnclosureCells(block.enclosure);
   const gap = BRAILLE_SPACE.repeat(block.columnGap);
-  const renderedRows: string[] = [];
+  let braille = "";
+  const requirements: Grade1Requirement[] = [];
   for (const [rowIndex, row] of block.rows.entries()) {
     if (row.length !== expectedColumns) {
       return {
@@ -1040,25 +1031,30 @@ function renderMatrix(
         rowIndex,
       };
     }
-    const cells: string[] = [];
-    for (const expression of row) {
+    if (rowIndex > 0) {
+      braille += "\n";
+    }
+    braille += enclosure.open;
+    for (const [columnIndex, expression] of row.entries()) {
+      if (columnIndex > 0) {
+        braille += gap;
+      }
       const rendered = renderExpression(expression, profile);
       if (!rendered.ok) {
         return rendered;
       }
-      cells.push(applyNumericGrade1(rendered).braille);
+      requirements.push(
+        ...shiftRequirements(rendered.requirements, braille.length),
+      );
+      braille += rendered.braille;
     }
-    renderedRows.push(
-      `${enclosure.open}${cells.join(gap)}${enclosure.close}`,
-    );
+    braille += enclosure.close;
   }
-  return renderSuccess(
-    `${GRADE1_PASSAGE_INDICATOR}${renderedRows.join("\n")}${GRADE1_TERMINATOR}`,
-  );
+  return renderSuccess(braille, requirements);
 }
 
 type Grade1RequirementKind =
-  | "numeric-symbol"
+  | "numeric-mode"
   | "standing-symbol"
   | "standing-word"
   | "symbol";
@@ -1116,7 +1112,7 @@ function activeRequirements(
       return false;
     }
     if (
-      requirement.kind === "numeric-symbol" ||
+      requirement.kind === "numeric-mode" ||
       requirement.kind === "symbol"
     ) {
       return true;
@@ -1141,47 +1137,40 @@ function applyInsertions(
   return result;
 }
 
-function numericGrade1Insertions(
+function numericModeInsertions(
   requirements: readonly Grade1Requirement[],
 ): readonly Grade1Insertion[] {
   return requirements
-    .filter((requirement) => requirement.kind === "numeric-symbol")
+    .filter((requirement) => requirement.kind === "numeric-mode")
     .map((requirement) => ({
       indicator: GRADE1_SYMBOL_INDICATOR,
       offset: requirement.offset,
     }));
 }
 
-function applyNumericGrade1(rendered: RenderSuccess): RenderSuccess {
-  return renderSuccess(
-    applyInsertions(rendered.braille, numericGrade1Insertions(rendered.requirements)),
-  );
-}
-
-function applyPreferredGrade1(
+function applyGrade1Protection(
   rendered: RenderSuccess,
+  policy: TechnicalGrade1Policy,
 ): RenderSuccess {
   const { braille, requirements } = rendered;
-  const insertions: Grade1Insertion[] = [];
+  const requiredNumericMode = numericModeInsertions(requirements);
+  if (policy === "all-technical") {
+    return renderSuccess(
+      `${GRADE1_PASSAGE_INDICATOR}${applyInsertions(braille, requiredNumericMode)}${GRADE1_TERMINATOR}`,
+    );
+  }
+
+  const insertions: Grade1Insertion[] = [...requiredNumericMode];
   let protectedSequenceCount = 0;
   for (const sequence of symbolsSequences(braille)) {
     const active = activeRequirements(requirements, sequence);
     if (active.length === 0) {
       continue;
     }
-    const numeric = active.filter(
-      (requirement) => requirement.kind === "numeric-symbol",
-    );
     const counted = active.filter(
-      (requirement) => requirement.kind !== "numeric-symbol",
+      (requirement) => requirement.kind !== "numeric-mode",
     );
     if (counted.length === 0) {
-      insertions.push(
-        ...numeric.map((requirement): Grade1Insertion => ({
-          indicator: GRADE1_SYMBOL_INDICATOR,
-          offset: requirement.offset,
-        })),
-      );
       continue;
     }
     protectedSequenceCount += 1;
@@ -1193,18 +1182,8 @@ function applyPreferredGrade1(
         indicator: GRADE1_WORD_INDICATOR,
         offset: sequence.start,
       });
-      insertions.push(...numeric.map((requirement): Grade1Insertion => ({
-        indicator: GRADE1_SYMBOL_INDICATOR,
-        offset: requirement.offset,
-      })));
       continue;
     }
-    insertions.push(
-      ...numeric.map((requirement): Grade1Insertion => ({
-        indicator: GRADE1_SYMBOL_INDICATOR,
-        offset: requirement.offset,
-      })),
-    );
     for (const requirement of counted) {
       insertions.push({
         indicator: GRADE1_SYMBOL_INDICATOR,
@@ -1214,12 +1193,8 @@ function applyPreferredGrade1(
     }
   }
   if (protectedSequenceCount >= 3) {
-    const numericProtected = applyInsertions(
-      braille,
-      numericGrade1Insertions(requirements),
-    );
     return renderSuccess(
-      `${GRADE1_PASSAGE_INDICATOR}${numericProtected}${GRADE1_TERMINATOR}`,
+      `${GRADE1_PASSAGE_INDICATOR}${applyInsertions(braille, requiredNumericMode)}${GRADE1_TERMINATOR}`,
     );
   }
   return renderSuccess(applyInsertions(braille, insertions));
@@ -1237,15 +1212,14 @@ function renderBlock(
       if (!rendered.ok) {
         return rendered;
       }
-      if (profile.grade1 === "preferred") {
-        return applyPreferredGrade1(rendered);
-      }
-      return renderSuccess(
-        `${GRADE1_PASSAGE_INDICATOR}${applyNumericGrade1(rendered).braille}${GRADE1_TERMINATOR}`,
-      );
+      return applyGrade1Protection(rendered, profile.grade1);
     }
-    case "matrix":
-      return renderMatrix(block, profile);
+    case "matrix": {
+      const rendered = renderMatrix(block, profile);
+      return rendered.ok
+        ? applyGrade1Protection(rendered, "all-technical")
+        : rendered;
+    }
   }
 }
 
