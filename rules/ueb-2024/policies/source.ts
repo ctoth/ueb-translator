@@ -23,7 +23,7 @@ export const COMPOSITION_POLICY_RULES: readonly CompositionPolicySource[] = [
   {
     citation: citeIceb("10.5"),
     id: "UEB-policy-lower-punctuation",
-    members: Array.from(",;:.…?\"'“”‘’–—-"),
+    members: Array.from(",;:.…!?\"'“”‘’–—-"),
     name: "lowerPunctuation",
   },
   {

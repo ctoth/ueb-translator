@@ -415,6 +415,20 @@ describe("translateGrade2", () => {
   });
 
   it.each([
+    ["in,", "⠊⠝⠂"],
+    ["in;", "⠊⠝⠆"],
+    ["in:", "⠊⠝⠒"],
+    ["in.", "⠊⠝⠲"],
+    ["in!", "⠊⠝⠖"],
+    ["enough!", "⠢⠳⠣⠖"],
+  ] as const)(
+    "avoids an all-lower sequence before lower punctuation in %s",
+    (text, braille) => {
+      expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+    },
+  );
+
+  it.each([
     ["Ch'in", "in"],
     ["Ch'in's", "in"],
     ["ch'in", "in"],
