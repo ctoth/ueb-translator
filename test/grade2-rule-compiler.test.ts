@@ -22,6 +22,7 @@ import {
   GRADE1_SYMBOL_PROGRAM,
   UEB_COMPOSITION_POLICIES,
 } from "../src/generated/ueb-2024/grade1-program.js";
+import { GRADE2_PROGRAM } from "../src/generated/ueb-2024/grade2-program.js";
 
 const rule = (
   id: `test-${string}`,
@@ -183,9 +184,12 @@ describe("compileContextualRules", () => {
 });
 
 describe("Grade 2 source compilation", () => {
-  it("derives Grade 1 ambiguity and whole-word groupsign guards", () => {
+  it("derives and emits Grade 1 ambiguity guards (issue #22)", () => {
     expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["b", "⠃"]);
     expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["ab", "⠁⠃"]);
+    expect(GRADE2_PROGRAM.grade1Ambiguities).toEqual(
+      GRADE2_AMBIGUOUS_LETTER_SEQUENCES,
+    );
     expect(GRADE2_STANDING_LITERAL_INPUTS).toEqual([
       "ch", "ou", "sh", "st", "th", "wh",
     ]);
