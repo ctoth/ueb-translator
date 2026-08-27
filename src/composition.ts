@@ -92,6 +92,23 @@ function isDashJoiner(
   return unit?.kind === "symbol" && isOneOf(unit.source, policies.dashJoiners);
 }
 
+function eligibilityCharacter(
+  unit: CompositionUnit,
+  policies: CompositionPolicies,
+  bucketAlphabet: readonly string[],
+): string {
+  const base = programBase(unit, bucketAlphabet);
+  if (base !== undefined) return base;
+  const canonicalElision = Array.from(policies.elisionPunctuation)[0];
+  if (
+    canonicalElision !== undefined && unit.kind === "symbol" &&
+    isOneOf(unit.source, policies.elisionPunctuation)
+  ) {
+    return canonicalElision;
+  }
+  return unit.source.toLowerCase();
+}
+
 function lexicalRanges(
   units: readonly CompositionUnit[],
   policies: CompositionPolicies,
@@ -356,7 +373,7 @@ export function compose(
         for (const lexical of lexicalRanges(units, policies)) {
           const standing = options.standing ?? standingAt(units, lexical, policies);
           const eligibilityWord = units.slice(lexical.start, lexical.end)
-            .map((unit) => programBase(unit, bucketAlphabet) ?? unit.source.toLowerCase())
+            .map((unit) => eligibilityCharacter(unit, policies, bucketAlphabet))
             .join("");
           for (const range of contractionRanges(units, lexical, bucketAlphabet)) {
             const component = dashComponentAt(units, lexical, range, policies);

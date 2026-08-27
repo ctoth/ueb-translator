@@ -424,6 +424,17 @@ describe("translateGrade2", () => {
     });
   });
 
+  it("keeps McDonald literal because it has no UEB-eligible contraction", () => {
+    expect(translateGrade2("McDonald")).toEqual({
+      braille: "⠠⠍⠉⠠⠙⠕⠝⠁⠇⠙",
+      mode: "grade2",
+      ok: true,
+    });
+    const result = traceGrade2("McDonald");
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules).toEqual([]);
+  });
+
   it("continues capitals word mode through apostrophes in both grades", () => {
     const expected = {
       braille: "⠠⠠⠙⠕⠝⠄⠞",
@@ -943,6 +954,7 @@ describe("translateGrade2", () => {
     ["couldn't", "UEB-Appendix-1-could-couldn't"],
     ["couldn't've", "UEB-Appendix-1-could-couldn't've"],
     ["'twould", "UEB-Appendix-1-would-'twould"],
+    ["’twould", "UEB-Appendix-1-would-'twould"],
   ] as const)("retains the Appendix shortform in %s", (text, id) => {
     const result = traceGrade2(text);
     expect(result.ok).toBe(true);
