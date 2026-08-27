@@ -53,7 +53,7 @@ function isIntegerInRange(value: unknown, minimum: number, maximum: number): val
 }
 
 function isContextualGuardOpcode(value: unknown): value is ContextualGuardOpcode {
-  return isIntegerInRange(value, 0, 16);
+  return isIntegerInRange(value, 0, 17);
 }
 
 function isNoOperandGuardOpcode(
@@ -66,8 +66,8 @@ function isNoOperandGuardOpcode(
 
 function isStringOperandGuardOpcode(
   value: ContextualGuardOpcode,
-): value is 2 | 7 | 11 {
-  return value === 2 || value === 7 || value === 11;
+): value is 2 | 7 | 11 | 17 {
+  return value === 2 || value === 7 || value === 11 || value === 17;
 }
 
 function isTwoStringOperandGuardOpcode(

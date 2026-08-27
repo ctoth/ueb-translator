@@ -219,6 +219,7 @@ export const GRADE2_RULE_IDS: readonly Grade2RuleId[] = [
   "UEB-10.4-ed",
   "UEB-10.9-either",
   "UEB-10.6-en",
+  "UEB-10.8-ence-preference-exception",
   "UEB-10.8-ence",
   "UEB-10.5-enough",
   "UEB-10.4-er",
