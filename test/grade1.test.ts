@@ -166,13 +166,14 @@ describe("ICEB 2024 4.3: explicit ligatures", () => {
   });
 
   it("rejects a sparse ligature letters array", () => {
-    const letters = new Array<string>(2) as [string, string];
+    const letters = new Array<string>(2);
     letters[0] = "a";
     const document = {
       kind: "grade1-document",
       paragraphs: [{ runs: [{ kind: "ligature", letters }] }],
-    } satisfies Grade1Document;
+    };
 
+    // @ts-expect-error Exercise malformed JavaScript input at the typed boundary.
     expect(translateGrade1(document)).toEqual({
       mode: "grade1",
       ok: false,

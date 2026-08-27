@@ -1,13 +1,6 @@
 export { encodeCell } from "./cell.js";
 export { translateGrade1 } from "./grade1.js";
 export { translateUeb } from "./translate.js";
-export { runTransducer } from "./transducer.js";
-export { translateBasicGrade1 } from "./basic-grade1.js";
-export type {
-  BasicGrade1Result,
-  BasicGrade1Success,
-  BasicGrade1UnsupportedCharacter,
-} from "./basic-grade1.js";
 export type { UebDot } from "./cell.js";
 export type {
   Grade1Document,
@@ -32,9 +25,3 @@ export type {
   UebTranslationResult,
 } from "./translate.js";
 export type { TechnicalInput, TechnicalTextInput } from "./technical.js";
-export type {
-  CompiledTransducer,
-  TransducerNoMatchingRule,
-  TransducerResult,
-  TransducerSuccess,
-} from "./transducer.js";
