@@ -16,6 +16,7 @@ import { npmPack, type PackedFile } from "./npm-pack.mts";
 
 interface BrowserEntryPoint {
   readonly check: string;
+  readonly declaration: string;
   readonly name: string;
   readonly specifier: string;
 }
@@ -23,36 +24,43 @@ interface BrowserEntryPoint {
 const ENTRY_POINTS = [
   {
     check: 'entry.translateUeb({ input: "A", mode: "grade1" }).braille === "⠠⠁"',
+    declaration: "./dist/index.d.ts",
     name: "combined",
     specifier: "ueb-translator",
   },
   {
     check: 'entry.encodeCell([1, 2, 3, 4, 5, 6]) === "⠿"',
+    declaration: "./dist/cell.d.ts",
     name: "cells",
     specifier: "ueb-translator/cells",
   },
   {
     check: 'entry.translateGrade1("A").braille === "⠠⠁"',
+    declaration: "./dist/grade1.d.ts",
     name: "grade1",
     specifier: "ueb-translator/grade1",
   },
   {
     check: 'entry.translateGrade2("and").braille === "⠯"',
+    declaration: "./dist/grade2.d.ts",
     name: "grade2",
     specifier: "ueb-translator/grade2",
   },
   {
     check: 'entry.traceGrade2("and").braille === "⠯"',
+    declaration: "./dist/grade2-diagnostics.d.ts",
     name: "grade2-diagnostics",
     specifier: "ueb-translator/grade2/diagnostics",
   },
   {
     check: 'entry.translateTechnicalInput({ kind: "technical-text", text: "3+2=5" }).ok === true',
+    declaration: "./dist/technical.d.ts",
     name: "technical",
     specifier: "ueb-translator/technical",
   },
   {
     check: 'entry.backtranslateGrade1("⠁").kind === "unique"',
+    declaration: "./dist/backtranslation.d.ts",
     name: "backtranslation",
     specifier: "ueb-translator/backtranslation",
   },
@@ -63,6 +71,8 @@ const EXPECTED_EXPORTS = ENTRY_POINTS.map(({ specifier }) =>
     ? "."
     : `./${specifier.slice("ueb-translator/".length)}`
 ).sort();
+
+const LEGACY_NODE_MODULE_RESOLUTION: ts.ModuleResolutionKind = 2;
 
 function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -82,6 +92,48 @@ function run(command: string, args: readonly string[], cwd: string): string {
     throw new Error(`${command} exited ${String(result.status)}.\n${output}`);
   }
   return result.stdout;
+}
+
+function validateAreTypesWrong(
+  archivePath: string,
+  repositoryRoot: string,
+): { readonly cjsResolvesToEsm: number; readonly legacyNodeNoResolution: number } {
+  const executable = resolve(
+    repositoryRoot,
+    "node_modules",
+    ".bin",
+    process.platform === "win32" ? "attw.cmd" : "attw",
+  );
+  const report: unknown = JSON.parse(run(
+    executable,
+    [
+      archivePath,
+      "--profile",
+      "esm-only",
+      "--format",
+      "json",
+      "--entrypoints",
+      ...EXPECTED_EXPORTS,
+    ],
+    repositoryRoot,
+  ));
+  if (!isRecord(report) || !isRecord(report["problems"])) {
+    throw new Error("ATTW did not return a structured problems report.");
+  }
+  const cjsProblems = report["problems"]["CJSResolvesToESM"];
+  const cjsResolvesToEsm = Array.isArray(cjsProblems) ? cjsProblems.length : 0;
+  const noResolution = report["problems"]["NoResolution"];
+  const legacyNodeNoResolution = Array.isArray(noResolution)
+    ? noResolution.filter((problem) =>
+      isRecord(problem) && problem["resolutionKind"] === "node10"
+    ).length
+    : 0;
+  if (cjsResolvesToEsm > 0 || legacyNodeNoResolution > 0) {
+    throw new Error(
+      `ATTW found ${String(cjsResolvesToEsm)} CJSResolvesToESM and ${String(legacyNodeNoResolution)} node10 NoResolution problems.`,
+    );
+  }
+  return { cjsResolvesToEsm, legacyNodeNoResolution };
 }
 
 function validatePackedFiles(files: readonly PackedFile[]): void {
@@ -105,6 +157,54 @@ function validateExportMap(packageJson: unknown): void {
     throw new Error(
       `Packed exports differ. Expected ${EXPECTED_EXPORTS.join(", ")}; got ${actual.join(", ")}.`,
     );
+  }
+  if (packageJson["types"] !== "./dist/index.d.ts") {
+    throw new Error("Packed package root types must point to ./dist/index.d.ts.");
+  }
+  const expectedTypeMappings = Object.fromEntries(
+    ENTRY_POINTS.filter(({ specifier }) => specifier !== "ueb-translator").map(
+      ({ declaration, specifier }) => [
+        specifier.slice("ueb-translator/".length),
+        [declaration.slice(2)],
+      ],
+    ),
+  );
+  const typesVersions = packageJson["typesVersions"];
+  const actualTypeMappings = isRecord(typesVersions) && isRecord(typesVersions["*"])
+    ? typesVersions["*"]
+    : undefined;
+  const expectedMappingKeys = Object.keys(expectedTypeMappings).sort();
+  const actualMappingKeys = actualTypeMappings === undefined
+    ? []
+    : Object.keys(actualTypeMappings).sort();
+  if (
+    actualTypeMappings === undefined ||
+    actualMappingKeys.join("\n") !== expectedMappingKeys.join("\n") ||
+    expectedMappingKeys.some((key) =>
+      JSON.stringify(actualTypeMappings[key]) !== JSON.stringify(expectedTypeMappings[key])
+    )
+  ) {
+    throw new Error("Packed package typesVersions do not exactly map every public subpath.");
+  }
+  const exports = packageJson["exports"];
+  for (const entryPoint of ENTRY_POINTS) {
+    const exportKey = entryPoint.specifier === "ueb-translator"
+      ? "."
+      : `./${entryPoint.specifier.slice("ueb-translator/".length)}`;
+    const exported = exports[exportKey];
+    if (!isRecord(exported) || !isRecord(exported["import"])) {
+      throw new Error(`${exportKey} must expose declarations only under its import condition.`);
+    }
+    const expectedImport = {
+      types: entryPoint.declaration,
+      default: entryPoint.declaration.replace(/\.d\.ts$/u, ".js"),
+    };
+    if (
+      Object.keys(exported).join("\n") !== "import" ||
+      JSON.stringify(exported["import"]) !== JSON.stringify(expectedImport)
+    ) {
+      throw new Error(`${exportKey} has an invalid ESM-only conditional export.`);
+    }
   }
   const dependencies = packageJson["dependencies"];
   if (dependencies !== undefined && (!isRecord(dependencies) || Object.keys(dependencies).length > 0)) {
@@ -164,11 +264,7 @@ async function validateDeclarations(
   return declarationPaths.length;
 }
 
-async function validateConsumerTypes(fixtureRoot: string): Promise<void> {
-  const consumerPath = resolve(fixtureRoot, "consumer.mts");
-  await writeFile(
-    consumerPath,
-    `
+const CONSUMER_SOURCE = `
 import { translateUeb, type UebTranslationRequest } from "ueb-translator";
 import { encodeCell, type UebDot } from "ueb-translator/cells";
 import { translateGrade1, type Grade1Document } from "ueb-translator/grade1";
@@ -183,32 +279,90 @@ const grade1 = { kind: "grade1-document", paragraphs: [] } satisfies Grade1Docum
 const grade2 = { kind: "grade2-document", runs: [] } satisfies Grade2Document;
 const technical = { kind: "technical-text", text: "3+2=5" } satisfies TechnicalInput;
 void [translateUeb(request), encodeCell(dots), translateGrade1(grade1), translateGrade2(grade2), traceGrade2("and"), translateTechnicalInput(technical), backtranslateGrade1("⠁")];
-`,
-    "utf8",
-  );
-  const program = ts.createProgram({
-    options: {
-      exactOptionalPropertyTypes: true,
-      lib: ["lib.es2022.d.ts", "lib.dom.d.ts"],
-      module: ts.ModuleKind.NodeNext,
-      moduleResolution: ts.ModuleResolutionKind.NodeNext,
-      noEmit: true,
-      noUncheckedIndexedAccess: true,
-      strict: true,
-      target: ts.ScriptTarget.ES2022,
-      types: [],
-      verbatimModuleSyntax: true,
+`;
+
+interface ConsumerCompilerOptions {
+  readonly module: ts.ModuleKind;
+  readonly moduleResolution: ts.ModuleResolutionKind;
+  readonly name: string;
+  readonly suffix: string;
+}
+
+function consumerCompilerOptions(
+  module: ts.ModuleKind,
+  moduleResolution: ts.ModuleResolutionKind,
+): ts.CompilerOptions {
+  return {
+    exactOptionalPropertyTypes: true,
+    ignoreDeprecations: "6.0",
+    lib: ["lib.es2022.d.ts", "lib.dom.d.ts"],
+    module,
+    moduleResolution,
+    noEmit: true,
+    noUncheckedIndexedAccess: true,
+    strict: true,
+    target: ts.ScriptTarget.ES2022,
+    types: [],
+    verbatimModuleSyntax: true,
+  };
+}
+
+async function validateConsumerTypes(fixtureRoot: string): Promise<void> {
+  const modes = [
+    {
+      module: ts.ModuleKind.ESNext,
+      moduleResolution: LEGACY_NODE_MODULE_RESOLUTION,
+      name: "legacy-node",
+      suffix: "ts",
     },
-    rootNames: [consumerPath],
+    {
+      module: ts.ModuleKind.Node16,
+      moduleResolution: ts.ModuleResolutionKind.Node16,
+      name: "node16-esm",
+      suffix: "mts",
+    },
+    {
+      module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.Bundler,
+      name: "bundler",
+      suffix: "ts",
+    },
+  ] satisfies readonly ConsumerCompilerOptions[];
+  for (const mode of modes) {
+    const consumerPath = resolve(fixtureRoot, `${mode.name}.${mode.suffix}`);
+    await writeFile(consumerPath, CONSUMER_SOURCE, "utf8");
+    const program = ts.createProgram({
+      options: consumerCompilerOptions(mode.module, mode.moduleResolution),
+      rootNames: [consumerPath],
+    });
+    const diagnostics = ts.getPreEmitDiagnostics(program);
+    if (diagnostics.length > 0) {
+      throw new Error(
+        `${mode.name} consumer failed:\n${ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+          getCanonicalFileName: (path) => path,
+          getCurrentDirectory: () => fixtureRoot,
+          getNewLine: () => "\n",
+        })}`,
+      );
+    }
+  }
+
+  const commonJsPath = resolve(fixtureRoot, "commonjs-consumer.cts");
+  await writeFile(commonJsPath, CONSUMER_SOURCE, "utf8");
+  const program = ts.createProgram({
+    options: consumerCompilerOptions(ts.ModuleKind.Node16, ts.ModuleResolutionKind.Node16),
+    rootNames: [commonJsPath],
   });
   const diagnostics = ts.getPreEmitDiagnostics(program);
-  if (diagnostics.length > 0) {
+  const missingSpecifiers = ENTRY_POINTS.filter(({ specifier }) =>
+    !diagnostics.some((diagnostic) =>
+      diagnostic.code === 2307 &&
+      ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n").includes(`'${specifier}'`)
+    )
+  ).map(({ specifier }) => specifier);
+  if (missingSpecifiers.length > 0) {
     throw new Error(
-      ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-        getCanonicalFileName: (path) => path,
-        getCurrentDirectory: () => fixtureRoot,
-        getNewLine: () => "\n",
-      }),
+      `Node16 CommonJS unexpectedly received declarations for: ${missingSpecifiers.join(", ")}.`,
     );
   }
 }
@@ -307,6 +461,7 @@ try {
   validateExportMap(packedPackageJson);
   const declarationCount = await validateDeclarations(packageRoot, pack.files);
   await validateConsumerTypes(fixtureRoot);
+  const attw = validateAreTypesWrong(resolve(temporaryRoot, pack.filename), repositoryRoot);
 
   browser = await chromium.launch({ headless: true });
   let isolated = false;
@@ -323,6 +478,7 @@ try {
 
   console.log(JSON.stringify({
     browser: "chromium",
+    attw,
     declarations: declarationCount,
     entryPoints: ENTRY_POINTS.map(({ specifier }) => specifier),
     files: pack.files.length,

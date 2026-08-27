@@ -19,6 +19,7 @@ describe("packed browser package", () => {
     expect(verification.error, output).toBeUndefined();
     expect(verification.status, output).toBe(0);
     expect(output).toContain('"browser":"chromium"');
+    expect(output).toContain('"attw":{"cjsResolvesToEsm":0,"legacyNodeNoResolution":0}');
     expect(output).toContain('"grade1Isolated":true');
   }, 125_000);
 });
