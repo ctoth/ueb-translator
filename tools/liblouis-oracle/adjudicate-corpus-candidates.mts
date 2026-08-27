@@ -235,7 +235,7 @@ async function reconcile(
     }
   }
   const resolved = staleCases.size - refreshed;
-  if (refreshed !== 454 || classifiedNew !== 0 || resolved !== 863) {
+  if (refreshed !== 1_217 || classifiedNew !== 1_905 || resolved !== 1_978) {
     throw new Error(`Unexpected corpus reconciliation shape: ${JSON.stringify({
       classifiedNew,
       refreshed,

@@ -100,9 +100,19 @@ export interface NoStandardsParse<Mode extends BacktranslationMode> {
   readonly scalarIndex: number;
 }
 
+export interface TooAmbiguous<Mode extends BacktranslationMode> {
+  readonly codeUnitIndex: number;
+  readonly kind: "invalid";
+  readonly limit: number;
+  readonly mode: Mode;
+  readonly reason: "too-ambiguous";
+  readonly scalarIndex: number;
+}
+
 export type InvalidBacktranslation<Mode extends BacktranslationMode> =
   | InvalidBrailleCharacter<Mode>
-  | NoStandardsParse<Mode>;
+  | NoStandardsParse<Mode>
+  | TooAmbiguous<Mode>;
 
 export type BacktranslationResult<
   Candidate extends BacktranslationCandidate,
@@ -143,6 +153,8 @@ interface ValidationBoundary {
 interface DecodeResult {
   readonly candidates: readonly DecodedPrint[];
   readonly furthestCodeUnitIndex: number;
+  readonly tooAmbiguousAt?: number;
+  readonly tooAmbiguousLimit?: number;
 }
 
 function validationBoundariesKey(
@@ -311,6 +323,8 @@ implements AmbiguousCandidates<Candidate> {
 }
 
 const BRAILLE_BLANK = "⠀";
+const DECODE_CANDIDATE_LIMIT = 4_096;
+const DECODE_PATH_LIMIT = 65_536;
 const CAPITAL_INDICATOR = modeIndicator(
   GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.capitals, "symbol",
 );
@@ -473,6 +487,12 @@ function capitalAfterBoundary(mode: CapitalsMode): CapitalsMode {
   return mode === "passage" ? mode : "none";
 }
 
+function capitalAfterSymbol(mode: CapitalsMode, print: string): CapitalsMode {
+  return mode === "word" && (print === "'" || print === "’")
+    ? mode
+    : capitalAfterBoundary(mode);
+}
+
 function scalarIndexAt(input: string, codeUnitIndex: number): number {
   return Array.from(input.slice(0, codeUnitIndex)).length;
 }
@@ -492,20 +512,30 @@ function decode(
     semanticFormatting: false,
     validationBoundaries: [],
   };
-  const queue: DecodePath[] = [initialPath];
+  const pending: DecodePath[] = [initialPath];
   const seen = new Set<string>([pathKey(initialPath)]);
   let furthestCodeUnitIndex = 0;
   const completed = new Map<string, DecodedPrint>();
+  let tooAmbiguousAt: number | undefined;
+  let tooAmbiguousLimit: number | undefined;
 
   const enqueue = (path: DecodePath): void => {
     const key = pathKey(path);
     if (!seen.has(key)) {
+      if (seen.size >= DECODE_PATH_LIMIT) {
+        tooAmbiguousAt ??= path.index;
+        tooAmbiguousLimit ??= DECODE_PATH_LIMIT;
+        return;
+      }
       seen.add(key);
-      queue.push(path);
+      pending.push(path);
     }
   };
 
-  for (const path of queue) {
+  while (pending.length > 0) {
+    const path = pending.pop();
+    /* v8 ignore next -- the loop condition proves a pending path exists. */
+    if (path === undefined) break;
     furthestCodeUnitIndex = Math.max(furthestCodeUnitIndex, path.index);
     if (path.index === input.length) {
       if (
@@ -518,6 +548,14 @@ function decode(
           validationBoundariesKey(path.validationBoundaries),
         ].join("\u0000");
         const previous = completed.get(completedKey);
+        if (
+          previous === undefined &&
+          completed.size >= DECODE_CANDIDATE_LIMIT
+        ) {
+          tooAmbiguousAt ??= path.index;
+          tooAmbiguousLimit ??= DECODE_CANDIDATE_LIMIT;
+          break;
+        }
         completed.set(completedKey, {
           forwardBraille: path.forwardBraille,
           print: path.print,
@@ -686,7 +724,7 @@ function decode(
           if (path.modifiers.length === 0 && path.capitals !== "next") {
             enqueue({
               ...path,
-              capitals: capitalAfterBoundary(path.capitals),
+              capitals: capitalAfterSymbol(path.capitals, token.print),
               forwardBraille: path.forwardBraille + token.braille,
               grade1Next: false,
               index: nextIndex,
@@ -715,6 +753,8 @@ function decode(
   return {
     candidates: completedEntries.map(([, candidate]) => candidate),
     furthestCodeUnitIndex,
+    ...(tooAmbiguousAt === undefined ? {} : { tooAmbiguousAt }),
+    ...(tooAmbiguousLimit === undefined ? {} : { tooAmbiguousLimit }),
   };
 }
 
@@ -754,6 +794,22 @@ function noParse<Mode extends BacktranslationMode>(
     kind: "invalid",
     mode,
     reason: "no-standards-parse",
+    scalarIndex: scalarIndexAt(input, codeUnitIndex),
+  };
+}
+
+function tooAmbiguous<Mode extends BacktranslationMode>(
+  input: string,
+  mode: Mode,
+  codeUnitIndex: number,
+  limit: number,
+): TooAmbiguous<Mode> {
+  return {
+    codeUnitIndex,
+    kind: "invalid",
+    limit,
+    mode,
+    reason: "too-ambiguous",
     scalarIndex: scalarIndexAt(input, codeUnitIndex),
   };
 }
@@ -896,53 +952,72 @@ export function backtranslateGrade1(
   if (invalid !== undefined) {
     return invalid;
   }
-  if (braille.includes(CAPITALS_PASSAGE_INDICATOR)) {
-    const decoded = decode(braille, GRADE1_BUCKETS);
-    const candidates = nonEmpty(grade1Candidates(decoded));
-    return candidates === undefined
-      ? noParse(braille, "grade1", decoded.furthestCodeUnitIndex)
-      : candidateProduct([candidates], combineGrade1);
-  }
   const segments: MutableNonEmpty<NonEmpty<Grade1BacktranslationCandidate>> = [
     fixedGrade1Segment(""),
   ];
+  const appendDecoded = (
+    segmentBraille: string,
+    start: number,
+  ): InvalidBacktranslation<"grade1"> | undefined => {
+    const decoded = decode(segmentBraille, GRADE1_BUCKETS);
+    if (
+      decoded.tooAmbiguousAt !== undefined &&
+      decoded.tooAmbiguousLimit !== undefined
+    ) {
+      return tooAmbiguous(
+        braille,
+        "grade1",
+        start + decoded.tooAmbiguousAt,
+        decoded.tooAmbiguousLimit,
+      );
+    }
+    const candidates = nonEmpty(grade1Candidates(decoded));
+    if (candidates === undefined) {
+      return noParse(braille, "grade1", start + decoded.furthestCodeUnitIndex);
+    }
+    segments.push(candidates);
+    return undefined;
+  };
   let segmentStart = 0;
   let index = 0;
   while (index < braille.length) {
+    if (braille.startsWith(CAPITALS_PASSAGE_INDICATOR, index)) {
+      const terminatorAt = braille.indexOf(
+        CAPITALS_TERMINATOR,
+        index + CAPITALS_PASSAGE_INDICATOR.length,
+      );
+      if (terminatorAt >= 0) {
+        const passageEnd = terminatorAt + CAPITALS_TERMINATOR.length;
+        const contextIndependent = segmentStart === index &&
+          (passageEnd === braille.length ||
+            separatorAt(braille, passageEnd) !== undefined);
+        if (!contextIndependent) {
+          index = passageEnd;
+          continue;
+        }
+        const invalid = appendDecoded(braille.slice(index, passageEnd), index);
+        if (invalid !== undefined) return invalid;
+        index = passageEnd;
+        segmentStart = index;
+        continue;
+      }
+    }
     const separator = separatorAt(braille, index);
     if (separator === undefined) {
       index += 1;
       continue;
     }
     if (segmentStart < index) {
-      const segmentBraille = braille.slice(segmentStart, index);
-      const decoded = decode(segmentBraille, GRADE1_BUCKETS);
-      const candidates = nonEmpty(grade1Candidates(decoded));
-      if (candidates === undefined) {
-        return noParse(
-          braille,
-          "grade1",
-          segmentStart + decoded.furthestCodeUnitIndex,
-        );
-      }
-      segments.push(candidates);
+      const invalid = appendDecoded(braille.slice(segmentStart, index), segmentStart);
+      if (invalid !== undefined) return invalid;
     }
     segments.push(fixedGrade1Segment(separator.print));
     index += separator.width;
     segmentStart = index;
   }
   if (segmentStart < braille.length) {
-    const segmentBraille = braille.slice(segmentStart);
-    const decoded = decode(segmentBraille, GRADE1_BUCKETS);
-    const candidates = nonEmpty(grade1Candidates(decoded));
-    if (candidates === undefined) {
-      return noParse(
-        braille,
-        "grade1",
-        segmentStart + decoded.furthestCodeUnitIndex,
-      );
-    }
-    segments.push(candidates);
+    const invalid = appendDecoded(braille.slice(segmentStart), segmentStart);
+    if (invalid !== undefined) return invalid;
   }
   return candidateProduct(segments, combineGrade1);
 }
@@ -964,6 +1039,17 @@ function backtranslatePlainGrade2(
     if (segmentStart < index) {
       const segmentBraille = braille.slice(segmentStart, index);
       const decoded = decode(segmentBraille, GRADE2_BUCKETS);
+      if (
+        decoded.tooAmbiguousAt !== undefined &&
+        decoded.tooAmbiguousLimit !== undefined
+      ) {
+        return tooAmbiguous(
+          braille,
+          "grade2",
+          segmentStart + decoded.tooAmbiguousAt,
+          decoded.tooAmbiguousLimit,
+        );
+      }
       const candidates = nonEmpty(grade2Candidates(segmentBraille, decoded));
       if (candidates === undefined) {
         return noParse(
@@ -981,6 +1067,17 @@ function backtranslatePlainGrade2(
   if (segmentStart < braille.length) {
     const segmentBraille = braille.slice(segmentStart);
     const decoded = decode(segmentBraille, GRADE2_BUCKETS);
+    if (
+      decoded.tooAmbiguousAt !== undefined &&
+      decoded.tooAmbiguousLimit !== undefined
+    ) {
+      return tooAmbiguous(
+        braille,
+        "grade2",
+        segmentStart + decoded.tooAmbiguousAt,
+        decoded.tooAmbiguousLimit,
+      );
+    }
     const candidates = nonEmpty(grade2Candidates(segmentBraille, decoded));
     if (candidates === undefined) {
       return noParse(
