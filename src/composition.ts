@@ -66,6 +66,23 @@ function isOneOf(value: string, values: string): boolean {
   return value.length > 0 && values.includes(value);
 }
 
+function asciiDoubleQuoteEmission(
+  units: readonly CompositionUnit[],
+  index: number,
+): string | undefined {
+  if (units[index]?.source !== "\"") return undefined;
+  const contentBefore = /[\p{L}\p{M}\p{N})\]}’”»]/u
+    .test(units[index - 1]?.source ?? "");
+  const contentAfter = /[\p{L}\p{M}\p{N}([{‘“«]/u
+    .test(units[index + 1]?.source ?? "");
+
+  // ICEB 2024 Rules 7.6.1 and 7.6.5: infer ordinary straight quotes from
+  // context; retain the nondirectional sign only when direction cannot be inferred.
+  if (contentBefore && !contentAfter) return "⠴";
+  if (!contentBefore && contentAfter) return "⠦";
+  return undefined;
+}
+
 function isStandingBoundary(
   unit: CompositionUnit,
   policies: CompositionPolicies,
@@ -329,7 +346,9 @@ export function compose(
       const parsed = parseCompositionTextWithSymbols(text, symbolRuntime);
       if (!parsed.ok) return parsed;
       const { units } = parsed;
-      const emissions = units.map(emitCompositionUnit);
+      const emissions = units.map((unit, index) =>
+        asciiDoubleQuoteEmission(units, index) ?? emitCompositionUnit(unit)
+      );
       const required = new Set<number>();
       const rules: ContextualAppliedRule[] = [];
       const collapsedRanges: UnitRange[] = [];

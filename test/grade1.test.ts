@@ -219,10 +219,28 @@ describe("ICEB 2024 3 and 7: general symbols and punctuation", () => {
     });
   });
 
-  it("translates primes, proportion, ditto, gender, and nondirectional quotes", () => {
+  it("translates primes, proportion, ditto, gender, and inferred ASCII quotes", () => {
     expect(translateGrade1("∷ ′ ″ 〃 ♀♂ \"x\" «x»")).toEqual({
       braille:
-        "⠒⠒⠀⠶⠀⠶⠶⠀⠐⠂⠀⠘⠭⠘⠽⠀⠠⠶⠭⠠⠶⠀⠸⠦⠭⠸⠴",
+        "⠒⠒⠀⠶⠀⠶⠶⠀⠐⠂⠀⠘⠭⠘⠽⠀⠦⠭⠴⠀⠸⠦⠭⠸⠴",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
+  it("infers a closing ASCII double quote under ICEB 2024 Rules 7.6.1 and 7.6.5", () => {
+    expect(translateGrade1("\"a")).toEqual({
+      braille: "⠦⠁",
+      mode: "grade1",
+      ok: true,
+    });
+    expect(translateGrade1("(a\"")).toEqual({
+      braille: "⠐⠣⠁⠴",
+      mode: "grade1",
+      ok: true,
+    });
+    expect(translateGrade1("a\"b")).toEqual({
+      braille: "⠁⠠⠶⠃",
       mode: "grade1",
       ok: true,
     });
