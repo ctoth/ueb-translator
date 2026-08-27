@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import { gunzipSync } from "node:zlib";
 
 import { prepareWikinews } from "../corpus-benchmark/prepare.mjs";
 import { buildDocumentRecord } from "../corpus-benchmark/src/corpus.js";
@@ -13,6 +14,7 @@ import { extractGutenbergBody } from "../corpus-benchmark/src/text.js";
 const GUTENBERG = {
   id: "gutenberg:ebook-1342",
   rawSha256: "74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806",
+  retainedPath: "tools/liblouis-oracle/fixtures/gutenberg-1342.txt.gz",
   url: "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
 } as const;
 const WIKINEWS_SNAPSHOT = "20260801";
@@ -26,14 +28,6 @@ async function exists(path: string): Promise<boolean> {
   }
 }
 
-async function download(url: string, path: string): Promise<void> {
-  const response = await fetch(url, { redirect: "follow" });
-  if (!response.ok) {
-    throw new Error(`Download failed with HTTP ${String(response.status)}: ${url}`);
-  }
-  await writeFile(path, new Uint8Array(await response.arrayBuffer()), { flag: "wx" });
-}
-
 async function preparePinnedGutenberg(cache: string): Promise<string> {
   const downloadDirectory = join(cache, "downloads", "gutenberg");
   const rawPath = join(downloadDirectory, `${GUTENBERG.rawSha256}.txt`);
@@ -43,7 +37,8 @@ async function preparePinnedGutenberg(cache: string): Promise<string> {
   }
   await mkdir(downloadDirectory, { recursive: true });
   if (!(await exists(rawPath))) {
-    await download(GUTENBERG.url, rawPath);
+    const retained = gunzipSync(await readFile(resolve(GUTENBERG.retainedPath)));
+    await writeFile(rawPath, retained, { flag: "wx" });
   }
   const raw = await readFile(rawPath);
   const digest = createHash("sha256").update(raw).digest("hex");

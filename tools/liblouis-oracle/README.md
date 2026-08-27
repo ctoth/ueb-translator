@@ -110,10 +110,11 @@ the pinned archive URL, verifies SHA-256
 `5587667caa20c4891390c2d42dbb4d5c4c3f41bee77af1457ece3ba23fb859cc`,
 and records upstream Git commit `5ef55f9c42730ebe4394a78b77855468a6f15dd2`.
 The ignored development cache retains SCOWL's copyright notice. It also
-prepares Wikinews snapshot 20260801 and the retained Project Gutenberg ebook
-1342 bytes identified by SHA-256
+prepares Wikinews snapshot 20260801 and expands the repository-retained,
+gzip-compressed Project Gutenberg ebook 1342 bytes identified by SHA-256
 `74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806`.
-The mutable Gutenberg URL is never trusted without that byte digest.
+Fresh CI runners never depend on the mutable Gutenberg URL retaining those
+exact bytes.
 
 CI runs all 658,033 prepared SCOWL entries and every bounded sentence chunk
 from both prepared corpora. `empirical-disagreements.json` retains the exact
