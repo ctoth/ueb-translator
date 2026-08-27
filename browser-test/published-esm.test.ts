@@ -55,12 +55,12 @@ describe("published browser ESM", () => {
       kind: "unique",
       mode: "grade1",
     });
-    const result = backtranslateGrade2("⠁⠃");
+    const result = backtranslateGrade2("⠨⠎");
     expect(result.kind).toBe("ambiguous");
     if (result.kind === "ambiguous") {
       expect(Array.from(result.candidates, (candidate) => candidate.print)).toEqual([
-        "ab",
-        "about",
+        "ς",
+        "σ",
       ]);
     }
   });

@@ -203,6 +203,7 @@ export function resolveModes(
   modeIds: readonly ModeId[],
   units: readonly ModeUnit[],
   sequenceBoundaryClass: ModeClassId,
+  inlineWordTerminatorModeIds: readonly ModeId[] = [],
 ): ModeResolution {
   const prefixes = new Map<number, string>();
   const suffixes = new Map<number, string>();
@@ -226,7 +227,8 @@ export function resolveModes(
         continue;
       }
       const previous = units[index - 1];
-      const startsInsideSequence = previous !== undefined && (
+      const startsInsideSequence = previous !== undefined &&
+        !hasModeClass(previous, sequenceBoundaryClass) && (
         isModeMember(program, modeId, previous) ||
         terminatesMode(program, modeId, previous) ||
         continuesMode(program, modeId, previous)
@@ -238,10 +240,26 @@ export function resolveModes(
       ) {
         const symbol = modeIndicator(program, modeId, "symbol");
         const word = modeIndicator(program, modeId, "word");
-        const continuing = symbol === word
+        const inlineTerminator = inlineWordTerminatorModeIds.includes(modeId);
+        const continuing = symbol === word || inlineTerminator
           ? wordSpan(program, modeId, units, index, sequenceBoundaryClass, true)
           : undefined;
-        append(prefixes, index, symbol);
+        const kind = continuing === undefined
+          ? "symbol"
+          : indicatorKind(program, modeId, continuing.memberCount, 1);
+        append(prefixes, index, modeIndicator(program, modeId, kind));
+        const following = continuing === undefined ? undefined : units[continuing.end];
+        if (
+          kind === "word" && inlineTerminator && continuing !== undefined &&
+          following !== undefined && terminatesMode(program, modeId, following) &&
+          !hasModeClass(following, sequenceBoundaryClass)
+        ) {
+          append(
+            suffixes,
+            continuing.end - 1,
+            modeIndicator(program, modeId, "terminator"),
+          );
+        }
         index = continuing?.end ?? index + 1;
         continue;
       }
@@ -273,12 +291,21 @@ export function resolveModes(
         units,
         index,
         sequenceBoundaryClass,
-        modeIndicator(program, modeId, "symbol") ===
-          modeIndicator(program, modeId, "word"),
+        inlineWordTerminatorModeIds.includes(modeId) ||
+          modeIndicator(program, modeId, "symbol") ===
+            modeIndicator(program, modeId, "word"),
       );
       if (word !== undefined) {
         const kind = indicatorKind(program, modeId, word.memberCount, 1);
         append(prefixes, index, modeIndicator(program, modeId, kind));
+        const following = units[word.end];
+        if (
+          kind === "word" && inlineWordTerminatorModeIds.includes(modeId) &&
+          following !== undefined && terminatesMode(program, modeId, following) &&
+          !hasModeClass(following, sequenceBoundaryClass)
+        ) {
+          append(suffixes, word.end - 1, modeIndicator(program, modeId, "terminator"));
+        }
         index = word.end;
         continue;
       }

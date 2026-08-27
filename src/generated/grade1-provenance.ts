@@ -9,6 +9,12 @@ export const GRADE1_MODE_RULE_IDS: readonly string[] = [
   "UEB-mode-typeform-transcriber-defined",
   "UEB-mode-typeform-underline"
 ];
+export const COMPOSITION_POLICY_RULE_IDS: readonly string[] = [
+  "UEB-policy-closing-standing-punctuation",
+  "UEB-policy-lower-punctuation",
+  "UEB-policy-opening-standing-punctuation",
+  "UEB-policy-standing-boundaries"
+];
 export const GRADE1_SYMBOL_RULE_IDS: readonly string[] = [
   "UEB-symbol-21",
   "UEB-symbol-22",

@@ -36,9 +36,11 @@ instead of shipping a duplicate reverse table. A candidate is retained only if
 `traceGrade2(candidate.print)` reproduces the complete input. Its `rules` field
 is the resulting ordered list of generated ICEB rule IDs.
 
-This makes ambiguity observable. For example, `⠁⠃` has both `ab` and `about`:
-the latter uses the normative shortform `UEB-10.9-about`, while the former is a
-literal two-letter word. Neither candidate is ranked above the other.
+This makes ambiguity observable without retaining readings that the forward
+rules disambiguate. For example, `⠁⠃` is uniquely `about`: literal `ab` is
+emitted as `⠰⠰⠁⠃` by the compile-time-derived Grade 1 pass. Greek sigma and
+final sigma remain distinct candidates for `⠨⠎` because UEB gives them the same
+cells and neither spelling needs a disambiguating control.
 
 ## Algorithm and complexity
 

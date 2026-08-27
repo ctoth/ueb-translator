@@ -64,6 +64,14 @@ explicit UEB context that cannot be recovered by the automaton itself, such as
 standing-alone status and caller-provided structural boundaries. It contains no
 contraction classes, named exceptions, guard opcodes, or rule-selection loop.
 
+The Grade 2 generator also derives two closed tables from the same rule
+inventory. The first maps every contraction output made solely from literary
+letter cells back to the literal letter sequence that would otherwise collide
+with it. The second finds strong groupsigns whose cells collide with a
+standing whole-word sign. The composed runtime uses those tables to select
+literal emission and Grade 1 symbol/word scope. No handwritten ambiguity list
+can drift when a contraction is added or removed.
+
 For each lexical position, permitted rules and the literal-letter fallback form
 the outgoing edges of an acyclic segmentation graph. A backward dynamic program
 uses Bellman's optimality recurrence to minimize emitted cells, then declared
@@ -87,9 +95,12 @@ Numeric a-j ambiguity, punctuation continuation, sequence boundaries, and
 capital word/passage selection therefore remain generated data rather than
 runtime vocabulary.
 
-The thin Grade 1 orchestrator tokenizes, adds the contextual classes required by
-the standard, asks the resolver for indicator placement, and emits cells from
-the generated symbol program. Explicit document nodes still carry typeform and
+The `compose(symbols, modes, policies, contractions?)` boundary parses once,
+adds contextual classes, resolves modes, and replaces eligible literal spans
+with contextual outputs. Grade 1 omits the contraction package. Grade 2 passes
+it, so capitals passages, numeric protection, punctuation context, and
+typeforms surround contraction rather than being reimplemented by a second
+orchestrator. Explicit document nodes still carry typeform, boundary, and
 Braille-grouping semantics that cannot be recovered from plain text.
 
 ## Structured technical runtime

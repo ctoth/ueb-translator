@@ -42,11 +42,19 @@ export interface ContextualTransducerProgram {
   readonly stringOperands: readonly string[];
 }
 
+export interface ComposedContractionProgram extends ContextualTransducerProgram {
+  readonly grade1Ambiguities: readonly (
+    readonly [print: string, braille: string]
+  )[];
+  readonly standingLiteralInputs: readonly string[];
+}
+
 export interface ContextualTransducerInput {
   readonly boundaries: readonly ContextualBoundary[];
   readonly eligibilityOffset: number;
   readonly eligibilityWord: string;
   readonly hasLowerPunctuation: boolean;
+  readonly hasRestrictingLowerPunctuation: boolean;
   readonly hasUpperPunctuation: boolean;
   readonly standing: boolean;
   readonly word: string;
@@ -127,15 +135,17 @@ function guardAllows(
   context: ContextualTransducerInput,
 ): boolean {
   const end = start + print.length;
+  const eligibilityStart = context.eligibilityOffset + start;
+  const eligibilityWord = context.eligibilityWord;
   switch (guard[0]) {
     case 0: {
       const operand = operandAt(program, guard[1]);
-      const eligible = context.eligibilityWord === operand ||
-        (context.eligibilityWord.endsWith("s") &&
-          context.eligibilityWord.slice(0, -1) === operand);
+      const eligible = eligibilityWord === operand ||
+        (eligibilityWord.endsWith("s") &&
+          eligibilityWord.slice(0, -1) === operand);
       return eligible && operand.startsWith(
         print,
-        context.eligibilityOffset + start,
+        eligibilityStart,
       );
     }
     case 1: {
@@ -150,17 +160,17 @@ function guardAllows(
       return following === "" || !"aeiouy".includes(following);
     }
     case 3:
-      return !context.hasLowerPunctuation || context.hasUpperPunctuation;
+      return !context.hasRestrictingLowerPunctuation || context.hasUpperPunctuation;
     case 4:
     case 5:
       return !crossesBoundaryMask(start, end, context.boundaries, guard[1]);
     case 6: {
       const operand = operandAt(program, guard[1]);
-      return !operand.split("\u0000").includes(context.word.replaceAll("-", ""));
+      return !operand.split("\u0000").includes(eligibilityWord.replaceAll("-", ""));
     }
     case 7: {
       const operand = operandAt(program, guard[1]);
-      return !operand.split("\u0000").some((ending) => context.word.endsWith(ending));
+      return !operand.split("\u0000").some((ending) => eligibilityWord.endsWith(ending));
     }
     case 8:
       return end !== context.word.length;

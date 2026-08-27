@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import { parseEmpiricalLedger } from "../src/empirical-ledger.js";
@@ -27,7 +29,83 @@ const group = {
   },
 } as const;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isUnknownArray(value: unknown): value is readonly unknown[] {
+  return Array.isArray(value);
+}
+
+function outputAt(entry: Record<string, unknown>, side: "local" | "oracle"): string {
+  const evidence = entry[side];
+  return isRecord(evidence) && typeof evidence["output"] === "string"
+    ? evidence["output"]
+    : "";
+}
+
 describe("grouped empirical ledger", () => {
+  it("retains the reconciled corpus evidence and issue 61 classifications", () => {
+    const rawLedger: unknown = JSON.parse(readFileSync(
+      new URL("../empirical-corpus-disagreements.json", import.meta.url),
+      "utf8",
+    ));
+    const parsed = parseEmpiricalLedger(rawLedger);
+    expect(parsed.ok).toBe(true);
+    expect(isRecord(rawLedger)).toBe(true);
+    if (!isRecord(rawLedger)) return;
+    const disagreements = rawLedger["disagreements"];
+    expect(isUnknownArray(disagreements)).toBe(true);
+    if (!isUnknownArray(disagreements)) return;
+    expect(disagreements).toHaveLength(137_904);
+    const unsupportedForeign = disagreements.filter((entry) =>
+      isRecord(entry) && entry["groupId"] === "corpus-unsupported-foreign"
+    );
+    expect(unsupportedForeign).toHaveLength(3_064);
+    const groups = rawLedger["groups"];
+    expect(isUnknownArray(groups)).toBe(true);
+    if (!isUnknownArray(groups)) return;
+    expect(groups.find((value) =>
+      isRecord(value) && value["id"] === "corpus-unsupported-foreign"
+    )).toMatchObject({
+      id: "corpus-unsupported-foreign",
+      verdict: { issues: [61], kind: "our-bug" },
+    });
+  });
+
+  it("records Grade 1 word scope separately from symbol insertion defects", () => {
+    const rawLedger: unknown = JSON.parse(readFileSync(
+      new URL("../empirical-disagreements.json", import.meta.url),
+      "utf8",
+    ));
+    const parsed = parseEmpiricalLedger(rawLedger);
+    expect(parsed.ok).toBe(true);
+    expect(isRecord(rawLedger)).toBe(true);
+    if (!isRecord(rawLedger)) return;
+    const disagreements = rawLedger["disagreements"];
+    expect(isUnknownArray(disagreements)).toBe(true);
+    if (!isUnknownArray(disagreements)) return;
+    const wordScoped = disagreements.filter((entry): entry is Record<string, unknown> =>
+      isRecord(entry) && entry["groupId"] === "grade1-word-scope-liblouis"
+    );
+    expect(wordScoped).toHaveLength(27);
+    expect(wordScoped.every((entry) =>
+      outputAt(entry, "local").startsWith("⠰⠰") &&
+      outputAt(entry, "oracle").startsWith("⠰") &&
+      !outputAt(entry, "oracle").startsWith("⠰⠰")
+    )).toBe(true);
+    const groups = rawLedger["groups"];
+    expect(isUnknownArray(groups)).toBe(true);
+    if (!isUnknownArray(groups)) return;
+    const wordGroup = groups.find((value) =>
+      isRecord(value) && value["id"] === "grade1-word-scope-liblouis"
+    );
+    expect(wordGroup).toMatchObject({
+      id: "grade1-word-scope-liblouis",
+      verdict: { kind: "liblouis-bug" },
+    });
+  });
+
   it("expands one source-backed group into exact per-case verdict evidence", () => {
     expect(parseEmpiricalLedger({
       disagreements: [{ ...evidence, groupId: "grade1" }],

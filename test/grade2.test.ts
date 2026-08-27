@@ -128,6 +128,22 @@ describe("translateGrade2", () => {
     }
   });
 
+  it.each([
+    ["do-it-yourselfer", "⠙⠤⠭⠤⠽⠗⠋⠻"],
+    ["Do-it-yourselfer", "⠠⠙⠤⠭⠤⠽⠗⠋⠻"],
+  ] as const)("preserves standing shortforms in %s", (print, braille) => {
+    expect(translateGrade2(print)).toEqual({ braille, mode: "grade2", ok: true });
+    const traced = traceGrade2(print);
+    expect(traced.ok).toBe(true);
+    if (traced.ok) {
+      expect(traced.rules.map((rule) => rule.id)).toEqual(expect.arrayContaining([
+        "UEB-10.1-do",
+        "UEB-10.1-it",
+        "UEB-Appendix-1-yourself-do-it-yourselfer",
+      ]));
+    }
+  });
+
   it.each(
     INITIAL_CONTRACTION_EXCEPTIONS.flatMap((constraint) =>
       constraint.words.map((word) => ({
@@ -198,9 +214,160 @@ describe("translateGrade2", () => {
     });
   });
 
+  it.each([
+    ["b", "⠰⠃"],
+    ["ab", "⠰⠰⠁⠃"],
+    ["a al", "⠁⠀⠰⠰⠁⠇"],
+    ["st", "⠎⠞"],
+    ["3d", "⠼⠉⠰⠙"],
+    ["page 10a", "⠏⠁⠛⠑⠀⠼⠁⠚⠰⠁"],
+  ] as const)("protects the ambiguous Grade 1 sequence %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  it.each([
+    ["AB", "⠰⠠⠠⠁⠃"],
+    ["Ab", "⠰⠠⠁⠃"],
+    ["AATech", "⠠⠠⠁⠁⠞⠠⠄⠑⠡"],
+  ] as const)("orders and preserves composed modes in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  it("rejects a contraction that crosses a capitals terminator", () => {
+    expect(translateGrade2("ABEd")).toEqual({
+      braille: "⠠⠠⠁⠃⠑⠠⠄⠙",
+      mode: "grade2",
+      ok: true,
+    });
+    const result = traceGrade2("ABEd");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.rules.map((rule) => rule.print)).not.toContain("ed");
+    }
+  });
+
+  it("uses full lexical coordinates for contractions after an apostrophe", () => {
+    expect(translateGrade2("D'Arcy")).toEqual({
+      braille: "⠠⠙⠄⠠⠜⠉⠽",
+      mode: "grade2",
+      ok: true,
+    });
+    for (const [text, print] of [
+      ["Abarbarea's", "ea"],
+      ["Acuff's", "ff"],
+    ] as const) {
+      const result = traceGrade2(text);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.rules.map((rule) => rule.print)).not.toContain(print);
+      }
+    }
+  });
+
+  it("rejects a contraction with a mode prefix strictly inside it", () => {
+    const contracted = traceGrade2("aND");
+    expect(contracted.ok).toBe(true);
+    if (contracted.ok) {
+      expect(contracted.rules.map((rule) => rule.print)).not.toContain("and");
+    }
+  });
+
+  it("uses a capital word indicator for an internal uppercase run", () => {
+    expect(translateGrade2("PowerPC")).toEqual({
+      braille: "⠠⠏⠪⠻⠠⠠⠏⠉",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("remaps a capitals terminator after a collapsed contraction", () => {
+    expect(translateGrade2("ANDx")).toEqual({
+      braille: "⠠⠠⠯⠠⠄⠭",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("terminates a restarted internal capitals word", () => {
+    expect(translateGrade2("aBCd")).toEqual({
+      braille: "⠁⠠⠠⠃⠉⠠⠄⠙",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("contracts ASCII ranges without guarding a non-ASCII word", () => {
+    const contracted = traceGrade2("caféhouse");
+    expect(contracted.ok).toBe(true);
+    if (contracted.ok) {
+      expect(contracted.rules.map((rule) => rule.print)).toContain("ou");
+    }
+    expect(translateGrade2("Asunción")).toEqual({
+      braille: "⠠⠁⠎⠥⠝⠉⠊⠘⠌⠕⠝",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("does not treat a trailing ASCII segment as the whole non-ASCII word", () => {
+    const grade1 = translateGrade1("madroñas");
+    const grade2 = translateGrade2("madroñas");
+    expect(grade1.ok).toBe(true);
+    expect(grade2.ok).toBe(true);
+    if (grade1.ok && grade2.ok) expect(grade2.braille).toBe(grade1.braille);
+  });
+
+  it.each(["alt's", "cd's", "hm's", "yr's"])(
+    "retains ambiguity protection for the possessive %s",
+    (text) => {
+      const result = translateGrade2(text);
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.braille.startsWith("⠰⠰")).toBe(true);
+    },
+  );
+
+  it("resolves capitals around contractions with the shared mode program", () => {
+    expect(translateGrade2("THE CAT SAT ON")).toEqual({
+      braille: "⠠⠠⠠⠮⠀⠉⠁⠞⠀⠎⠁⠞⠀⠕⠝⠠⠄",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2("PowerPoint caféhouse")).toEqual({
+      braille: "⠠⠏⠪⠻⠠⠏⠕⠔⠞⠀⠉⠁⠋⠘⠌⠑⠓⠳⠎⠑",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2("aND")).toEqual({
+      braille: "⠁⠠⠠⠝⠙",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("keeps separator context in the composed pass", () => {
+    expect(translateGrade2("was?")).toEqual({
+      braille: "⠺⠁⠎⠦",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2("?-190")).toEqual({
+      braille: "⠰⠦⠤⠼⠁⠊⠚",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
   it("applies the UEB 2.6 standing-alone punctuation rules", () => {
     expect(translateGrade2("(can) out-and-out")).toEqual({
       braille: "⠐⠣⠉⠐⠜⠀⠳⠤⠯⠤⠳",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("treats a CRLF unit as a standing boundary", () => {
+    expect(translateGrade2("can\r\nbut")).toEqual({
+      braille: "⠉\r\n⠃",
       mode: "grade2",
       ok: true,
     });
@@ -220,6 +387,70 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
+    expect(translateGrade2("be-be")).toEqual({
+      braille: "⠃⠑⠤⠃⠑",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it.each([
+    ["Ch'in", "in"],
+    ["Ch'in's", "in"],
+    ["ch'in", "in"],
+    ["In's", "in"],
+    ["in's", "in"],
+    ["in't", "in"],
+    ["samh'in", "in"],
+    ["enough's", "enough"],
+  ] as const)("allows the lower wordsign before an apostrophe affix in %s", (text, print) => {
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.print)).toContain(print);
+  });
+
+  it.each(["BEd", "BEng", "BeShT", "BeShT's", "BeV"])(
+    "does not collapse be across an adjacent capitals transition in %s",
+    (text) => {
+      const result = traceGrade2(text);
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.rules.map((rule) => rule.print)).not.toContain("be");
+    },
+  );
+
+  it.each([
+    ["Lübeck", "be"],
+    ["Lübeck's", "be"],
+    ["Québecois", "be"],
+    ["Québecois's", "be"],
+    ["O'Connell", "con"],
+    ["O'Connell's", "con"],
+    ["O'Conner", "con"],
+    ["O'Conner's", "con"],
+    ["O'Connor", "con"],
+    ["O'Connor's", "con"],
+  ] as const)("uses parsed lexical neighbors for the initial groupsign in %s", (text, print) => {
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.print)).not.toContain(print);
+  });
+
+  it("applies derived Grade 1 guards to each joined component", () => {
+    expect(translateGrade2("ab-cd")).toEqual({
+      braille: "⠰⠰⠁⠃⠤⠰⠰⠉⠙",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it.each(
+    APPENDIX1_LONGER_WORDS.filter((rule) => rule.print.includes("n't")),
+  )("does not guard the apostrophe suffix in $print", (rule) => {
+    const result = translateGrade2(rule.print);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.braille).not.toContain("⠰");
+    }
   });
 
   it("translates the official shortform sentence from UEB 10.9.1", () => {
@@ -409,12 +640,64 @@ describe("translateGrade2", () => {
     });
   });
 
-  it.each(["'twould", "AB", "aBc"])(
+  it("applies shared typeform modes around contracted text", () => {
+    const document: Grade2Document = {
+      kind: "grade2-document",
+      runs: [{ kind: "text", text: "and", typeforms: ["italic"] }],
+    };
+    expect(translateGrade2(document)).toEqual({
+      braille: "⠨⠂⠯",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("keeps structured standing and boundary options in typeformed callbacks", () => {
+    expect(translateGrade2({
+      kind: "grade2-document",
+      runs: [{
+        kind: "word",
+        standing: "joined",
+        text: "can",
+        typeforms: ["italic"],
+      }],
+    })).toEqual({
+      braille: "⠨⠂⠉⠁⠝",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2({
+      kind: "grade2-document",
+      runs: [{
+        boundaries: [{ at: 1, kind: "syllable" }],
+        kind: "word",
+        standing: "alone",
+        text: "become",
+        typeforms: ["italic"],
+      }],
+    })).toEqual({
+      braille: "⠨⠂⠃⠑⠉⠕⠍⠑",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it.each(["AB", "aBc"])(
     "handles capitalization and apostrophe structure through the generic path: %s",
     (text) => {
       expect(translateGrade2(text).ok).toBe(true);
     },
   );
+
+  it.each([
+    ["couldn't", "UEB-Appendix-1-could-couldn't"],
+    ["couldn't've", "UEB-Appendix-1-could-couldn't've"],
+    ["'twould", "UEB-Appendix-1-would-'twould"],
+  ] as const)("retains the Appendix shortform in %s", (text, id) => {
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.id)).toContain(id);
+  });
 
   it("keeps rule diagnostics out of the ordinary result", () => {
     expect(translateGrade2("and")).toEqual({

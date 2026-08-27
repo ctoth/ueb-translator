@@ -3,11 +3,33 @@ import { describe, expect, it } from "vitest";
 import {
   invertContextualProgram,
   runContextualTransducer,
+  type ContextualGuardTuple,
   type ContextualTransducerProgram,
 } from "../src/contextual-transducer.js";
 
 function encode(values: readonly number[]): string {
   return String.fromCharCode(...values.map((value) => value + 0x100));
+}
+
+function translateGuard(
+  word: string,
+  guard: ContextualGuardTuple,
+  stringOperands: readonly string[] = [],
+): string {
+  return runContextualTransducer(
+    { ...suffixGuardProgram, guards: [guard], stringOperands },
+    {
+      boundaries: [],
+      eligibilityOffset: 0,
+      eligibilityWord: word,
+      hasLowerPunctuation: false,
+      hasRestrictingLowerPunctuation: false,
+      hasUpperPunctuation: false,
+      standing: true,
+      word,
+    },
+    (character) => character.toUpperCase(),
+  ).braille;
 }
 
 const suffixGuardProgram: ContextualTransducerProgram = {
@@ -35,6 +57,7 @@ function translate(
       eligibilityOffset: 0,
       eligibilityWord: "ab",
       hasLowerPunctuation: false,
+      hasRestrictingLowerPunctuation: false,
       hasUpperPunctuation: false,
       standing: true,
       word: "ab",
@@ -47,6 +70,25 @@ describe("runContextualTransducer", () => {
   it("interprets a typed suffix-boundary mask", () => {
     expect(translate(false)).toBe("X");
     expect(translate(true)).toBe("AB");
+  });
+
+  it("uses local start, end, previous, and following positions", () => {
+    expect(translateGuard("aba", [2])).toBe("ABA");
+    expect(translateGuard("abz", [2])).toBe("XZ");
+    expect(translateGuard("ab", [8])).toBe("AB");
+    expect(translateGuard("abz", [8])).toBe("XZ");
+    expect(translateGuard("ab", [9])).toBe("AB");
+    expect(translateGuard("zab", [9])).toBe("ZX");
+    expect(translateGuard("ab", [10])).toBe("AB");
+    expect(translateGuard("abz", [10])).toBe("XZ");
+    expect(translateGuard("cab", [11, 0], ["c"])).toBe("CAB");
+    expect(translateGuard("yab", [11, 0], ["c"])).toBe("YX");
+    expect(translateGuard("ab", [13])).toBe("X");
+    expect(translateGuard("abz", [13])).toBe("ABZ");
+    expect(translateGuard("zabz", [14])).toBe("ZXZ");
+    expect(translateGuard("zab", [14])).toBe("ZAB");
+    expect(translateGuard("ab", [15])).toBe("X");
+    expect(translateGuard("zab", [15])).toBe("ZAB");
   });
 
   it("fails closed for malformed cross-array references", () => {

@@ -3,13 +3,20 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import {
+  COMPOSITION_POLICY_COMPILATION,
   GRADE1_MODE_COMPILATION,
   GRADE1_SYMBOL_COMPILATION,
 } from "../rules/ueb-2024/grade1-program.js";
 import {
+  COMPOSITION_POLICY_RULE_IDS,
   GRADE1_MODE_RULE_IDS,
   GRADE1_SYMBOL_RULE_IDS,
 } from "../src/generated/grade1-provenance.js";
+import {
+  compileCompositionPolicies,
+  type CompositionPolicySource,
+} from "../rules/ueb-2024/policies/compiler.js";
+import { COMPOSITION_POLICY_RULES } from "../rules/ueb-2024/policies/source.js";
 import {
   compileModes,
   type ModeCompilationError,
@@ -48,6 +55,43 @@ function symbol(id: string, print: string): SymbolRuleSource {
     uppercasePrint: null,
   };
 }
+
+describe("compiled composition policies", () => {
+  it("compiles every cited policy into generated closed data", () => {
+    const runtime = COMPOSITION_POLICY_COMPILATION.runtime;
+    expect(runtime.closingStandingPunctuation).toContain(")");
+    expect(runtime.lowerPunctuation).toContain("?");
+    expect(runtime.openingStandingPunctuation).toContain("(");
+    expect(runtime.standingBoundaries).toContain(" ");
+    expect(COMPOSITION_POLICY_RULE_IDS).toHaveLength(4);
+  });
+
+  it("rejects duplicate, missing, malformed, and uncited policies", () => {
+    const first = COMPOSITION_POLICY_RULES[0];
+    if (first === undefined) throw new Error("Policy fixture is empty.");
+    const compile = (replacement: CompositionPolicySource): void => {
+      compileCompositionPolicies([
+        replacement,
+        ...COMPOSITION_POLICY_RULES.slice(1),
+      ]);
+    };
+    expect(() => compileCompositionPolicies([...COMPOSITION_POLICY_RULES, first]))
+      .toThrow("not closed cited data");
+    expect(() => { compile({ ...first, name: "lowerPunctuation" }); })
+      .toThrow("not closed cited data");
+    expect(() => { compile({ ...first, members: [] }); })
+      .toThrow("not closed cited data");
+    expect(() => { compile({ ...first, members: [")", ")"] }); })
+      .toThrow("not closed cited data");
+    expect(() => { compile({ ...first, members: ["ab"] }); })
+      .toThrow("not closed cited data");
+    const uncited = structuredClone(first);
+    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    expect(() => { compile(uncited); }).toThrow("not closed cited data");
+    expect(() => compileCompositionPolicies(COMPOSITION_POLICY_RULES.slice(0, -1)))
+      .toThrow("is missing");
+  });
+});
 
 describe("compiled Grade 1 symbols", () => {
   it("compiles the complete cited inventory including U+0060 and U+007C", () => {

@@ -61,6 +61,17 @@ import { translateGrade2 } from "ueb-translator/grade2";
 const result = translateGrade2("You should receive your letter.");
 ```
 
+Grade 2 documents use the same compiled typeform modes around contracted text:
+
+```ts
+import { translateGrade2, type Grade2Document } from "ueb-translator/grade2";
+
+const result = translateGrade2({
+  kind: "grade2-document",
+  runs: [{ kind: "text", text: "important", typeforms: ["italic"] }],
+} satisfies Grade2Document);
+```
+
 Rule traces are intentionally separate from the ordinary browser path and are
 available from `ueb-translator/grade2/diagnostics` for conformance work.
 
@@ -73,16 +84,16 @@ import {
   selectBacktranslation,
 } from "ueb-translator/backtranslation";
 
-const decoded = backtranslateGrade2("⠁⠃");
+const decoded = backtranslateGrade2("⠨⠎");
 if (decoded.kind === "ambiguous") {
-  // Both `ab` and the UEB shortform `about` canonically produce these cells.
+  // Greek sigma and final sigma have the same UEB cells.
   console.log(decoded.candidates.size); // 2n
   console.log(Array.from(decoded.candidates, ({ print }) => print));
 }
 
 // Optional dictionary or product policy is explicitly caller-owned.
 const selected = selectBacktranslation(decoded, (candidates) =>
-  candidates.find(({ print }) => print === "about")
+  candidates.find(({ print }) => print === "σ")
 );
 ```
 
