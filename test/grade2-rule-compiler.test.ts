@@ -130,6 +130,13 @@ describe("compileContextualRules", () => {
     expect(matcher.inputs).toEqual(["a", "α"]);
   });
 
+  it("rejects an explicit alphabet missing a canonical rule input", () => {
+    expect(() => compileContextualRules(
+      [rule("test-missing-canonical-input", "A", 1)],
+      ["B"],
+    )).toThrow(expect.objectContaining({ code: "unreachable-rule" }));
+  });
+
   it("rejects duplicate guards", () => {
     expect(() =>
       compileContextualRules([
@@ -228,6 +235,7 @@ describe("Grade 2 runtime architecture", () => {
     );
 
     expect(translator.translate("A")).toMatchObject({ braille: "⠠⠁", ok: true });
+    expect(translator.translate("b")).toMatchObject({ braille: "⠃", ok: true });
   });
 
   it("remaps modes after a single-unit contraction", () => {
