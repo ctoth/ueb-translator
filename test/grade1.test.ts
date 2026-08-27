@@ -164,6 +164,22 @@ describe("ICEB 2024 4.3: explicit ligatures", () => {
       value,
     });
   });
+
+  it("rejects a sparse ligature letters array", () => {
+    const letters = new Array<string>(2) as [string, string];
+    letters[0] = "a";
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ kind: "ligature", letters }] }],
+    } satisfies Grade1Document;
+
+    expect(translateGrade1(document)).toEqual({
+      mode: "grade1",
+      ok: false,
+      reason: "invalid-run",
+      runIndex: 0,
+    });
+  });
 });
 
 describe("ICEB 2024 6.1-6.5: numeric mode", () => {
@@ -293,6 +309,21 @@ describe("ICEB 2024 3.4: explicit braille grouping", () => {
       braille: "⠓⠊⠖",
       mode: "grade1",
       ok: true,
+    });
+  });
+
+  it("rejects a sparse typeforms array", () => {
+    const typeforms = new Array<"italic">(1);
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ text: "a", typeforms }] }],
+    } satisfies Grade1Document;
+
+    expect(translateGrade1(document)).toEqual({
+      mode: "grade1",
+      ok: false,
+      reason: "invalid-run",
+      runIndex: 0,
     });
   });
 

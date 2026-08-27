@@ -703,6 +703,17 @@ function isGrade1Typeform(value: unknown): value is Grade1Typeform {
     value === "underline";
 }
 
+function isDenseArrayOf<T>(
+  value: unknown,
+  isElement: (element: unknown) => element is T,
+): value is T[] {
+  if (!Array.isArray(value)) return false;
+  for (let index = 0; index < value.length; index += 1) {
+    if (!(index in value) || !isElement(value[index])) return false;
+  }
+  return true;
+}
+
 function isGrade1TextRun(run: object): run is Grade1TextRun {
   const kind = "kind" in run ? run.kind : undefined;
   const text = "text" in run ? run.text : undefined;
@@ -710,7 +721,7 @@ function isGrade1TextRun(run: object): run is Grade1TextRun {
   return (kind === undefined || kind === "text") &&
     typeof text === "string" &&
     (typeforms === undefined ||
-      (Array.isArray(typeforms) && typeforms.every(isGrade1Typeform)));
+      isDenseArrayOf(typeforms, isGrade1Typeform));
 }
 
 function isGrade1Run(run: unknown): run is Grade1Run {
@@ -722,9 +733,11 @@ function isGrade1Run(run: unknown): run is Grade1Run {
   }
   if (run.kind === "ligature") {
     return "letters" in run &&
-      Array.isArray(run.letters) &&
-      run.letters.length >= 2 &&
-      run.letters.every((letter) => typeof letter === "string");
+      isDenseArrayOf(
+        run.letters,
+        (letter): letter is string => typeof letter === "string",
+      ) &&
+      run.letters.length >= 2;
   }
   return false;
 }
