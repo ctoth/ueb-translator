@@ -600,6 +600,7 @@ describe("technical translation properties", () => {
     fc.assert(
       fc.property(expression, (generated) => {
         const translated = translateTechnical(documentFor(generated));
+        expect(translated.ok).toBe(true);
         if (translated.ok) {
           expect(translated.braille).toMatch(/^[\u2800-\u28ff\n]*$/u);
         }
