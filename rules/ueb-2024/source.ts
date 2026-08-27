@@ -26,6 +26,8 @@ export type Grade1RuleLocator =
   | "9.2-9.4"
   | `Symbols list: U+${string}`;
 export type Grade2ConstraintLocator =
+  | "10.3.1"
+  | "10.6.1"
   | "10.10"
   | "10.7.2"
   | "10.7.3"
