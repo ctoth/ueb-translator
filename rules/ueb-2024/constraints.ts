@@ -4,6 +4,50 @@ import {
   type IcebRuleCitation,
 } from "./source.js";
 
+export interface CompoundContractionExceptionSource {
+  readonly citation: IcebRuleCitation<"10.3.1">;
+  readonly contraction: "of" | "the";
+  readonly id: `UEB-10.3.1-${"of" | "the"}-compound-exception`;
+  readonly words: readonly string[];
+}
+
+export const COMPOUND_CONTRACTION_EXCEPTIONS: readonly CompoundContractionExceptionSource[] = [
+  {
+    citation: citeIceb("10.3.1"),
+    contraction: "of",
+    id: "UEB-10.3.1-of-compound-exception",
+    words: ["microfilm", "twofold"],
+  },
+  {
+    citation: citeIceb("10.3.1"),
+    contraction: "the",
+    id: "UEB-10.3.1-the-compound-exception",
+    words: ["northeast"],
+  },
+];
+
+export interface FirstSyllableContractionExceptionSource {
+  readonly citation: IcebRuleCitation<"10.6.1">;
+  readonly contraction: "be" | "con" | "dis";
+  readonly id: `UEB-10.6.1-${"be" | "con" | "dis"}-syllable-exception`;
+  readonly words: readonly string[];
+}
+
+export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContractionExceptionSource[] = [
+  {
+    citation: citeIceb("10.6.1"),
+    contraction: "be",
+    id: "UEB-10.6.1-be-syllable-exception",
+    words: ["bead", "beauty"],
+  },
+  {
+    citation: citeIceb("10.6.1"),
+    contraction: "con",
+    id: "UEB-10.6.1-con-syllable-exception",
+    words: ["cone"],
+  },
+];
+
 export type ContextualInitialContraction =
   | "ever"
   | "had"
@@ -60,7 +104,7 @@ export const INITIAL_CONTRACTION_EXCEPTIONS: readonly InitialContractionExceptio
     "enamel", "ornament", "unamended", "vietnamese",
   ]),
   initialExceptions("10.7.6", "one", [
-    "anemone", "baroness", "baronet", "boone", "cantonese", "colonel",
+    "anemone", "baroness", "baronet", "boone", "cantonese", "colonel", "cone",
     "conestoga", "crooner", "donegal", "erroneous", "hermione", "indonesia",
     "krone", "monet", "onerous", "phonetic", "pioneer", "poisoned", "rhône",
     "rooney", "sooner", "stoned",
