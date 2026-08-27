@@ -3,7 +3,9 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { APPENDIX1_LONGER_WORDS } from "../rules/ueb-2024/appendix1.js";
 import {
+  COMPOUND_CONTRACTION_EXCEPTIONS,
   FINAL_GROUPSIGN_EXCEPTIONS,
+  FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS,
   INITIAL_CONTRACTION_EXCEPTIONS,
 } from "../rules/ueb-2024/constraints.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
@@ -86,6 +88,23 @@ describe("official Grade 2 source inventory", () => {
     ]) {
       expect(constraint.citation.authority).toBe("ICEB");
       expect(constraint.citation.locator).toMatch(/^10\.(?:7|8)\./u);
+    }
+  });
+
+  it("cites the conservative implicit-boundary exception data", () => {
+    expect(COMPOUND_CONTRACTION_EXCEPTIONS).toHaveLength(2);
+    expect(FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS).toHaveLength(2);
+    for (const constraint of COMPOUND_CONTRACTION_EXCEPTIONS) {
+      expect(constraint.citation).toEqual(expect.objectContaining({
+        authority: "ICEB",
+        locator: "10.3.1",
+      }));
+    }
+    for (const constraint of FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS) {
+      expect(constraint.citation).toEqual(expect.objectContaining({
+        authority: "ICEB",
+        locator: "10.6.1",
+      }));
     }
   });
 });
@@ -592,6 +611,43 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
+  });
+
+  it.each([
+    ["cone", "⠉⠐⠕"],
+    ["beauty", "⠃⠂⠥⠞⠽"],
+    ["bead", "⠃⠂⠙"],
+    ["beads", "⠃⠂⠙⠎"],
+  ] as const)(
+    "does not use a first-syllable groupsign in the official %s counterexample",
+    (text, braille) => {
+      expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+    },
+  );
+
+  it.each([
+    ["apartheid", "⠁⠐⠏⠓⠑⠊⠙"],
+    ["biofeedback", "⠃⠊⠕⠋⠑⠫⠃⠁⠉⠅"],
+    ["twofold", "⠞⠺⠕⠋⠕⠇⠙"],
+    ["twofolds", "⠞⠺⠕⠋⠕⠇⠙⠎"],
+    ["northeast", "⠝⠕⠗⠹⠂⠌"],
+    ["northeastern", "⠝⠕⠗⠹⠂⠌⠻⠝"],
+    ["microfilm", "⠍⠊⠉⠗⠕⠋⠊⠇⠍"],
+    ["microfilms", "⠍⠊⠉⠗⠕⠋⠊⠇⠍⠎"],
+  ] as const)(
+    "does not bridge the implicit compound in the official %s counterexample",
+    (text, braille) => {
+      expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+    },
+  );
+
+  it.each([
+    ["concern", "⠒⠉⠻⠝"],
+    ["conestoga", "⠒⠑⠌⠕⠛⠁"],
+    ["disturb", "⠲⠞⠥⠗⠃"],
+    ["believe", "⠆⠇⠊⠑⠧⠑"],
+  ] as const)("keeps the valid first-syllable contraction in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
   it.each([

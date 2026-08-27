@@ -1,6 +1,8 @@
 import { APPENDIX1_LONGER_WORDS } from "./appendix1.js";
 import {
+  COMPOUND_CONTRACTION_EXCEPTIONS,
   FINAL_GROUPSIGN_EXCEPTIONS,
+  FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS,
   INITIAL_CONTRACTION_EXCEPTIONS,
 } from "./constraints.js";
 import {
@@ -23,6 +25,24 @@ function initialExceptionWords(print: string): readonly string[] {
   return INITIAL_CONTRACTION_EXCEPTIONS
     .filter((constraint) => constraint.contraction === print)
     .flatMap((constraint) => constraint.words);
+}
+
+function compoundExceptionWords(print: string): readonly string[] {
+  return COMPOUND_CONTRACTION_EXCEPTIONS
+    .filter((constraint) => constraint.contraction === print)
+    .flatMap((constraint) => constraint.words);
+}
+
+function firstSyllableExceptionWords(print: string): readonly string[] {
+  return FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS
+    .filter((constraint) => constraint.contraction === print)
+    .flatMap((constraint) => constraint.words);
+}
+
+function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
+  return words.length === 0
+    ? []
+    : [{ ignoredCharacters: "-", kind: "not-word", words }];
 }
 
 function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
@@ -87,7 +107,10 @@ export function compileGrade2RuleGuards(
         { kind: "word-end" },
       ];
     case "strong-contraction":
-      return [NO_STRUCTURAL_CROSSING];
+      return [
+        NO_STRUCTURAL_CROSSING,
+        ...exceptionWordGuard(compoundExceptionWords(rule.print)),
+      ];
     case "strong-groupsign":
       return rule.print === "ing"
         ? [NO_STRUCTURAL_CROSSING, { kind: "not-word-start" }]
@@ -97,6 +120,7 @@ export function compileGrade2RuleGuards(
         return [
           { kind: "first-syllable" },
           NO_STRUCTURAL_CROSSING,
+          ...exceptionWordGuard(firstSyllableExceptionWords(rule.print)),
           { kind: "not-word-end" },
           { kind: "word-start" },
         ];
@@ -120,9 +144,7 @@ export function compileGrade2RuleGuards(
       const exceptionWords = initialExceptionWords(rule.print);
       return [
         NO_STRUCTURAL_CROSSING,
-        ...(exceptionWords.length === 0
-          ? []
-          : [{ ignoredCharacters: "-", kind: "not-word", words: exceptionWords } as const]),
+        ...exceptionWordGuard(exceptionWords),
         ...(rule.print === "ever"
           ? [{ characters: "ei", kind: "previous-not" } as const]
           : rule.print === "one"

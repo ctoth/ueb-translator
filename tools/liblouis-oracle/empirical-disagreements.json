@@ -1027,25 +1027,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00007970",
-      "input": "Apartheid",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠁⠏⠜⠮⠊⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠁⠐⠏⠓⠑⠊⠙"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00007971",
       "input": "Apartheid's",
       "local": {
@@ -44841,25 +44822,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00102047",
-      "input": "Northeast",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠝⠕⠗⠮⠁⠌",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠝⠕⠗⠹⠂⠌"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00102048",
       "input": "Northeast's",
       "local": {
@@ -44875,25 +44837,6 @@
         ],
         "version": "3.38.0",
         "output": "⠠⠝⠕⠗⠹⠂⠌⠄⠎"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00102049",
-      "input": "Northeastern",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠝⠕⠗⠮⠁⠌⠻⠝",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠠⠝⠕⠗⠹⠂⠌⠻⠝"
       },
       "groupId": "traced-strong-contraction"
     },
@@ -59851,25 +59794,6 @@
       "groupId": "ness-pattern"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00175373",
-      "input": "apartheid",
-      "local": {
-        "kind": "test",
-        "output": "⠁⠏⠜⠮⠊⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠁⠐⠏⠓⠑⠊⠙"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00175374",
       "input": "apartheid's",
       "local": {
@@ -65494,25 +65418,6 @@
       "groupId": "traced-be-con-dis"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00192111",
-      "input": "bead",
-      "local": {
-        "kind": "test",
-        "output": "⠆⠁⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠃⠂⠙"
-      },
-      "groupId": "traced-be-con-dis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00192112",
       "input": "bead's",
       "local": {
@@ -66288,25 +66193,6 @@
         ],
         "version": "3.38.0",
         "output": "⠃⠂⠙⠗⠪"
-      },
-      "groupId": "traced-be-con-dis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00192153",
-      "input": "beads",
-      "local": {
-        "kind": "test",
-        "output": "⠆⠁⠙⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠃⠂⠙⠎"
       },
       "groupId": "traced-be-con-dis"
     },
@@ -73128,25 +73014,6 @@
         ],
         "version": "3.38.0",
         "output": "⠃⠂⠥⠞⠎"
-      },
-      "groupId": "traced-be-con-dis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00192534",
-      "input": "beauty",
-      "local": {
-        "kind": "test",
-        "output": "⠆⠁⠥⠞⠽",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠃⠂⠥⠞⠽"
       },
       "groupId": "traced-be-con-dis"
     },
@@ -108719,25 +108586,6 @@
       "groupId": "ness-pattern"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00198580",
-      "input": "biofeedback",
-      "local": {
-        "kind": "test",
-        "output": "⠃⠊⠷⠑⠫⠃⠁⠉⠅",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠃⠊⠕⠋⠑⠫⠃⠁⠉⠅"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00198581",
       "input": "biofeedback's",
       "local": {
@@ -121124,25 +120972,6 @@
         "output": "⠒⠙⠥⠉⠞⠊⠍⠑⠞⠗⠊⠉"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00240511",
-      "input": "cone",
-      "local": {
-        "kind": "test",
-        "output": "⠒⠑",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠐⠕"
-      },
-      "groupId": "traced-be-con-dis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00240512",
@@ -174364,25 +174193,6 @@
       "groupId": "traced-strong-contraction"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00407660",
-      "input": "microfilm",
-      "local": {
-        "kind": "test",
-        "output": "⠍⠊⠉⠗⠷⠊⠇⠍",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠍⠊⠉⠗⠕⠋⠊⠇⠍"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00407661",
       "input": "microfilm's",
       "local": {
@@ -174512,25 +174322,6 @@
         ],
         "version": "3.38.0",
         "output": "⠍⠊⠉⠗⠕⠋⠊⠇⠍⠬"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00407668",
-      "input": "microfilms",
-      "local": {
-        "kind": "test",
-        "output": "⠍⠊⠉⠗⠷⠊⠇⠍⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠍⠊⠉⠗⠕⠋⠊⠇⠍⠎"
       },
       "groupId": "traced-strong-contraction"
     },
@@ -200432,25 +200223,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00437458",
-      "input": "northeast",
-      "local": {
-        "kind": "test",
-        "output": "⠝⠕⠗⠮⠁⠌",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠝⠕⠗⠹⠂⠌"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00437459",
       "input": "northeast's",
       "local": {
@@ -200523,25 +200295,6 @@
         ],
         "version": "3.38.0",
         "output": "⠝⠕⠗⠹⠂⠌⠻⠇⠽"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00437463",
-      "input": "northeastern",
-      "local": {
-        "kind": "test",
-        "output": "⠝⠕⠗⠮⠁⠌⠻⠝",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠝⠕⠗⠹⠂⠌⠻⠝"
       },
       "groupId": "traced-strong-contraction"
     },
@@ -274095,25 +273848,6 @@
       "groupId": "traced-strong-contraction"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00610090",
-      "input": "twofold",
-      "local": {
-        "kind": "test",
-        "output": "⠞⠺⠷⠕⠇⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠞⠺⠕⠋⠕⠇⠙"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00610091",
       "input": "twofold's",
       "local": {
@@ -274186,25 +273920,6 @@
         ],
         "version": "3.38.0",
         "output": "⠞⠺⠕⠋⠕⠇⠙⠰⠎⠑⠎"
-      },
-      "groupId": "traced-strong-contraction"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00610095",
-      "input": "twofolds",
-      "local": {
-        "kind": "test",
-        "output": "⠞⠺⠷⠕⠇⠙⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠞⠺⠕⠋⠕⠇⠙⠎"
       },
       "groupId": "traced-strong-contraction"
     },
