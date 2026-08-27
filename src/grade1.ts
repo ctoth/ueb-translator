@@ -35,7 +35,7 @@ const GRADE1_TRANSLATOR = compose(
 
 /** Compose the generated symbol program with the closed mode runtime. */
 export function translateGrade1(input: string): Grade1TextResult;
-export function translateGrade1(input: Grade1Document): Grade1Result;
+export function translateGrade1(input: string | Grade1Document): Grade1Result;
 export function translateGrade1(input: string | Grade1Document): Grade1Result {
   if (typeof input !== "string") return translateGrade1Runtime(input);
   const result = GRADE1_TRANSLATOR.translate(input);

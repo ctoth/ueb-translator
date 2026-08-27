@@ -294,6 +294,36 @@ describe("ICEB GTM 2014 sections 13, 16, and 17", () => {
       ok: true,
     });
   });
+
+  it("indexes computer-block translation failures", () => {
+    const document: TechnicalDocument = {
+      blocks: [
+        {
+          expression: { kind: "identifier", value: "x" },
+          kind: "expression",
+        },
+        {
+          grade: "grade1",
+          kind: "computer",
+          lines: ["ok", "A 😀"],
+          spacing: "significant",
+        },
+      ],
+      kind: "technical-document",
+      profile: internationalAllTechnical,
+    };
+
+    expect(translateTechnical(document)).toEqual({
+      blockIndex: 1,
+      character: "😀",
+      codeUnitIndex: 2,
+      lineIndex: 1,
+      mode: "technical",
+      ok: false,
+      reason: "unsupported-character",
+      scalarIndex: 2,
+    });
+  });
 });
 
 describe("ICEB GTM 2014 sections 5, 9, 12, 14, and 15", () => {

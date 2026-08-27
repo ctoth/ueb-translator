@@ -1,12 +1,24 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  translateGrade1,
   translateUeb,
+  type Grade1Document,
   type TechnicalInput,
   type UebTranslationRequest,
 } from "../src/index.js";
 
 describe("combined UEB translation API", () => {
+  it("accepts a Grade 1 input union through the intentional overload", () => {
+    const translate = (input: Grade1Document | string) => translateGrade1(input);
+
+    expect(translate("A")).toEqual({
+      braille: "⠠⠁",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
   it.each([
     {
       expected: { braille: "⠠⠁", mode: "grade1", ok: true },

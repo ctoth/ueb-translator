@@ -110,6 +110,14 @@ describe("official Grade 2 source inventory", () => {
 });
 
 describe("translateGrade2", () => {
+  it("infers issue 67's closing ASCII quote under ICEB 2024 Rules 7.6.1 and 7.6.5", () => {
+    expect(translateGrade2("(a\"")).toEqual({
+      braille: "⠐⠣⠁⠴",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
   it.each(GRADE2_RULES)(
     "applies $id in a standards-permitted context",
     (rule) => {
