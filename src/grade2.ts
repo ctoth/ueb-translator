@@ -239,6 +239,7 @@ export function translateGrade2Internal(
 /** Translate print with the compiled Grade 1 packages plus contractions. */
 export function translateGrade2(input: string): Grade2TextResult;
 export function translateGrade2(input: Grade2Document): Grade2DocumentResult;
+export function translateGrade2(input: string | Grade2Document): Grade2Result;
 export function translateGrade2(input: string | Grade2Document): Grade2Result {
   const result = translateGrade2Internal(input);
   return result.ok
