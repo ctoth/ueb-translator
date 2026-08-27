@@ -57,6 +57,14 @@ describe("ICEB 2024 4.1 and 8.3-8.6: letters and capitals", () => {
       ok: true,
     });
   });
+
+  it("places a capitals passage indicator before a leading symbol", () => {
+    expect(translateGrade1("(A B C")).toEqual({
+      braille: "⠠⠠⠠⠐⠣⠁⠀⠃⠀⠉⠠⠄",
+      mode: "grade1",
+      ok: true,
+    });
+  });
 });
 
 describe("ICEB 2024 4.2: Latin modifiers", () => {
@@ -182,6 +190,14 @@ describe("ICEB 2024 6.1-6.5: numeric mode", () => {
     expect(translateGrade1("1.2,3 1a 1A 1-2 1–2 1—2 1+2")).toEqual({
       braille:
         "⠼⠁⠲⠃⠂⠉⠀⠼⠁⠰⠁⠀⠼⠁⠠⠁⠀⠼⠁⠤⠼⠃⠀⠼⠁⠠⠤⠼⠃⠀⠼⠁⠐⠠⠤⠼⠃⠀⠼⠁⠐⠖⠼⠃",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
+  it("emits one numeric indicator for a run terminated by a letter", () => {
+    expect(translateGrade1("12a 12,3a")).toEqual({
+      braille: "⠼⠁⠃⠰⠁⠀⠼⠁⠃⠂⠉⠰⠁",
       mode: "grade1",
       ok: true,
     });

@@ -109,10 +109,6 @@ export function scanModeSpan(
   start: number,
   sequenceBoundaryClass: ModeClassId,
 ): ModeSpan | undefined {
-  const initial = units[start];
-  if (initial === undefined || !isModeMember(program, modeId, initial)) {
-    return undefined;
-  }
   const first = sequenceEnd(program, modeId, units, start, sequenceBoundaryClass);
   if (first === undefined) {
     return undefined;
@@ -170,6 +166,7 @@ function wordSpan(
   units: readonly ModeUnit[],
   start: number,
   sequenceBoundaryClass: ModeClassId,
+  acceptInlineTerminator: boolean,
 ): { readonly end: number; readonly memberCount: number } | undefined {
   const initial = units[start];
   if (initial === undefined || !isModeMember(program, modeId, initial)) {
@@ -191,7 +188,7 @@ function wordSpan(
       continue;
     }
     if (terminatesMode(program, modeId, unit)) {
-      return hasModeClass(unit, sequenceBoundaryClass)
+      return hasModeClass(unit, sequenceBoundaryClass) || acceptInlineTerminator
         ? { end, memberCount }
         : undefined;
     }
@@ -242,7 +239,7 @@ export function resolveModes(
         const symbol = modeIndicator(program, modeId, "symbol");
         const word = modeIndicator(program, modeId, "word");
         const continuing = symbol === word
-          ? wordSpan(program, modeId, units, index, sequenceBoundaryClass)
+          ? wordSpan(program, modeId, units, index, sequenceBoundaryClass, true)
           : undefined;
         append(prefixes, index, symbol);
         index = continuing?.end ?? index + 1;
@@ -276,6 +273,8 @@ export function resolveModes(
         units,
         index,
         sequenceBoundaryClass,
+        modeIndicator(program, modeId, "symbol") ===
+          modeIndicator(program, modeId, "word"),
       );
       if (word !== undefined) {
         const kind = indicatorKind(program, modeId, word.memberCount, 1);
