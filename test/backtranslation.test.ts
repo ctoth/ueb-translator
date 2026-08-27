@@ -190,6 +190,36 @@ describe("backtranslateGrade1", () => {
     });
   });
 
+  it("bounds an exhaustive ambiguous prefix that cannot complete", () => {
+    expect(backtranslateGrade1(`${"⠨⠎".repeat(18)}⠠`)).toMatchObject({
+      kind: "invalid",
+      limit: 65_536,
+      mode: "grade1",
+      reason: "too-ambiguous",
+    });
+  });
+
+  it("decodes a prefix before a capitals passage", () => {
+    expect(candidatePrints(backtranslateGrade1("⠁⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄")))
+      .toContain("aA B C");
+  });
+
+  it("reports an invalid prefix before a capitals passage", () => {
+    expect(backtranslateGrade1("⠼⠠⠠⠠⠁⠠⠄")).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "no-standards-parse",
+    });
+  });
+
+  it("reports invalid content within a capitals passage", () => {
+    expect(backtranslateGrade1("⠠⠠⠠⠠⠠⠄")).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "no-standards-parse",
+    });
+  });
+
   it.each(["\n", "\r\n"])(
     "round trips a canonical capitals passage across %j",
     (boundary) => {
@@ -298,6 +328,18 @@ describe("backtranslateGrade2", () => {
     }
   });
 
+  it.each([
+    ["at the end", "⠨⠎".repeat(20)],
+    ["before a separator", `${"⠨⠎".repeat(20)}⠀`],
+  ])("bounds one exponentially ambiguous Grade 2 segment %s", (_location, braille) => {
+    expect(backtranslateGrade2(braille)).toMatchObject({
+      kind: "invalid",
+      limit: 4_096,
+      mode: "grade2",
+      reason: "too-ambiguous",
+    });
+  });
+
   it("keeps a mixed foreign-language Cartesian product symbolic", () => {
     const ambiguous = Array.from({ length: 40 }, () => "⠨⠎").join("⠀");
     const frenchWord = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
@@ -310,6 +352,12 @@ describe("backtranslateGrade2", () => {
       expect(result.candidates.second.print).toMatch(/ école$/u);
       expect(result.candidates.at((1n << 40n) - 1n)?.print).toMatch(/ école$/u);
     }
+  });
+
+  it("combines a unique UEB segment with a foreign-language segment", () => {
+    const frenchWord = "⠘⠷⠿⠉⠕⠇⠑⠘⠾";
+    expect(grade2CandidatePrints(backtranslateGrade2(`⠯⠀${frenchWord}`)))
+      .toContain("and école");
   });
 
   it("offsets a nested mixed-UEB parse failure", () => {
