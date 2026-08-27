@@ -486,6 +486,10 @@ function symbolCell(print: string): string {
   return braille;
 }
 
+const UNPREFIXED_LATIN_LETTER_CELLS = new Set(
+  Array.from("⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"),
+);
+
 function arrowCell(direction: SimpleArrowDirection): string {
   return symbolCell(ARROW_PRINT[direction]);
 }
@@ -617,6 +621,16 @@ function operationIsSpaced(profile: TechnicalProfile): boolean {
   }
 }
 
+function needsSpaceBeforeFunction(
+  previous: TechnicalExpression | undefined,
+  expression: TechnicalExpression,
+): boolean {
+  return previous?.kind === "identifier" &&
+    /[A-Za-z]$/u.test(previous.value) &&
+    expression.kind === "function" &&
+    /^[a-z]/u.test(expression.name);
+}
+
 function joinRendered(results: readonly RenderResult[]): RenderResult {
   let braille = "";
   const requirements: Grade1Requirement[] = [];
@@ -732,11 +746,11 @@ function renderExpression(
       if (!argument.ok) {
         return argument;
       }
-      const space =
-        expression.argument.kind === "identifier" &&
-        /^\p{Ll}/u.test(expression.argument.value)
-          ? BRAILLE_SPACE
-          : "";
+      const space = UNPREFIXED_LATIN_LETTER_CELLS.has(
+        argument.braille.charAt(0),
+      )
+        ? BRAILLE_SPACE
+        : "";
       return renderSuccess(
         `${name.braille}${space}${argument.braille}`,
         shiftRequirements(
@@ -866,6 +880,10 @@ function renderExpression(
         const itemRendered = renderExpression(item, profile);
         if (!itemRendered.ok) {
           return itemRendered;
+        }
+        if (needsSpaceBeforeFunction(previous, item)) {
+          braille += BRAILLE_SPACE;
+          offset += BRAILLE_SPACE.length;
         }
         requirements.push(
           ...shiftRequirements(itemRendered.requirements, offset),
