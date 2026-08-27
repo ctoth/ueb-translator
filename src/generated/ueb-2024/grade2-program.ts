@@ -343,7 +343,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      138,
+      139,
       263
     ],
     [
@@ -1526,14 +1526,6 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      113,
-      263
-    ],
-    [
-      12
-    ],
-    [
-      0,
       114,
       263
     ],
@@ -1574,7 +1566,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      128,
+      119,
       263
     ],
     [
@@ -1591,6 +1583,14 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       0,
       130,
+      263
+    ],
+    [
+      12
+    ],
+    [
+      0,
+      131,
       263
     ],
     [
@@ -1755,7 +1755,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      112,
+      113,
       263
     ],
     [
@@ -1792,37 +1792,11 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      119,
-      263
-    ],
-    [
-      12
-    ],
-    [
-      0,
       120,
       263
     ],
     [
       12
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
-    ],
-    [
-      12
-    ],
-    [
-      13
-    ],
-    [
-      15
     ],
     [
       0,
@@ -1831,6 +1805,24 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       12
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
+    ],
+    [
+      12
+    ],
+    [
+      13
+    ],
+    [
+      15
     ],
     [
       0,
@@ -1873,6 +1865,14 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       12
     ],
     [
+      0,
+      127,
+      263
+    ],
+    [
+      12
+    ],
+    [
       12
     ],
     [
@@ -1895,7 +1895,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      131,
+      132,
       263
     ],
     [
@@ -1903,7 +1903,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      132,
+      133,
       263
     ],
     [
@@ -1961,7 +1961,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      133,
+      134,
       263
     ],
     [
@@ -1969,7 +1969,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      134,
+      135,
       263
     ],
     [
@@ -2096,7 +2096,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       11,
-      139
+      140
     ],
     [
       12
@@ -2199,7 +2199,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      135,
+      136,
       263
     ],
     [
@@ -3112,7 +3112,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      140,
+      141,
       5
     ],
     [
@@ -3146,8 +3146,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      7,
-      141
+      6,
+      112,
+      5
     ],
     [
       9
@@ -3501,7 +3502,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      137,
+      138,
       263
     ],
     [
@@ -4224,7 +4225,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      127,
+      128,
       5
     ],
     [
@@ -4441,7 +4442,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      136,
+      137,
       263
     ],
     [
@@ -7401,6 +7402,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "boyfriend",
     "chad\u0000hades\u0000hadrian\u0000menhaden\u0000shadow\u0000thaddeus",
     "chainletter",
+    "chieftainess\u0000citizeness\u0000heatheness",
     "children'swear",
     "colorblind",
     "colorblindness",
@@ -7430,7 +7432,6 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "eastabout",
     "ei",
     "enamel\u0000ornament\u0000unamended\u0000vietnamese",
-    "eness\u0000iness",
     "feelgood",
     "feetfirst",
     "firstaid",

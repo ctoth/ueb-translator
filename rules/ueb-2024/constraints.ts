@@ -94,9 +94,9 @@ export const FINAL_GROUPSIGN_EXCEPTIONS: readonly FinalGroupsignExceptionSource[
   },
   {
     citation: citeIceb("10.8.4"),
-    endings: ["eness", "iness"],
+    endings: [],
     groupsign: "ness",
     id: "UEB-10.8.4-ness-exception",
-    words: [],
+    words: ["chieftainess", "citizeness", "heatheness"],
   },
 ];

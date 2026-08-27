@@ -16,7 +16,7 @@ export const GRADE1_MODE_PROGRAM: UebProgram<ModeProgram> = {
       7,
       3,
       4,
-      0
+      256
     ],
     [
       [
@@ -1228,5 +1228,6 @@ export const GRADE1_MODE_CLASS_IDS = {
   "numeric-punctuation": 4,
   "sequence-boundary": 5,
   "typeformed": 6,
-  "uppercase-letter": 7
+  "uppercase-letter": 7,
+  "capitals-continuation": 8
 };

@@ -196,13 +196,32 @@ describe("translateGrade2", () => {
   });
 
   it.each([
-    ["oneness", "ness"],
-    ["happiness", "ness"],
-  ] as const)("does not use %s in %s under UEB 10.8.4", (word, groupsign) => {
+    "happiness",
+    "politeness",
+    "business",
+    "oneness",
+  ] as const)("uses the ness groupsign in %s", (word) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rules.map((applied) => applied.print)).not.toContain(groupsign);
+      expect(result.rules.map((applied) => applied.print)).toContain("ness");
+    }
+  });
+
+  it.each([
+    "chieftainess",
+    "citizeness",
+    "heatheness",
+  ] as const)("applies the cited UEB 10.8.4 feminine-ending exception to %s", (word) => {
+    const exception = FINAL_GROUPSIGN_EXCEPTIONS.find(
+      (constraint) => constraint.id === "UEB-10.8.4-ness-exception",
+    );
+    expect(exception?.citation.locator).toBe("10.8.4");
+    expect(exception?.words).toContain(word);
+    const result = traceGrade2(word);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.rules.map((applied) => applied.print)).not.toContain("ness");
     }
   });
 
@@ -355,6 +374,15 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
+  });
+
+  it("continues capitals word mode through apostrophes in both grades", () => {
+    const expected = {
+      braille: "⠠⠠⠙⠕⠝⠄⠞",
+      ok: true,
+    } as const;
+    expect(translateGrade1("DON'T")).toMatchObject({ ...expected, mode: "grade1" });
+    expect(translateGrade2("DON'T")).toMatchObject({ ...expected, mode: "grade2" });
   });
 
   it("keeps separator context in the composed pass", () => {

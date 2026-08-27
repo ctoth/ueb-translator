@@ -167,6 +167,29 @@ describe("backtranslateGrade1", () => {
     });
   });
 
+  it("keeps ambiguity around a capitals passage as a compact product", () => {
+    const ambiguous = Array.from({ length: 18 }, () => "⠨⠎");
+    ambiguous.splice(9, 0, "⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄");
+    const started = performance.now();
+    const result = backtranslateGrade1(ambiguous.join("⠀"));
+    const elapsed = performance.now() - started;
+
+    expect(result.kind).toBe("ambiguous");
+    expect(elapsed).toBeLessThan(1_000);
+    if (result.kind === "ambiguous") {
+      expect(result.candidates.size).toBe(1n << 18n);
+    }
+  });
+
+  it("returns a typed bound result for one exponentially ambiguous segment", () => {
+    const result = backtranslateGrade1("⠨⠎".repeat(20));
+    expect(result).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "too-ambiguous",
+    });
+  });
+
   it.each(["\n", "\r\n"])(
     "round trips a canonical capitals passage across %j",
     (boundary) => {
