@@ -26,6 +26,29 @@
     "node": ">=22.18.0"
   },
   "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "backtranslation": [
+        "dist/backtranslation.d.ts"
+      ],
+      "cells": [
+        "dist/cell.d.ts"
+      ],
+      "grade1": [
+        "dist/grade1.d.ts"
+      ],
+      "grade2": [
+        "dist/grade2.d.ts"
+      ],
+      "grade2/diagnostics": [
+        "dist/grade2-diagnostics.d.ts"
+      ],
+      "technical": [
+        "dist/technical.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "LICENSE",
@@ -33,32 +56,46 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./backtranslation": {
-      "types": "./dist/backtranslation.d.ts",
-      "import": "./dist/backtranslation.js"
+      "import": {
+        "types": "./dist/backtranslation.d.ts",
+        "default": "./dist/backtranslation.js"
+      }
     },
     "./cells": {
-      "types": "./dist/cell.d.ts",
-      "import": "./dist/cell.js"
+      "import": {
+        "types": "./dist/cell.d.ts",
+        "default": "./dist/cell.js"
+      }
     },
     "./grade1": {
-      "types": "./dist/grade1.d.ts",
-      "import": "./dist/grade1.js"
+      "import": {
+        "types": "./dist/grade1.d.ts",
+        "default": "./dist/grade1.js"
+      }
     },
     "./grade2": {
-      "types": "./dist/grade2.d.ts",
-      "import": "./dist/grade2.js"
+      "import": {
+        "types": "./dist/grade2.d.ts",
+        "default": "./dist/grade2.js"
+      }
     },
     "./grade2/diagnostics": {
-      "types": "./dist/grade2-diagnostics.d.ts",
-      "import": "./dist/grade2-diagnostics.js"
+      "import": {
+        "types": "./dist/grade2-diagnostics.d.ts",
+        "default": "./dist/grade2-diagnostics.js"
+      }
     },
     "./technical": {
-      "types": "./dist/technical.d.ts",
-      "import": "./dist/technical.js"
+      "import": {
+        "types": "./dist/technical.d.ts",
+        "default": "./dist/technical.js"
+      }
     }
   },
   "scripts": {
@@ -102,6 +139,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@eslint/js": "10.0.1",
     "@types/node": "26.3.0",
     "@vitest/browser-playwright": "4.1.11",
