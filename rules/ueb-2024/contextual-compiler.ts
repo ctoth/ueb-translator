@@ -1,4 +1,8 @@
 import type { IcebRuleCitation } from "./source.js";
+import {
+  CONTEXTUAL_BOUNDARY_MASKS,
+  CONTEXTUAL_GUARD_SCHEMA,
+} from "../../src/contextual-schema.js";
 import type {
   ContextualBoundaryKind,
   ContextualBoundaryMask,
@@ -134,26 +138,6 @@ function countsFromOffsets(offsets: readonly number[]): readonly number[] {
   return counts;
 }
 
-const GUARD_OPCODE: Readonly<Record<ContextualRuleGuard["kind"], ContextualGuardOpcode>> = {
-  "eligibility-word": 0,
-  "first-syllable": 1,
-  following: 17,
-  "following-not-vowel-y": 2,
-  "lower-sign": 3,
-  "not-boundary": 4,
-  "not-crossing": 5,
-  "not-word": 6,
-  "not-word-ending": 7,
-  "not-word-end": 8,
-  "not-word-start": 9,
-  "not-whole-word": 10,
-  "previous-not": 11,
-  "standing-alone": 12,
-  "word-end": 13,
-  "word-internal": 14,
-  "word-start": 15,
-};
-
 function compareText(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
@@ -199,7 +183,7 @@ function boundaryBit(kind: ContextualBoundaryKind): ContextualBoundaryMask {
 }
 
 function isBoundaryMask(value: number): value is ContextualBoundaryMask {
-  return Number.isInteger(value) && value >= 1 && value <= 31;
+  return CONTEXTUAL_BOUNDARY_MASKS.some((candidate) => candidate === value);
 }
 
 function boundaryMask(boundaries: readonly ContextualBoundaryKind[]): ContextualBoundaryMask {
@@ -214,9 +198,44 @@ function boundaryMask(boundaries: readonly ContextualBoundaryKind[]): Contextual
 }
 
 function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
-  return guard.kind === "lower-sign" && guard.policy === "other"
-    ? 16
-    : GUARD_OPCODE[guard.kind];
+  switch (guard.kind) {
+    case "eligibility-word":
+      return CONTEXTUAL_GUARD_SCHEMA.eligibilityWord.opcode;
+    case "first-syllable":
+      return CONTEXTUAL_GUARD_SCHEMA.firstSyllable.opcode;
+    case "following":
+      return CONTEXTUAL_GUARD_SCHEMA.following.opcode;
+    case "following-not-vowel-y":
+      return CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode;
+    case "lower-sign":
+      return guard.policy === "enough-or-in"
+        ? CONTEXTUAL_GUARD_SCHEMA.lowerSignEnoughOrIn.opcode
+        : CONTEXTUAL_GUARD_SCHEMA.lowerSignOther.opcode;
+    case "not-boundary":
+      return CONTEXTUAL_GUARD_SCHEMA.notBoundary.opcode;
+    case "not-crossing":
+      return CONTEXTUAL_GUARD_SCHEMA.notCrossing.opcode;
+    case "not-word":
+      return CONTEXTUAL_GUARD_SCHEMA.notWord.opcode;
+    case "not-word-ending":
+      return CONTEXTUAL_GUARD_SCHEMA.notWordEnding.opcode;
+    case "not-word-end":
+      return CONTEXTUAL_GUARD_SCHEMA.notWordEnd.opcode;
+    case "not-word-start":
+      return CONTEXTUAL_GUARD_SCHEMA.notWordStart.opcode;
+    case "not-whole-word":
+      return CONTEXTUAL_GUARD_SCHEMA.notWholeWord.opcode;
+    case "previous-not":
+      return CONTEXTUAL_GUARD_SCHEMA.previousNot.opcode;
+    case "standing-alone":
+      return CONTEXTUAL_GUARD_SCHEMA.standingAlone.opcode;
+    case "word-end":
+      return CONTEXTUAL_GUARD_SCHEMA.wordEnd.opcode;
+    case "word-internal":
+      return CONTEXTUAL_GUARD_SCHEMA.wordInternal.opcode;
+    case "word-start":
+      return CONTEXTUAL_GUARD_SCHEMA.wordStart.opcode;
+  }
 }
 
 function guardKey(guard: ContextualRuleGuard): string {
@@ -246,25 +265,33 @@ function compileGuard(
   switch (guard.kind) {
     case "eligibility-word":
       return [
-        0,
+        CONTEXTUAL_GUARD_SCHEMA.eligibilityWord.opcode,
         requireContextualOperandIndex(guard.word, operandIndexes),
         requireContextualOperandIndex(guard.pluralSuffix, operandIndexes),
       ];
     case "first-syllable":
-      return [1];
+      return [CONTEXTUAL_GUARD_SCHEMA.firstSyllable.opcode];
     case "following":
-      return [17, requireContextualOperandIndex(guard.characters, operandIndexes)];
+      return [
+        CONTEXTUAL_GUARD_SCHEMA.following.opcode,
+        requireContextualOperandIndex(guard.characters, operandIndexes),
+      ];
     case "following-not-vowel-y":
-      return [2, requireContextualOperandIndex(guard.characters, operandIndexes)];
+      return [
+        CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode,
+        requireContextualOperandIndex(guard.characters, operandIndexes),
+      ];
     case "lower-sign":
-      return guard.policy === "enough-or-in" ? [3] : [16];
+      return guard.policy === "enough-or-in"
+        ? [CONTEXTUAL_GUARD_SCHEMA.lowerSignEnoughOrIn.opcode]
+        : [CONTEXTUAL_GUARD_SCHEMA.lowerSignOther.opcode];
     case "not-boundary":
-      return [4, boundaryMask([guard.boundary])];
+      return [CONTEXTUAL_GUARD_SCHEMA.notBoundary.opcode, boundaryMask([guard.boundary])];
     case "not-crossing":
-      return [5, boundaryMask(guard.boundaries)];
+      return [CONTEXTUAL_GUARD_SCHEMA.notCrossing.opcode, boundaryMask(guard.boundaries)];
     case "not-word":
       return [
-        6,
+        CONTEXTUAL_GUARD_SCHEMA.notWord.opcode,
         requireContextualOperandIndex(
           [...guard.words].sort(compareText).join("\u0000"),
           operandIndexes,
@@ -272,26 +299,29 @@ function compileGuard(
         requireContextualOperandIndex(guard.ignoredCharacters, operandIndexes),
       ];
     case "not-word-ending":
-      return [7, requireContextualOperandIndex(
+      return [CONTEXTUAL_GUARD_SCHEMA.notWordEnding.opcode, requireContextualOperandIndex(
         [...guard.endings].sort(compareText).join("\u0000"),
         operandIndexes,
       )];
     case "not-word-end":
-      return [8];
+      return [CONTEXTUAL_GUARD_SCHEMA.notWordEnd.opcode];
     case "not-word-start":
-      return [9];
+      return [CONTEXTUAL_GUARD_SCHEMA.notWordStart.opcode];
     case "not-whole-word":
-      return [10];
+      return [CONTEXTUAL_GUARD_SCHEMA.notWholeWord.opcode];
     case "previous-not":
-      return [11, requireContextualOperandIndex(guard.characters, operandIndexes)];
+      return [
+        CONTEXTUAL_GUARD_SCHEMA.previousNot.opcode,
+        requireContextualOperandIndex(guard.characters, operandIndexes),
+      ];
     case "standing-alone":
-      return [12];
+      return [CONTEXTUAL_GUARD_SCHEMA.standingAlone.opcode];
     case "word-end":
-      return [13];
+      return [CONTEXTUAL_GUARD_SCHEMA.wordEnd.opcode];
     case "word-internal":
-      return [14];
+      return [CONTEXTUAL_GUARD_SCHEMA.wordInternal.opcode];
     case "word-start":
-      return [15];
+      return [CONTEXTUAL_GUARD_SCHEMA.wordStart.opcode];
   }
 }
 

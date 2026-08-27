@@ -35,6 +35,7 @@ export type Grade1Typeform =
   | "underline";
 
 export interface Grade1TextRun {
+  readonly kind?: "text";
   readonly text: string;
   readonly typeforms?: readonly Grade1Typeform[];
 }
@@ -83,8 +84,16 @@ export interface Grade1InvalidLigature {
   readonly value: string;
 }
 
+export interface Grade1InvalidRun {
+  readonly mode: "grade1";
+  readonly ok: false;
+  readonly reason: "invalid-run";
+  readonly runIndex: number;
+}
+
 export type Grade1Result =
   | Grade1InvalidLigature
+  | Grade1InvalidRun
   | Grade1Success
   | Grade1UnsupportedCharacter;
 
@@ -268,10 +277,64 @@ function unitModeClasses(unit: TranslatableUnit): ModeUnit {
     case "space":
       return classMask(SEQUENCE_BOUNDARY_CLASS);
     case "symbol":
-      return unit.source === "," || unit.source === "."
-          ? classMask(GRADE1_MODE_CLASS_IDS["numeric-punctuation"])
-          : 0;
+      return classMask(
+        ...(unit.source === "," || unit.source === "."
+          ? [GRADE1_MODE_CLASS_IDS["numeric-punctuation"]]
+          : []),
+      );
   }
+}
+
+function capitalsContinuesAt(
+  units: readonly TranslatableUnit[],
+  index: number,
+): boolean {
+  const unit = units[index];
+  if (
+    unit?.kind !== "symbol" ||
+    (unit.source !== "'" && unit.source !== "’") ||
+    units[index - 1]?.kind !== "letter" ||
+    units[index + 1]?.kind !== "letter"
+  ) return false;
+
+  let uppercaseBefore = 0;
+  for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+    const previous = units[cursor];
+    if (previous?.kind === "letter" && previous.uppercase) {
+      uppercaseBefore += 1;
+      continue;
+    }
+    if (
+      previous?.kind === "symbol" &&
+      (previous.source === "'" || previous.source === "’")
+    ) continue;
+    break;
+  }
+  if (uppercaseBefore >= 2) return true;
+
+  let start = index - 1;
+  while (start > 0) {
+    const previous = units[start - 1];
+    if (
+      previous?.kind === "letter" ||
+      (previous?.kind === "symbol" &&
+        (previous.source === "'" || previous.source === "’"))
+    ) start -= 1;
+    else break;
+  }
+  let end = index + 1;
+  while (end + 1 < units.length) {
+    const following = units[end + 1];
+    if (
+      following?.kind === "letter" ||
+      (following?.kind === "symbol" &&
+        (following.source === "'" || following.source === "’"))
+    ) end += 1;
+    else break;
+  }
+  return units.slice(start, end + 1).every(
+    (member) => member.kind !== "letter" || member.uppercase,
+  );
 }
 
 function unsupported(token: ScalarToken): Grade1UnsupportedCharacter {
@@ -443,9 +506,11 @@ function addContextClasses(
       (unit.kind === "symbol" &&
         unit.source === "?" &&
         questionMarkNeedsGrade1(previous));
-    return grade1Required
-      ? modeUnit | classMask(GRADE1_MODE_CLASS_IDS["grade1-required"])
-      : modeUnit;
+    return modeUnit |
+      (grade1Required ? classMask(GRADE1_MODE_CLASS_IDS["grade1-required"]) : 0) |
+      (capitalsContinuesAt(units, index)
+        ? classMask(GRADE1_MODE_CLASS_IDS["capitals-continuation"])
+        : 0);
   });
 }
 
@@ -489,8 +554,54 @@ export function emitCompositionUnit(unit: CompositionUnit): string {
   return emittedUnit(unit);
 }
 
+function isAsciiQuoteOpeningContext(
+  unit: CompositionUnit | undefined,
+): boolean {
+  return unit === undefined ||
+    unit.kind === "space" ||
+    unit.kind === "line-boundary" ||
+    (unit.kind === "symbol" && "([{‘“«".includes(unit.source));
+}
+
+function hasAsciiQuoteMaterial(unit: CompositionUnit | undefined): boolean {
+  return unit !== undefined &&
+    unit.kind !== "space" &&
+    unit.kind !== "line-boundary";
+}
+
+/** Resolve straight quotation marks while retaining numeric inch notation. */
+export function resolveAsciiDoubleQuotes(
+  units: readonly CompositionUnit[],
+): readonly (string | undefined)[] {
+  let quotationOpen = false;
+  return units.map((unit, index) => {
+    if (unit.source !== "\"") return undefined;
+    const previous = units[index - 1];
+    const next = units[index + 1];
+
+    if (quotationOpen) {
+      quotationOpen = false;
+      return "⠴";
+    }
+    if (
+      isAsciiQuoteOpeningContext(previous) &&
+      hasAsciiQuoteMaterial(next)
+    ) {
+      quotationOpen = true;
+      return "⠦";
+    }
+    if (
+      previous?.kind !== "digit" &&
+      hasAsciiQuoteMaterial(previous) &&
+      !hasAsciiQuoteMaterial(next)
+    ) return "⠴";
+    return undefined;
+  });
+}
+
 function translateUnits(units: readonly TranslatableUnit[]): string {
   let braille = "";
+  const asciiDoubleQuotes = resolveAsciiDoubleQuotes(units);
   const baseModeUnits = units.map(unitModeClasses);
   const modeUnits = addContextClasses(units, baseModeUnits);
   const resolution = resolveModes(
@@ -502,7 +613,7 @@ function translateUnits(units: readonly TranslatableUnit[]): string {
   for (const [index, unit] of units.entries()) {
     braille +=
       (resolution.prefixes.get(index) ?? "") +
-      emittedUnit(unit) +
+      (asciiDoubleQuotes[index] ?? emittedUnit(unit)) +
       (resolution.suffixes.get(index) ?? "");
   }
   return braille;
@@ -686,20 +797,69 @@ function translateLigature(run: Grade1Ligature): Grade1Result {
   return { braille, mode: "grade1", ok: true };
 }
 
+function isGrade1Typeform(value: unknown): value is Grade1Typeform {
+  return value === "bold" ||
+    value === "italic" ||
+    value === "script" ||
+    value === "transcriber-defined" ||
+    value === "underline";
+}
+
+function isDenseArrayOf<T>(
+  value: unknown,
+  isElement: (element: unknown) => element is T,
+): value is T[] {
+  if (!Array.isArray(value)) return false;
+  for (let index = 0; index < value.length; index += 1) {
+    if (!(index in value) || !isElement(value[index])) return false;
+  }
+  return true;
+}
+
+function isGrade1TextRun(run: object): run is Grade1TextRun {
+  const kind = "kind" in run ? run.kind : undefined;
+  const text = "text" in run ? run.text : undefined;
+  const typeforms = "typeforms" in run ? run.typeforms : undefined;
+  return (kind === undefined || kind === "text") &&
+    typeof text === "string" &&
+    (typeforms === undefined ||
+      isDenseArrayOf(typeforms, isGrade1Typeform));
+}
+
+function isGrade1Run(run: unknown): run is Grade1Run {
+  if (typeof run !== "object" || run === null) return false;
+  if (isGrade1TextRun(run)) return true;
+  if (!("kind" in run)) return false;
+  if (run.kind === "braille-group") {
+    return "runs" in run && Array.isArray(run.runs) && run.runs.length > 0;
+  }
+  if (run.kind === "ligature") {
+    return "letters" in run &&
+      isDenseArrayOf(
+        run.letters,
+        (letter): letter is string => typeof letter === "string",
+      ) &&
+      run.letters.length >= 2;
+  }
+  return false;
+}
+
 function translateRuns(runs: readonly Grade1Run[]): Grade1Result {
   let braille = "";
-  for (const run of runs) {
-    const translated =
-      !("kind" in run)
-        ? translateTypeformedRun(run)
-        : run.kind === "braille-group"
-          ? translateRuns(run.runs)
-          : translateLigature(run);
+  for (const [runIndex, run] of runs.entries()) {
+    if (!isGrade1Run(run)) {
+      return { mode: "grade1", ok: false, reason: "invalid-run", runIndex };
+    }
+    const translated = run.kind === "braille-group"
+      ? translateRuns(run.runs)
+      : run.kind === "ligature"
+        ? translateLigature(run)
+        : translateTypeformedRun(run);
     if (!translated.ok) {
       return translated;
     }
     braille +=
-      "kind" in run && run.kind === "braille-group"
+      run.kind === "braille-group"
         ? `⠣${translated.braille}⠜`
         : translated.braille;
   }
