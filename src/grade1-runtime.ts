@@ -489,8 +489,54 @@ export function emitCompositionUnit(unit: CompositionUnit): string {
   return emittedUnit(unit);
 }
 
+function isAsciiQuoteOpeningContext(
+  unit: CompositionUnit | undefined,
+): boolean {
+  return unit === undefined ||
+    unit.kind === "space" ||
+    unit.kind === "line-boundary" ||
+    (unit.kind === "symbol" && "([{‘“«".includes(unit.source));
+}
+
+function hasAsciiQuoteMaterial(unit: CompositionUnit | undefined): boolean {
+  return unit !== undefined &&
+    unit.kind !== "space" &&
+    unit.kind !== "line-boundary";
+}
+
+/** Resolve straight quotation marks while retaining numeric inch notation. */
+export function resolveAsciiDoubleQuotes(
+  units: readonly CompositionUnit[],
+): readonly (string | undefined)[] {
+  let quotationOpen = false;
+  return units.map((unit, index) => {
+    if (unit.source !== "\"") return undefined;
+    const previous = units[index - 1];
+    const next = units[index + 1];
+
+    if (quotationOpen) {
+      quotationOpen = false;
+      return "⠴";
+    }
+    if (
+      isAsciiQuoteOpeningContext(previous) &&
+      hasAsciiQuoteMaterial(next)
+    ) {
+      quotationOpen = true;
+      return "⠦";
+    }
+    if (
+      previous?.kind !== "digit" &&
+      hasAsciiQuoteMaterial(previous) &&
+      !hasAsciiQuoteMaterial(next)
+    ) return "⠴";
+    return undefined;
+  });
+}
+
 function translateUnits(units: readonly TranslatableUnit[]): string {
   let braille = "";
+  const asciiDoubleQuotes = resolveAsciiDoubleQuotes(units);
   const baseModeUnits = units.map(unitModeClasses);
   const modeUnits = addContextClasses(units, baseModeUnits);
   const resolution = resolveModes(
@@ -502,7 +548,7 @@ function translateUnits(units: readonly TranslatableUnit[]): string {
   for (const [index, unit] of units.entries()) {
     braille +=
       (resolution.prefixes.get(index) ?? "") +
-      emittedUnit(unit) +
+      (asciiDoubleQuotes[index] ?? emittedUnit(unit)) +
       (resolution.suffixes.get(index) ?? "");
   }
   return braille;

@@ -244,6 +244,26 @@ describe("ICEB 2024 3 and 7: general symbols and punctuation", () => {
       mode: "grade1",
       ok: true,
     });
+    expect(translateGrade1("\"hello.\" 6\"")).toEqual({
+      braille: "⠦⠓⠑⠇⠇⠕⠲⠴⠀⠼⠋⠠⠶",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
+  it("uses contextual ASCII quote inference in Grade1Document text runs", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{
+        runs: [{ text: "\"hello.\" 6\"" }],
+      }],
+    } satisfies Grade1Document;
+
+    expect(translateGrade1(document)).toEqual({
+      braille: "⠦⠓⠑⠇⠇⠕⠲⠴⠀⠼⠋⠠⠶",
+      mode: "grade1",
+      ok: true,
+    });
   });
 
   it("translates the vertical bar from the compiled U+007C symbol rule", () => {
