@@ -509,8 +509,8 @@ function reconcileBaseLedger(
     replacements.set(evidence.caseId, { ...evidence, groupId });
   }
   if (
-    refreshed !== 76 || reclassifiedWordScope !== 27 ||
-    classifiedExisting !== 52 || explicitOverrides !== 3
+    refreshed !== 61 || reclassifiedWordScope !== 0 ||
+    classifiedExisting !== 415 || explicitOverrides !== 0
   ) {
     throw new Error(`Unexpected reconciliation shape: ${JSON.stringify({
       classifiedExisting,

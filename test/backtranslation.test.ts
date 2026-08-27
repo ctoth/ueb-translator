@@ -90,7 +90,7 @@ describe("backtranslateGrade1", () => {
     }
   });
 
-  it.each(["DON'T", "B'S"])(
+  it.each(["DON'T", "B'S", "D’ARTAGNAN’S"])(
     "round trips canonical capitals word mode through an apostrophe in %s",
     (print) => {
       const translated = translateGrade1(print);
