@@ -84,6 +84,10 @@ function removeFinalLineEnding(value: string): string {
   return value;
 }
 
+export function encodeOracleInput(input: string): string {
+  return input.replaceAll("\\", "\\\\");
+}
+
 export async function verifyOracleVersion(
   executable: string,
 ): Promise<string> {
@@ -117,7 +121,7 @@ export async function runOracleTranslation(
   const result = await runProcess(
     executable,
     [direction, "--display-table", "unicode.dis", tables.join(",")],
-    request.text,
+    encodeOracleInput(request.text),
   );
   if (result.exitCode !== 0) {
     throw commandError(executable, result);
@@ -137,4 +141,96 @@ export async function runOracleTranslation(
     },
     output: removeFinalLineEnding(result.stdout),
   };
+}
+
+export async function runOracleTranslations(
+  executable: string,
+  requests: readonly OracleRequest[],
+  version: string,
+): Promise<readonly OracleTranslation[]> {
+  if (requests.length === 0) {
+    return [];
+  }
+  const mode = requests[0]?.mode;
+  if (mode === undefined || requests.some((request) => request.mode !== mode)) {
+    throw new Error("batched oracle requests must use one mode");
+  }
+  if (requests.some((request) => request.direction !== "forward")) {
+    throw new Error("batched empirical oracle requests must be forward translations");
+  }
+  if (requests.some((request) => /[\r\n\v\f\u0085\u2028\u2029]/u.test(request.text))) {
+    throw new Error("batched oracle request text must not contain line endings");
+  }
+  const tables = tablesForMode(mode);
+  const result = await runProcess(
+    executable,
+    ["--forward", "--display-table", "unicode.dis", tables.join(",")],
+    requests.map((request) => encodeOracleInput(request.text)).join("\n"),
+  );
+  if (result.exitCode !== 0) {
+    throw commandError(executable, result);
+  }
+  if (result.stderr.trim().length !== 0) {
+    if (requests.length > 1) {
+      const middle = Math.floor(requests.length / 2);
+      const left = await runOracleTranslations(
+        executable,
+        requests.slice(0, middle),
+        version,
+      );
+      const right = await runOracleTranslations(
+        executable,
+        requests.slice(middle),
+        version,
+      );
+      return [...left, ...right];
+    }
+    const request = requests[0];
+    if (request === undefined) {
+      throw new Error("missing request for unrepresentable oracle output");
+    }
+    const detail = result.stderr.trim().replace(/\s+/gu, " ");
+    return [{
+      id: request.id,
+      ok: true,
+      oracle: {
+        engine: "liblouis",
+        status: `${LIBLOUIS_ORACLE_STATUS}; unrepresentable: ${detail}`,
+        tables,
+        version,
+      },
+      output: "[[unrepresentable:liblouis-stderr]]",
+    }];
+  }
+  const output = removeFinalLineEnding(result.stdout).split(/\r?\n/u);
+  if (output.length !== requests.length) {
+    if (requests.length > 1) {
+      const middle = Math.floor(requests.length / 2);
+      const left = await runOracleTranslations(
+        executable,
+        requests.slice(0, middle),
+        version,
+      );
+      const right = await runOracleTranslations(
+        executable,
+        requests.slice(middle),
+        version,
+      );
+      return [...left, ...right];
+    }
+    throw new Error(
+      `batched oracle returned ${String(output.length)} lines for ${String(requests.length)} requests (${requests[0]?.id ?? "missing"} through ${requests.at(-1)?.id ?? "missing"})`,
+    );
+  }
+  return requests.map((request, index) => ({
+    id: request.id,
+    ok: true,
+    oracle: {
+      engine: "liblouis",
+      status: LIBLOUIS_ORACLE_STATUS,
+      tables,
+      version,
+    },
+    output: output[index] ?? "",
+  }));
 }

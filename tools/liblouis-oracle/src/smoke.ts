@@ -6,6 +6,7 @@ const requests: readonly OracleRequest[] = [
   { direction: "forward", id: "grade1", mode: "grade1", text: "Hello, 2024." },
   { direction: "forward", id: "grade2", mode: "grade2", text: "The quick brown fox." },
   { direction: "forward", id: "technical", mode: "technical", text: "x² + y² = z²" },
+  { direction: "forward", id: "ucs4", mode: "grade2", text: "𝒜" },
 ];
 
 function isUnicodeBraille(value: string): boolean {

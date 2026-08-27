@@ -1,0 +1,76 @@
+name: Nightly oracle fuzz
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    env:
+      LIBLOUIS_VERSION: "3.38.0"
+      LIBLOUIS_SHA256: "afb26096b18b17f43e6055e6a79ce0058eb9dbdcdcc4597522dcd7f11915ec16"
+      ORACLE_FUZZ_NUM_RUNS: "10000"
+      ORACLE_FUZZ_RESULT: .oracle-artifacts/fuzz-result.json
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install project development dependencies
+        run: npm ci
+
+      - name: Build pinned Liblouis release
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/liblouis-${LIBLOUIS_VERSION}.tar.gz"
+          source_dir="$RUNNER_TEMP/liblouis-${LIBLOUIS_VERSION}"
+          install_dir="$RUNNER_TEMP/liblouis-install"
+          url="https://github.com/liblouis/liblouis/releases/download/v${LIBLOUIS_VERSION}/liblouis-${LIBLOUIS_VERSION}.tar.gz"
+
+          curl --fail --location --proto '=https' --tlsv1.2 "$url" --output "$archive"
+          echo "${LIBLOUIS_SHA256}  ${archive}" | sha256sum --check --strict
+          tar --extract --gzip --file "$archive" --directory "$RUNNER_TEMP"
+          cd "$source_dir"
+          ./configure --enable-ucs4 --prefix="$install_dir" --without-yaml
+          make --jobs="$(nproc)"
+          make install
+
+      - name: Build oracle adapter
+        run: npm run oracle:build
+
+      - name: Fuzz with a fresh recorded seed and shrink new divergences
+        env:
+          LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
+          LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
+        run: npm run oracle:fuzz
+
+      - name: Retain seed, shrink path, minimal input, and exact evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-fuzz-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .oracle-artifacts/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: File one deduplicated issue for a new minimal divergence
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: npm run oracle:fuzz:file

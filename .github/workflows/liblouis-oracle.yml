@@ -10,7 +10,7 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
 
     env:
       # Official release and asset digest:
@@ -44,7 +44,7 @@ jobs:
           echo "${LIBLOUIS_SHA256}  ${archive}" | sha256sum --check --strict
           tar --extract --gzip --file "$archive" --directory "$RUNNER_TEMP"
           cd "$source_dir"
-          ./configure --prefix="$install_dir" --without-yaml
+          ./configure --enable-ucs4 --prefix="$install_dir" --without-yaml
           make --jobs="$(nproc)"
           make install
 
@@ -70,3 +70,35 @@ jobs:
           LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
           LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
         run: npm run oracle:inventory:check
+
+      - name: Prepare deterministic empirical corpora and SCOWL level 95
+        run: npm run oracle:empirical:prepare
+
+      - name: Sweep the full SCOWL wordlist
+        env:
+          LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
+          LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .oracle-artifacts
+          npm run oracle:dictionary:check | tee .oracle-artifacts/dictionary-sweep.jsonl
+
+      - name: Sweep the retained Gutenberg and fixed Wikinews corpora
+        env:
+          LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
+          LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .oracle-artifacts
+          npm run oracle:corpus:check | tee .oracle-artifacts/corpus-sweep.jsonl
+
+      - name: Retain empirical failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: empirical-oracle-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .oracle-artifacts/
+          if-no-files-found: warn
+          retention-days: 90

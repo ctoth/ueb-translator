@@ -7,6 +7,6 @@
     "rootDir": "../..",
     "sourceMap": true
   },
-  "include": ["../../src/**/*.ts", "src/**/*.ts"],
+  "include": ["../../rules/ueb-2024/**/*.ts", "../../src/**/*.ts", "../corpus-benchmark/src/**/*.ts", "*.mts", "src/**/*.ts"],
   "exclude": ["test/**/*.ts"]
 }

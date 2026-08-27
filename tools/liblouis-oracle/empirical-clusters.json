@@ -1,0 +1,1646 @@
+{
+  "groups": [
+    {
+      "count": 7,
+      "id": "unsupported",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00142511",
+          "input": "Tromsø",
+          "local": {
+            "kind": "test",
+            "output": "[[unsupported:unsupported-character:ø:scalar-5]]",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠞⠗⠕⠍⠎⠈⠡⠕"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00142512",
+          "input": "Tromsø's",
+          "local": {
+            "kind": "test",
+            "output": "[[unsupported:unsupported-character:ø:scalar-5]]",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠞⠗⠕⠍⠎⠈⠡⠕⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00554722",
+          "input": "smørbrød",
+          "local": {
+            "kind": "test",
+            "output": "[[unsupported:unsupported-character:ø:scalar-2]]",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠎⠍⠈⠡⠕⠗⠃⠗⠈⠡⠕⠙"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00554723",
+          "input": "smørbrøds",
+          "local": {
+            "kind": "test",
+            "output": "[[unsupported:unsupported-character:ø:scalar-2]]",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠎⠍⠈⠡⠕⠗⠃⠗⠈⠡⠕⠙⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00554724",
+          "input": "smørrebrød",
+          "local": {
+            "kind": "test",
+            "output": "[[unsupported:unsupported-character:ø:scalar-2]]",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠎⠍⠈⠡⠕⠗⠗⠑⠃⠗⠈⠡⠕⠙"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "our-bug",
+        "rationale": "The local translator returned explicit unsupported-character evidence for print present in the pinned SCOWL inventory. ICEB 2024 Sections 4.2 and 4.6 require the print symbol or foreign-letter treatment to be represented rather than dropped; each exact unsupported input remains recorded.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 576,
+      "id": "supported-non-ascii",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00009021",
+          "input": "Ardèche",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠗⠙⠘⠡⠑⠉⠓⠑",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠜⠙⠘⠡⠑⠡⠑"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00009022",
+          "input": "Ardèche's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠗⠙⠘⠡⠑⠉⠓⠑⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠜⠙⠘⠡⠑⠡⠑⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00009452",
+          "input": "Ariège",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠗⠊⠘⠡⠑⠛⠑",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠜⠊⠘⠡⠑⠛⠑"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00009453",
+          "input": "Ariège's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠗⠊⠘⠡⠑⠛⠑⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠜⠊⠘⠡⠑⠛⠑⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00009632",
+          "input": "Armentières",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠗⠍⠑⠝⠞⠊⠘⠡⠑⠗⠑⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠜⠰⠞⠊⠘⠡⠑⠗⠑⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The local result preserves supported non-ASCII print through the ICEB 2024 Section 4.2/4.6 modifier and foreign-letter model. Liblouis is retained only as comparator evidence; the exact differing renderings require language context that a SCOWL spelling does not supply.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 5888,
+      "id": "ness-pattern",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00026793",
+          "input": "Caviness",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠉⠁⠧⠔⠑⠎⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠉⠁⠧⠊⠰⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00026794",
+          "input": "Caviness's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠉⠁⠧⠔⠑⠎⠎⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠉⠁⠧⠊⠰⠎⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00029920",
+          "input": "Christlikeness",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠡⠗⠊⠌⠇⠊⠅⠢⠑⠎⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠡⠗⠊⠌⠇⠊⠅⠑⠰⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00029921",
+          "input": "Christlikeness's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠡⠗⠊⠌⠇⠊⠅⠢⠑⠎⠎⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠡⠗⠊⠌⠇⠊⠅⠑⠰⠎⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00029923",
+          "input": "Christliness",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠡⠗⠊⠌⠇⠔⠑⠎⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠡⠗⠊⠌⠇⠊⠰⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The changed local window contains the complete final-letter groupsign selected by the authored ICEB 2024 Section 10.8 rule for ness. Sections 10.10 and 10.12 make syllabification and unfamiliar-word judgment relevant, so spelling-only dictionary evidence cannot make the comparator normative.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 3186,
+      "id": "traced-initial-letter",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00001516",
+          "input": "Actinonema",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠉⠞⠔⠐⠕⠍⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠉⠞⠔⠕⠝⠑⠍⠁"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00001517",
+          "input": "Actinonema's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠉⠞⠔⠐⠕⠍⠁⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠉⠞⠔⠕⠝⠑⠍⠁⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00002333",
+          "input": "Aethionema",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠑⠹⠊⠐⠕⠍⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠑⠹⠊⠕⠝⠑⠍⠁"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00002334",
+          "input": "Aethionema's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠑⠹⠊⠐⠕⠍⠁⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠑⠹⠊⠕⠝⠑⠍⠁⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00002690",
+          "input": "Aglaonema",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠛⠇⠁⠐⠕⠍⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠛⠇⠁⠕⠝⠑⠍⠁"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The changed local window contains the complete initial-letter contraction selected by an authored ICEB 2024 Section 10.7 rule. The exact trace proves which local rule caused the difference; Section 10.12 preserves pronunciation and unfamiliar-word judgment for spelling-only entries.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 4110,
+      "id": "traced-be-con-dis",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00012436",
+          "input": "BEA",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠆⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠃⠑⠁"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00012437",
+          "input": "BEAV",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠆⠁⠧",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠃⠂⠧"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00012438",
+          "input": "BED",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠆⠙",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠃⠫"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00012439",
+          "input": "BEE",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠆⠑",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠃⠑⠑"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00012440",
+          "input": "BEF",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠆⠋",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠃⠑⠋"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The changed local window contains the complete be, con, or dis lower groupsign selected under ICEB 2024 Section 10.6. The first-syllable condition depends on pronunciation, so Section 10.12 permits judgment where SCOWL supplies spelling without pronunciation.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 1436,
+      "id": "traced-ea",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00019347",
+          "input": "Boreas",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠕⠗⠂⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠕⠗⠑⠁⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00019348",
+          "input": "Boreas's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠕⠗⠂⠎⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠕⠗⠑⠁⠎⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00034014",
+          "input": "Cotoneaster",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠉⠕⠞⠕⠝⠂⠌⠻",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠉⠕⠞⠐⠕⠁⠌⠻"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00034015",
+          "input": "Cotoneaster's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠉⠕⠞⠕⠝⠂⠌⠻⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠉⠕⠞⠐⠕⠁⠌⠻⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00038005",
+          "input": "Deanna",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠙⠂⠝⠝⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠙⠑⠁⠝⠝⠁"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The changed local window contains the complete ea lower groupsign selected under ICEB 2024 Section 10.6. Prefix and syllable analysis can depend on word knowledge; ICEB 10.12 allows judgment for unfamiliar spelling-only entries.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 190,
+      "id": "traced-other-lower-groupsign",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00000715",
+          "input": "Abencerrages",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠃⠢⠉⠻⠗⠁⠛⠑⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠃⠰⠑⠗⠗⠁⠛⠑⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000716",
+          "input": "Abencerrages's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠃⠢⠉⠻⠗⠁⠛⠑⠎⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠃⠰⠑⠗⠗⠁⠛⠑⠎⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00015646",
+          "input": "Bein's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠆⠔⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠆⠊⠝⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00018411",
+          "input": "Bluenose",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠇⠥⠢⠕⠎⠑",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠇⠥⠑⠝⠕⠎⠑"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00018412",
+          "input": "Bluenose's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠇⠥⠢⠕⠎⠑⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠇⠥⠑⠝⠕⠎⠑⠄⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The changed local window contains a complete authored lower groupsign under ICEB 2024 Section 10.6. The exact trace and changed window retain the rule evidence, while Section 10.12 governs any pronunciation-dependent uncertainty.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 775,
+      "id": "traced-strong-contraction",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00002284",
+          "input": "Aeroflot",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠻⠷⠇⠕⠞",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠻⠕⠋⠇⠕⠞"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00002285",
+          "input": "Aeroflot's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠻⠷⠇⠕⠞⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠻⠕⠋⠇⠕⠞⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00005006",
+          "input": "Altheimer",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠇⠮⠊⠍⠻",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠇⠞⠓⠑⠊⠍⠻"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00005007",
+          "input": "Altheimer's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠇⠮⠊⠍⠻⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠇⠞⠓⠑⠊⠍⠻⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00007773",
+          "input": "Antisthenes",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠝⠞⠊⠎⠮⠝⠑⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠝⠞⠊⠌⠓⠢⠑⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The changed local window contains a complete authored strong contraction under ICEB 2024 Section 10.3. The trace proves the local rule provenance; Section 10.12 permits different transcriptions when pronunciation or syllabification of an unfamiliar word is uncertain.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 1341,
+      "id": "traced-strong-groupsign",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00000352",
+          "input": "AR",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠜",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠁⠗"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000651",
+          "input": "Abbottstown",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠆⠕⠞⠞⠌⠪⠝",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠆⠕⠞⠞⠎⠞⠪⠝"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000652",
+          "input": "Abbottstown's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠆⠕⠞⠞⠌⠪⠝⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠆⠕⠞⠞⠎⠞⠪⠝⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00001674",
+          "input": "Adamstown",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠙⠁⠍⠌⠪⠝",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠙⠁⠍⠎⠞⠪⠝"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00001675",
+          "input": "Adamstown's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠙⠁⠍⠌⠪⠝⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠁⠙⠁⠍⠎⠞⠪⠝⠄⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The changed local window contains a complete authored strong groupsign under ICEB 2024 Section 10.4. The trace proves the local rule provenance; Section 10.12 preserves word-knowledge judgment for unfamiliar spellings.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 22,
+      "id": "traced-other",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00015224",
+          "input": "Be's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠆⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠑⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00018445",
+          "input": "Blumenthal",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠇⠥⠰⠞⠓⠁⠇",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠇⠥⠍⠢⠹⠁⠇"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00018446",
+          "input": "Blumenthal's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠇⠥⠰⠞⠓⠁⠇⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠇⠥⠍⠢⠹⠁⠇⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00045526",
+          "input": "Emmenthal",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠑⠍⠰⠞⠓⠁⠇",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠑⠍⠍⠢⠹⠁⠇"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00045527",
+          "input": "Emmenthal's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠑⠍⠰⠞⠓⠁⠇⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠑⠍⠍⠢⠹⠁⠇⠄⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "A complete authored ICEB 2024 contraction or Appendix 1 shortform sign occurs in the changed local window. The exact trace identifies the rule; the spelling-only empirical channel does not override ICEB 10.9-10.12 judgment.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 210,
+      "id": "exact-grade1-insertion",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00000038",
+          "input": "AB",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠁⠃",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠰⠠⠠⠁⠃"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000039",
+          "input": "AB's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠁⠃⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠰⠠⠠⠁⠃⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000066",
+          "input": "AC",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠁⠉",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠰⠠⠠⠁⠉"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000067",
+          "input": "AC's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠁⠉⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠰⠠⠠⠁⠉⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000095",
+          "input": "ACS",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠁⠉⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠰⠠⠠⠁⠉⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "our-bug",
+        "rationale": "After removing the common Braille prefix and suffix, the local changed window is empty and the comparator changed window is exactly the grade-1 symbol indicator. ICEB 2024 Sections 5.2 and 5.7 require this disambiguating indicator in the recorded contexts.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 1138,
+      "id": "capitalization-or-abbreviation",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00000022",
+          "input": "AARP's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠠⠁⠁⠗⠏⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠁⠜⠏⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000025",
+          "input": "AATech",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠠⠁⠠⠞⠑⠉⠓",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠁⠁⠞⠠⠄⠑⠡"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000026",
+          "input": "AATech's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠠⠁⠠⠞⠑⠉⠓⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠁⠁⠞⠠⠄⠑⠡⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000032",
+          "input": "AAeE",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠠⠁⠑⠠⠑",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠁⠁⠠⠄⠑⠠⠑"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00000033",
+          "input": "AAeE's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠁⠠⠁⠑⠠⠑⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠠⠁⠁⠠⠄⠑⠠⠑⠄⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "The exact untraced difference has capitalized or abbreviation-shaped print, but that shape alone does not prove an indicator defect. ICEB 2024 Sections 8.3-8.6 govern capitalization; the queue preserves exact evidence without treating Liblouis as normative.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 406,
+      "id": "untraced-final-letter",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00008803",
+          "input": "Archencephala",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠜⠡⠰⠑⠏⠓⠁⠇⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠜⠡⠢⠉⠑⠏⠓⠁⠇⠁"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00008804",
+          "input": "Archencephala's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠜⠡⠰⠑⠏⠓⠁⠇⠁⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠜⠡⠢⠉⠑⠏⠓⠁⠇⠁⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00059811",
+          "input": "Gyrencephala",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠛⠽⠗⠰⠑⠏⠓⠁⠇⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠛⠽⠗⠢⠉⠑⠏⠓⠁⠇⠁"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00059812",
+          "input": "Gyrencephala's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠛⠽⠗⠰⠑⠏⠓⠁⠇⠁⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠛⠽⠗⠢⠉⠑⠏⠓⠁⠇⠁⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00068828",
+          "input": "Inessa",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠊⠰⠎⠁",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠔⠑⠎⠎⠁"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "Only the comparator changed window contains a complete ICEB 2024 Section 10.8 final-letter groupsign. Because the local trace did not select that rule and final-letter usage depends on syllable boundaries, Section 10.12 makes spelling-only evidence insufficient to prefer the comparator.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 11,
+      "id": "shortform-s-extension",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00155291",
+          "input": "aboves",
+          "local": {
+            "kind": "test",
+            "output": "⠁⠃⠕⠧⠑⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠁⠃⠧⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00195927",
+          "input": "besides",
+          "local": {
+            "kind": "test",
+            "output": "⠆⠎⠊⠙⠑⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠆⠎⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00196814",
+          "input": "beyonds",
+          "local": {
+            "kind": "test",
+            "output": "⠆⠽⠕⠝⠙⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠆⠽⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00239670",
+          "input": "conceives",
+          "local": {
+            "kind": "test",
+            "output": "⠒⠉⠑⠊⠧⠑⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠒⠉⠧⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00259943",
+          "input": "deceives",
+          "local": {
+            "kind": "test",
+            "output": "⠙⠑⠉⠑⠊⠧⠑⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠙⠉⠧⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "issues": [
+          59
+        ],
+        "kind": "our-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 explicitly permits these recorded shortforms in the longer form made by adding only the letter s. The comparator retains the shortform and the pre-fix local output spells it in full.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 19,
+      "id": "oracle-only",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00057404",
+          "input": "Goody's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠛⠕⠕⠙⠽⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠛⠙⠽⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00057406",
+          "input": "Goodyear's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠛⠕⠕⠙⠽⠑⠜⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠛⠙⠽⠑⠜⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00194310",
+          "input": "belittlement's",
+          "local": {
+            "kind": "test",
+            "output": "⠆⠇⠊⠞⠞⠇⠑⠰⠞⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠆⠇⠇⠰⠞⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00283287",
+          "input": "e'en",
+          "local": {
+            "kind": "test",
+            "output": "⠑⠄⠑⠝",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠑⠄⠢"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00289073",
+          "input": "en's",
+          "local": {
+            "kind": "test",
+            "output": "⠑⠝⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠢⠄⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "Only Liblouis introduces a contraction in the exact changed window and no authored local contraction caused the difference. Liblouis is a non-normative development oracle; ICEB 2024 Sections 10.3-10.12 and Appendix 1 remain the authority for the retained exact evidence.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 1,
+      "id": "residual-captainess",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00216677",
+          "input": "captainess",
+          "local": {
+            "kind": "test",
+            "output": "⠉⠁⠏⠞⠁⠔⠑⠎⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠉⠁⠏⠞⠁⠊⠔⠑⠎⠎"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.10.2 explicitly prints captainess as ⠉⠁⠏⠞⠁⠔⠑⠎⠎. The recorded local output matches that normative example exactly and the comparator output does not.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 1,
+      "id": "residual-today-apostrophe-ll",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00598172",
+          "input": "today'll",
+          "local": {
+            "kind": "test",
+            "output": "⠞⠙⠄⠇⠇",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠞⠕⠐⠙⠄⠇⠇"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "our-bug",
+        "rationale": "ICEB 2024 Rules 7.6 and 10.9.2-10.9.5 do not permit retaining the today shortform before apostrophe-ll; the suffix extension is explicitly limited to s and apostrophe-s. The recorded Liblouis output spells today in full and is source-backed.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "count": 1,
+      "id": "residual-your-apostrophe-n",
+      "representatives": [
+        {
+          "caseId": "scowl:2020.12.07:95:00655642",
+          "input": "your'n",
+          "local": {
+            "kind": "test",
+            "output": "⠽⠗⠄⠝",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠽⠳⠗⠄⠝"
+          }
+        }
+      ],
+      "verdict": {
+        "kind": "our-bug",
+        "rationale": "ICEB 2024 Rules 7.6 and 10.9.2-10.9.5 do not permit retaining the your shortform before apostrophe-n; the suffix extension is explicitly limited to s and apostrophe-s. The recorded Liblouis output spells your in full and is source-backed.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    }
+  ],
+  "total": 19318
+}

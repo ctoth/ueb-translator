@@ -65,6 +65,8 @@ Run `npm run oracle:test` without Liblouis to verify the boundary protocol.
 Run `npm run oracle:smoke` with the environment above to verify the pinned
 binary and all table mappings. The smoke check validates only process health
 and Unicode Braille output; it contains no expected Liblouis translations.
+CI builds the pinned release with `--enable-ucs4`, and the smoke includes a
+non-BMP print character so a 16-bit Liblouis build cannot silently pass.
 
 ## Differential failures
 
@@ -100,6 +102,35 @@ new or changed disagreement until that exact evidence is adjudicated and
 committed; it also fails when a ledger entry becomes stale, so resolved drift is
 reviewed rather than silently retained. Liblouis remains non-normative: only the
 cited official source decides the verdict.
+
+## Empirical dictionary, corpus, and fuzz channels
+
+`npm run oracle:empirical:prepare` reacquires SCOWL 2020.12.07 level 95 from
+the pinned archive URL, verifies SHA-256
+`5587667caa20c4891390c2d42dbb4d5c4c3f41bee77af1457ece3ba23fb859cc`,
+and records upstream Git commit `5ef55f9c42730ebe4394a78b77855468a6f15dd2`.
+The ignored development cache retains SCOWL's copyright notice. It also
+prepares Wikinews snapshot 20260801 and expands the repository-retained,
+gzip-compressed Project Gutenberg ebook 1342 bytes identified by SHA-256
+`74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806`.
+Fresh CI runners never depend on the mutable Gutenberg URL retaining those
+exact bytes.
+
+CI runs all 658,033 prepared SCOWL entries and every bounded sentence chunk
+from both prepared corpora. `empirical-disagreements.json` retains the exact
+dictionary evidence. The much larger corpus channel uses exact SHA-256
+comparison keys plus bounded changed-window repro previews in
+`empirical-corpus-disagreements.json`; full candidate JSONL remains ignored
+and is retained as a CI failure artifact. Both ledgers fail closed for new,
+changed, or stale evidence, and every entry references a source-backed verdict
+group. An `our-bug` verdict carries the owning GitHub issue number.
+
+The separate scheduled workflow runs fast-check with a fresh signed 32-bit
+seed and records the seed, shrink path, shrink count, minimal input, exact
+evidence, and stable semantic fingerprint. Reproduce a run by setting
+`ORACLE_FUZZ_SEED` and `ORACLE_FUZZ_NUM_RUNS`. Scheduled failures upload the
+result before idempotent issue filing; a fingerprint marker deduplicates both
+open and closed issues, and filing failure leaves the job failed.
 
 [release]: https://github.com/liblouis/liblouis/releases/tag/v3.38.0
 [g1]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g1.ctb
