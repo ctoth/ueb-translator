@@ -199,6 +199,74 @@ describe("Grade 2 source compilation", () => {
 });
 
 describe("Grade 2 runtime architecture", () => {
+  it.each([
+    ["'tis", "test-leading-tis"],
+    ["’twas", "test-leading-twas"],
+    ["'em", "test-leading-em"],
+    ["can't", "test-internal-cant"],
+    ["o’clock", "test-internal-oclock"],
+  ] as const)("keeps apostrophes in the eligibility word for %s", (text, id) => {
+    const sources = [
+      rule("test-leading-tis", "tis", 0, [{
+        kind: "eligibility-word",
+        pluralSuffix: "",
+        word: "'tis",
+      }]),
+      rule("test-leading-twas", "twas", 0, [{
+        kind: "eligibility-word",
+        pluralSuffix: "",
+        word: "'twas",
+      }]),
+      rule("test-leading-em", "em", 0, [{
+        kind: "eligibility-word",
+        pluralSuffix: "",
+        word: "'em",
+      }]),
+      rule("test-internal-cant", "can", 0, [{
+        kind: "eligibility-word",
+        pluralSuffix: "",
+        word: "can't",
+      }]),
+      rule("test-internal-oclock", "clock", 0, [{
+        kind: "eligibility-word",
+        pluralSuffix: "",
+        word: "o'clock",
+      }]),
+    ];
+    const compilation = compileContextualRules(sources);
+    const compiled = compilation.runtime;
+    const encode = (values: readonly number[]): string =>
+      String.fromCharCode(...values.map((value) => value + 0x100));
+    const translator = compose(
+      GRADE1_SYMBOL_PROGRAM,
+      GRADE1_MODE_PROGRAM,
+      UEB_COMPOSITION_POLICIES,
+      {
+        ...compiled,
+        code: "ueb-2024",
+        grade1Ambiguities: [],
+        matcher: [
+          compiled.matcher.bucketAlphabet,
+          compiled.matcher.inputs,
+          encode(compiled.matcher.initialInputOffsets),
+          encode(compiled.matcher.initialRuleOffsets),
+          encode(compiled.matcher.initialGuardOffsets),
+          encode(compiled.matcher.inputRuleCounts),
+          encode(compiled.matcher.inputGuardCounts),
+        ],
+        standingLiteralInputs: [],
+      },
+    );
+
+    const result = translator.translate(text);
+    expect(result.ok).toBe(true);
+    const ruleIndex = compilation.provenance.findIndex((source) => source.id === id);
+    expect(ruleIndex).toBeGreaterThanOrEqual(0);
+    if (result.ok) {
+      expect(result.rules.map((applied) => applied.ruleIndex)).toContain(ruleIndex);
+    }
+  });
+
   it("reaches canonically lowercase rules from uppercase composition input", () => {
     const compiled = compileContextualRules([rule("test-uppercase", "A", 0)]).runtime;
     const encode = (values: readonly number[]): string =>
