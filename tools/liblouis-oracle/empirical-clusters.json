@@ -207,7 +207,7 @@
       }
     },
     {
-      "count": 5888,
+      "count": 5886,
       "id": "ness-pattern",
       "representatives": [
         {
@@ -619,45 +619,9 @@
       }
     },
     {
-      "count": 190,
+      "count": 60,
       "id": "traced-other-lower-groupsign",
       "representatives": [
-        {
-          "caseId": "scowl:2020.12.07:95:00000715",
-          "input": "Abencerrages",
-          "local": {
-            "kind": "test",
-            "output": "⠠⠁⠃⠢⠉⠻⠗⠁⠛⠑⠎",
-            "testId": "SCOWL-2020.12.07-level-95"
-          },
-          "oracle": {
-            "engine": "liblouis",
-            "status": "non-normative development oracle; ICEB sources decide disagreements",
-            "tables": [
-              "en-ueb-g2.ctb"
-            ],
-            "version": "3.38.0",
-            "output": "⠠⠁⠃⠰⠑⠗⠗⠁⠛⠑⠎"
-          }
-        },
-        {
-          "caseId": "scowl:2020.12.07:95:00000716",
-          "input": "Abencerrages's",
-          "local": {
-            "kind": "test",
-            "output": "⠠⠁⠃⠢⠉⠻⠗⠁⠛⠑⠎⠄⠎",
-            "testId": "SCOWL-2020.12.07-level-95"
-          },
-          "oracle": {
-            "engine": "liblouis",
-            "status": "non-normative development oracle; ICEB sources decide disagreements",
-            "tables": [
-              "en-ueb-g2.ctb"
-            ],
-            "version": "3.38.0",
-            "output": "⠠⠁⠃⠰⠑⠗⠗⠁⠛⠑⠎⠄⠎"
-          }
-        },
         {
           "caseId": "scowl:2020.12.07:95:00015646",
           "input": "Bein's",
@@ -710,6 +674,42 @@
             ],
             "version": "3.38.0",
             "output": "⠠⠃⠇⠥⠑⠝⠕⠎⠑⠄⠎"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00018413",
+          "input": "Bluenoser",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠇⠥⠢⠕⠎⠻",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠇⠥⠑⠝⠕⠎⠑⠗"
+          }
+        },
+        {
+          "caseId": "scowl:2020.12.07:95:00018414",
+          "input": "Bluenoser's",
+          "local": {
+            "kind": "test",
+            "output": "⠠⠃⠇⠥⠢⠕⠎⠻⠄⠎",
+            "testId": "SCOWL-2020.12.07-level-95"
+          },
+          "oracle": {
+            "engine": "liblouis",
+            "status": "non-normative development oracle; ICEB sources decide disagreements",
+            "tables": [
+              "en-ueb-g2.ctb"
+            ],
+            "version": "3.38.0",
+            "output": "⠠⠃⠇⠥⠑⠝⠕⠎⠑⠗⠄⠎"
           }
         }
       ],
@@ -1642,5 +1642,5 @@
       }
     }
   ],
-  "total": 19318
+  "total": 19186
 }

@@ -17,6 +17,7 @@ export type { ContextualPrecedence } from "../../src/contextual-transducer.js";
 export type ContextualRuleGuard =
   | { readonly kind: "eligibility-word"; readonly pluralSuffix: string; readonly word: string }
   | { readonly kind: "first-syllable" }
+  | { readonly characters: string; readonly kind: "following" }
   | { readonly characters: string; readonly kind: "following-not-vowel-y" }
   | { readonly kind: "lower-sign"; readonly policy: "enough-or-in" | "other" }
   | { readonly kind: "not-boundary"; readonly boundary: ContextualBoundaryKind }
@@ -145,6 +146,7 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
   switch (guard.kind) {
     case "eligibility-word":
       return [guard.word, guard.pluralSuffix];
+    case "following":
     case "following-not-vowel-y":
       return [guard.characters];
     case "previous-not":
@@ -201,6 +203,8 @@ function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
       return CONTEXTUAL_GUARD_SCHEMA.eligibilityWord.opcode;
     case "first-syllable":
       return CONTEXTUAL_GUARD_SCHEMA.firstSyllable.opcode;
+    case "following":
+      return CONTEXTUAL_GUARD_SCHEMA.following.opcode;
     case "following-not-vowel-y":
       return CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode;
     case "lower-sign":
@@ -267,6 +271,11 @@ function compileGuard(
       ];
     case "first-syllable":
       return [CONTEXTUAL_GUARD_SCHEMA.firstSyllable.opcode];
+    case "following":
+      return [
+        CONTEXTUAL_GUARD_SCHEMA.following.opcode,
+        requireContextualOperandIndex(guard.characters, operandIndexes),
+      ];
     case "following-not-vowel-y":
       return [
         CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode,
@@ -320,6 +329,7 @@ function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
   switch (guard.kind) {
     case "eligibility-word":
       return { kind: guard.kind, pluralSuffix: guard.pluralSuffix, word: guard.word };
+    case "following":
     case "following-not-vowel-y":
       return { characters: guard.characters, kind: guard.kind };
     case "previous-not":

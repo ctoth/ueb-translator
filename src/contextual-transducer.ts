@@ -295,6 +295,10 @@ function guardAllows(
       return start === 0;
     case 16:
       return !context.hasLowerPunctuation;
+    case 17: {
+      const following = context.word.charAt(end);
+      return following !== "" && operandAt(program, guard[1]).includes(following);
+    }
   }
 }
 

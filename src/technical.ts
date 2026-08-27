@@ -486,6 +486,10 @@ function symbolCell(print: string): string {
   return braille;
 }
 
+const UNPREFIXED_LATIN_LETTER_CELLS = new Set(
+  Array.from("⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"),
+);
+
 function arrowCell(direction: SimpleArrowDirection): string {
   return symbolCell(ARROW_PRINT[direction]);
 }
@@ -616,6 +620,16 @@ function operationIsSpaced(profile: TechnicalProfile): boolean {
   }
 }
 
+function needsSpaceBeforeFunction(
+  previous: RenderSuccess | undefined,
+  expression: TechnicalExpression,
+): boolean {
+  return previous !== undefined &&
+    UNPREFIXED_LATIN_LETTER_CELLS.has(previous.braille.at(-1) ?? "") &&
+    expression.kind === "function" &&
+    /^[a-z]/u.test(expression.name);
+}
+
 function joinRendered(results: readonly RenderResult[]): RenderResult {
   let braille = "";
   const requirements: Grade1Requirement[] = [];
@@ -731,11 +745,11 @@ function renderExpression(
       if (!argument.ok) {
         return argument;
       }
-      const space =
-        expression.argument.kind === "identifier" &&
-        /^\p{Ll}/u.test(expression.argument.value)
-          ? BRAILLE_SPACE
-          : "";
+      const space = UNPREFIXED_LATIN_LETTER_CELLS.has(
+        argument.braille.charAt(0),
+      )
+        ? BRAILLE_SPACE
+        : "";
       return renderSuccess(
         `${name.braille}${space}${argument.braille}`,
         shiftRequirements(
@@ -861,10 +875,15 @@ function renderExpression(
       const requirements: Grade1Requirement[] = [];
       let offset = 0;
       let previous: TechnicalExpression | undefined;
+      let previousRendered: RenderSuccess | undefined;
       for (const item of expression.items) {
         const itemRendered = renderExpression(item, profile);
         if (!itemRendered.ok) {
           return itemRendered;
+        }
+        if (needsSpaceBeforeFunction(previousRendered, item)) {
+          braille += BRAILLE_SPACE;
+          offset += BRAILLE_SPACE.length;
         }
         requirements.push(
           ...shiftRequirements(itemRendered.requirements, offset),
@@ -884,6 +903,7 @@ function renderExpression(
         braille += itemRendered.braille;
         offset += itemRendered.braille.length;
         previous = item;
+        previousRendered = itemRendered;
       }
       return renderSuccess(braille, requirements);
     }

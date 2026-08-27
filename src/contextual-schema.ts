@@ -1,6 +1,7 @@
 export const CONTEXTUAL_GUARD_SCHEMA = {
   eligibilityWord: { opcode: 0, operands: "two-string" },
   firstSyllable: { opcode: 1, operands: "none" },
+  following: { opcode: 17, operands: "string" },
   followingNotVowelY: { opcode: 2, operands: "string" },
   lowerSignEnoughOrIn: { opcode: 3, operands: "none" },
   notBoundary: { opcode: 4, operands: "boundary" },
