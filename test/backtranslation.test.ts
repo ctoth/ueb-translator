@@ -97,11 +97,11 @@ describe("backtranslateGrade1", () => {
     if (!translated.every((result) => result.ok)) {
       return;
     }
-    const braille = translated[0].braille;
+    const braille = translated[0]!.braille;
     expect(translated.map((result) => result.braille)).toEqual([braille, braille]);
 
     const candidates = candidatePrints(backtranslateGrade1(braille));
-    expect(candidates).toEqual(expect.arrayContaining(equivalentPrints));
+    expect(candidates).toEqual(expect.arrayContaining([...equivalentPrints]));
     for (const candidate of candidates) {
       expect(translatesGrade1To(candidate, braille), candidate).toBe(true);
     }
