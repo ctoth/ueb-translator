@@ -5776,7 +5776,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       "⠰⠑",
-      5,
+      4,
       2
     ],
     [

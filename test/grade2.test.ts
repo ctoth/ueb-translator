@@ -509,6 +509,37 @@ describe("translateGrade2", () => {
     });
   });
 
+  it.each([
+    {
+      braille: "⠉⠕⠍⠍⠰⠑⠙",
+      citation: "UEB 10.10.6",
+      print: "commenced",
+    },
+    {
+      braille: "⠎⠊⠇⠰⠑⠗",
+      citation: "UEB 10.10.6",
+      print: "silencer",
+    },
+    { braille: "⠋⠰⠑⠗", citation: "UEB 10.10.6", print: "fencer" },
+  ] as const)("uses final ence in $print under $citation", ({ print, braille }) => {
+    expect(translateGrade2(print)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  it.each([
+    { braille: "⠋⠰⠑", citation: "UEB 10.10.2", print: "fence" },
+    { braille: "⠏⠨⠙", citation: "UEB 10.10.2", print: "pound" },
+    {
+      braille: "⠁⠙⠓⠻⠰⠑",
+      citation: "UEB 10.10.2",
+      print: "adherence",
+    },
+  ] as const)(
+    "preserves shortest-cell choice for $print under $citation",
+    ({ print, braille }) => {
+      expect(translateGrade2(print)).toEqual({ braille, mode: "grade2", ok: true });
+    },
+  );
+
   it("does not bridge an explicitly marked compound boundary", () => {
     const document: Grade2Document = {
       kind: "grade2-document",

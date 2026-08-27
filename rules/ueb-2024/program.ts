@@ -59,7 +59,9 @@ function precedenceFor(rule: Grade2RuleSource): ContextualPrecedence {
     case "initial-letter-contraction":
       return 4;
     case "final-letter-groupsign":
-      return 5;
+      // UEB 10.10.6 makes final "ence" the exception to the usual
+      // 10.10.7 preference for strong and lower groupsigns.
+      return rule.print === "ence" ? 4 : 5;
   }
 }
 
