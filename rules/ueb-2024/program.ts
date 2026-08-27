@@ -177,6 +177,23 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
   };
 }
 
+function contextualRules(rule: Grade2RuleSource): readonly ContextualRuleSource[] {
+  const general = contextualRule(rule);
+  if (rule.kind !== "final-letter-groupsign" || rule.print !== "ence") {
+    return [general];
+  }
+  return [
+    general,
+    {
+      ...general,
+      citation: { ...general.citation, locator: "10.10" },
+      guards: [...general.guards, { characters: "adr", kind: "following" }],
+      id: `${general.id}-preference-exception`,
+      precedence: 4,
+    },
+  ];
+}
+
 function wholeShortform(rule: ShortformSource): ContextualRuleSource {
   return {
     braille: rule.braille,
@@ -257,7 +274,7 @@ const longerShortforms = SHORTFORMS
   .filter((rule): rule is ContextualRuleSource => rule !== undefined);
 
 export const GRADE2_CONTEXTUAL_RULES: readonly ContextualRuleSource[] = [
-  ...GRADE2_RULES.map(contextualRule),
+  ...GRADE2_RULES.flatMap(contextualRules),
   ...SHORTFORMS.map(wholeShortform),
   ...longerShortforms,
   ...appendixRules,

@@ -162,6 +162,13 @@ function ruleExample(rule: ContextualRuleSource): string {
   ) {
     return rule.input;
   }
+  const following = rule.guards.find(
+    (guard): guard is Extract<ContextualRuleSource["guards"][number], { kind: "following" }> =>
+      guard.kind === "following",
+  );
+  if (following !== undefined) {
+    return `a${rule.input}${following.characters.charAt(0)}`;
+  }
   if (guardKinds.has("not-word-start")) {
     return `a${rule.input}`;
   }
