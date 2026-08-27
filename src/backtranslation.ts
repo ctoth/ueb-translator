@@ -447,6 +447,12 @@ function capitalAfterBoundary(mode: CapitalsMode): CapitalsMode {
   return mode === "passage" ? mode : "none";
 }
 
+function capitalAfterSymbol(mode: CapitalsMode, print: string): CapitalsMode {
+  return mode === "word" && (print === "'" || print === "’")
+    ? mode
+    : capitalAfterBoundary(mode);
+}
+
 function scalarIndexAt(input: string, codeUnitIndex: number): number {
   return Array.from(input.slice(0, codeUnitIndex)).length;
 }
@@ -656,7 +662,7 @@ function decode(
           if (path.modifiers.length === 0 && path.capitals !== "next") {
             enqueue({
               ...path,
-              capitals: capitalAfterBoundary(path.capitals),
+              capitals: capitalAfterSymbol(path.capitals, token.print),
               grade1Next: false,
               index: nextIndex,
               numeric: false,
@@ -902,11 +908,18 @@ export function backtranslateGrade1(
         index + CAPITALS_PASSAGE_INDICATOR.length,
       );
       if (terminatorAt >= 0) {
+        const passageEnd = terminatorAt + CAPITALS_TERMINATOR.length;
+        const contextIndependent = segmentStart === index &&
+          (passageEnd === braille.length ||
+            separatorAt(braille, passageEnd) !== undefined);
+        if (!contextIndependent) {
+          index = passageEnd;
+          continue;
+        }
         if (segmentStart < index) {
           const invalid = appendDecoded(braille.slice(segmentStart, index), segmentStart);
           if (invalid !== undefined) return invalid;
         }
-        const passageEnd = terminatorAt + CAPITALS_TERMINATOR.length;
         const invalid = appendDecoded(braille.slice(index, passageEnd), index);
         if (invalid !== undefined) return invalid;
         index = passageEnd;

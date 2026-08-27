@@ -97,6 +97,8 @@ export const FINAL_GROUPSIGN_EXCEPTIONS: readonly FinalGroupsignExceptionSource[
     endings: [],
     groupsign: "ness",
     id: "UEB-10.8.4-ness-exception",
-    words: ["chieftainess", "citizeness", "heatheness"],
+    words: [
+      "captainess", "chieftainess", "citizeness", "heatheness", "villainess",
+    ],
   },
 ];

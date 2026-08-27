@@ -2537,7 +2537,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      110,
+      111,
       5
     ],
     [
@@ -2742,7 +2742,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      111,
+      112,
       263
     ],
     [
@@ -3147,7 +3147,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      112,
+      110,
       5
     ],
     [
@@ -7400,9 +7400,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "blossomed\u0000gasometer\u0000isometric\u0000ransomed\u0000somersault\u0000somerset",
     "bothered\u0000ethereal\u0000isothere\u0000smithereens\u0000theresa",
     "boyfriend",
+    "captainess\u0000chieftainess\u0000citizeness\u0000heatheness\u0000villainess",
     "chad\u0000hades\u0000hadrian\u0000menhaden\u0000shadow\u0000thaddeus",
     "chainletter",
-    "chieftainess\u0000citizeness\u0000heatheness",
     "children'swear",
     "colorblind",
     "colorblindness",

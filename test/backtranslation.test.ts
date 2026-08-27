@@ -90,6 +90,17 @@ describe("backtranslateGrade1", () => {
     }
   });
 
+  it.each(["DON'T", "B'S"])(
+    "round trips canonical capitals word mode through an apostrophe in %s",
+    (print) => {
+      const translated = translateGrade1(print);
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(candidatePrints(backtranslateGrade1(translated.braille))).toContain(print);
+      }
+    },
+  );
+
   it("recovers text from explicit grouping, ligature, and typeform modes", () => {
     const document = {
       kind: "grade1-document",
@@ -199,9 +210,12 @@ describe("backtranslateGrade1", () => {
     });
   });
 
-  it("decodes a prefix before a capitals passage", () => {
-    expect(candidatePrints(backtranslateGrade1("⠁⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄")))
-      .toContain("aA B C");
+  it("rejects an illegal shared-context candidate before a capitals passage", () => {
+    expect(backtranslateGrade1("⠁⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄")).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "no-standards-parse",
+    });
   });
 
   it("reports an invalid prefix before a capitals passage", () => {
@@ -253,6 +267,18 @@ describe("backtranslateGrade1", () => {
 });
 
 describe("backtranslateGrade2", () => {
+  it.each(["DON'T", "B'S"])(
+    "round trips canonical Grade 2 capitals word mode through an apostrophe in %s",
+    (print) => {
+      const translated = translateGrade2(print);
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(grade2CandidatePrints(backtranslateGrade2(translated.braille)))
+          .toContain(print);
+      }
+    },
+  );
+
   it("restores a word introduced by a single capital indicator", () => {
     const translated = translateGrade2("Braille");
     expect(translated.ok).toBe(true);

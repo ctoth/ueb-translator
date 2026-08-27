@@ -288,6 +288,21 @@ function capitalsContinuesAt(
     units[index + 1]?.kind !== "letter"
   ) return false;
 
+  let uppercaseBefore = 0;
+  for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+    const previous = units[cursor];
+    if (previous?.kind === "letter" && previous.uppercase) {
+      uppercaseBefore += 1;
+      continue;
+    }
+    if (
+      previous?.kind === "symbol" &&
+      (previous.source === "'" || previous.source === "’")
+    ) continue;
+    break;
+  }
+  if (uppercaseBefore >= 2) return true;
+
   let start = index - 1;
   while (start > 0) {
     const previous = units[start - 1];
@@ -295,9 +310,8 @@ function capitalsContinuesAt(
       previous?.kind === "letter" ||
       (previous?.kind === "symbol" &&
         (previous.source === "'" || previous.source === "’"))
-    ) {
-      start -= 1;
-    } else break;
+    ) start -= 1;
+    else break;
   }
   let end = index + 1;
   while (end + 1 < units.length) {
@@ -306,15 +320,12 @@ function capitalsContinuesAt(
       following?.kind === "letter" ||
       (following?.kind === "symbol" &&
         (following.source === "'" || following.source === "’"))
-    ) {
-      end += 1;
-    } else break;
+    ) end += 1;
+    else break;
   }
-  for (let cursor = start; cursor <= end; cursor += 1) {
-    const member = units[cursor];
-    if (member?.kind === "letter" && !member.uppercase) return false;
-  }
-  return true;
+  return units.slice(start, end + 1).every(
+    (member) => member.kind !== "letter" || member.uppercase,
+  );
 }
 
 function unsupported(token: ScalarToken): Grade1UnsupportedCharacter {
