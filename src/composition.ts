@@ -184,6 +184,14 @@ function contractionRanges(
   return ranges;
 }
 
+function startsAfterApostrophe(
+  units: readonly CompositionUnit[],
+  range: UnitRange,
+): boolean {
+  const previous = units[range.start - 1];
+  return previous?.kind === "symbol" && isOneOf(previous.source, "'’");
+}
+
 function contractionPreservesCapitals(
   units: readonly CompositionUnit[],
   range: UnitRange,
@@ -239,7 +247,10 @@ export function compose(
             .join("");
           for (const range of contractionRanges(units, lexical)) {
             const exact = exactLetterPrint(units, range);
-            if (standing && ambiguityPrints.has(exact)) {
+            if (
+              standing && ambiguityPrints.has(exact) &&
+              !startsAfterApostrophe(units, range)
+            ) {
               for (let index = range.start; index < range.end; index += 1) {
                 requiredValue(units[index], "Missing lexical unit.");
                 required.add(index);

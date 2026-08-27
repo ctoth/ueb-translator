@@ -285,6 +285,16 @@ describe("translateGrade2", () => {
     });
   });
 
+  it.each(
+    APPENDIX1_LONGER_WORDS.filter((rule) => rule.print.includes("n't")),
+  )("does not guard the apostrophe suffix in $print", (rule) => {
+    const result = translateGrade2(rule.print);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.braille).not.toContain("⠰");
+    }
+  });
+
   it("translates the official shortform sentence from UEB 10.9.1", () => {
     expect(
       translateGrade2(
