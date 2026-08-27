@@ -226,14 +226,43 @@ describe("translateGrade2", () => {
   });
 
   it.each([
-    ["oneness", "ness"],
-    ["happiness", "ness"],
-  ] as const)("does not use %s in %s under UEB 10.8.4", (word, groupsign) => {
+    "happiness",
+    "politeness",
+    "business",
+    "oneness",
+  ] as const)("uses the ness groupsign in %s", (word) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.rules.map((applied) => applied.print)).not.toContain(groupsign);
+      expect(result.rules.map((applied) => applied.print)).toContain("ness");
     }
+  });
+
+  it.each([
+    "captainess",
+    "chieftainess",
+    "citizeness",
+    "heatheness",
+    "villainess",
+  ] as const)("applies the cited UEB 10.8.4 feminine-ending exception to %s", (word) => {
+    const exception = FINAL_GROUPSIGN_EXCEPTIONS.find(
+      (constraint) => constraint.id === "UEB-10.8.4-ness-exception",
+    );
+    expect(exception?.citation.locator).toBe("10.8.4");
+    expect(exception?.words).toContain(word);
+    const result = traceGrade2(word);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.rules.map((applied) => applied.print)).not.toContain("ness");
+    }
+  });
+
+  it("preserves the normative captainess spelling", () => {
+    expect(translateGrade2("captainess")).toEqual({
+      braille: "⠉⠁⠏⠞⠁⠔⠑⠎⠎",
+      mode: "grade2",
+      ok: true,
+    });
   });
 
   it("uses alphabetic wordsigns and preserves separators", () => {
@@ -386,6 +415,39 @@ describe("translateGrade2", () => {
       ok: true,
     });
   });
+
+  it("continues capitals word mode through apostrophes in both grades", () => {
+    const expected = {
+      braille: "⠠⠠⠙⠕⠝⠄⠞",
+      ok: true,
+    } as const;
+    expect(translateGrade1("DON'T")).toMatchObject({ ...expected, mode: "grade1" });
+    expect(translateGrade2("DON'T")).toMatchObject({ ...expected, mode: "grade2" });
+    expect(translateGrade1("O'NEIL'S")).toMatchObject({
+      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      mode: "grade1",
+      ok: true,
+    });
+    expect(translateGrade2("O'NEIL'S")).toMatchObject({
+      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it.each([translateGrade1, translateGrade2])(
+    "distinguishes lowercase from uppercase after a capitals apostrophe",
+    (translate) => {
+      const lowercase = translate("AB'c");
+      const uppercase = translate("AB'C");
+      expect(lowercase.ok).toBe(true);
+      expect(uppercase.ok).toBe(true);
+      if (lowercase.ok && uppercase.ok) {
+        expect(lowercase.braille).not.toBe(uppercase.braille);
+        expect(uppercase.braille).toBe("⠠⠠⠁⠃⠄⠉");
+      }
+    },
+  );
 
   it("keeps separator context in the composed pass", () => {
     expect(translateGrade2("was?")).toEqual({
