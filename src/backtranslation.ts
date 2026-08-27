@@ -18,10 +18,18 @@ import {
 import { GRADE2_PROGRAM } from "./generated/grade2-program.js";
 import type { Grade2RuleId } from "./generated/grade2-provenance.js";
 import {
-  grade1ReverseEntries,
   translateGrade1,
-  type Grade1ReverseEntry,
 } from "./grade1.js";
+import {
+  GRADE1_MODE_IDS,
+  GRADE1_MODE_PROGRAM,
+  GRADE1_SYMBOL_PROGRAM,
+} from "./generated/grade1-program.js";
+import { modeIndicator } from "./mode-engine.js";
+import {
+  invertSymbolProgram,
+  type CompiledSymbol,
+} from "./symbol-program.js";
 import { traceGrade2 } from "./grade2-diagnostics.js";
 
 export type BacktranslationMode = "grade1" | "grade2";
@@ -249,30 +257,43 @@ implements AmbiguousCandidates<Candidate> {
 }
 
 const BRAILLE_BLANK = "⠀";
-const CAPITAL_INDICATOR = "⠠";
-const CAPITALS_WORD_INDICATOR = "⠠⠠";
-const CAPITALS_PASSAGE_INDICATOR = "⠠⠠⠠";
-const CAPITALS_TERMINATOR = "⠠⠄";
-const GRADE1_INDICATOR = "⠰";
-const NUMERIC_INDICATOR = "⠼";
+const CAPITAL_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.capitals, "symbol",
+);
+const CAPITALS_WORD_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.capitals, "word",
+);
+const CAPITALS_PASSAGE_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.capitals, "passage",
+);
+const CAPITALS_TERMINATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.capitals, "terminator",
+);
+const GRADE1_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.grade1, "symbol",
+);
+const NUMERIC_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.numeric, "symbol",
+);
 
-function decodeToken(entry: Grade1ReverseEntry): DecodeToken {
+function decodeToken(entry: CompiledSymbol): DecodeToken | undefined {
   switch (entry.kind) {
     case "letter":
+      /* v8 ignore next -- compiled letter rules require an uppercase scalar. */
+      if (entry.uppercasePrint === null) return undefined;
       return {
         braille: entry.braille,
         kind: entry.kind,
         print: entry.print,
         uppercasePrint: entry.uppercasePrint,
       };
+    case "digit": return undefined;
     case "modifier":
       return {
         braille: entry.braille,
         kind: entry.kind,
         print: entry.print,
       };
-    case "semantic-control":
-      return { braille: entry.braille, kind: entry.kind };
     case "symbol":
       return {
         braille: entry.braille,
@@ -282,11 +303,31 @@ function decodeToken(entry: Grade1ReverseEntry): DecodeToken {
   }
 }
 
-const GRADE1_ENTRIES = grade1ReverseEntries();
-const GRADE1_TOKENS: readonly DecodeToken[] = GRADE1_ENTRIES.map(decodeToken);
+const GRADE1_ENTRIES = invertSymbolProgram(GRADE1_SYMBOL_PROGRAM);
+const TYPEFORM_MODE_IDS = Object.entries(GRADE1_MODE_IDS)
+  .filter(([name]) => name.startsWith("typeform-"))
+  .map(([, modeId]) => modeId);
+const SEMANTIC_CONTROLS: readonly SemanticControlToken[] = [
+  { braille: "⠣", kind: "semantic-control" },
+  { braille: "⠜", kind: "semantic-control" },
+  { braille: "⠘⠖", kind: "semantic-control" },
+  ...TYPEFORM_MODE_IDS.flatMap((modeId): readonly SemanticControlToken[] => [
+    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "passage"), kind: "semantic-control" },
+    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "symbol"), kind: "semantic-control" },
+    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "terminator"), kind: "semantic-control" },
+    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "word"), kind: "semantic-control" },
+  ]),
+];
+const GRADE1_TOKENS: readonly DecodeToken[] = [
+  ...GRADE1_ENTRIES.flatMap((entry): readonly DecodeToken[] => {
+    const token = decodeToken(entry);
+    return token === undefined ? [] : [token];
+  }),
+  ...SEMANTIC_CONTROLS,
+];
 const NUMERIC_DIGITS: ReadonlyMap<string, string> = new Map(
   GRADE1_ENTRIES.flatMap((entry): readonly (readonly [string, string])[] =>
-    entry.kind === "letter" && entry.numericDigit !== null
+    entry.kind === "digit" && entry.numericDigit !== null
       ? [[entry.braille, entry.numericDigit]]
       : []
   ),

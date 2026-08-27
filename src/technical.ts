@@ -12,6 +12,13 @@ import {
   type Grade1TextResult,
 } from "./grade1.js";
 import type { Grade2TextResult } from "./grade2.js";
+import {
+  GRADE1_MODE_IDS,
+  GRADE1_MODE_PROGRAM,
+  GRADE1_SYMBOL_PROGRAM,
+} from "./generated/grade1-program.js";
+import { modeIndicator } from "./mode-engine.js";
+import { loadSymbolProgram } from "./symbol-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -365,10 +372,19 @@ function renderSuccess(
 }
 
 const BRAILLE_SPACE = "⠀";
-const GRADE1_SYMBOL_INDICATOR = "⠰";
-const GRADE1_WORD_INDICATOR = "⠰⠰";
-const GRADE1_PASSAGE_INDICATOR = "⠰⠰⠰";
-const GRADE1_TERMINATOR = "⠰⠄";
+const GRADE1_SYMBOL_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.grade1, "symbol",
+);
+const GRADE1_WORD_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.grade1, "word",
+);
+const GRADE1_PASSAGE_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.grade1, "passage",
+);
+const GRADE1_TERMINATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.grade1, "terminator",
+);
+const SYMBOL_RUNTIME = loadSymbolProgram(GRADE1_SYMBOL_PROGRAM);
 const BRAILLE_GROUP_OPEN = "⠣";
 const BRAILLE_GROUP_CLOSE = "⠜";
 const GENERAL_FRACTION_OPEN = "⠷";
@@ -415,24 +431,24 @@ const SCRIPT_INDICATORS = {
   "right-superscript": "⠔",
 } satisfies Readonly<Record<TechnicalScriptPlacement, string>>;
 
-const ARROW_TERMINATORS = {
-  down: "⠩",
-  "down-left": "⠜",
-  "down-right": "⠣",
-  left: "⠪",
-  right: "⠕",
-  up: "⠬",
-  "up-left": "⠱",
-  "up-right": "⠎",
+const ARROW_PRINT = {
+  down: "↓",
+  "down-left": "↙",
+  "down-right": "↘",
+  left: "←",
+  right: "→",
+  up: "↑",
+  "up-left": "↖",
+  "up-right": "↗",
 } satisfies Readonly<Record<SimpleArrowDirection, string>>;
 
-const ENCLOSURE_CELLS = {
-  absolute: { close: "⠸⠳", open: "⠸⠳" },
-  angle: { close: "⠈⠜", open: "⠈⠣" },
-  curly: { close: "⠸⠜", open: "⠸⠣" },
-  round: { close: "⠐⠜", open: "⠐⠣" },
-  square: { close: "⠨⠜", open: "⠨⠣" },
-} satisfies Readonly<Record<TechnicalEnclosure, EnclosureCells>>;
+const ENCLOSURE_PRINT = {
+  absolute: { close: "|", open: "|" },
+  angle: { close: "⟩", open: "⟨" },
+  curly: { close: "}", open: "{" },
+  round: { close: ")", open: "(" },
+  square: { close: "]", open: "[" },
+} satisfies Readonly<Record<TechnicalEnclosure, { readonly close: string; readonly open: string }>>;
 
 const MODIFIER_CELLS = {
   "arc-above": "⠨⠸⠱",
@@ -461,12 +477,22 @@ function scriptIndicator(placement: TechnicalScriptPlacement): string {
   return SCRIPT_INDICATORS[placement];
 }
 
-function arrowTerminator(direction: SimpleArrowDirection): string {
-  return ARROW_TERMINATORS[direction];
+function symbolCell(print: string): string {
+  const braille = SYMBOL_RUNTIME.symbols.get(print)?.braille;
+  /* v8 ignore next -- semantic maps are closed over the generated inventory. */
+  if (braille === undefined) {
+    throw new Error(`Compiled Grade 1 symbol inventory lacks ${JSON.stringify(print)}.`);
+  }
+  return braille;
+}
+
+function arrowCell(direction: SimpleArrowDirection): string {
+  return symbolCell(ARROW_PRINT[direction]);
 }
 
 function enclosureCells(enclosure: TechnicalEnclosure): EnclosureCells {
-  return ENCLOSURE_CELLS[enclosure];
+  const print = ENCLOSURE_PRINT[enclosure];
+  return { close: symbolCell(print.close), open: symbolCell(print.open) };
 }
 
 function modifierCell(modifier: TechnicalModifier): string {
@@ -859,7 +885,7 @@ function renderExpression(
         { end: 1, kind: "symbol", offset: 0 },
       ]);
     case "simple-arrow":
-      return renderSuccess(`⠳${arrowTerminator(expression.direction)}`, [
+      return renderSuccess(arrowCell(expression.direction), [
         { end: 1, kind: "symbol", offset: 0 },
       ]);
     case "simple-fraction": {
@@ -1031,7 +1057,7 @@ interface SymbolsSequence {
 }
 
 interface Grade1Insertion {
-  readonly indicator: typeof GRADE1_SYMBOL_INDICATOR | typeof GRADE1_WORD_INDICATOR;
+  readonly indicator: string;
   readonly offset: number;
 }
 

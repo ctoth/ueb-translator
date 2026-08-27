@@ -16,9 +16,10 @@ by the decoder. It cannot inject a new answer.
 
 ## Grade 1
 
-The inverse scanner restores letters, capitals symbol/word/passage modes,
-numeric mode and punctuation, Grade 1 indicators, Latin modifiers, Greek and
-special letters, symbols, Braille blanks, and ASCII line endings. Unicode
+The inverse scanner derives letters, digits, modifiers, and symbols by inverting
+the generated Grade 1 symbol program. It restores capitals symbol/word/passage
+modes, numeric mode and punctuation, Grade 1 indicators, Braille blanks, and
+ASCII line endings. Unicode
 spellings that have identical UEB cells remain distinct candidates where their
 print identity differs, such as Greek sigma and final sigma.
 

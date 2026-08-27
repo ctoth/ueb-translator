@@ -9,6 +9,14 @@
  * https://www.unicode.org/charts/PDF/U2800.pdf
  */
 
+import {
+  GRADE1_MODE_IDS,
+  GRADE1_MODE_PROGRAM,
+  GRADE1_SYMBOL_PROGRAM,
+} from "./generated/grade1-program.js";
+import { modeIndicator } from "./mode-engine.js";
+import { loadSymbolProgram } from "./symbol-program.js";
+
 export interface BasicGrade1Success {
   readonly braille: string;
   readonly ok: true;
@@ -33,19 +41,28 @@ const ASCII_UPPERCASE_Z = 0x5a;
 const ASCII_LOWERCASE_A = 0x61;
 const ASCII_LOWERCASE_J = 0x6a;
 const ASCII_LOWERCASE_Z = 0x7a;
-const BRAILLE_PATTERN_BLANK = 0x2800;
-
-// UEB 4.1, stored as one six-bit Unicode offset per Basic Latin letter.
-const LETTER_CELL_BITS =
-  "\u0001\u0003\u0009\u0019\u0011\u000b\u001b\u0013\u000a\u001a" +
-  "\u0005\u0007\u000d\u001d\u0015\u000f\u001f\u0017\u000e\u001e" +
-  "%\u0027:-=5";
-
-const CAPITAL_INDICATOR = "⠠";
-const CAPITALS_WORD_INDICATOR = "⠠⠠";
-const GRADE_1_SYMBOL_INDICATOR = "⠰";
-const NUMERIC_INDICATOR = "⠼";
 const BRAILLE_BLANK = "⠀";
+const SYMBOL_RUNTIME = loadSymbolProgram(GRADE1_SYMBOL_PROGRAM);
+const CAPITAL_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM,
+  GRADE1_MODE_IDS.capitals,
+  "symbol",
+);
+const CAPITALS_WORD_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM,
+  GRADE1_MODE_IDS.capitals,
+  "word",
+);
+const GRADE_1_SYMBOL_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM,
+  GRADE1_MODE_IDS.grade1,
+  "symbol",
+);
+const NUMERIC_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM,
+  GRADE1_MODE_IDS.numeric,
+  "symbol",
+);
 
 function isAsciiDigit(codeUnit: number): boolean {
   return codeUnit >= ASCII_ZERO && codeUnit <= ASCII_NINE;
@@ -67,11 +84,12 @@ function encodeLetterCodeUnit(codeUnit: number): string {
   const lowercaseCodeUnit = isAsciiUppercase(codeUnit)
     ? codeUnit + (ASCII_LOWERCASE_A - ASCII_UPPERCASE_A)
     : codeUnit;
-  const bits = LETTER_CELL_BITS.charCodeAt(
-    lowercaseCodeUnit - ASCII_LOWERCASE_A,
-  );
-
-  return String.fromCodePoint(BRAILLE_PATTERN_BLANK + bits);
+  const entry = SYMBOL_RUNTIME.letters.get(String.fromCharCode(lowercaseCodeUnit));
+  /* v8 ignore next -- generated inventory contains every Basic Latin letter. */
+  if (entry === undefined) {
+    throw new Error("Compiled symbol program lacks a Basic Latin letter.");
+  }
+  return entry.braille;
 }
 
 function encodeLetterRun(text: string, start: number, end: number): string {
@@ -98,11 +116,15 @@ function encodeLetterRun(text: string, start: number, end: number): string {
 }
 
 function encodeDigitCodeUnit(codeUnit: number): string {
-  const digit = codeUnit - ASCII_ZERO;
-  const letterIndex = digit === 0 ? 9 : digit - 1;
-  const bits = LETTER_CELL_BITS.charCodeAt(letterIndex);
-
-  return String.fromCodePoint(BRAILLE_PATTERN_BLANK + bits);
+  const digit = String.fromCharCode(codeUnit);
+  const entry = GRADE1_SYMBOL_PROGRAM.symbols.find(
+    (candidate) => candidate.kind === "digit" && candidate.print === digit,
+  );
+  /* v8 ignore next -- generated inventory contains every ASCII digit. */
+  if (entry === undefined) {
+    throw new Error("Compiled symbol program lacks a numeric digit cell.");
+  }
+  return entry.braille;
 }
 
 /**

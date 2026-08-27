@@ -71,18 +71,26 @@ precedence, then a deterministic output tie-break. This is exact shortest-path
 selection over the compiled rule graph, not a corpus-trained or heuristic
 choice.
 
-## Uncontracted mode scanner
+## Compiled uncontracted program
 
 Grade 1 input is parsed once into a closed discriminated union of validated
 letters, digits, symbols, spaces, and line boundaries. That makes unsupported
-input a perimeter result and leaves the mode scanner unable to observe a token
-without a standards-defined output. The scanner then makes one left-to-right
-pass, carrying only numeric mode and the preceding unit required by UEB's
-question-mark disambiguation rule. Maximal letter and symbols-sequence spans
-select capital word and passage indicators; explicit document nodes carry
-typeform and Braille-grouping semantics that cannot be recovered from plain
-text. This is a specialized sequential transducer in Mohri's sense, with UEB
-Sections 3-9 defining the transitions and outputs.
+input a perimeter result and leaves the resolver unable to observe a token
+without a compiled output.
+
+The cited symbol package compiles print scalars into cells and opaque class IDs.
+The cited mode package compiles capitals, numeric, grade-1, and each typeform
+from the same five-field data contract into indicator tuples and class bitsets.
+The generic resolver knows only numeric IDs, masks, thresholds, and indicator
+positions; it contains no UEB mode names, callbacks, or per-mode branches.
+Numeric a-j ambiguity, punctuation continuation, sequence boundaries, and
+capital word/passage selection therefore remain generated data rather than
+runtime vocabulary.
+
+The thin Grade 1 orchestrator tokenizes, adds the contextual classes required by
+the standard, asks the resolver for indicator placement, and emits cells from
+the generated symbol program. Explicit document nodes still carry typeform and
+Braille-grouping semantics that cannot be recovered from plain text.
 
 ## Structured technical runtime
 
@@ -111,8 +119,9 @@ are later layout concerns, not hidden translation heuristics.
 ## Inverse relation and canonical validation
 
 Backtranslation reuses the forward runtime rather than compiling a second
-linguistic table. The compact contextual matcher's existing input ranges are
-inverted into Braille-to-print edges at module initialization. A work-list
+linguistic table. Grade 1 inverts the generated symbol program, while Grade 2
+inverts the compact contextual matcher's existing input ranges into
+Braille-to-print edges at module initialization. A work-list
 walk over the acyclic cell lattice retains every reachable print path and
 deduplicates identical strings. Capital, numeric, Grade 1, modifier, whitespace,
 and semantic-indicator modes are explicit closed decoder states.

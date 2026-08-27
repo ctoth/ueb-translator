@@ -20,6 +20,11 @@ ASCII spaces become Braille blanks. LF and CRLF boundaries are preserved.
 Other whitespace is unsupported. The first unsupported source grapheme returns
 both its Unicode-scalar and UTF-16 code-unit offsets, with no partial output.
 
+The supported scalar inventory and mode definitions are authored with pinpoint
+ICEB citations under `rules/ueb-2024/symbols/` and `rules/ueb-2024/modes/`.
+`npm run grade1:generate` compiles them into the runtime symbol and mode program;
+`npm run grade1:generate:check` verifies byte-for-byte reproducibility.
+
 ## Typed documents
 
 Section 9 typeforms, Section 3 Braille grouping, and Section 4.3 joined-letter
@@ -43,3 +48,6 @@ Example and boundary tests name their controlling ICEB sections. `fast-check`
 generates supported strings to test determinism, the output alphabet, and exact
 failure offsets. The built `dist/index.js` entry point also runs in headless
 Chromium through Vitest Browser Mode and Playwright.
+
+`npm run grade1:performance:check` builds the published artifact and translates
+at least 1 MiB through that artifact, failing if the run reaches one second.
