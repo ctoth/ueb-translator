@@ -378,6 +378,47 @@ describe("translateGrade2", () => {
     });
   });
 
+  it.each([
+    ["Ch'in", "in"],
+    ["Ch'in's", "in"],
+    ["ch'in", "in"],
+    ["In's", "in"],
+    ["in's", "in"],
+    ["in't", "in"],
+    ["samh'in", "in"],
+    ["enough's", "enough"],
+  ] as const)("allows the lower wordsign before an apostrophe affix in %s", (text, print) => {
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.print)).toContain(print);
+  });
+
+  it.each(["BEd", "BEng", "BeShT", "BeShT's", "BeV"])(
+    "does not collapse be across an adjacent capitals transition in %s",
+    (text) => {
+      const result = traceGrade2(text);
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.rules.map((rule) => rule.print)).not.toContain("be");
+    },
+  );
+
+  it.each([
+    ["Lübeck", "be"],
+    ["Lübeck's", "be"],
+    ["Québecois", "be"],
+    ["Québecois's", "be"],
+    ["O'Connell", "con"],
+    ["O'Connell's", "con"],
+    ["O'Conner", "con"],
+    ["O'Conner's", "con"],
+    ["O'Connor", "con"],
+    ["O'Connor's", "con"],
+  ] as const)("uses parsed lexical neighbors for the initial groupsign in %s", (text, print) => {
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.print)).not.toContain(print);
+  });
+
   it("applies derived Grade 1 guards to each joined component", () => {
     expect(translateGrade2("ab-cd")).toEqual({
       braille: "⠰⠰⠁⠃⠤⠰⠰⠉⠙",

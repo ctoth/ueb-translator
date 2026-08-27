@@ -54,6 +54,7 @@ export interface ContextualTransducerInput {
   readonly eligibilityOffset: number;
   readonly eligibilityWord: string;
   readonly hasLowerPunctuation: boolean;
+  readonly hasRestrictingLowerPunctuation: boolean;
   readonly hasUpperPunctuation: boolean;
   readonly standing: boolean;
   readonly word: string;
@@ -159,7 +160,7 @@ function guardAllows(
       return following === "" || !"aeiouy".includes(following);
     }
     case 3:
-      return !context.hasLowerPunctuation || context.hasUpperPunctuation;
+      return !context.hasRestrictingLowerPunctuation || context.hasUpperPunctuation;
     case 4:
     case 5:
       return !crossesBoundaryMask(start, end, context.boundaries, guard[1]);

@@ -127,8 +127,13 @@ function lowerSignContext(
   units: readonly CompositionUnit[],
   range: UnitRange,
   policies: CompositionPolicies,
-): { readonly hasLowerPunctuation: boolean; readonly hasUpperPunctuation: boolean } {
+): {
+  readonly hasLowerPunctuation: boolean;
+  readonly hasRestrictingLowerPunctuation: boolean;
+  readonly hasUpperPunctuation: boolean;
+} {
   let hasLowerPunctuation = false;
+  let hasRestrictingLowerPunctuation = false;
   let hasUpperPunctuation = false;
   const inspect = (initial: number, step: -1 | 1): void => {
     let index = initial;
@@ -138,6 +143,9 @@ function lowerSignContext(
         unit.kind === "space" || unit.kind === "line-boundary") break;
       if (isOneOf(unit.source, policies.lowerPunctuation)) {
         hasLowerPunctuation = true;
+        const joinsLetters = isOneOf(unit.source, "'’") &&
+          units[index - 1]?.kind === "letter" && units[index + 1]?.kind === "letter";
+        hasRestrictingLowerPunctuation ||= !joinsLetters;
       } else {
         hasUpperPunctuation = true;
       }
@@ -146,7 +154,11 @@ function lowerSignContext(
   };
   inspect(range.start - 1, -1);
   inspect(range.end, 1);
-  return { hasLowerPunctuation, hasUpperPunctuation };
+  return {
+    hasLowerPunctuation,
+    hasRestrictingLowerPunctuation,
+    hasUpperPunctuation,
+  };
 }
 
 function asciiBase(unit: CompositionUnit): string | undefined {
@@ -226,6 +238,7 @@ function hasOnlyAsciiLiteralLetters(
 function canCollapseModeSpan(
   plan: CompositionModePlan,
   range: UnitRange,
+  requireStableAdjacentModes = false,
 ): boolean {
   for (let index = range.start + 1; index < range.end; index += 1) {
     if ((plan.prefixes.get(index) ?? "").length > 0) return false;
@@ -233,6 +246,12 @@ function canCollapseModeSpan(
   for (let index = range.start; index < range.end - 1; index += 1) {
     if ((plan.suffixes.get(index) ?? "").length > 0) return false;
   }
+  if (
+    requireStableAdjacentModes && (
+      (plan.suffixes.get(range.end - 1) ?? "").length > 0 ||
+      (plan.prefixes.get(range.end) ?? "").length > 0
+    )
+  ) return false;
   return true;
 }
 
@@ -354,6 +373,8 @@ export function compose(
                 eligibilityOffset,
                 eligibilityWord,
                 hasLowerPunctuation: lowerContext.hasLowerPunctuation,
+                hasRestrictingLowerPunctuation:
+                  lowerContext.hasRestrictingLowerPunctuation,
                 hasUpperPunctuation: lowerContext.hasUpperPunctuation,
                 standing: standing && asciiLiteralComponent,
                 word,
@@ -372,9 +393,16 @@ export function compose(
               /* v8 ignore next -- applied rules originate in this program. */
               if (rule === undefined) continue;
               const appliedRange = { end, start };
+              const initialLowerGroupsign = applied.print === "be" ||
+                applied.print === "con" || applied.print === "dis";
               if (
+                (initialLowerGroupsign && appliedRange.start !== component.start) ||
                 contractionModePlan === undefined ||
-                !canCollapseModeSpan(contractionModePlan, appliedRange)
+                !canCollapseModeSpan(
+                  contractionModePlan,
+                  appliedRange,
+                  initialLowerGroupsign,
+                )
               ) continue;
               emissions[start] = rule[0];
               for (let index = start + 1; index < end; index += 1) emissions[index] = "";
