@@ -622,11 +622,11 @@ function operationIsSpaced(profile: TechnicalProfile): boolean {
 }
 
 function needsSpaceBeforeFunction(
-  previous: TechnicalExpression | undefined,
+  previous: RenderSuccess | undefined,
   expression: TechnicalExpression,
 ): boolean {
-  return previous?.kind === "identifier" &&
-    /[A-Za-z]$/u.test(previous.value) &&
+  return previous !== undefined &&
+    UNPREFIXED_LATIN_LETTER_CELLS.has(previous.braille.at(-1) ?? "") &&
     expression.kind === "function" &&
     /^[a-z]/u.test(expression.name);
 }
@@ -876,12 +876,13 @@ function renderExpression(
       const requirements: Grade1Requirement[] = [];
       let offset = 0;
       let previous: TechnicalExpression | undefined;
+      let previousRendered: RenderSuccess | undefined;
       for (const item of expression.items) {
         const itemRendered = renderExpression(item, profile);
         if (!itemRendered.ok) {
           return itemRendered;
         }
-        if (needsSpaceBeforeFunction(previous, item)) {
+        if (needsSpaceBeforeFunction(previousRendered, item)) {
           braille += BRAILLE_SPACE;
           offset += BRAILLE_SPACE.length;
         }
@@ -903,6 +904,7 @@ function renderExpression(
         braille += itemRendered.braille;
         offset += itemRendered.braille.length;
         previous = item;
+        previousRendered = itemRendered;
       }
       return renderSuccess(braille, requirements);
     }
