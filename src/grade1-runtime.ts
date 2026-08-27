@@ -526,18 +526,18 @@ function indicatorsFor(
 
 export function translateTypeformedText(
   run: Grade1TextRun,
-  translate: (text: string) => Grade1TextResult,
+  translate: (text: string, codeUnitOffset: number) => Grade1TextResult,
 ): Grade1TextResult {
   const typeforms = run.typeforms ?? [];
   if (typeforms.length === 0 || run.text.length === 0) {
-    return translate(run.text);
+    return translate(run.text, 0);
   }
 
   const sequenceCount = countSequences(run.text);
   const firstTypeform = typeforms[0];
   /* v8 ignore next -- the empty array returned above. */
   if (firstTypeform === undefined) {
-    return translate(run.text);
+    return translate(run.text, 0);
   }
   const selection = indicatorKind(
     GRADE1_MODE_PROGRAM,
@@ -546,7 +546,7 @@ export function translateTypeformedText(
     sequenceCount,
   );
   if (selection === "passage") {
-    const translated = translate(run.text);
+    const translated = translate(run.text, 0);
     return translated.ok
       ? {
           braille:
@@ -560,7 +560,7 @@ export function translateTypeformedText(
   }
 
   if (sequenceCount === 1) {
-    const translated = translate(run.text);
+    const translated = translate(run.text, 0);
     if (!translated.ok) {
       return translated;
     }
@@ -573,10 +573,12 @@ export function translateTypeformedText(
 
   let braille = "";
   let sequence = "";
+  let sequenceOffset = 0;
+  let codeUnitOffset = 0;
   for (const value of run.text) {
     if (value === " " || isAsciiLineBoundary(value)) {
       if (sequence.length > 0) {
-        const translated = translate(sequence);
+        const translated = translate(sequence, sequenceOffset);
         if (!translated.ok) {
           return translated;
         }
@@ -591,11 +593,13 @@ export function translateTypeformedText(
       }
       braille += value === " " ? BRAILLE_BLANK : value;
     } else {
+      if (sequence.length === 0) sequenceOffset = codeUnitOffset;
       sequence += value;
     }
+    codeUnitOffset += value.length;
   }
   if (sequence.length > 0) {
-    const translated = translate(sequence);
+    const translated = translate(sequence, sequenceOffset);
     if (!translated.ok) {
       return translated;
     }

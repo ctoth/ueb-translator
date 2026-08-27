@@ -220,6 +220,11 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
+    expect(translateGrade2("aND")).toEqual({
+      braille: "⠁⠠⠝⠠⠙",
+      mode: "grade2",
+      ok: true,
+    });
   });
 
   it("keeps separator context in the composed pass", () => {
@@ -243,6 +248,14 @@ describe("translateGrade2", () => {
     });
   });
 
+  it("treats a CRLF unit as a standing boundary", () => {
+    expect(translateGrade2("can\r\nbut")).toEqual({
+      braille: "⠉\r\n⠃",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
   it("does not treat letters adjoining a slash as standing alone", () => {
     expect(translateGrade2("this/that could/should")).toEqual({
       braille: "⠹⠊⠎⠸⠌⠹⠁⠞⠀⠉⠳⠇⠙⠸⠌⠩⠳⠇⠙",
@@ -254,6 +267,19 @@ describe("translateGrade2", () => {
   it("applies the lower-sign punctuation restrictions in UEB 10.5", () => {
     expect(translateGrade2("“Be safe.” Take enough. Come in,")).toEqual({
       braille: "⠦⠠⠃⠑⠀⠎⠁⠋⠑⠲⠴⠀⠠⠞⠁⠅⠑⠀⠢⠳⠣⠲⠀⠠⠉⠕⠍⠑⠀⠊⠝⠂",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2("be-be")).toEqual({
+      braille: "⠃⠑⠤⠃⠑",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("applies derived Grade 1 guards to each joined component", () => {
+    expect(translateGrade2("ab-cd")).toEqual({
+      braille: "⠰⠰⠁⠃⠤⠰⠰⠉⠙",
       mode: "grade2",
       ok: true,
     });
@@ -453,6 +479,36 @@ describe("translateGrade2", () => {
     };
     expect(translateGrade2(document)).toEqual({
       braille: "⠨⠂⠯",
+      mode: "grade2",
+      ok: true,
+    });
+  });
+
+  it("keeps structured standing and boundary options in typeformed callbacks", () => {
+    expect(translateGrade2({
+      kind: "grade2-document",
+      runs: [{
+        kind: "word",
+        standing: "joined",
+        text: "can",
+        typeforms: ["italic"],
+      }],
+    })).toEqual({
+      braille: "⠨⠂⠉⠁⠝",
+      mode: "grade2",
+      ok: true,
+    });
+    expect(translateGrade2({
+      kind: "grade2-document",
+      runs: [{
+        boundaries: [{ at: 1, kind: "syllable" }],
+        kind: "word",
+        standing: "alone",
+        text: "become",
+        typeforms: ["italic"],
+      }],
+    })).toEqual({
+      braille: "⠨⠂⠃⠑⠉⠕⠍⠑",
       mode: "grade2",
       ok: true,
     });

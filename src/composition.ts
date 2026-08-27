@@ -60,6 +60,14 @@ function isOneOf(value: string, values: string): boolean {
   return value.length > 0 && values.includes(value);
 }
 
+function isStandingBoundary(
+  unit: CompositionUnit,
+  policies: CompositionPolicies,
+): boolean {
+  return unit.kind === "line-boundary" ||
+    isOneOf(unit.source, policies.standingBoundaries);
+}
+
 function isLexicalJoiner(unit: CompositionUnit): boolean {
   return unit.kind === "symbol" && isOneOf(unit.source, "'’–—-");
 }
@@ -93,8 +101,10 @@ function standingAt(
     /* v8 ignore next -- the index is bounded by the units array. */
     isOneOf(units[before]?.source ?? "", policies.openingStandingPunctuation)
   ) before -= 1;
-  const beforeValue = units[before]?.source ?? "";
-  if (before >= 0 && !isOneOf(beforeValue, policies.standingBoundaries)) return false;
+  if (
+    before >= 0 &&
+    !isStandingBoundary(requiredValue(units[before], "Missing preceding unit."), policies)
+  ) return false;
 
   let after = range.end;
   while (
@@ -102,8 +112,10 @@ function standingAt(
     /* v8 ignore next -- the index is bounded by the units array. */
     isOneOf(units[after]?.source ?? "", policies.closingStandingPunctuation)
   ) after += 1;
-  const afterValue = units[after]?.source ?? "";
-  return after >= units.length || isOneOf(afterValue, policies.standingBoundaries);
+  return after >= units.length || isStandingBoundary(
+    requiredValue(units[after], "Missing following unit."),
+    policies,
+  );
 }
 
 function lowerSignContext(
@@ -142,14 +154,14 @@ function asciiBase(unit: CompositionUnit): string | undefined {
 function exactLetterPrint(
   units: readonly CompositionUnit[],
   range: UnitRange,
-): string | undefined {
+): string {
   let print = "";
   for (let index = range.start; index < range.end; index += 1) {
-    const unit = units[index];
-    /* v8 ignore next -- range indexes are bounded by the parsed unit array. */
-    const base = unit === undefined ? undefined : asciiBase(unit);
-    if (base === undefined) return undefined;
-    print += base;
+    const unit = requiredValue(units[index], "Missing contraction unit.");
+    print += requiredValue(
+      asciiBase(unit),
+      "Contraction range contains a non-ASCII letter.",
+    );
   }
   return print;
 }
@@ -170,6 +182,18 @@ function contractionRanges(
     start = undefined;
   }
   return ranges;
+}
+
+function contractionPreservesCapitals(
+  units: readonly CompositionUnit[],
+  range: UnitRange,
+): boolean {
+  const uppercase = units.slice(range.start, range.end).map((unit) =>
+    unit.kind === "letter" && unit.uppercase
+  );
+  return uppercase.every(Boolean) ||
+    uppercase.every((value, index) => index === 0 ? value : !value) ||
+    uppercase.every((value) => !value);
 }
 
 /**
@@ -210,22 +234,22 @@ export function compose(
         const standingLiteralInputs = new Set(contractions.standingLiteralInputs);
         for (const lexical of lexicalRanges(units)) {
           const standing = options.standing ?? standingAt(units, lexical, policies);
-          const exact = exactLetterPrint(units, lexical);
-          if (standing && exact !== undefined && ambiguityPrints.has(exact)) {
-            for (let index = lexical.start; index < lexical.end; index += 1) {
-              requiredValue(units[index], "Missing lexical unit.");
-              required.add(index);
-            }
-            continue;
-          }
-          if (standing && exact !== undefined && standingLiteralInputs.has(exact)) {
-            continue;
-          }
-          const lowerContext = lowerSignContext(units, lexical, policies);
           const eligibilityWord = units.slice(lexical.start, lexical.end)
             .map((unit) => asciiBase(unit) ?? unit.source.toLowerCase())
             .join("");
           for (const range of contractionRanges(units, lexical)) {
+            const exact = exactLetterPrint(units, range);
+            if (standing && ambiguityPrints.has(exact)) {
+              for (let index = range.start; index < range.end; index += 1) {
+                requiredValue(units[index], "Missing lexical unit.");
+                required.add(index);
+              }
+              continue;
+            }
+            if (standing && standingLiteralInputs.has(exact)) {
+              continue;
+            }
+            const lowerContext = lowerSignContext(units, range, policies);
             const word = units.slice(range.start, range.end)
               .map((unit) => requiredValue(
                 asciiBase(unit),
@@ -269,6 +293,7 @@ export function compose(
               const rule = contractions.rules[applied.ruleIndex];
               /* v8 ignore next -- applied rules originate in this program. */
               if (rule === undefined) continue;
+              if (!contractionPreservesCapitals(units, { end, start })) continue;
               emissions[start] = rule[0];
               for (let index = start + 1; index < end; index += 1) emissions[index] = "";
               rules.push({

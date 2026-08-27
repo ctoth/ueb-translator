@@ -1,6 +1,7 @@
 import {
   compose,
   type CompositionResult,
+  type CompositionTextOptions,
 } from "./composition.js";
 import {
   type ContextualAppliedRule,
@@ -105,7 +106,7 @@ function adaptedResult(
 }
 
 function translateRun(run: Grade2Run, globalOffset: number): Grade2InternalResult {
-  const options = run.kind === "word"
+  const options: CompositionTextOptions = run.kind === "word"
     ? {
         ...(run.boundaries === undefined ? {} : { boundaries: run.boundaries }),
         globalOffset,
@@ -121,8 +122,21 @@ function translateRun(run: Grade2Run, globalOffset: number): Grade2InternalResul
 
   const typed = translateTypeformedText(
     { text: run.text, typeforms },
-    (text): Grade1TextResult => {
-      const translated = GRADE2_TRANSLATOR.translate(text);
+    (text, codeUnitOffset): Grade1TextResult => {
+      const boundaries = options.boundaries
+        ?.filter((boundary) =>
+          boundary.at > codeUnitOffset &&
+          boundary.at < codeUnitOffset + text.length
+        )
+        .map((boundary) => ({
+          at: boundary.at - codeUnitOffset,
+          kind: boundary.kind,
+        }));
+      const translated = GRADE2_TRANSLATOR.translate(text, {
+        ...options,
+        ...(boundaries === undefined ? {} : { boundaries }),
+        globalOffset: globalOffset + codeUnitOffset,
+      });
       /* v8 ignore next -- the same complete run parsed successfully above. */
       if (!translated.ok) return translated;
       return { braille: translated.braille, mode: "grade1", ok: true };
