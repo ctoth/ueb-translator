@@ -8,6 +8,7 @@ import {
 } from "../rules/ueb-2024/constraints.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import { SHORTFORMS } from "../rules/ueb-2024/shortforms.js";
+import { translateGrade1 } from "../src/grade1.js";
 import { traceGrade2 } from "../src/grade2-diagnostics.js";
 import { translateGrade2, type Grade2Document } from "../src/grade2.js";
 
@@ -436,17 +437,43 @@ describe("translateGrade2", () => {
     });
   });
 
-  it("is deterministic for supported literary input", () => {
+  it("emits only Unicode Braille cells and line boundaries", () => {
     fc.assert(
       fc.property(
         fc.string({
           unit: fc.constantFrom(...Array.from("abcdefghijklmnopqrstuvwxyz .")),
         }),
         (text) => {
-          expect(translateGrade2(text)).toEqual(translateGrade2(text));
+          const translated = translateGrade2(text);
+          expect(translated.ok).toBe(true);
+          if (translated.ok) {
+            expect(translated.braille).toMatch(/^[\u2800-\u28ff\r\n]*$/u);
+          }
         },
       ),
       { numRuns: 500 },
     );
+  });
+
+  it("agrees with Grade 1 when generated text has no contraction opportunities", () => {
+    const uncontractableWord = fc.string({
+      maxLength: 12,
+      minLength: 1,
+      unit: fc.constantFrom("a", "i", "o"),
+    });
+    const uncontractableText = fc.array(uncontractableWord, {
+      maxLength: 4,
+      minLength: 1,
+    }).map((words) => words.join(" "));
+
+    fc.assert(fc.property(uncontractableText, (text) => {
+      const grade1 = translateGrade1(text);
+      const grade2 = translateGrade2(text);
+      expect(grade1.ok).toBe(true);
+      expect(grade2.ok).toBe(true);
+      if (grade1.ok && grade2.ok) {
+        expect(grade2.braille).toBe(grade1.braille);
+      }
+    }), { numRuns: 500 });
   });
 });

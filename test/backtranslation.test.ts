@@ -194,6 +194,15 @@ describe("backtranslateGrade1", () => {
 });
 
 describe("backtranslateGrade2", () => {
+  it("restores a word introduced by a single capital indicator", () => {
+    const translated = translateGrade2("Braille");
+    expect(translated.ok).toBe(true);
+    if (translated.ok) {
+      expect(grade2CandidatePrints(backtranslateGrade2(translated.braille)))
+        .toContain("Braille");
+    }
+  });
+
   it("retains every canonical candidate for a shortform collision", () => {
     const translated = translateGrade2("about");
     expect(translated.ok).toBe(true);
@@ -350,18 +359,16 @@ describe("backtranslateGrade2", () => {
     }
   });
 
-  it("round trips representative contracted text", () => {
+  it("round trips generated lowercase words and sentences", () => {
+    const word = fc.string({
+      maxLength: 10,
+      minLength: 1,
+      unit: fc.constantFrom(...Array.from("abcdefghijklmnopqrstuvwxyz")),
+    });
+    const printText = fc.array(word, { maxLength: 3, minLength: 1 })
+      .map((words) => words.join(" "));
     fc.assert(fc.property(
-      fc.constantFrom(
-        "about",
-        "and",
-        "children",
-        "knowledge",
-        "quick",
-        "the",
-        "world",
-        "Braille",
-      ),
+      printText,
       (print) => {
         const translated = translateGrade2(print);
         if (!translated.ok) {
@@ -374,9 +381,17 @@ describe("backtranslateGrade2", () => {
         const candidates = result.kind === "unique"
           ? [result.candidate]
           : result.candidates;
-        return Array.from(candidates).some((candidate) => candidate.print === print);
+        let retainedOriginal = false;
+        for (const candidate of candidates) {
+          const retranslated = translateGrade2(candidate.print);
+          if (!retranslated.ok || retranslated.braille !== translated.braille) {
+            return false;
+          }
+          retainedOriginal ||= candidate.print === print;
+        }
+        return retainedOriginal;
       },
-    ));
+    ), { numRuns: 200 });
   });
 
   it("round trips every compiled Section 10 and Appendix 1 source", () => {
