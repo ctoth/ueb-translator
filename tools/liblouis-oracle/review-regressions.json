@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "capturedAtCommit": "4d7cca81369b201d9165b184d34dd611035bc1f0",
+  "cases": [
+    {
+      "caseId": "review:22:standalone-letter",
+      "issue": 22,
+      "preFix": true,
+      "input": { "adapter": "translateGrade2", "value": "b" },
+      "evidence": { "kind": "actual", "output": "⠃" },
+      "oracle": { "kind": "liblouis", "mode": "grade2", "version": "3.38.0", "output": "⠰⠃" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:26:question-context",
+      "issue": 26,
+      "preFix": true,
+      "input": { "adapter": "translateGrade2", "value": "was?" },
+      "evidence": { "kind": "actual", "output": "⠺⠁⠎⠰⠦" },
+      "oracle": { "kind": "liblouis", "mode": "grade2", "version": "3.38.0", "output": "⠺⠁⠎⠦" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:28:capitals-passage",
+      "issue": 28,
+      "preFix": true,
+      "input": { "adapter": "translateGrade2", "value": "THE CAT SAT ON" },
+      "evidence": { "kind": "actual", "output": "⠠⠠⠮⠀⠠⠠⠉⠁⠞⠀⠠⠠⠎⠁⠞⠀⠠⠠⠕⠝" },
+      "oracle": { "kind": "liblouis", "mode": "grade2", "version": "3.38.0", "output": "⠠⠠⠠⠮⠀⠉⠁⠞⠀⠎⠁⠞⠀⠕⠝⠠⠄" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:29:capitals-newline",
+      "issue": 29,
+      "preFix": true,
+      "input": { "adapter": "translateGrade1", "value": "AB CD\nEF GH IJ KL" },
+      "evidence": { "kind": "assertion", "observed": "two capitals-word indicators before the line break", "expected": "one capitals passage spanning the line break" },
+      "oracle": { "kind": "liblouis", "mode": "grade1", "version": "3.38.0", "output": "⠠⠠⠁⠃⠀⠠⠠⠉⠙\n⠠⠠⠠⠑⠋⠀⠛⠓⠀⠊⠚⠀⠅⠇⠠⠄" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:29:capitals-apostrophe",
+      "issue": 29,
+      "preFix": true,
+      "input": { "adapter": "translateGrade1", "value": "DON'T" },
+      "evidence": { "kind": "assertion", "observed": "⠠⠠⠙⠕⠝⠄⠠⠞", "expected": "no interior capitals indicator after the apostrophe" },
+      "oracle": { "kind": "liblouis", "mode": "grade1", "version": "3.38.0", "output": "⠠⠠⠙⠕⠝⠄⠠⠞" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:30:mixed-case",
+      "issue": 30,
+      "preFix": true,
+      "input": { "adapter": "translateGrade2", "value": "PowerPoint" },
+      "evidence": { "kind": "actual", "output": "⠠⠏⠕⠺⠑⠗⠠⠏⠕⠊⠝⠞" },
+      "oracle": { "kind": "liblouis", "mode": "grade2", "version": "3.38.0", "output": "⠠⠏⠪⠻⠠⠏⠕⠔⠞" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:34:technical-numeric-letter",
+      "issue": 34,
+      "preFix": true,
+      "input": { "adapter": "translateTechnical", "value": { "kind": "technical-document", "profile": { "grade1": "all-technical", "jurisdiction": "international", "operationSpacing": "unspaced" }, "blocks": [{ "kind": "expression", "expression": { "kind": "sequence", "items": [{ "kind": "number", "value": "1" }, { "kind": "identifier", "value": "a" }] } }] } },
+      "evidence": { "kind": "actual", "output": "⠰⠰⠰⠼⠁⠁⠰⠄" },
+      "oracle": { "kind": "unrepresentable", "reason": "lou_translate has no adapter for the structured all-technical policy input" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:34:technical-radical",
+      "issue": 34,
+      "preFix": true,
+      "input": { "adapter": "translateTechnical", "value": { "kind": "technical-document", "profile": { "grade1": "preferred", "jurisdiction": "international", "operationSpacing": "unspaced" }, "blocks": [{ "kind": "expression", "expression": { "kind": "radical", "root": "square", "radicand": { "kind": "number", "value": "9" } } }] } },
+      "evidence": { "kind": "actual", "output": "⠰⠰⠩⠼⠊⠬" },
+      "oracle": { "kind": "unrepresentable", "reason": "lou_translate has no adapter for the structured preferred-technical input" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:35:technical-capital",
+      "issue": 35,
+      "preFix": true,
+      "input": { "adapter": "translateTechnical", "value": { "kind": "technical-document", "profile": { "grade1": "preferred", "jurisdiction": "international", "operationSpacing": "unspaced" }, "blocks": [{ "kind": "expression", "expression": { "kind": "identifier", "value": "X" } }] } },
+      "evidence": { "kind": "actual", "output": "⠠⠭" },
+      "oracle": { "kind": "unrepresentable", "reason": "lou_translate cannot preserve the structured identifier semantic kind" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:35:technical-element",
+      "issue": 35,
+      "preFix": true,
+      "input": { "adapter": "translateTechnical", "value": { "kind": "technical-document", "profile": { "grade1": "preferred", "jurisdiction": "international", "operationSpacing": "unspaced" }, "blocks": [{ "kind": "expression", "expression": { "kind": "chemical-element", "symbol": "H" } }] } },
+      "evidence": { "kind": "actual", "output": "⠠⠓" },
+      "oracle": { "kind": "unrepresentable", "reason": "lou_translate cannot preserve the structured chemical-element semantic kind" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:36:technical-enclosure",
+      "issue": 36,
+      "preFix": true,
+      "input": { "adapter": "translateTechnical", "value": { "kind": "technical-document", "profile": { "grade1": "preferred", "jurisdiction": "international", "operationSpacing": "unspaced" }, "blocks": [{ "kind": "expression", "expression": { "kind": "group", "enclosure": "round", "content": { "kind": "identifier", "value": "ab" } } }] } },
+      "evidence": { "kind": "actual", "output": "⠐⠣⠁⠃⠐⠜" },
+      "oracle": { "kind": "unrepresentable", "reason": "lou_translate cannot preserve enclosure and identifier semantic structure" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:44:typeform-symbol",
+      "issue": 44,
+      "preFix": true,
+      "input": { "adapter": "translateGrade1", "value": { "kind": "grade1-document", "paragraphs": [{ "runs": [{ "text": "a b", "typeforms": ["italic"] }] }] } },
+      "evidence": { "kind": "actual", "output": "⠨⠂⠁⠀⠨⠂⠃" },
+      "oracle": { "kind": "unrepresentable", "reason": "lou_translate CLI cannot carry typed emphasis spans" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    },
+    {
+      "caseId": "review:45:grade2-typeform-api",
+      "issue": 45,
+      "preFix": true,
+      "input": { "adapter": "translateGrade2", "value": { "kind": "grade2-document", "runs": [{ "kind": "text", "text": "about", "typeforms": ["italic"] }] } },
+      "evidence": { "kind": "assertion", "observed": "Grade2Run rejects typeforms", "expected": "Grade 2 document runs accept explicit typeform semantics" },
+      "oracle": { "kind": "unrepresentable", "reason": "the local API contract is missing and lou_translate CLI cannot carry typed emphasis spans" },
+      "sources": ["https://iceb.org/publications/ueb/"]
+    }
+  ]
+}
