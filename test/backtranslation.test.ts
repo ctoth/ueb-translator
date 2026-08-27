@@ -90,6 +90,17 @@ describe("backtranslateGrade1", () => {
     }
   });
 
+  it.each(["DON'T", "B'S", "D’ARTAGNAN’S"])(
+    "round trips canonical capitals word mode through an apostrophe in %s",
+    (print) => {
+      const translated = translateGrade1(print);
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(candidatePrints(backtranslateGrade1(translated.braille))).toContain(print);
+      }
+    },
+  );
+
   it("retains every spot-checked numeric punctuation expansion", () => {
     const equivalentPrints = ["3...", "3…"] as const;
     const translated = equivalentPrints.map((print) => translateGrade1(print));
@@ -211,6 +222,62 @@ describe("backtranslateGrade1", () => {
     });
   });
 
+  it("keeps ambiguity around a capitals passage as a compact product", () => {
+    const ambiguous = Array.from({ length: 18 }, () => "⠨⠎");
+    ambiguous.splice(9, 0, "⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄");
+    const started = performance.now();
+    const result = backtranslateGrade1(ambiguous.join("⠀"));
+    const elapsed = performance.now() - started;
+
+    expect(result.kind).toBe("ambiguous");
+    expect(elapsed).toBeLessThan(1_000);
+    if (result.kind === "ambiguous") {
+      expect(result.candidates.size).toBe(1n << 18n);
+    }
+  });
+
+  it("returns a typed bound result for one exponentially ambiguous segment", () => {
+    const result = backtranslateGrade1("⠨⠎".repeat(20));
+    expect(result).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "too-ambiguous",
+    });
+  });
+
+  it("bounds an exhaustive ambiguous prefix that cannot complete", () => {
+    expect(backtranslateGrade1(`${"⠨⠎".repeat(18)}⠠`)).toMatchObject({
+      kind: "invalid",
+      limit: 65_536,
+      mode: "grade1",
+      reason: "too-ambiguous",
+    });
+  });
+
+  it("rejects an illegal shared-context candidate before a capitals passage", () => {
+    expect(backtranslateGrade1("⠁⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄")).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "no-standards-parse",
+    });
+  });
+
+  it("reports an invalid prefix before a capitals passage", () => {
+    expect(backtranslateGrade1("⠼⠠⠠⠠⠁⠠⠄")).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "no-standards-parse",
+    });
+  });
+
+  it("reports invalid content within a capitals passage", () => {
+    expect(backtranslateGrade1("⠠⠠⠠⠠⠠⠄")).toMatchObject({
+      kind: "invalid",
+      mode: "grade1",
+      reason: "no-standards-parse",
+    });
+  });
+
   it.each(["\n", "\r\n"])(
     "round trips a canonical capitals passage across %j",
     (boundary) => {
@@ -244,6 +311,18 @@ describe("backtranslateGrade1", () => {
 });
 
 describe("backtranslateGrade2", () => {
+  it.each(["DON'T", "B'S"])(
+    "round trips canonical Grade 2 capitals word mode through an apostrophe in %s",
+    (print) => {
+      const translated = translateGrade2(print);
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(grade2CandidatePrints(backtranslateGrade2(translated.braille)))
+          .toContain(print);
+      }
+    },
+  );
+
   it("restores a word introduced by a single capital indicator", () => {
     const translated = translateGrade2("Braille");
     expect(translated.ok).toBe(true);
@@ -317,6 +396,18 @@ describe("backtranslateGrade2", () => {
       expect(result.candidates.at(4n)).toBeUndefined();
       expect(result.candidates.find(() => false)).toBeUndefined();
     }
+  });
+
+  it.each([
+    ["at the end", "⠨⠎".repeat(20)],
+    ["before a separator", `${"⠨⠎".repeat(20)}⠀`],
+  ])("bounds one exponentially ambiguous Grade 2 segment %s", (_location, braille) => {
+    expect(backtranslateGrade2(braille)).toMatchObject({
+      kind: "invalid",
+      limit: 4_096,
+      mode: "grade2",
+      reason: "too-ambiguous",
+    });
   });
 
   it("keeps a mixed foreign-language Cartesian product symbolic", () => {

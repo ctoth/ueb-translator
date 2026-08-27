@@ -12,7 +12,7 @@ export type ModeRuleName =
   | "typeform-transcriber-defined" | "typeform-underline";
 
 export type ModeMemberClass =
-  | "digit" | "grade1-required" | "lowercase-letter"
+  | "capitals-continuation" | "digit" | "grade1-required" | "lowercase-letter"
   | "numeric-ambiguous-letter" | "numeric-punctuation"
   | "sequence-boundary" | "typeformed" | "uppercase-letter";
 
@@ -68,6 +68,7 @@ const MODE_NAMES: readonly ModeRuleName[] = [
 const MEMBER_CLASSES: readonly ModeMemberClass[] = [
   "digit", "grade1-required", "lowercase-letter", "numeric-ambiguous-letter",
   "numeric-punctuation", "sequence-boundary", "typeformed", "uppercase-letter",
+  "capitals-continuation",
 ];
 
 const MEMBER_CLASS_IDS = {
@@ -79,6 +80,7 @@ const MEMBER_CLASS_IDS = {
   "sequence-boundary": 5,
   typeformed: 6,
   "uppercase-letter": 7,
+  "capitals-continuation": 8,
 } satisfies Readonly<Record<ModeMemberClass, number>>;
 
 function cited(rule: ModeRuleSource): boolean {
