@@ -6,7 +6,14 @@ import {
   type ContextualTransduction,
 } from "./contextual-transducer.js";
 import { GRADE2_PROGRAM } from "./generated/grade2-program.js";
+import {
+  GRADE1_MODE_IDS,
+  GRADE1_MODE_PROGRAM,
+  GRADE1_SYMBOL_PROGRAM,
+} from "./generated/grade1-program.js";
 import { translateGrade1 } from "./grade1.js";
+import { modeIndicator } from "./mode-engine.js";
+import { loadSymbolProgram } from "./symbol-program.js";
 
 export type Grade2BoundaryKind = ContextualBoundaryKind;
 export type Grade2Boundary = ContextualBoundary;
@@ -76,17 +83,21 @@ interface LowerSignContext {
   readonly hasUpperPunctuation: boolean;
 }
 
-const CAPITAL_INDICATOR = "⠠";
-const CAPITALS_WORD_INDICATOR = "⠠⠠";
-const LETTER_CELLS = "⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵";
+const CAPITAL_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.capitals, "symbol",
+);
+const CAPITALS_WORD_INDICATOR = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.capitals, "word",
+);
+const SYMBOL_RUNTIME = loadSymbolProgram(GRADE1_SYMBOL_PROGRAM);
 const NO_PUNCTUATION_CONTACT: LowerSignContext = {
   hasLowerPunctuation: false,
   hasUpperPunctuation: false,
 };
 
 function letterCell(letter: string): string {
-  const index = letter.charCodeAt(0) - 97;
-  return LETTER_CELLS.charAt(index);
+  /* v8 ignore next -- lexical matches contain only generated Basic Latin letters. */
+  return SYMBOL_RUNTIME.letters.get(letter)?.braille ?? "";
 }
 
 function contractLexicalWord(

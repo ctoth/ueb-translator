@@ -168,9 +168,15 @@ describe("backtranslateGrade1", () => {
   });
 
   it.each(["\n", "\r\n"])(
-    "rejects a noncanonical capitals passage across %j",
+    "round trips a canonical capitals passage across %j",
     (boundary) => {
-      expect(backtranslateGrade1(`⠠⠠⠠⠁${boundary}⠃⠠⠄`).kind).toBe("invalid");
+      const print = `AB CD${boundary}EF GH`;
+      const translated = translateGrade1(print);
+      expect(translated.ok).toBe(true);
+      if (!translated.ok) {
+        return;
+      }
+      expect(candidatePrints(backtranslateGrade1(translated.braille))).toContain(print);
     },
   );
 

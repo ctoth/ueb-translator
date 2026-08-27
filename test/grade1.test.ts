@@ -36,6 +36,27 @@ describe("ICEB 2024 4.1 and 8.3-8.6: letters and capitals", () => {
       ok: true,
     });
   });
+
+  it("does not begin capitals word mode inside a mixed-case word", () => {
+    expect(translateGrade1("MariaDBC CosmosDB")).toEqual({
+      braille: "⠠⠍⠁⠗⠊⠁⠠⠙⠠⠃⠠⠉⠀⠠⠉⠕⠎⠍⠕⠎⠠⠙⠠⠃",
+      mode: "grade1",
+      ok: true,
+    });
+    expect(translateGrade1("cDNA")).toEqual({
+      braille: "⠉⠠⠙⠠⠝⠠⠁",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
+  it("continues capitals passages across line boundaries", () => {
+    expect(translateGrade1("AB CD\nEF GH IJ KL")).toEqual({
+      braille: "⠠⠠⠠⠁⠃⠀⠉⠙\n⠑⠋⠀⠛⠓⠀⠊⠚⠀⠅⠇⠠⠄",
+      mode: "grade1",
+      ok: true,
+    });
+  });
 });
 
 describe("ICEB 2024 4.2: Latin modifiers", () => {
@@ -186,6 +207,14 @@ describe("ICEB 2024 3 and 7: general symbols and punctuation", () => {
     });
   });
 
+  it("translates the vertical bar from the compiled U+007C symbol rule", () => {
+    expect(translateGrade1("|")).toEqual({
+      braille: "⠸⠳",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
   it("disambiguates a question mark only where it could be a wordsign or opening quote", () => {
     expect(translateGrade1("?")).toEqual({
       braille: "⠰⠦",
@@ -218,6 +247,14 @@ describe("ICEB 2024 3.23: explicit whitespace contract", () => {
   it("preserves ASCII spaces and line boundaries exactly", () => {
     expect(translateGrade1("a  b\r\nc\nd")).toEqual({
       braille: "⠁⠀⠀⠃\r\n⠉\n⠙",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
+  it("preserves CRLF after a non-ASCII scalar", () => {
+    expect(translateGrade1("é\r\nω")).toEqual({
+      braille: "⠘⠌⠑\r\n⠨⠺",
       mode: "grade1",
       ok: true,
     });
@@ -307,6 +344,19 @@ describe("ICEB 2024 9.2-9.4: explicit typeform semantics", () => {
     expect(translateGrade1(document)).toEqual({
       braille:
         "⠀⠨⠂⠘⠂⠕⠝⠑⠀⠨⠂⠘⠂⠞⠺⠕",
+      mode: "grade1",
+      ok: true,
+    });
+  });
+
+  it("uses symbol indicators for each one-character sequence", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{ runs: [{ text: "a b", typeforms: ["italic"] }] }],
+    } satisfies Grade1Document;
+
+    expect(translateGrade1(document)).toEqual({
+      braille: "⠨⠆⠁⠀⠨⠆⠃",
       mode: "grade1",
       ok: true,
     });
@@ -484,4 +534,15 @@ describe("property-based invariants", () => {
       }),
     );
   });
+
+  it("translates a 1 MiB lowercase run in linear time", () => {
+    const text = "a".repeat(1024 * 1024);
+    const started = performance.now();
+    const result = translateGrade1(text);
+    const elapsed = performance.now() - started;
+
+    expect(result.ok).toBe(true);
+    expect(result.ok ? result.braille.length : 0).toBe(text.length);
+    expect(elapsed).toBeLessThan(5_000);
+  }, 10_000);
 });

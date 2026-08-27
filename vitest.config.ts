@@ -14,9 +14,9 @@ const config: ViteUserConfigExport = defineConfig({
       enabled: true,
       exclude: ["tools/liblouis-oracle/src/**/*.ts"],
       include: [
+        "rules/ueb-2024/**/*.ts",
         "src/**/*.ts",
         "tools/corpus-benchmark/src/**/*.ts",
-        "tools/rule-compiler/src/**/*.ts",
       ],
       provider: "v8",
       reporter: ["text", "json-summary"],

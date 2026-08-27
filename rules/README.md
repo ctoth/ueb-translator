@@ -25,4 +25,13 @@ const example = {
 
 The compiler rejects empty inputs, duplicate inputs, duplicate identifiers, and missing or unofficial citations. Its output separates tiny runtime arrays from development-only provenance. Rule files, citations, and compiler code are excluded from the npm artifact by the package allowlist.
 
-The complete 2024 rule inventory belongs to the grade-specific implementation issues. This directory defines its source contract without copying official rule prose.
+`ueb-2024/symbols/` maps every supported print scalar to cells and a closed
+character class. `ueb-2024/modes/` declares capitals, numeric, grade-1, and
+typeform behavior using only indicators, member class, passage threshold,
+termination classes, and continuation classes. Their compilers lower those
+sources to the opaque tuples consumed by the browser runtime; UEB names and
+classes remain in the development-only layer.
+
+Run `npm run grade1:generate` after changing either package. The normal
+`npm run check` gate begins with `grade1:generate:check`, which compiles into a
+temporary directory and rejects any non-reproducible generated artifact.

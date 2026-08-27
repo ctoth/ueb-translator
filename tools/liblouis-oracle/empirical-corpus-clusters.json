@@ -1,73 +1,7 @@
 {
   "groups": [
     {
-      "count": 7455,
-      "id": "corpus-unsupported-symbol",
-      "representatives": [
-        {
-          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000012",
-          "evidenceDigest": "0ba19b28e0b3110579e854a4c232c16f63f55482547eb98e936a33ecc0b98604",
-          "groupId": "corpus-unsupported-symbol",
-          "repro": {
-            "input": "{| class=\"wikitable sortable\" border=\"1\" |+ Flu prevelance by state !",
-            "localChanged": "[[unsupported:unsupporte",
-            "oracleChanged": "⠸⠣⠸⠳⠀⠉⠇⠁⠎⠎⠐⠶⠠⠶⠺⠊⠅⠊⠞⠁⠃⠇⠑⠀"
-          }
-        },
-        {
-          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000016",
-          "evidenceDigest": "10e3085a343bf3eecb7b2cf0954a5062e18012ba76809b93e3d70cc76b516f86",
-          "groupId": "corpus-unsupported-symbol",
-          "repro": {
-            "input": "The Weather Channel |- | Alabama || Moderate || Local || Localized |- | ",
-            "localChanged": "[[unsupported:unsupporte",
-            "oracleChanged": "⠠⠮⠀⠠⠺⠂⠮⠗⠀⠠⠡⠁⠝⠝⠑⠇⠀⠸⠳⠤⠀⠸⠳⠀"
-          }
-        },
-        {
-          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000017",
-          "evidenceDigest": "af8513572f11f3a3a80f7d6fae77edadb860f33c62842c354c8d4758852c7d99",
-          "groupId": "corpus-unsupported-symbol",
-          "repro": {
-            "input": "activity || |- | Illinois || Moderate || Sporadic || |- | Indiana || Low",
-            "localChanged": "[[unsupported:unsupporte",
-            "oracleChanged": "⠁⠉⠞⠊⠧⠰⠽⠀⠸⠳⠸⠳⠀⠸⠳⠤⠀⠸⠳⠀⠠⠊⠇⠇"
-          }
-        },
-        {
-          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000018",
-          "evidenceDigest": "076920092061af89ab687593ae1b3f9546f0b700e9815a538bb8c62939cc29a9",
-          "groupId": "corpus-unsupported-symbol",
-          "repro": {
-            "input": "Mississippi || Moderate || Local || Sporadic |- | Missouri || Moderate |",
-            "localChanged": "[[unsupported:unsupporte",
-            "oracleChanged": "⠠⠍⠊⠎⠎⠊⠎⠎⠊⠏⠏⠊⠀⠸⠳⠸⠳⠀⠠⠍⠕⠙⠻⠁"
-          }
-        },
-        {
-          "caseId": "corpus:009fb3acd788f70686506d59c18c09eca99b60fe93c8bb130d4a7c19414a04cd:00000019",
-          "evidenceDigest": "0d5b83c053e435411ec83e1cad16c561f79cbb830974119f914c16c55373ab14",
-          "groupId": "corpus-unsupported-symbol",
-          "repro": {
-            "input": "|| Sporadic |- | Oklahoma || Moderate || No activity || |- | Oregon || L",
-            "localChanged": "[[unsupported:unsupporte",
-            "oracleChanged": "⠸⠳⠸⠳⠀⠠⠎⠏⠕⠗⠁⠙⠊⠉⠀⠸⠳⠤⠀⠸⠳⠀⠠⠕"
-          }
-        }
-      ],
-      "verdict": {
-        "issues": [
-          58
-        ],
-        "kind": "our-bug",
-        "rationale": "The retained corpus sentence reaches an unsupported ASCII print symbol. ICEB 2024 Sections 3-7 require a Grade 1 symbol representation; issue 58 owns the compiled Grade 1 symbol and mode package.",
-        "sources": [
-          "https://iceb.org/publications/ueb/"
-        ]
-      }
-    },
-    {
-      "count": 2958,
+      "count": 3064,
       "id": "corpus-unsupported-foreign",
       "representatives": [
         {
@@ -133,7 +67,7 @@
       }
     },
     {
-      "count": 150248,
+      "count": 154348,
       "id": "corpus-context-dependent",
       "representatives": [
         {
@@ -196,5 +130,5 @@
       }
     }
   ],
-  "total": 160661
+  "total": 157412
 }

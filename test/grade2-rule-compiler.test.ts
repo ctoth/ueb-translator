@@ -4,11 +4,16 @@ import { describe, expect, it } from "vitest";
 
 import {
   compileContextualRules,
+  requireContextualOperandIndex,
   type ContextualRuleCompilationError,
   type ContextualPrecedence,
   type ContextualRuleSource,
 } from "../rules/ueb-2024/contextual-compiler.js";
-import { GRADE2_CONTEXTUAL_COMPILATION } from "../rules/ueb-2024/program.js";
+import {
+  compileGrade2RuleGuards,
+  GRADE2_CONTEXTUAL_COMPILATION,
+  requireAppendixShortformBase,
+} from "../rules/ueb-2024/program.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
 
 const runtimeSource = readFileSync(
@@ -64,21 +69,32 @@ describe("compileContextualRules", () => {
     const compilation = compileContextualRules([
       rule("test-standing", "a", 1, [{ kind: "standing-alone" }]),
       rule("test-boundaries", "b", 2, [{
-        boundaries: ["braille-line", "compound"],
+        boundaries: ["braille-line", "compound", "prefix", "suffix", "syllable"],
         kind: "not-crossing",
       }]),
       rule("test-words", "c", 3, [{ kind: "not-word", words: ["cat"] }]),
+      rule("test-not-whole", "d", 4, [{ kind: "not-whole-word" }]),
     ]);
 
     expect(compilation.runtime.guards).toEqual([
       [12],
-      [5, 3],
+      [5, 31],
       [6, 0],
+      [10],
     ]);
     expect(compilation.runtime.stringOperands).toEqual(["cat"]);
   });
 
+  it("fails closed when a collected guard operand is missing", () => {
+    const operands: ReadonlyMap<string, number> = new Map([["cat", 0]]);
+    expect(requireContextualOperandIndex("cat", operands)).toBe(0);
+    expect(() => requireContextualOperandIndex("dog", operands))
+      .toThrow('operand was not collected: "dog"');
+  });
+
   it("rejects duplicate identifiers and unsupported empty inputs", () => {
+    expect(() => compileContextualRules([]))
+      .toThrow(expect.objectContaining({ code: "unreachable-rule" }));
     expect(() =>
       compileContextualRules([
         rule("test-same", "a", 1),
@@ -109,12 +125,55 @@ describe("compileContextualRules", () => {
     ).toThrow(expect.objectContaining({ code: "duplicate-guard" }));
   });
 
+  it("rejects empty boundary masks and unofficial citations", () => {
+    expect(() => compileContextualRules([
+      rule("test-empty-boundaries", "a", 1, [{ boundaries: [], kind: "not-crossing" }]),
+    ])).toThrow("at least one boundary");
+
+    const uncited = structuredClone(rule("test-uncited", "a", 1));
+    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    expect(() => compileContextualRules([uncited]))
+      .toThrow(expect.objectContaining({ code: "uncited-rule" }));
+  });
+
   it("compiles the complete official inventory without unresolved precedence", () => {
     expect(GRADE2_CONTEXTUAL_COMPILATION.runtime.rules).toHaveLength(519);
     expect(GRADE2_CONTEXTUAL_COMPILATION.provenance).toHaveLength(519);
     expect(new Set(
       GRADE2_CONTEXTUAL_COMPILATION.provenance.map((source) => source.id),
     ).size).toBe(519);
+  });
+});
+
+describe("Grade 2 source compilation", () => {
+  it("keeps the lower groupsign whole-word guard limited to en and in", () => {
+    expect(compileGrade2RuleGuards({
+      braille: "⠢",
+      citation: citeIceb("10.6"),
+      id: "UEB-10.6-en",
+      kind: "lower-groupsign",
+      print: "en",
+    })).toContainEqual({ kind: "not-whole-word" });
+    expect(compileGrade2RuleGuards({
+      braille: "⠁",
+      citation: citeIceb("10.6"),
+      id: "UEB-10.6-test-fallback",
+      kind: "lower-groupsign",
+      print: "test-fallback",
+    })).not.toContainEqual({ kind: "not-whole-word" });
+  });
+
+  it("requires every Appendix 1 base to have a shortform", () => {
+    const shortform = {
+      braille: "⠁⠃",
+      citation: citeIceb("10.9 and Appendix 1"),
+      id: "UEB-10.9-about",
+      print: "about",
+    } as const;
+    const shortforms = new Map([[shortform.print, shortform]]);
+    expect(requireAppendixShortformBase("about", shortforms)).toBe(shortform);
+    expect(() => requireAppendixShortformBase("missing", shortforms))
+      .toThrow("Appendix 1 base has no shortform: missing");
   });
 });
 

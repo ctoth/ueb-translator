@@ -62,7 +62,9 @@ function precedenceFor(rule: Grade2RuleSource): ContextualPrecedence {
   }
 }
 
-function guardsFor(rule: Grade2RuleSource): readonly ContextualRuleGuard[] {
+export function compileGrade2RuleGuards(
+  rule: Grade2RuleSource,
+): readonly ContextualRuleGuard[] {
   switch (rule.kind) {
     case "alphabetic-wordsign":
     case "strong-wordsign":
@@ -145,7 +147,7 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
   return {
     braille: rule.braille,
     citation: rule.citation,
-    guards: guardsFor(rule),
+    guards: compileGrade2RuleGuards(rule),
     id: rule.id,
     input: rule.print,
     precedence: precedenceFor(rule),
@@ -196,12 +198,20 @@ const SHORTFORM_BY_PRINT: ReadonlyMap<string, ShortformSource> = new Map(
   SHORTFORMS.map((rule): readonly [string, ShortformSource] => [rule.print, rule]),
 );
 
+export function requireAppendixShortformBase(
+  base: string,
+  shortforms: ReadonlyMap<string, ShortformSource>,
+): ShortformSource {
+  const source = shortforms.get(base);
+  if (source === undefined) {
+    throw new Error(`Appendix 1 base has no shortform: ${base}`);
+  }
+  return source;
+}
+
 const appendixRules: readonly ContextualRuleSource[] = APPENDIX1_LONGER_WORDS.map(
   (word): ContextualRuleSource => {
-    const base = SHORTFORM_BY_PRINT.get(word.base);
-    if (base === undefined) {
-      throw new Error(`Appendix 1 base has no shortform: ${word.base}`);
-    }
+    const base = requireAppendixShortformBase(word.base, SHORTFORM_BY_PRINT);
     return {
       braille: base.braille,
       citation: word.citation,
