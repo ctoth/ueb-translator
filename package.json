@@ -22,6 +22,9 @@
   },
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
   "sideEffects": false,
   "files": [
     "dist",
@@ -61,12 +64,13 @@
   "scripts": {
     "browser:test": "vitest run --config vitest.browser.config.ts",
     "browser:typecheck": "tsc -p tsconfig.browser.json --noEmit",
-    "build": "node scripts/clean-dist.mts && tsc -p tsconfig.build.json",
-    "check": "npm run grade1:generate:check && npm run grade2:generate:check && npm run build && npm run corpus:build && npm run corpus:smoke && npm run typecheck && npm run browser:typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run browser:test && npm run oracle:test",
+    "build": "node scripts/clean-output.mts dist && tsc -p tsconfig.build.json",
+    "build:verify": "node scripts/verify-build.mts",
+    "check": "npm run grade1:generate:check && npm run grade2:generate:check && npm run build:verify && npm run corpus:smoke && npm run typecheck && npm run corpus:typecheck && npm run browser:typecheck && npm run rules:typecheck && npm run oracle:typecheck && npm run lint && npm run test && npm run browser:test && npm run package:verify && npm run size && npm run oracle:test",
     "corpus:benchmark": "npm run corpus:build && node node_modules/.cache/ueb-translator/corpus-benchmark/tools/corpus-benchmark/cli.mjs benchmark",
-    "corpus:build": "tsc -p tools/corpus-benchmark/tsconfig.build.json",
+    "corpus:build": "node scripts/clean-output.mts corpus && tsc -p tools/corpus-benchmark/tsconfig.build.json",
     "corpus:prepare": "npm run corpus:build && node node_modules/.cache/ueb-translator/corpus-benchmark/tools/corpus-benchmark/cli.mjs prepare",
-    "corpus:smoke": "node node_modules/.cache/ueb-translator/corpus-benchmark/tools/corpus-benchmark/smoke.mjs",
+    "corpus:smoke": "npm run corpus:build && node node_modules/.cache/ueb-translator/corpus-benchmark/tools/corpus-benchmark/smoke.mjs",
     "corpus:typecheck": "tsc -p tools/corpus-benchmark/tsconfig.json --noEmit",
     "grade2:generate": "npm run grade2:rules:build && node scripts/generate-grade2.mts",
     "grade2:generate:check": "npm run grade2:rules:build && node scripts/generate-grade2.mts --check",
@@ -75,10 +79,10 @@
     "grade1:generate:check": "npm run grade2:rules:build && node scripts/generate-grade1.mts --check",
     "grade1:performance:check": "npm run build && node scripts/benchmark-grade1.mts",
     "lint": "eslint .",
-    "oracle": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/cli.js",
-    "oracle:build": "node tools/liblouis-oracle/clean.mts && tsc -p tools/liblouis-oracle/tsconfig.build.json",
-    "oracle:compare": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/differential-cli.js",
-    "oracle:differential:smoke": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/differential-smoke.js",
+    "oracle": "npm run oracle:build && node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/cli.js",
+    "oracle:build": "node scripts/clean-output.mts oracle && tsc -p tools/liblouis-oracle/tsconfig.build.json",
+    "oracle:compare": "npm run oracle:build && node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/differential-cli.js",
+    "oracle:differential:smoke": "npm run oracle:build && node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/differential-smoke.js",
     "oracle:empirical:prepare": "npm run corpus:build && npm run oracle:build && node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/prepare-empirical-corpora.mjs && node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/prepare-scowl.mjs",
     "oracle:corpus:check": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/empirical-sweep.js corpus .corpus-cache/prepared/gutenberg-1342-74f2665d6e6925fc2c17dec644bec9e87df478a0f1836822125e8acbb3777806 .corpus-cache/prepared/wikinews-20260801",
     "oracle:dictionary:check": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/empirical-sweep.js dictionary .corpus-cache/scowl/2020.12.07-level-95/words.txt",
@@ -89,11 +93,11 @@
     "oracle:test": "vitest run --coverage.enabled=false tools/liblouis-oracle/test",
     "oracle:typecheck": "tsc -p tools/liblouis-oracle/tsconfig.json --noEmit",
     "pack:check": "npm pack --dry-run",
-    "package:verify": "npm run --silent build && node scripts/verify-package.mts",
+    "package:verify": "node scripts/verify-package.mts",
     "rules:typecheck": "tsc -p tools/rule-compiler/tsconfig.json --noEmit",
-    "size": "npm run --silent build && node scripts/report-size.mts",
+    "size": "node scripts/report-size.mts",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit && npm run corpus:typecheck"
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
