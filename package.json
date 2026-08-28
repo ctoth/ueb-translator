@@ -1,6 +1,6 @@
 {
   "name": "ueb-translator",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A tiny, standards-driven Unified English Braille translator for browsers.",
   "keywords": [
     "accessibility",
