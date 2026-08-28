@@ -132,14 +132,17 @@ interface DecodeState {
 
 interface DecodePath extends DecodeState {
   readonly forwardBraille: string;
+  readonly grade2UnsupportedSemanticControl: boolean;
   readonly index: number;
   readonly print: string;
   readonly semanticFormatting: boolean;
+  readonly typeformScopes: readonly TypeformScope[];
   readonly validationBoundaries: readonly ValidationBoundary[];
 }
 
 interface DecodedPrint {
   readonly forwardBraille: string;
+  readonly grade2UnsupportedSemanticControl: boolean;
   readonly print: string;
   readonly semanticFormatting: boolean;
   readonly validationBoundaries: readonly ValidationBoundary[];
@@ -182,7 +185,20 @@ interface ModifierToken {
 
 interface SemanticControlToken {
   readonly braille: string;
+  readonly grade2Lexical: boolean;
   readonly kind: "semantic-control";
+  readonly typeform?: TypeformControl;
+}
+
+interface TypeformControl {
+  readonly kind: "passage" | "symbol" | "terminator" | "word";
+  readonly modeId: number;
+}
+
+interface TypeformScope {
+  readonly kind: "passage" | "symbol" | "word";
+  readonly memberCount: number;
+  readonly modeId: number;
 }
 
 interface SymbolToken {
@@ -376,16 +392,54 @@ const TYPEFORM_MODE_IDS = Object.entries(GRADE1_MODE_IDS)
   .filter(([name]) => name.startsWith("typeform-"))
   .map(([, modeId]) => modeId);
 const SEMANTIC_CONTROLS: readonly SemanticControlToken[] = [
-  { braille: "⠣", kind: "semantic-control" },
-  { braille: "⠜", kind: "semantic-control" },
-  { braille: "⠘⠖", kind: "semantic-control" },
+  { braille: "⠣", grade2Lexical: false, kind: "semantic-control" },
+  { braille: "⠜", grade2Lexical: false, kind: "semantic-control" },
+  { braille: "⠘⠖", grade2Lexical: false, kind: "semantic-control" },
   ...TYPEFORM_MODE_IDS.flatMap((modeId): readonly SemanticControlToken[] => [
-    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "passage"), kind: "semantic-control" },
-    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "symbol"), kind: "semantic-control" },
-    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "terminator"), kind: "semantic-control" },
-    { braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "word"), kind: "semantic-control" },
+    {
+      braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "passage"),
+      grade2Lexical: true,
+      kind: "semantic-control",
+      typeform: { kind: "passage", modeId },
+    },
+    {
+      braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "symbol"),
+      grade2Lexical: true,
+      kind: "semantic-control",
+      typeform: { kind: "symbol", modeId },
+    },
+    {
+      braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "terminator"),
+      grade2Lexical: true,
+      kind: "semantic-control",
+      typeform: { kind: "terminator", modeId },
+    },
+    {
+      braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "word"),
+      grade2Lexical: true,
+      kind: "semantic-control",
+      typeform: { kind: "word", modeId },
+    },
   ]),
 ];
+const GRADE2_PASSAGE_CONTROLS = [
+  {
+    closing: CAPITALS_TERMINATOR,
+    opening: CAPITALS_PASSAGE_INDICATOR,
+    typeform: false,
+  },
+  ...TYPEFORM_MODE_IDS.map((modeId) => ({
+    closing: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "terminator"),
+    opening: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "passage"),
+    typeform: true,
+  })),
+] as const;
+const CAPITALS_INDICATORS = [
+  CAPITALS_PASSAGE_INDICATOR,
+  CAPITALS_WORD_INDICATOR,
+  CAPITALS_TERMINATOR,
+  CAPITAL_INDICATOR,
+].sort((left, right) => right.length - left.length);
 const GRADE1_TOKENS: readonly DecodeToken[] = [
   ...GRADE1_ENTRIES.flatMap((entry): readonly DecodeToken[] => {
     const token = decodeToken(entry);
@@ -446,11 +500,87 @@ function pathKey(path: DecodePath): string {
     path.grade1Next ? "1" : "0",
     path.modifiers,
     path.numeric ? "1" : "0",
+    path.grade2UnsupportedSemanticControl ? "1" : "0",
     path.semanticFormatting ? "1" : "0",
+    path.typeformScopes.map((scope) =>
+      `${String(scope.modeId)}:${scope.kind}:${String(scope.memberCount)}`
+    ).join(","),
     validationBoundariesKey(path.validationBoundaries),
     path.forwardBraille,
     path.print,
   ].join("\u0000");
+}
+
+function typeformScopesAtBoundary(
+  scopes: readonly TypeformScope[],
+): readonly TypeformScope[] | undefined {
+  const remaining: TypeformScope[] = [];
+  for (const scope of scopes) {
+    if (scope.kind === "symbol" ||
+      (scope.kind === "word" && scope.memberCount === 0)) {
+      return undefined;
+    }
+    if (scope.kind === "passage") remaining.push(scope);
+  }
+  return remaining;
+}
+
+function typeformScopesBeforeControl(
+  scopes: readonly TypeformScope[],
+): readonly TypeformScope[] | undefined {
+  const remaining: TypeformScope[] = [];
+  for (const scope of scopes) {
+    if (scope.kind === "symbol") return undefined;
+    if (scope.kind === "word" && scope.memberCount > 0) continue;
+    remaining.push(scope);
+  }
+  return remaining;
+}
+
+function withTypeformControl(
+  scopes: readonly TypeformScope[],
+  control: TypeformControl,
+): readonly TypeformScope[] | undefined {
+  const settled = typeformScopesBeforeControl(scopes);
+  if (settled === undefined) return undefined;
+  if (control.kind === "terminator") {
+    const active = settled.at(-1);
+    return active?.kind === "passage" && active.modeId === control.modeId &&
+        active.memberCount > 0
+      ? settled.slice(0, -1)
+      : undefined;
+  }
+  if (settled.some((scope) => scope.modeId === control.modeId)) {
+    return undefined;
+  }
+  return [...settled, {
+    kind: control.kind,
+    memberCount: 0,
+    modeId: control.modeId,
+  }];
+}
+
+function withTypeformOperand(
+  scopes: readonly TypeformScope[],
+  print: string,
+): readonly TypeformScope[] | undefined {
+  const memberCount = Array.from(print).length;
+  const remaining: TypeformScope[] = [];
+  for (const scope of scopes) {
+    const updated = { ...scope, memberCount: scope.memberCount + memberCount };
+    if (scope.kind === "symbol") {
+      if (updated.memberCount !== 1) return undefined;
+      continue;
+    }
+    remaining.push(updated);
+  }
+  return remaining;
+}
+
+function typeformScopesComplete(scopes: readonly TypeformScope[]): boolean {
+  return scopes.every((scope) =>
+    scope.kind === "word" && scope.memberCount > 0
+  );
 }
 
 function withValidationBoundary(path: DecodePath): DecodePath {
@@ -497,6 +627,27 @@ function scalarIndexAt(input: string, codeUnitIndex: number): number {
   return Array.from(input.slice(0, codeUnitIndex)).length;
 }
 
+function withoutCapitalsIndicators(braille: string): string {
+  let content = "";
+  let index = 0;
+  while (index < braille.length) {
+    const indicator = CAPITALS_INDICATORS.find((candidate) =>
+      braille.startsWith(candidate, index)
+    );
+    if (indicator !== undefined) {
+      index += indicator.length;
+      continue;
+    }
+    content += braille.charAt(index);
+    index += 1;
+  }
+  return content;
+}
+
+function withoutGrade1Indicators(braille: string): string {
+  return braille.replaceAll(GRADE1_INDICATOR, "");
+}
+
 function decode(
   input: string,
   buckets: ReadonlyMap<string, readonly DecodeToken[]>,
@@ -504,12 +655,14 @@ function decode(
   const initialPath: DecodePath = {
     capitals: "none",
     forwardBraille: "",
+    grade2UnsupportedSemanticControl: false,
     grade1Next: false,
     index: 0,
     modifiers: "",
     numeric: false,
     print: "",
     semanticFormatting: false,
+    typeformScopes: [],
     validationBoundaries: [],
   };
   const pending: DecodePath[] = [initialPath];
@@ -540,11 +693,13 @@ function decode(
     if (path.index === input.length) {
       if (
         path.capitals !== "next" && path.capitals !== "passage" &&
-        !path.grade1Next && path.modifiers.length === 0
+        !path.grade1Next && path.modifiers.length === 0 &&
+        typeformScopesComplete(path.typeformScopes)
       ) {
         const completedKey = [
           path.print,
           path.forwardBraille,
+          path.grade2UnsupportedSemanticControl ? "1" : "0",
           validationBoundariesKey(path.validationBoundaries),
         ].join("\u0000");
         const previous = completed.get(completedKey);
@@ -558,6 +713,8 @@ function decode(
         }
         completed.set(completedKey, {
           forwardBraille: path.forwardBraille,
+          grade2UnsupportedSemanticControl:
+            path.grade2UnsupportedSemanticControl,
           print: path.print,
           semanticFormatting:
             path.semanticFormatting || previous?.semanticFormatting === true,
@@ -568,6 +725,8 @@ function decode(
     }
 
     if (input.startsWith("\r\n", path.index)) {
+      const typeformScopes = typeformScopesAtBoundary(path.typeformScopes);
+      if (typeformScopes === undefined) continue;
       enqueue({
         ...path,
         capitals: capitalAfterBoundary(path.capitals),
@@ -577,11 +736,14 @@ function decode(
         modifiers: "",
         numeric: false,
         print: `${path.print}\r\n`,
+        typeformScopes,
       });
       continue;
     }
     const current = input.charAt(path.index);
     if (current === "\r" || current === "\n" || current === BRAILLE_BLANK) {
+      const typeformScopes = typeformScopesAtBoundary(path.typeformScopes);
+      if (typeformScopes === undefined) continue;
       enqueue({
         ...path,
         capitals: capitalAfterBoundary(path.capitals),
@@ -591,6 +753,7 @@ function decode(
         modifiers: "",
         numeric: false,
         print: path.print + (current === BRAILLE_BLANK ? " " : current),
+        typeformScopes,
       });
       continue;
     }
@@ -662,19 +825,30 @@ function decode(
     if (path.numeric) {
       const digit = NUMERIC_DIGITS.get(current);
       if (digit !== undefined) {
-        enqueue({
-          ...path,
-          forwardBraille: path.forwardBraille + current,
-          index: path.index + 1,
-          print: path.print + digit,
-        });
+        const typeformScopes = withTypeformOperand(path.typeformScopes, digit);
+        /* v8 ignore next -- numeric digits contain exactly one scalar. */
+        if (typeformScopes !== undefined) {
+          enqueue({
+            ...path,
+            forwardBraille: path.forwardBraille + current,
+            index: path.index + 1,
+            print: path.print + digit,
+            typeformScopes,
+          });
+        }
       } else if (current === "⠂" || current === "⠲") {
-        enqueue({
-          ...path,
-          forwardBraille: path.forwardBraille + current,
-          index: path.index + 1,
-          print: path.print + (current === "⠂" ? "," : "."),
-        });
+        const print = current === "⠂" ? "," : ".";
+        const typeformScopes = withTypeformOperand(path.typeformScopes, print);
+        /* v8 ignore next -- numeric punctuation contains exactly one scalar. */
+        if (typeformScopes !== undefined) {
+          enqueue({
+            ...path,
+            forwardBraille: path.forwardBraille + current,
+            index: path.index + 1,
+            print: path.print + print,
+            typeformScopes,
+          });
+        }
         enqueue({ ...path, numeric: false });
       } else {
         enqueue({ ...path, numeric: false });
@@ -693,15 +867,22 @@ function decode(
             ? token.print
             : token.uppercasePrint;
           const print = `${base}${path.modifiers}`.normalize("NFC");
-          enqueue({
-            ...path,
-            capitals: capitalAfterWord(path.capitals),
-            forwardBraille: path.forwardBraille + token.braille,
-            grade1Next: false,
-            index: nextIndex,
-            modifiers: "",
-            print: path.print + print,
-          });
+          const typeformScopes = withTypeformOperand(
+            path.typeformScopes,
+            print,
+          );
+          if (typeformScopes !== undefined) {
+            enqueue({
+              ...path,
+              capitals: capitalAfterWord(path.capitals),
+              forwardBraille: path.forwardBraille + token.braille,
+              grade1Next: false,
+              index: nextIndex,
+              modifiers: "",
+              print: path.print + print,
+              typeformScopes,
+            });
+          }
           break;
         }
         case "modifier":
@@ -713,35 +894,61 @@ function decode(
           });
           break;
         case "semantic-control":
-          enqueue({
-            ...withValidationBoundary(path),
-            index: nextIndex,
-            numeric: false,
-            semanticFormatting: true,
-          });
+          {
+            const typeformScopes = token.typeform === undefined
+              ? path.typeformScopes
+              : withTypeformControl(path.typeformScopes, token.typeform);
+            if (typeformScopes !== undefined) {
+              enqueue({
+                ...withValidationBoundary(path),
+                grade2UnsupportedSemanticControl:
+                  path.grade2UnsupportedSemanticControl || !token.grade2Lexical,
+                index: nextIndex,
+                numeric: false,
+                semanticFormatting: true,
+                typeformScopes,
+              });
+            }
+          }
           break;
         case "symbol":
           if (path.modifiers.length === 0 && path.capitals !== "next") {
-            enqueue({
-              ...path,
-              capitals: capitalAfterSymbol(path.capitals, token.print),
-              forwardBraille: path.forwardBraille + token.braille,
-              grade1Next: false,
-              index: nextIndex,
-              numeric: false,
-              print: path.print + token.print,
-            });
+            const typeformScopes = withTypeformOperand(
+              path.typeformScopes,
+              token.print,
+            );
+            /* v8 ignore next -- compiled symbol tokens contain one scalar. */
+            if (typeformScopes !== undefined) {
+              enqueue({
+                ...path,
+                capitals: capitalAfterSymbol(path.capitals, token.print),
+                forwardBraille: path.forwardBraille + token.braille,
+                grade1Next: false,
+                index: nextIndex,
+                numeric: false,
+                print: path.print + token.print,
+                typeformScopes,
+              });
+            }
           }
           break;
         case "word":
           if (path.modifiers.length === 0 && !path.grade1Next) {
-            enqueue({
-              ...path,
-              capitals: capitalAfterWord(path.capitals),
-              forwardBraille: path.forwardBraille + token.braille,
-              index: nextIndex,
-              print: path.print + capitalizeWord(token.print, path.capitals),
-            });
+            const print = capitalizeWord(token.print, path.capitals);
+            const typeformScopes = withTypeformOperand(
+              path.typeformScopes,
+              print,
+            );
+            if (typeformScopes !== undefined) {
+              enqueue({
+                ...path,
+                capitals: capitalAfterWord(path.capitals),
+                forwardBraille: path.forwardBraille + token.braille,
+                index: nextIndex,
+                print: path.print + print,
+                typeformScopes,
+              });
+            }
           }
           break;
       }
@@ -848,22 +1055,57 @@ function grade1Candidates(
 }
 
 function grade2Candidates(
-  input: string,
   decoded: DecodeResult,
 ): readonly Grade2BacktranslationCandidate[] {
   const candidates: Grade2BacktranslationCandidate[] = [];
   for (const candidate of decoded.candidates) {
-    if (candidate.semanticFormatting) {
+    if (candidate.grade2UnsupportedSemanticControl) {
       continue;
     }
-    const translated = traceGrade2(candidate.print);
-    if (!translated.ok || translated.braille !== input) {
-      continue;
+    const boundaries = [
+      ...candidate.validationBoundaries,
+      {
+        forwardBrailleIndex: candidate.forwardBraille.length,
+        printIndex: candidate.print.length,
+      },
+    ];
+    let forwardBrailleIndex = 0;
+    let printIndex = 0;
+    const rules: Grade2RuleId[] = [];
+    let valid = true;
+    for (const boundary of boundaries) {
+      const translated = traceGrade2(
+        candidate.print.slice(printIndex, boundary.printIndex),
+      );
+      const expected = candidate.forwardBraille.slice(
+        forwardBrailleIndex,
+        boundary.forwardBrailleIndex,
+      );
+      forwardBrailleIndex = boundary.forwardBrailleIndex;
+      printIndex = boundary.printIndex;
+      const relaxedCapitalsPassage =
+        candidate.forwardBraille.includes(CAPITALS_PASSAGE_INDICATOR) &&
+        /\s/u.test(candidate.print) &&
+        translated.ok &&
+        withoutCapitalsIndicators(translated.braille) ===
+          withoutCapitalsIndicators(expected);
+      const retainedTypeformContext = candidate.semanticFormatting &&
+        translated.ok &&
+        withoutGrade1Indicators(translated.braille) ===
+          withoutGrade1Indicators(expected);
+      if (!translated.ok ||
+        (translated.braille !== expected && !relaxedCapitalsPassage &&
+          !retainedTypeformContext)) {
+        valid = false;
+        break;
+      }
+      rules.push(...translated.rules.map((rule) => rule.id));
     }
+    if (!valid) continue;
     candidates.push({
       mode: "grade2",
       print: candidate.print,
-      rules: translated.rules.map((rule) => rule.id),
+      rules,
     });
   }
   return candidates;
@@ -978,9 +1220,80 @@ export function backtranslateGrade1(
     segments.push(candidates);
     return undefined;
   };
+  const appendTypeformPassage = (
+    opening: string,
+    closing: string,
+    contentStart: number,
+    contentEnd: number,
+  ): InvalidBacktranslation<"grade1"> | undefined => {
+    let hasLexicalContent = false;
+    let segmentStart = contentStart;
+    let index = contentStart;
+    const appendLexicalSegment = (
+      start: number,
+      end: number,
+    ): InvalidBacktranslation<"grade1"> | undefined => {
+      return appendDecoded(
+        opening + braille.slice(start, end) + closing,
+        start - opening.length,
+      );
+    };
+    while (index < contentEnd) {
+      const separator = separatorAt(braille, index);
+      if (separator === undefined) {
+        index += 1;
+        continue;
+      }
+      if (segmentStart < index) {
+        hasLexicalContent = true;
+        const invalid = appendLexicalSegment(segmentStart, index);
+        if (invalid !== undefined) return invalid;
+      }
+      segments.push(fixedGrade1Segment(separator.print));
+      index += separator.width;
+      segmentStart = index;
+    }
+    if (segmentStart < contentEnd) {
+      hasLexicalContent = true;
+      const invalid = appendLexicalSegment(segmentStart, contentEnd);
+      if (invalid !== undefined) return invalid;
+    }
+    return hasLexicalContent
+      ? undefined
+      : noParse(braille, "grade1", contentStart);
+  };
   let segmentStart = 0;
   let index = 0;
   while (index < braille.length) {
+    const typeformPassage = GRADE2_PASSAGE_CONTROLS.find((passage) =>
+      passage.typeform && braille.startsWith(passage.opening, index)
+    );
+    if (typeformPassage !== undefined) {
+      const terminatorAt = braille.indexOf(
+        typeformPassage.closing,
+        index + typeformPassage.opening.length,
+      );
+      if (terminatorAt >= 0) {
+        const passageEnd = terminatorAt + typeformPassage.closing.length;
+        const contextIndependent = segmentStart === index &&
+          (passageEnd === braille.length ||
+            separatorAt(braille, passageEnd) !== undefined);
+        if (contextIndependent) {
+          const invalid = appendTypeformPassage(
+            typeformPassage.opening,
+            typeformPassage.closing,
+            index + typeformPassage.opening.length,
+            terminatorAt,
+          );
+          if (invalid !== undefined) return invalid;
+          index = passageEnd;
+          segmentStart = index;
+          continue;
+        }
+        index = passageEnd;
+        continue;
+      }
+    }
     if (braille.startsWith(CAPITALS_PASSAGE_INDICATOR, index)) {
       const terminatorAt = braille.indexOf(
         CAPITALS_TERMINATOR,
@@ -1028,44 +1341,10 @@ function backtranslatePlainGrade2(
   const segments: MutableNonEmpty<NonEmpty<Grade2BacktranslationCandidate>> = [
     fixedGrade2Segment(""),
   ];
-  let segmentStart = 0;
-  let index = 0;
-  while (index < braille.length) {
-    const separator = separatorAt(braille, index);
-    if (separator === undefined) {
-      index += 1;
-      continue;
-    }
-    if (segmentStart < index) {
-      const segmentBraille = braille.slice(segmentStart, index);
-      const decoded = decode(segmentBraille, GRADE2_BUCKETS);
-      if (
-        decoded.tooAmbiguousAt !== undefined &&
-        decoded.tooAmbiguousLimit !== undefined
-      ) {
-        return tooAmbiguous(
-          braille,
-          "grade2",
-          segmentStart + decoded.tooAmbiguousAt,
-          decoded.tooAmbiguousLimit,
-        );
-      }
-      const candidates = nonEmpty(grade2Candidates(segmentBraille, decoded));
-      if (candidates === undefined) {
-        return noParse(
-          braille,
-          "grade2",
-          segmentStart + decoded.furthestCodeUnitIndex,
-        );
-      }
-      segments.push(candidates);
-    }
-    segments.push(fixedGrade2Segment(separator.print));
-    index += separator.width;
-    segmentStart = index;
-  }
-  if (segmentStart < braille.length) {
-    const segmentBraille = braille.slice(segmentStart);
+  const appendDecoded = (
+    segmentBraille: string,
+    start: number,
+  ): InvalidBacktranslation<"grade2"> | undefined => {
     const decoded = decode(segmentBraille, GRADE2_BUCKETS);
     if (
       decoded.tooAmbiguousAt !== undefined &&
@@ -1074,19 +1353,109 @@ function backtranslatePlainGrade2(
       return tooAmbiguous(
         braille,
         "grade2",
-        segmentStart + decoded.tooAmbiguousAt,
+        start + decoded.tooAmbiguousAt,
         decoded.tooAmbiguousLimit,
       );
     }
-    const candidates = nonEmpty(grade2Candidates(segmentBraille, decoded));
+    const candidates = nonEmpty(grade2Candidates(decoded));
     if (candidates === undefined) {
-      return noParse(
-        braille,
-        "grade2",
-        segmentStart + decoded.furthestCodeUnitIndex,
-      );
+      return noParse(braille, "grade2", start + decoded.furthestCodeUnitIndex);
     }
     segments.push(candidates);
+    return undefined;
+  };
+  const appendTypeformPassage = (
+    opening: string,
+    closing: string,
+    contentStart: number,
+    contentEnd: number,
+  ): InvalidBacktranslation<"grade2"> | undefined => {
+    let hasLexicalContent = false;
+    let segmentStart = contentStart;
+    let index = contentStart;
+    const appendLexicalSegment = (
+      start: number,
+      end: number,
+    ): InvalidBacktranslation<"grade2"> | undefined => {
+      return appendDecoded(
+        opening + braille.slice(start, end) + closing,
+        start - opening.length,
+      );
+    };
+    while (index < contentEnd) {
+      const separator = separatorAt(braille, index);
+      if (separator === undefined) {
+        index += 1;
+        continue;
+      }
+      if (segmentStart < index) {
+        hasLexicalContent = true;
+        const invalid = appendLexicalSegment(segmentStart, index);
+        if (invalid !== undefined) return invalid;
+      }
+      segments.push(fixedGrade2Segment(separator.print));
+      index += separator.width;
+      segmentStart = index;
+    }
+    if (segmentStart < contentEnd) {
+      hasLexicalContent = true;
+      const invalid = appendLexicalSegment(segmentStart, contentEnd);
+      if (invalid !== undefined) return invalid;
+    }
+    return hasLexicalContent
+      ? undefined
+      : noParse(braille, "grade2", contentStart);
+  };
+  let segmentStart = 0;
+  let index = 0;
+  while (index < braille.length) {
+    const passage = GRADE2_PASSAGE_CONTROLS.find(({ opening }) =>
+      braille.startsWith(opening, index)
+    );
+    if (passage !== undefined) {
+      const terminatorAt = braille.indexOf(
+        passage.closing,
+        index + passage.opening.length,
+      );
+      if (terminatorAt >= 0) {
+        const passageEnd = terminatorAt + passage.closing.length;
+        const contextIndependent = segmentStart === index &&
+          (passageEnd === braille.length ||
+            separatorAt(braille, passageEnd) !== undefined);
+        if (contextIndependent) {
+          const invalid = passage.typeform
+            ? appendTypeformPassage(
+                passage.opening,
+                passage.closing,
+                index + passage.opening.length,
+                terminatorAt,
+              )
+            : appendDecoded(braille.slice(index, passageEnd), index);
+          if (invalid !== undefined) return invalid;
+          index = passageEnd;
+          segmentStart = index;
+          continue;
+        }
+        index = passageEnd;
+        continue;
+      }
+    }
+    const separator = separatorAt(braille, index);
+    if (separator === undefined) {
+      index += 1;
+      continue;
+    }
+    if (segmentStart < index) {
+      const invalid = appendDecoded(braille.slice(segmentStart, index), segmentStart);
+      if (invalid !== undefined) return invalid;
+    }
+    segments.push(fixedGrade2Segment(separator.print));
+    index += separator.width;
+    segmentStart = index;
+  }
+  if (segmentStart < braille.length) {
+    const invalid = appendDecoded(braille.slice(segmentStart), segmentStart);
+    if (invalid !== undefined) return invalid;
   }
   return candidateProduct(segments, combineGrade2);
 }

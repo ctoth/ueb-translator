@@ -164,6 +164,92 @@ describe("backtranslateGrade1", () => {
     expect(candidatePrints(backtranslateGrade1(translated.braille))).toContain("aaABC");
   });
 
+  it("retains attached typeform-passage scope through separators", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{
+        runs: [
+          { text: "a" },
+          { text: "one two three", typeforms: ["italic"] },
+        ],
+      }],
+    } satisfies Grade1Document;
+    const translated = translateGrade1(document);
+    expect(translated.ok).toBe(true);
+    if (translated.ok) {
+      expect(candidatePrints(backtranslateGrade1(translated.braille)))
+        .toContain("aone two three");
+    }
+  });
+
+  it("rejects an unterminated typeform passage", () => {
+    expect(backtranslateGrade1("⠨⠶⠁").kind).toBe("invalid");
+  });
+
+  it.each([
+    ["after a separator", "⠀⠁", "one two three a"],
+    ["before attached content", "⠁", "one two threea"],
+  ] as const)(
+    "retains a complete typeform passage %s",
+    (_placement, suffix, print) => {
+      const translated = translateGrade1({
+        kind: "grade1-document",
+        paragraphs: [{
+          runs: [{ text: "one two three", typeforms: ["italic"] }],
+        }],
+      });
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(candidatePrints(backtranslateGrade1(translated.braille + suffix)))
+          .toContain(print);
+      }
+    },
+  );
+
+  it("closes a typeform word before an adjacent formatted run", () => {
+    const document = {
+      kind: "grade1-document",
+      paragraphs: [{
+        runs: [
+          { text: "ab", typeforms: ["italic"] },
+          { text: "c", typeforms: ["underline"] },
+        ],
+      }],
+    } satisfies Grade1Document;
+    const translated = translateGrade1(document);
+    expect(translated.ok).toBe(true);
+    if (translated.ok) {
+      expect(candidatePrints(backtranslateGrade1(translated.braille))).toContain("abc");
+    }
+  });
+
+  it("closes a nested typeform word at a passage separator", () => {
+    expect(candidatePrints(backtranslateGrade1(
+      "⠁⠨⠶⠸⠂⠁⠃⠀⠉⠨⠄",
+    ))).toContain("aab c");
+  });
+
+  it("rejects a multi-scalar modified letter behind a symbol typeform", () => {
+    const translated = translateGrade1("a̸");
+    expect(translated.ok).toBe(true);
+    if (translated.ok) {
+      expect(backtranslateGrade1(`⠨⠆${translated.braille}`).kind).toBe("invalid");
+    }
+  });
+
+  it.each([
+    "⠁⠨⠶⠸⠆⠀⠃⠨⠄",
+    "⠁⠨⠶⠸⠂\r\n⠃⠨⠄",
+    "⠨⠆⠸⠆⠁",
+    "⠨⠂⠨⠂⠁",
+    "⠁⠨⠶⠨⠄",
+    "⠨⠶⣿⠀⠁⠨⠄",
+    "⠨⠶⠁⠀⣿⠨⠄",
+    "⠨⠶⠀⠨⠄",
+  ])("rejects a malformed typeform scope lifecycle: %s", (braille) => {
+    expect(backtranslateGrade1(braille).kind).toBe("invalid");
+  });
+
   it("rejects an illegal sequence behind a typeform prefix", () => {
     expect(backtranslateGrade1("⠨⠆⠁⠼").kind).toBe("invalid");
   });
@@ -311,6 +397,100 @@ describe("backtranslateGrade1", () => {
 });
 
 describe("backtranslateGrade2", () => {
+  it("accepts a valid noncanonical capitals passage", () => {
+    expect(grade2CandidatePrints(
+      backtranslateGrade2("⠠⠠⠠⠁⠃⠉⠀⠙⠑⠋⠠⠄"),
+    )).toContain("ABC DEF");
+  });
+
+  it("validates an attached capitals passage in one lexical segment", () => {
+    expect(grade2CandidatePrints(
+      backtranslateGrade2("⠁⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄"),
+    )).toContain("aA BUT CAN");
+  });
+
+  it("rejects an unterminated capitals passage", () => {
+    expect(backtranslateGrade2("⠠⠠⠠⠁").kind).toBe("invalid");
+  });
+
+  it("keeps a passage and adjacent trailing content in one segment", () => {
+    expect(grade2CandidatePrints(
+      backtranslateGrade2("⠠⠠⠠⠁⠀⠃⠀⠉⠠⠄⠁"),
+    )).toContain("A BUT Ca");
+  });
+
+  it("accepts the Grade 1 word indicator", () => {
+    expect(grade2CandidatePrints(backtranslateGrade2("⠰⠰⠁⠃")))
+      .toContain("ab");
+  });
+
+  it.each(["and", "one two three"])(
+    "validates typeformed Grade 2 by its lexical content: %s",
+    (print) => {
+      const translated = translateGrade2({
+        kind: "grade2-document",
+        runs: [{ kind: "text", text: print, typeforms: ["italic"] }],
+      });
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(grade2CandidatePrints(backtranslateGrade2(translated.braille)))
+          .toContain(print);
+      }
+    },
+  );
+
+  it.each(["Ab", "A-B", "1a"])(
+    "retains typeform mode context while validating %s",
+    (print) => {
+      const translated = translateGrade2({
+        kind: "grade2-document",
+        runs: [{ kind: "text", text: print, typeforms: ["italic"] }],
+      });
+      expect(translated.ok).toBe(true);
+      if (translated.ok) {
+        expect(grade2CandidatePrints(backtranslateGrade2(translated.braille)))
+          .toContain(print);
+      }
+    },
+  );
+
+  it.each(["⠨⠆", "⠨⠶⠁", "⠨⠄⠁"])(
+    "rejects a typeform control without a valid scope: %s",
+    (braille) => {
+      expect(backtranslateGrade2(braille)).toMatchObject({
+        kind: "invalid",
+        mode: "grade2",
+        reason: "no-standards-parse",
+      });
+    },
+  );
+
+  it.each([
+    "⠨⠆⠯",
+    "⠨⠶⣿⠀⠁⠨⠄",
+    "⠨⠶⠁⠀⣿⠨⠄",
+    "⠨⠶⠀⠨⠄",
+  ])("rejects an invalid typeform operand or passage segment: %s", (braille) => {
+    expect(backtranslateGrade2(braille).kind).toBe("invalid");
+  });
+
+  it("keeps typeform-passage ambiguity as a compact lexical product", () => {
+    const print = Array.from({ length: 8 }, () => "σ").join(" ");
+    const translated = translateGrade2({
+      kind: "grade2-document",
+      runs: [{ kind: "text", text: print, typeforms: ["italic"] }],
+    });
+    expect(translated.ok).toBe(true);
+    if (!translated.ok) return;
+
+    const result = backtranslateGrade2(translated.braille);
+    expect(result.kind).toBe("ambiguous");
+    if (result.kind === "ambiguous") {
+      expect(result.candidates.size).toBe(1n << 8n);
+      expect(result.candidates.at((1n << 8n) - 1n)?.print).toBe(print);
+    }
+  });
+
   it.each(["DON'T", "B'S"])(
     "round trips canonical Grade 2 capitals word mode through an apostrophe in %s",
     (print) => {
