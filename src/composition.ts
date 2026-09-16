@@ -7,7 +7,7 @@ import {
 import {
   emitCompositionUnit,
   parseCompositionTextWithSymbols,
-  resolveAsciiDoubleQuotes,
+  resolveContextualPunctuation,
   resolveCompositionModes,
   type CompositionModePlan,
   type CompositionUnit,
@@ -282,6 +282,30 @@ function hasOnlyProgramLiteralLetters(
     );
 }
 
+function exclusionComponent(
+  units: readonly CompositionUnit[],
+  component: UnitRange,
+  range: UnitRange,
+  policies: CompositionPolicies,
+  bucketAlphabet: readonly string[],
+): string {
+  // Outer quote/apostrophe marks do not change the spelling being excluded.
+  // Retain medial apostrophes and possessive s. Full lexical eligibility is
+  // checked separately so divided spellings such as hoity-toity still match.
+  let { start, end } = component;
+  while (start < range.start && isOneOf(
+    requiredValue(units[start], "Missing component start.").source,
+    policies.elisionPunctuation,
+  )) start += 1;
+  while (end > range.end && isOneOf(
+    requiredValue(units[end - 1], "Missing component end.").source,
+    policies.elisionPunctuation,
+  )) end -= 1;
+  return units.slice(start, end)
+    .map((unit) => eligibilityCharacter(unit, policies, bucketAlphabet))
+    .join("");
+}
+
 function canCollapseModeSpan(
   plan: CompositionModePlan,
   range: UnitRange,
@@ -347,9 +371,9 @@ export function compose(
       const parsed = parseCompositionTextWithSymbols(text, symbolRuntime);
       if (!parsed.ok) return parsed;
       const { units } = parsed;
-      const asciiDoubleQuotes = resolveAsciiDoubleQuotes(units);
+      const punctuation = resolveContextualPunctuation(units);
       const emissions = units.map((unit, index) =>
-        asciiDoubleQuotes[index] ?? emitCompositionUnit(unit)
+        punctuation[index] ?? emitCompositionUnit(unit)
       );
       const required = new Set<number>();
       const rules: ContextualAppliedRule[] = [];
@@ -431,6 +455,10 @@ export function compose(
                   })),
                 eligibilityOffset,
                 eligibilityWord,
+                exclusionWords: [
+                  exclusionComponent(units, lexical, range, policies, bucketAlphabet),
+                  exclusionComponent(units, component, range, policies, bucketAlphabet),
+                ],
                 hasLowerPunctuation: lowerContext.hasLowerPunctuation,
                 hasRestrictingLowerPunctuation:
                   lowerContext.hasRestrictingLowerPunctuation,

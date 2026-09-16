@@ -151,6 +151,8 @@ export interface ContextualTransducerInput {
   readonly boundaries: readonly ContextualBoundary[];
   readonly eligibilityOffset: number;
   readonly eligibilityWord: string;
+  /** Additional exclusion spellings; full-word eligibility still owns shortforms. */
+  readonly exclusionWords: readonly string[];
   readonly hasLowerPunctuation: boolean;
   readonly hasRestrictingLowerPunctuation: boolean;
   readonly hasUpperPunctuation: boolean;
@@ -266,10 +268,11 @@ function guardAllows(
     case 6: {
       const operand = operandAt(program, guard[1]);
       const ignored = operandAt(program, guard[2]);
-      const normalized = Array.from(eligibilityWord)
-        .filter((character) => !ignored.includes(character))
-        .join("");
-      return !operand.split("\u0000").includes(normalized);
+      const excluded = operand.split("\u0000");
+      return [eligibilityWord, ...context.exclusionWords]
+        .every((candidate) => !excluded.includes(Array.from(candidate)
+          .filter((character) => !ignored.includes(character))
+          .join("")));
     }
     case 7: {
       const operand = operandAt(program, guard[1]);

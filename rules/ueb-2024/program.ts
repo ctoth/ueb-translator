@@ -27,7 +27,7 @@ function initialExceptionWords(print: string): readonly string[] {
     .flatMap((constraint) => constraint.words);
 }
 
-function optionalFinalExceptionGuard(
+function optionalExceptionGuard(
   values: readonly string[],
   guard: ContextualRuleGuard,
 ): readonly ContextualRuleGuard[] {
@@ -47,9 +47,16 @@ function firstSyllableExceptionWords(print: string): readonly string[] {
 }
 
 function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
-  return words.length === 0
-    ? []
-    : [{ ignoredCharacters: "-", kind: "not-word", words }];
+  // A possessive does not change the restricted letters inside its base word.
+  // Expand at compilation, keeping English morphology out of the interpreter.
+  // ICEB 2024 10.12.12 retains contraction rules around medial punctuation.
+  // Composition canonicalizes apostrophe spellings to ASCII for eligibility.
+  const possessiveWords = words.flatMap((word) => [
+    word, `${word}'s`, ...(word.endsWith("s") ? [`${word}'`] : []),
+  ]);
+  return optionalExceptionGuard(possessiveWords, {
+    ignoredCharacters: "-", kind: "not-word", words: possessiveWords,
+  });
 }
 
 function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
@@ -60,12 +67,8 @@ function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
     return [];
   }
   return [
-    ...optionalFinalExceptionGuard(constraint.words, {
-      ignoredCharacters: "-",
-      kind: "not-word",
-      words: constraint.words,
-    }),
-    ...optionalFinalExceptionGuard(constraint.endings, {
+    ...exceptionWordGuard(constraint.words),
+    ...optionalExceptionGuard(constraint.endings, {
       endings: constraint.endings,
       kind: "not-word-ending",
     }),

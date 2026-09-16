@@ -31,6 +31,7 @@ import {
   type CompiledSymbol,
 } from "./symbol-program.js";
 import { traceGrade2 } from "./grade2-diagnostics.js";
+import { CURLY_APOSTROPHE } from "./grade1-runtime.js";
 import {
   decodeForeignLanguageBraille,
   NON_UEB_PASSAGE_INDICATOR,
@@ -441,6 +442,9 @@ const CAPITALS_INDICATORS = [
   CAPITAL_INDICATOR,
 ].sort((left, right) => right.length - left.length);
 const GRADE1_TOKENS: readonly DecodeToken[] = [
+  // Contextual U+2019 has both a quote edge (in the symbol program) and an
+  // apostrophe edge. Forward validation below rejects inapplicable readings.
+  { ...CURLY_APOSTROPHE, kind: "symbol" },
   ...GRADE1_ENTRIES.flatMap((entry): readonly DecodeToken[] => {
     const token = decodeToken(entry);
     return token === undefined ? [] : [token];
@@ -912,6 +916,12 @@ function decode(
           }
           break;
         case "symbol":
+          // Prune the contextual alias before it multiplies unrelated symbol
+          // paths. A curly apostrophe needs preceding letters or an opening
+          // context; complete forward validation still checks its right side.
+          if (token.print === CURLY_APOSTROPHE.print &&
+            token.braille === CURLY_APOSTROPHE.braille &&
+            !/(?:^|[\s([{‘“«]|\p{L}\p{M}*)$/u.test(path.print)) break;
           if (path.modifiers.length === 0 && path.capitals !== "next") {
             const typeformScopes = withTypeformOperand(
               path.typeformScopes,

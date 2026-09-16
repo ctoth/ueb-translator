@@ -4,6 +4,13 @@ import {
   type IcebRuleCitation,
 } from "./source.js";
 
+// Expand only reviewed, spelling-preserving suffixes. This is source data for
+// the cited restriction, not a general stemmer: arbitrary derivation can change
+// pronunciation or syllable boundaries (e.g. Monet versus monetary, 10.7.6).
+function family(base: string, suffixes: readonly string[]): readonly string[] {
+  return [base, ...suffixes.map((suffix) => base + suffix)];
+}
+
 export interface CompoundContractionExceptionSource {
   readonly citation: IcebRuleCitation<"10.3.1">;
   readonly contraction: "of" | "the";
@@ -16,7 +23,10 @@ export const COMPOUND_CONTRACTION_EXCEPTIONS: readonly CompoundContractionExcept
     citation: citeIceb("10.3.1"),
     contraction: "of",
     id: "UEB-10.3.1-of-compound-exception",
-    words: ["biofeedback", "microfilm", "microfilms", "twofold", "twofolds"],
+    words: [
+      "biofeedback", ...family("microfilm", ["s", "ed", "ing"]),
+      "twofold", "twofolds",
+    ],
   },
   {
     citation: citeIceb("10.3.1"),
@@ -38,13 +48,13 @@ export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContra
     citation: citeIceb("10.6.1"),
     contraction: "be",
     id: "UEB-10.6.1-be-syllable-exception",
-    words: ["bead", "beads", "beauty"],
+    words: [...family("bead", ["s", "ed", "ing"]), "beauty"],
   },
   {
     citation: citeIceb("10.6.1"),
     contraction: "con",
     id: "UEB-10.6.1-con-syllable-exception",
-    words: ["cone"],
+    words: family("cone", ["s"]),
   },
 ];
 
@@ -98,22 +108,29 @@ export const INITIAL_CONTRACTION_EXCEPTIONS: readonly InitialContractionExceptio
   ]),
   initialExceptions("10.7.5", "here", [
     "adhered", "bothered", "coherence", "elsewhere", "ethereal", "heredity",
-    "hereford",
+    "hereford", "hereditary",
   ]),
   initialExceptions("10.7.5", "name", [
-    "enamel", "ornament", "unamended", "vietnamese",
+    ...family("enamel", ["s", "ed", "ing", "led", "ling"]),
+    ...family("ornament", ["s", "ed", "ing", "al"]), "unamended", "vietnamese",
   ]),
   initialExceptions("10.7.6", "one", [
-    "anemone", "baroness", "baronet", "boone", "cantonese", "colonel",
+    ...family("anemone", ["s"]), "baroness", ...family("baronet", ["s"]),
+    "boone", "cantonese",
+    ...family("colonel", ["s"]),
     "conestoga", "crooner", "donegal", "erroneous", "hermione", "indonesia",
     "krone", "monet", "onerous", "phonetic", "pioneer", "poisoned", "rhône",
     "rooney", "sooner", "stoned",
   ]),
   initialExceptions("10.7.7", "some", [
-    "blossomed", "gasometer", "isometric", "ransomed", "somersault", "somerset",
+    "blossomed", ...family("gasometer", ["s"]), "isometric", "ransomed",
+    ...family("somersault", ["s", "ed", "ing"]), "somerset",
   ]),
   initialExceptions("10.7.8", "time", [
-    "altimeter", "centime", "centimeter", "mortimer", "multimedia", "sentiment",
+    ...family("altimeter", ["s"]), ...family("centime", ["s"]),
+    ...family("centimeter", ["s"]), "mortimer", "multimedia",
+    ...family("multimeter", ["s"]),
+    ...family("sentiment", ["s", "al", "ally", "ality"]),
   ]),
   initialExceptions("10.7.9", "under", [
     "flounder", "laundering", "saunders", "underived", "underogatory",
@@ -143,6 +160,6 @@ export const FINAL_GROUPSIGN_EXCEPTIONS: readonly FinalGroupsignExceptionSource[
     id: "UEB-10.8.4-ness-exception",
     words: [
       "captainess", "chieftainess", "citizeness", "heatheness", "villainess",
-    ],
+    ].flatMap((word) => family(word, ["es"])),
   },
 ];

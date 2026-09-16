@@ -569,15 +569,38 @@ function hasAsciiQuoteMaterial(unit: CompositionUnit | undefined): boolean {
     unit.kind !== "line-boundary";
 }
 
-/** Resolve straight quotation marks while retaining numeric inch notation. */
-export function resolveAsciiDoubleQuotes(
+/** Shared forward/inverse edge; context decides whether U+2019 is an apostrophe. */
+export const CURLY_APOSTROPHE: {
+  readonly braille: string;
+  readonly print: string;
+} = { braille: "⠄", print: "’" };
+
+/** Resolve contextual punctuation (ICEB 2024 7.6.6 and 7.6.13-15). */
+export function resolveContextualPunctuation(
   units: readonly CompositionUnit[],
 ): readonly (string | undefined)[] {
   let quotationOpen = false;
+  let singleQuotationDepth = 0;
   return units.map((unit, index) => {
-    if (unit.source !== "\"") return undefined;
     const previous = units[index - 1];
     const next = units[index + 1];
+    if (unit.source === "‘") singleQuotationDepth += 1;
+    if (unit.source === CURLY_APOSTROPHE.print) {
+      // Between letters, the right single quote is an apostrophe. A leading
+      // right quote before letters denotes elision; an unmatched trailing one
+      // after s is treated as a possessive. These last two are bounded heuristics
+      // under 7.6.13, not a claim to infer every dialectal omission.
+      if (next?.kind === "letter" && (
+        previous?.kind === "letter" || isAsciiQuoteOpeningContext(previous)
+      )) return CURLY_APOSTROPHE.braille;
+      if (singleQuotationDepth > 0) {
+        singleQuotationDepth -= 1;
+      } else if (previous?.source.toLowerCase() === "s") {
+        return CURLY_APOSTROPHE.braille;
+      }
+      return undefined;
+    }
+    if (unit.source !== "\"") return undefined;
 
     if (quotationOpen) {
       quotationOpen = false;
@@ -601,7 +624,7 @@ export function resolveAsciiDoubleQuotes(
 
 function translateUnits(units: readonly TranslatableUnit[]): string {
   let braille = "";
-  const asciiDoubleQuotes = resolveAsciiDoubleQuotes(units);
+  const punctuation = resolveContextualPunctuation(units);
   const baseModeUnits = units.map(unitModeClasses);
   const modeUnits = addContextClasses(units, baseModeUnits);
   const resolution = resolveModes(
@@ -613,7 +636,7 @@ function translateUnits(units: readonly TranslatableUnit[]): string {
   for (const [index, unit] of units.entries()) {
     braille +=
       (resolution.prefixes.get(index) ?? "") +
-      (asciiDoubleQuotes[index] ?? emittedUnit(unit)) +
+      (punctuation[index] ?? emittedUnit(unit)) +
       (resolution.suffixes.get(index) ?? "");
   }
   return braille;
