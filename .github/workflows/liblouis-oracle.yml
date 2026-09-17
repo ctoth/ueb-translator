@@ -1,6 +1,11 @@
 name: Liblouis oracle
 
 on:
+  workflow_call:
+    inputs:
+      replay-fuzz:
+        type: boolean
+        default: false
   pull_request:
   push:
 
@@ -93,6 +98,16 @@ jobs:
           set -euo pipefail
           mkdir -p .oracle-artifacts
           npm run oracle:corpus:check | tee .oracle-artifacts/corpus-sweep.jsonl
+
+      - name: Replay deterministic release fuzz cases
+        if: inputs.replay-fuzz == true
+        env:
+          LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
+          LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
+          # Replay the 100,000-case baseline adjudicated in d94cbdb.
+          ORACLE_FUZZ_SEED: "-679952479"
+          ORACLE_FUZZ_NUM_RUNS: "100000"
+        run: npm run oracle:fuzz
 
       - name: Retain empirical failure evidence
         if: failure()
