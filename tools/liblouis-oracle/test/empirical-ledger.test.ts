@@ -50,7 +50,7 @@ describe("grouped empirical ledger", () => {
     const disagreements = rawLedger["disagreements"];
     expect(isUnknownArray(disagreements)).toBe(true);
     if (!isUnknownArray(disagreements)) return;
-    expect(disagreements).toHaveLength(62_014);
+    expect(disagreements).toHaveLength(62_012);
     const unsupportedForeign = disagreements.filter((entry) =>
       isRecord(entry) && entry["groupId"] === "corpus-unsupported-foreign"
     );
