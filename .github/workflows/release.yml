@@ -1,6 +1,11 @@
 name: Release
 
 on:
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+      - .github/workflows/ci.yml
+      - .github/workflows/liblouis-oracle.yml
   push:
     tags:
       - 'v*'
@@ -23,6 +28,7 @@ jobs:
         with:
           node-version: 24
       - name: Validate stable release tag and main ancestry
+        if: github.event_name == 'push'
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
@@ -51,6 +57,7 @@ jobs:
       replay-fuzz: true
 
   publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     needs: [check, oracle]
     runs-on: ubuntu-latest
     permissions:

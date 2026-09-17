@@ -10,6 +10,9 @@ retained-corpus sweeps, and 100,000 fuzz cases with seed `20260917`.
 It builds and packs the package, publishes the tarball with provenance, checks
 the registry's integrity against that tarball, and creates a GitHub release.
 
+PRs changing these workflows also rehearse the CI and oracle jobs, including
+the fuzz replay. Tag validation and publishing run only for tag pushes.
+
 ## One-time npm setup
 
 In the npm package settings for `ueb-translator`, configure a GitHub Actions
