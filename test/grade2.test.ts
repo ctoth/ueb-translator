@@ -283,8 +283,9 @@ describe("translateGrade2", () => {
 
   it.each([
     ["b", "⠰⠃"],
-    ["ab", "⠰⠰⠁⠃"],
-    ["a al", "⠁⠀⠰⠰⠁⠇"],
+    ["ab", "⠰⠁⠃"],
+    ["a al", "⠁⠀⠰⠁⠇"],
+    ["a-ac", "⠁⠤⠰⠁⠉"],
     ["st", "⠎⠞"],
     ["3d", "⠼⠉⠰⠙"],
     ["page 10a", "⠏⠁⠛⠑⠀⠼⠁⠚⠰⠁"],
@@ -402,7 +403,10 @@ describe("translateGrade2", () => {
     (text) => {
       const result = translateGrade2(text);
       expect(result.ok).toBe(true);
-      if (result.ok) expect(result.braille.startsWith("⠰⠰")).toBe(true);
+      if (result.ok) {
+        expect(result.braille.startsWith("⠰")).toBe(true);
+        expect(result.braille.startsWith("⠰⠰")).toBe(false);
+      }
     },
   );
 
@@ -500,7 +504,7 @@ describe("translateGrade2", () => {
     ["v')", "⠰⠧⠄⠐⠜"],
     ["'v'", "⠄⠰⠧⠄"],
     ["v''", "⠰⠧⠄⠄"],
-    ["ab'", "⠰⠰⠁⠃⠄"],
+    ["ab'", "⠰⠁⠃⠄"],
     ["'v's'", "⠄⠰⠧⠄⠎⠄"],
     ["a'", "⠁⠄"],
     ["t'night", "⠞⠄⠝⠊⠣⠞"],
@@ -615,7 +619,7 @@ describe("translateGrade2", () => {
 
   it("applies derived Grade 1 guards to each joined component", () => {
     expect(translateGrade2("ab-cd")).toEqual({
-      braille: "⠰⠰⠁⠃⠤⠰⠰⠉⠙",
+      braille: "⠰⠁⠃⠤⠰⠉⠙",
       mode: "grade2",
       ok: true,
     });

@@ -431,13 +431,9 @@ export function compose(
                 bucketAlphabet,
               )
             ) {
-              const hasCapital = units.slice(range.start, range.end)
-                .some((unit) => unit.kind === "letter" && unit.uppercase);
-              const requiredEnd = hasCapital ? range.start + 1 : range.end;
-              for (let index = range.start; index < requiredEnd; index += 1) {
-                requiredValue(units[index], "Missing lexical unit.");
-                required.add(index);
-              }
+              // UEB 10.9.7: one symbol indicator disambiguates a whole
+              // shortform spelling; the remaining letters need no grade 1 mode.
+              required.add(range.start);
               continue;
             }
             if (
