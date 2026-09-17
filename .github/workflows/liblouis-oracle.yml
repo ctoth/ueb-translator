@@ -100,5 +100,6 @@ jobs:
         with:
           name: empirical-oracle-${{ github.run_id }}-${{ github.run_attempt }}
           path: .oracle-artifacts/
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 90
