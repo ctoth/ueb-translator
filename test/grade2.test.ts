@@ -511,6 +511,24 @@ describe("translateGrade2", () => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
+  // ICEB 2024 10.4.1–10.4.2 and 10.12.12: an internal apostrophe
+  // does not make each letters-sequence an independent word.
+  it.each([
+    ["a'sh", "⠁⠄⠩"],
+    ["a'ch", "⠁⠄⠡"],
+    ["a'th", "⠁⠄⠹"],
+    ["a'wh", "⠁⠄⠱"],
+    ["a'ou", "⠁⠄⠳"],
+    ["a'st", "⠁⠄⠌"],
+    ["th'n", "⠹⠄⠝"],
+    ["sh", "⠎⠓"],
+    ["'sh'", "⠄⠎⠓⠄"],
+    ["th'", "⠞⠓⠄"],
+    ["sh's", "⠎⠓⠄⠎"],
+  ] as const)("uses groupsigns within apostrophe words in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it("treats a CRLF unit as a standing boundary", () => {
     expect(translateGrade2("can\r\nbut")).toEqual({
       braille: "⠉\r\n⠃",

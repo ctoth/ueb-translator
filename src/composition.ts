@@ -440,7 +440,16 @@ export function compose(
               }
               continue;
             }
-            if (standing && standingLiteralInputs.has(exact)) {
+            if (
+              standing && standingLiteralInputs.has(exact) &&
+              isCompleteAmbiguityLiteral(
+                units,
+                range,
+                component,
+                policies,
+                bucketAlphabet,
+              )
+            ) {
               continue;
             }
             const lowerContext = lowerSignContext(units, range, policies);
