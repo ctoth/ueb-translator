@@ -283,8 +283,9 @@ describe("translateGrade2", () => {
 
   it.each([
     ["b", "⠰⠃"],
-    ["ab", "⠰⠰⠁⠃"],
-    ["a al", "⠁⠀⠰⠰⠁⠇"],
+    ["ab", "⠰⠁⠃"],
+    ["a al", "⠁⠀⠰⠁⠇"],
+    ["a-ac", "⠁⠤⠰⠁⠉"],
     ["st", "⠎⠞"],
     ["3d", "⠼⠉⠰⠙"],
     ["page 10a", "⠏⠁⠛⠑⠀⠼⠁⠚⠰⠁"],
@@ -311,6 +312,26 @@ describe("translateGrade2", () => {
     if (result.ok) {
       expect(result.rules.map((rule) => rule.print)).not.toContain("ed");
     }
+  });
+
+  // ICEB 8.3.2 and 10.4.1: retain groupsigns inside a capitalization
+  // span when a larger contraction would cross an interior indicator.
+  it.each([
+    ["ThAt", "⠠⠹⠠⠁⠞"],
+    ["ChIlD", "⠠⠡⠠⠊⠇⠠⠙"],
+  ] as const)("selects an eligible contraction within %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.6.6 prohibits ea/bb/cc/ff/gg beside capitals indicators.
+  it.each([
+    ["AaEaA", "⠠⠁⠁⠠⠑⠁⠠⠁"],
+    ["AaGgA", "⠠⠁⠁⠠⠛⠛⠠⠁"],
+    ["SeaWorld", "⠠⠎⠑⠁⠠⠸⠺"],
+    ["EggHead", "⠠⠑⠛⠛⠠⠓⠂⠙"],
+    ["aEaa", "⠁⠠⠑⠁⠁"],
+  ] as const)("does not use internal lower groupsigns beside capitals in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
   it("uses full lexical coordinates for contractions after an apostrophe", () => {
@@ -386,12 +407,12 @@ describe("translateGrade2", () => {
 
   it("keeps letters outside the contraction program alphabet as span breaks", () => {
     expect(translateGrade2("de:Tornados hinterließen")).toEqual({
-      braille: "⠙⠑⠒⠠⠞⠕⠗⠝⠁⠙⠕⠎⠀⠓⠔⠞⠻⠇⠊⠑⠨⠮⠑⠝",
+      braille: "⠙⠑⠒⠠⠞⠕⠗⠝⠁⠙⠕⠎⠀⠓⠔⠞⠻⠇⠊⠑⠨⠮⠢",
       mode: "grade2",
       ok: true,
     });
     expect(translateGrade2("Roßberg")).toEqual({
-      braille: "⠠⠗⠕⠨⠮⠃⠑⠗⠛",
+      braille: "⠠⠗⠕⠨⠮⠃⠻⠛",
       mode: "grade2",
       ok: true,
     });
@@ -402,7 +423,10 @@ describe("translateGrade2", () => {
     (text) => {
       const result = translateGrade2(text);
       expect(result.ok).toBe(true);
-      if (result.ok) expect(result.braille.startsWith("⠰⠰")).toBe(true);
+      if (result.ok) {
+        expect(result.braille.startsWith("⠰")).toBe(true);
+        expect(result.braille.startsWith("⠰⠰")).toBe(false);
+      }
     },
   );
 
@@ -435,20 +459,20 @@ describe("translateGrade2", () => {
     if (result.ok) expect(result.rules).toEqual([]);
   });
 
-  it("continues capitals word mode through apostrophes in both grades", () => {
+  it("ends capitals word mode at apostrophes in both grades (UEB 8.4.2)", () => {
     const expected = {
-      braille: "⠠⠠⠙⠕⠝⠄⠞",
+      braille: "⠠⠠⠙⠕⠝⠄⠠⠞",
       ok: true,
     } as const;
     expect(translateGrade1("DON'T")).toMatchObject({ ...expected, mode: "grade1" });
     expect(translateGrade2("DON'T")).toMatchObject({ ...expected, mode: "grade2" });
     expect(translateGrade1("O'NEIL'S")).toMatchObject({
-      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      braille: "⠠⠕⠄⠠⠠⠝⠑⠊⠇⠄⠠⠎",
       mode: "grade1",
       ok: true,
     });
     expect(translateGrade2("O'NEIL'S")).toMatchObject({
-      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      braille: "⠠⠕⠄⠠⠠⠝⠑⠊⠇⠄⠠⠎",
       mode: "grade2",
       ok: true,
     });
@@ -463,7 +487,7 @@ describe("translateGrade2", () => {
       expect(uppercase.ok).toBe(true);
       if (lowercase.ok && uppercase.ok) {
         expect(lowercase.braille).not.toBe(uppercase.braille);
-        expect(uppercase.braille).toBe("⠠⠠⠁⠃⠄⠉");
+        expect(uppercase.braille).toBe("⠠⠠⠁⠃⠄⠠⠉");
       }
     },
   );
@@ -487,6 +511,88 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
+  });
+
+  // ICEB 2024 §§2.6.2–2.6.3 and 5.7: outer apostrophes do not
+  // remove standing-alone ambiguity protection. t' and X' are source examples;
+  // the remaining cases apply the same rule to letters and shortform spellings.
+  it.each([
+    ["t'", "⠰⠞⠄"],
+    ["X'", "⠰⠠⠭⠄"],
+    ["(v'", "⠐⠣⠰⠧⠄"],
+    ["v' ", "⠰⠧⠄⠀"],
+    ["v')", "⠰⠧⠄⠐⠜"],
+    ["'v'", "⠄⠰⠧⠄"],
+    ["v''", "⠰⠧⠄⠄"],
+    ["ab'", "⠰⠁⠃⠄"],
+    ["'v's'", "⠄⠰⠧⠄⠎⠄"],
+    ["a'", "⠁⠄"],
+    ["t'night", "⠞⠄⠝⠊⠣⠞"],
+    ["v'a", "⠧⠄⠁"],
+    ["av'", "⠁⠧⠄"],
+    ["v'/a", "⠧⠄⠸⠌⠁"],
+  ] as const)("preserves apostrophe standing-alone context in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 2024 10.4.1–10.4.2 and 10.12.12: an internal apostrophe
+  // does not make each letters-sequence an independent word.
+  it.each([
+    ["a'sh", "⠁⠄⠩"],
+    ["a'ch", "⠁⠄⠡"],
+    ["a'th", "⠁⠄⠹"],
+    ["a'wh", "⠁⠄⠱"],
+    ["a'ou", "⠁⠄⠳"],
+    ["a'st", "⠁⠄⠌"],
+    ["th'n", "⠹⠄⠝"],
+    ["sh", "⠎⠓"],
+    ["'sh'", "⠄⠎⠓⠄"],
+    ["th'", "⠞⠓⠄"],
+    ["sh's", "⠎⠓⠄⠎"],
+  ] as const)("uses groupsigns within apostrophe words in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.4.3 and 10.8.1 retain context outside the matchable letters.
+  it.each([
+    ["OK'd", "⠠⠠⠕⠅⠄⠙"],
+    ["OK'ing", "⠠⠠⠕⠅⠄⠬"],
+    ["Ch'ing", "⠠⠡⠄⠬"],
+    ["'distributed'", "⠄⠲⠞⠗⠊⠃⠥⠞⠫⠄"],
+    ["'dishonesty'", "⠄⠲⠓⠐⠕⠌⠽⠄"],
+    ["can't—“", "⠉⠄⠞⠐⠠⠤⠦"],
+    ["'bend'", "⠄⠃⠢⠙⠄"],
+    ["'bedrock'", "⠄⠃⠫⠗⠕⠉⠅⠄"],
+    ["'bedroom'", "⠄⠃⠫⠗⠕⠕⠍⠄"],
+    ["'beating'", "⠄⠃⠂⠞⠬⠄"],
+    ["'best'", "⠄⠃⠑⠌⠄"],
+    ["'Benfica'", "⠄⠠⠃⠢⠋⠊⠉⠁⠄"],
+    ["'Conan'", "⠄⠠⠉⠕⠝⠁⠝⠄"],
+    ["'bed'", "⠄⠃⠫⠄"],
+    ["'better'", "⠄⠃⠑⠞⠞⠻⠄"],
+    ["'beep'", "⠄⠃⠑⠑⠏⠄"],
+    ["'Bear'", "⠄⠠⠃⠑⠜⠄"],
+    ["'Belfast'", "⠄⠠⠃⠑⠇⠋⠁⠌⠄"],
+    ["'ing", "⠄⠔⠛"],
+    ["a-ing", "⠁⠤⠔⠛"],
+    ["déchéance", "⠙⠘⠌⠑⠡⠘⠌⠑⠨⠑"],
+    ["Féin\".", "⠠⠋⠘⠌⠑⠔⠴⠲"],
+  ] as const)("uses lexical context across contraction ranges in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.1.2 and 10.2.2 allow only the listed apostrophe endings.
+  it.each([
+    ["sd'but", "⠎⠙⠄⠃⠥⠞"],
+    ["so'dgkztbclkkzf", "⠎⠕⠄⠙⠛⠅⠵⠞⠃⠉⠇⠅⠅⠵⠋"],
+    ["ufydz'as", "⠥⠋⠽⠙⠵⠄⠁⠎"],
+    ["t'do", "⠞⠄⠙⠕"],
+    ["more'n", "⠍⠕⠗⠑⠄⠝"],
+    ["can't", "⠉⠄⠞"],
+    ["you'll", "⠽⠄⠇⠇"],
+    ["child's", "⠡⠄⠎"],
+  ] as const)("limits wordsigns in apostrophe words in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
   it("treats a CRLF unit as a standing boundary", () => {
@@ -575,7 +681,7 @@ describe("translateGrade2", () => {
 
   it("applies derived Grade 1 guards to each joined component", () => {
     expect(translateGrade2("ab-cd")).toEqual({
-      braille: "⠰⠰⠁⠃⠤⠰⠰⠉⠙",
+      braille: "⠰⠁⠃⠤⠰⠉⠙",
       mode: "grade2",
       ok: true,
     });

@@ -29,7 +29,7 @@ export const COMPOSITION_POLICY_RULES: readonly CompositionPolicySource[] = [
   {
     citation: citeIceb("2.6"),
     id: "UEB-policy-opening-standing-punctuation",
-    members: Array.from("([{“‘\"'«"),
+    members: Array.from("([{“‘’\"'«"),
     name: "openingStandingPunctuation",
   },
   {

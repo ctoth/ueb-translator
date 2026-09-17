@@ -18,7 +18,7 @@ jobs:
     env:
       LIBLOUIS_VERSION: "3.38.0"
       LIBLOUIS_SHA256: "afb26096b18b17f43e6055e6a79ce0058eb9dbdcdcc4597522dcd7f11915ec16"
-      ORACLE_FUZZ_NUM_RUNS: "10000"
+      ORACLE_FUZZ_NUM_RUNS: "100000"
       ORACLE_FUZZ_RESULT: .oracle-artifacts/fuzz-result.json
 
     steps:
@@ -66,6 +66,7 @@ jobs:
         with:
           name: oracle-fuzz-${{ github.run_id }}-${{ github.run_attempt }}
           path: .oracle-artifacts/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
 

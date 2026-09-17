@@ -248,9 +248,23 @@ function isCompleteAmbiguityLiteral(
   policies: CompositionPolicies,
   bucketAlphabet: readonly string[],
 ): boolean {
-  if (range.start !== component.start) return false;
-  if (range.end === component.end) return true;
-  if (range.end + 2 !== component.end) return false;
+  // UEB 2.6.2–2.6.3: outer punctuation preserves standing alone,
+  // even when an apostrophe was included in the lexical component.
+  let start = component.start;
+  let end = component.end;
+  while (
+    start < range.start &&
+    isOneOf(requiredValue(units[start], "Missing leading unit.").source,
+      policies.openingStandingPunctuation)
+  ) start += 1;
+  while (
+    end > range.end &&
+    isOneOf(requiredValue(units[end - 1], "Missing trailing unit.").source,
+      policies.closingStandingPunctuation)
+  ) end -= 1;
+  if (range.start !== start) return false;
+  if (range.end === end) return true;
+  if (range.end + 2 !== end) return false;
   const apostrophe = units[range.end];
   const suffix = units[range.end + 1];
   return apostrophe?.kind === "symbol" &&
@@ -395,12 +409,12 @@ export function compose(
         );
         const standingLiteralInputs = new Set(contractions.standingLiteralInputs);
         for (const lexical of lexicalRanges(units, policies)) {
-          const standing = options.standing ?? standingAt(units, lexical, policies);
           const eligibilityWord = units.slice(lexical.start, lexical.end)
             .map((unit) => eligibilityCharacter(unit, policies, bucketAlphabet))
             .join("");
           for (const range of contractionRanges(units, lexical, bucketAlphabet)) {
             const component = dashComponentAt(units, lexical, range, policies);
+            const standing = options.standing ?? standingAt(units, component, policies);
             const programLiteralComponent = hasOnlyProgramLiteralLetters(
               units,
               component,
@@ -417,16 +431,21 @@ export function compose(
                 bucketAlphabet,
               )
             ) {
-              const hasCapital = units.slice(range.start, range.end)
-                .some((unit) => unit.kind === "letter" && unit.uppercase);
-              const requiredEnd = hasCapital ? range.start + 1 : range.end;
-              for (let index = range.start; index < requiredEnd; index += 1) {
-                requiredValue(units[index], "Missing lexical unit.");
-                required.add(index);
-              }
+              // UEB 10.9.7: one symbol indicator disambiguates a whole
+              // shortform spelling; the remaining letters need no grade 1 mode.
+              required.add(range.start);
               continue;
             }
-            if (standing && standingLiteralInputs.has(exact)) {
+            if (
+              standing && standingLiteralInputs.has(exact) &&
+              isCompleteAmbiguityLiteral(
+                units,
+                range,
+                component,
+                policies,
+                bucketAlphabet,
+              )
+            ) {
               continue;
             }
             const lowerContext = lowerSignContext(units, range, policies);
@@ -463,6 +482,9 @@ export function compose(
                 hasRestrictingLowerPunctuation:
                   lowerContext.hasRestrictingLowerPunctuation,
                 hasUpperPunctuation: lowerContext.hasUpperPunctuation,
+                atWordStart: !units.slice(component.start, range.start)
+                  .some((unit) => unit.kind === "letter"),
+                precededByLetter: units[range.start - 1]?.kind === "letter",
                 standing: standing && programLiteralComponent,
                 word,
               },
@@ -472,6 +494,27 @@ export function compose(
                 /* v8 ignore next -- the literal callback receives a character in word. */
                 return unit === undefined ? "" : emitCompositionUnit(unit);
               },
+              (candidate) => {
+                const appliedRange = {
+                  end: range.start + candidate.end,
+                  start: range.start + candidate.start,
+                };
+                const initialLowerGroupsign = candidate.print === "be" ||
+                  candidate.print === "con" || candidate.print === "dis";
+                const internalLowerGroupsign = ["ea", "bb", "cc", "ff", "gg"]
+                  .includes(candidate.print);
+                return (!initialLowerGroupsign || !units.slice(component.start, appliedRange.start)
+                  .some((unit) => unit.kind === "letter")) &&
+                  contractionModePlan !== undefined &&
+                  (!internalLowerGroupsign || (
+                    !contractionModePlan.prefixes.has(appliedRange.start) &&
+                    !contractionModePlan.suffixes.has(appliedRange.start - 1)
+                  )) && canCollapseModeSpan(
+                    contractionModePlan,
+                    appliedRange,
+                    initialLowerGroupsign || internalLowerGroupsign,
+                  );
+              },
             );
             for (const applied of translated.rules) {
               const start = range.start + applied.start;
@@ -479,21 +522,9 @@ export function compose(
               const rule = contractions.rules[applied.ruleIndex];
               /* v8 ignore next -- applied rules originate in this program. */
               if (rule === undefined) continue;
-              const appliedRange = { end, start };
-              const initialLowerGroupsign = applied.print === "be" ||
-                applied.print === "con" || applied.print === "dis";
-              if (
-                (initialLowerGroupsign && appliedRange.start !== component.start) ||
-                contractionModePlan === undefined ||
-                !canCollapseModeSpan(
-                  contractionModePlan,
-                  appliedRange,
-                  initialLowerGroupsign,
-                )
-              ) continue;
               emissions[start] = rule[0];
               for (let index = start + 1; index < end; index += 1) emissions[index] = "";
-              collapsedRanges.push(appliedRange);
+              collapsedRanges.push({ end, start });
               rules.push({
                 ...applied,
                 end: (options.globalOffset ?? 0) + (offsets[end] ?? text.length),

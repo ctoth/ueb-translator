@@ -7,6 +7,7 @@ import type { CompiledSymbol, SymbolProgram } from "../src/symbol-program.js";
 import type { CompositionPolicies } from "../src/composition.js";
 
 interface LoadedCompilation {
+  readonly initialElisionWords: readonly string[];
   readonly classIds: Readonly<Record<string, number>>;
   readonly modeIds: Readonly<Record<string, number>>;
   readonly modeRuleIds: readonly string[];
@@ -128,11 +129,16 @@ function loadCompilation(imported: unknown): LoadedCompilation {
   const modes = imported["GRADE1_MODE_COMPILATION"];
   const policies = imported["COMPOSITION_POLICY_COMPILATION"];
   const symbols = imported["GRADE1_SYMBOL_COMPILATION"];
+  const initialElisionWords: unknown = imported["INITIAL_ELISION_WORDS"];
+  if (!Array.isArray(initialElisionWords) || !initialElisionWords.every(
+    (word): word is string => typeof word === "string" && /^[a-z]+$/u.test(word),
+  )) throw new Error("Compiled initial elision dictionary is malformed.");
   if (!isRecord(modes) || !isRecord(policies) || !isRecord(symbols)) {
     throw new Error("Compiled Grade 1 module lacks its compilations.");
   }
   return {
     classIds: idObject(modes["classIds"], "class"),
+    initialElisionWords,
     modeIds: idObject(modes["modeIds"], "mode"),
     modeRuleIds: provenanceIds(modes["provenance"], "mode"),
     modes: modeProgram(modes["runtime"]),
@@ -149,6 +155,7 @@ function generatedProgram(compilation: LoadedCompilation): string {
     'import type { CompositionPolicies } from "../../composition.js";\n' +
     'import type { SymbolProgram } from "../../symbol-program.js";\n' +
     'type UebProgram<Program> = Program & { readonly code: "ueb-2024" };\n' +
+    `export const INITIAL_ELISION_WORDS: readonly string[] = ${JSON.stringify(compilation.initialElisionWords)};\n` +
     `export const GRADE1_MODE_PROGRAM: UebProgram<ModeProgram> = ${JSON.stringify({ code: "ueb-2024", ...compilation.modes }, undefined, 2)};\n` +
     `export const UEB_COMPOSITION_POLICIES: UebProgram<CompositionPolicies> = ${JSON.stringify({ code: "ueb-2024", ...compilation.policies }, undefined, 2)};\n` +
     `export const GRADE1_SYMBOL_PROGRAM: UebProgram<SymbolProgram> = ${JSON.stringify({ code: "ueb-2024", ...compilation.symbols }, undefined, 2)};\n` +

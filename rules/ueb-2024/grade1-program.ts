@@ -12,3 +12,4 @@ export const GRADE1_MODE_COMPILATION: ModeCompilationResult = compileModes(MODE_
 export const COMPOSITION_POLICY_COMPILATION: CompositionPolicyCompilation =
   compileCompositionPolicies(COMPOSITION_POLICY_RULES);
 export const GRADE1_SYMBOL_COMPILATION: SymbolCompilationResult = compileSymbols(SYMBOL_RULES);
+export { INITIAL_ELISION_WORDS } from "./apostrophes.js";

@@ -156,6 +156,9 @@ export interface ContextualTransducerInput {
   readonly hasLowerPunctuation: boolean;
   readonly hasRestrictingLowerPunctuation: boolean;
   readonly hasUpperPunctuation: boolean;
+  /** Context before this matchable letter range, including modified letters. */
+  readonly precededByLetter?: boolean;
+  readonly atWordStart?: boolean;
   readonly standing: boolean;
   readonly word: string;
 }
@@ -281,9 +284,9 @@ function guardAllows(
     case 8:
       return end !== context.word.length;
     case 9:
-      return start !== 0;
+      return start !== 0 || context.atWordStart === false;
     case 10:
-      return start !== 0 || end !== context.word.length;
+      return start !== 0 || end !== context.word.length || context.precededByLetter === true;
     case 11: {
       const operand = operandAt(program, guard[1]);
       return start === 0 || !operand.includes(context.word.charAt(start - 1));
@@ -302,6 +305,14 @@ function guardAllows(
       const following = context.word.charAt(end);
       return following !== "" && operandAt(program, guard[1]).includes(following);
     }
+    case 18: {
+      const affixes = operandAt(program, guard[1]).split("\u0000");
+      return [eligibilityWord, ...context.exclusionWords].some((word) =>
+        word === print || affixes.some((affix) => word === print + affix)
+      );
+    }
+    case 19:
+      return start !== 0 || context.precededByLetter === true;
   }
 }
 
@@ -403,6 +414,7 @@ export function runContextualTransducer(
   program: ContextualTransducerProgram,
   context: ContextualTransducerInput,
   literalCell: (character: string) => string,
+  canApply: (rule: ContextualAppliedRule) => boolean = () => true,
 ): ContextualTransduction {
   const best: (BestPath | undefined)[] = Array.from(
     { length: context.word.length + 1 },
@@ -419,6 +431,12 @@ export function runContextualTransducer(
   for (let start = context.word.length - 1; start >= 0; start -= 1) {
     let selected: BestPath | undefined;
     for (const candidate of candidatesAt(program, context, start, literalCell)) {
+      if (candidate.ruleIndex !== undefined && !canApply({
+        end: candidate.end,
+        print: candidate.print,
+        ruleIndex: candidate.ruleIndex,
+        start,
+      })) continue;
       const suffix = best[candidate.end];
       /* v8 ignore next -- the literal edge makes every suffix reachable. */
       if (suffix === undefined) {

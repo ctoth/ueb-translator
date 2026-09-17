@@ -103,6 +103,8 @@ export function compileGrade2RuleGuards(
     case "alphabetic-wordsign":
     case "strong-wordsign":
       return [
+        // ICEB 10.1.2 and 10.2.2: only these apostrophe endings retain wordsigns.
+        { kind: "word-with-affixes", affixes: ["'d", "'ll", "'re", "'s", "'t", "'ve"] },
         { kind: "standing-alone" },
         { kind: "word-start" },
         { kind: "word-end" },
@@ -174,7 +176,7 @@ export function compileGrade2RuleGuards(
           boundaries: ["braille-line", "compound", "syllable"],
           kind: "not-crossing",
         },
-        { kind: "not-word-start" },
+        { kind: "preceded-by-letter" },
       ];
   }
 }

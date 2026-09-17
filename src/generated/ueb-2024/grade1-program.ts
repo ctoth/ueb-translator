@@ -3,6 +3,7 @@ import type { ModeProgram } from "../../mode-engine.js";
 import type { CompositionPolicies } from "../../composition.js";
 import type { SymbolProgram } from "../../symbol-program.js";
 type UebProgram<Program> = Program & { readonly code: "ueb-2024" };
+export const INITIAL_ELISION_WORDS: readonly string[] = ["cause","em","n","s","tis","twas","twere","twill","twould"];
 export const GRADE1_MODE_PROGRAM: UebProgram<ModeProgram> = {
   "code": "ueb-2024",
   "modes": [
@@ -16,7 +17,7 @@ export const GRADE1_MODE_PROGRAM: UebProgram<ModeProgram> = {
       7,
       3,
       4,
-      256
+      0
     ],
     [
       [
@@ -110,7 +111,7 @@ export const UEB_COMPOSITION_POLICIES: UebProgram<CompositionPolicies> = {
   "dashJoiners": "–—-",
   "elisionPunctuation": "'’",
   "lowerPunctuation": ",;:.…!?\"'“”‘’–—-",
-  "openingStandingPunctuation": "([{“‘\"'«",
+  "openingStandingPunctuation": "([{“‘’\"'«",
   "standingBoundaries": " \n\r–—-"
 };
 export const GRADE1_SYMBOL_PROGRAM: UebProgram<SymbolProgram> = {
@@ -1228,6 +1229,5 @@ export const GRADE1_MODE_CLASS_IDS = {
   "numeric-punctuation": 4,
   "sequence-boundary": 5,
   "typeformed": 6,
-  "uppercase-letter": 7,
-  "capitals-continuation": 8
+  "uppercase-letter": 7
 };

@@ -14,6 +14,7 @@ import {
   GRADE1_MODE_IDS,
   GRADE1_MODE_PROGRAM,
   GRADE1_SYMBOL_PROGRAM,
+  INITIAL_ELISION_WORDS,
 } from "./generated/ueb-2024/grade1-program.js";
 import {
   activeModeBefore,
@@ -285,58 +286,6 @@ function unitModeClasses(unit: TranslatableUnit): ModeUnit {
   }
 }
 
-function capitalsContinuesAt(
-  units: readonly TranslatableUnit[],
-  index: number,
-): boolean {
-  const unit = units[index];
-  if (
-    unit?.kind !== "symbol" ||
-    (unit.source !== "'" && unit.source !== "’") ||
-    units[index - 1]?.kind !== "letter" ||
-    units[index + 1]?.kind !== "letter"
-  ) return false;
-
-  let uppercaseBefore = 0;
-  for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
-    const previous = units[cursor];
-    if (previous?.kind === "letter" && previous.uppercase) {
-      uppercaseBefore += 1;
-      continue;
-    }
-    if (
-      previous?.kind === "symbol" &&
-      (previous.source === "'" || previous.source === "’")
-    ) continue;
-    break;
-  }
-  if (uppercaseBefore >= 2) return true;
-
-  let start = index - 1;
-  while (start > 0) {
-    const previous = units[start - 1];
-    if (
-      previous?.kind === "letter" ||
-      (previous?.kind === "symbol" &&
-        (previous.source === "'" || previous.source === "’"))
-    ) start -= 1;
-    else break;
-  }
-  let end = index + 1;
-  while (end + 1 < units.length) {
-    const following = units[end + 1];
-    if (
-      following?.kind === "letter" ||
-      (following?.kind === "symbol" &&
-        (following.source === "'" || following.source === "’"))
-    ) end += 1;
-    else break;
-  }
-  return units.slice(start, end + 1).every(
-    (member) => member.kind !== "letter" || member.uppercase,
-  );
-}
-
 function unsupported(token: ScalarToken): Grade1UnsupportedCharacter {
   return {
     character: token.value,
@@ -507,10 +456,7 @@ function addContextClasses(
         unit.source === "?" &&
         questionMarkNeedsGrade1(previous));
     return modeUnit |
-      (grade1Required ? classMask(GRADE1_MODE_CLASS_IDS["grade1-required"]) : 0) |
-      (capitalsContinuesAt(units, index)
-        ? classMask(GRADE1_MODE_CLASS_IDS["capitals-continuation"])
-        : 0);
+      (grade1Required ? classMask(GRADE1_MODE_CLASS_IDS["grade1-required"]) : 0);
   });
 }
 
@@ -569,6 +515,19 @@ function hasAsciiQuoteMaterial(unit: CompositionUnit | undefined): boolean {
     unit.kind !== "line-boundary";
 }
 
+function isAsciiQuoteClosingContext(
+  units: readonly CompositionUnit[],
+  index: number,
+): boolean {
+  let end = index + 1;
+  let next = units[end];
+  while (next?.kind === "symbol" && ",;:.!?)]}'’”".includes(next.source)) {
+    end += 1;
+    next = units[end];
+  }
+  return !hasAsciiQuoteMaterial(next);
+}
+
 /** Shared forward/inverse edge; context decides whether U+2019 is an apostrophe. */
 export const CURLY_APOSTROPHE: {
   readonly braille: string;
@@ -581,18 +540,29 @@ export function resolveContextualPunctuation(
 ): readonly (string | undefined)[] {
   let quotationOpen = false;
   let singleQuotationDepth = 0;
+  let elisionEnd = -1;
   return units.map((unit, index) => {
     const previous = units[index - 1];
     const next = units[index + 1];
     if (unit.source === "‘") singleQuotationDepth += 1;
     if (unit.source === CURLY_APOSTROPHE.print) {
-      // Between letters, the right single quote is an apostrophe. A leading
-      // right quote before letters denotes elision; an unmatched trailing one
-      // after s is treated as a possessive. These last two are bounded heuristics
-      // under 7.6.13, not a claim to infer every dialectal omission.
-      if (next?.kind === "letter" && (
-        previous?.kind === "letter" || isAsciiQuoteOpeningContext(previous)
-      )) return CURLY_APOSTROPHE.braille;
+      if (index === elisionEnd ||
+        (next?.kind === "letter" && previous?.kind === "letter")) {
+        return CURLY_APOSTROPHE.braille;
+      }
+      if (next?.kind === "letter" && isAsciiQuoteOpeningContext(previous)) {
+        let end = index + 1;
+        while (units[end]?.kind === "letter") end += 1;
+        const word = units.slice(index + 1, end).map((part) => part.source).join("")
+          .toLowerCase();
+        if (INITIAL_ELISION_WORDS.includes(word)) {
+          elisionEnd = end;
+          return CURLY_APOSTROPHE.braille;
+        }
+        // UEB 7.6.15: absent a dictionary elision, a leading mark is a quote.
+        singleQuotationDepth += 1;
+        return "⠠⠦";
+      }
       if (singleQuotationDepth > 0) {
         singleQuotationDepth -= 1;
       } else if (previous?.source.toLowerCase() === "s") {
@@ -616,7 +586,7 @@ export function resolveContextualPunctuation(
     if (
       previous?.kind !== "digit" &&
       hasAsciiQuoteMaterial(previous) &&
-      !hasAsciiQuoteMaterial(next)
+      isAsciiQuoteClosingContext(units, index)
     ) return "⠴";
     return undefined;
   });
