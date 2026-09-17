@@ -248,9 +248,23 @@ function isCompleteAmbiguityLiteral(
   policies: CompositionPolicies,
   bucketAlphabet: readonly string[],
 ): boolean {
-  if (range.start !== component.start) return false;
-  if (range.end === component.end) return true;
-  if (range.end + 2 !== component.end) return false;
+  // UEB 2.6.2–2.6.3: outer punctuation preserves standing alone,
+  // even when an apostrophe was included in the lexical component.
+  let start = component.start;
+  let end = component.end;
+  while (
+    start < range.start &&
+    isOneOf(requiredValue(units[start], "Missing leading unit.").source,
+      policies.openingStandingPunctuation)
+  ) start += 1;
+  while (
+    end > range.end &&
+    isOneOf(requiredValue(units[end - 1], "Missing trailing unit.").source,
+      policies.closingStandingPunctuation)
+  ) end -= 1;
+  if (range.start !== start) return false;
+  if (range.end === end) return true;
+  if (range.end + 2 !== end) return false;
   const apostrophe = units[range.end];
   const suffix = units[range.end + 1];
   return apostrophe?.kind === "symbol" &&
