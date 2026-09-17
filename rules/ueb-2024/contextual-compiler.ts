@@ -34,7 +34,8 @@ export type ContextualRuleGuard =
   | { readonly kind: "standing-alone" }
   | { readonly kind: "word-end" }
   | { readonly kind: "word-internal" }
-  | { readonly kind: "word-start" };
+  | { readonly kind: "word-start" }
+  | { readonly kind: "word-with-affixes"; readonly affixes: readonly string[] };
 
 export interface ContextualRuleSource {
   readonly braille: string;
@@ -155,6 +156,8 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
       return [[...guard.words].sort(compareText).join("\u0000"), guard.ignoredCharacters];
     case "not-word-ending":
       return [[...guard.endings].sort(compareText).join("\u0000")];
+    case "word-with-affixes":
+      return [[...guard.affixes].sort(compareText).join("\u0000")];
     case "first-syllable":
     case "lower-sign":
     case "not-boundary":
@@ -235,6 +238,8 @@ function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
       return CONTEXTUAL_GUARD_SCHEMA.wordInternal.opcode;
     case "word-start":
       return CONTEXTUAL_GUARD_SCHEMA.wordStart.opcode;
+    case "word-with-affixes":
+      return CONTEXTUAL_GUARD_SCHEMA.wordWithAffixes.opcode;
   }
 }
 
@@ -322,6 +327,11 @@ function compileGuard(
       return [CONTEXTUAL_GUARD_SCHEMA.wordInternal.opcode];
     case "word-start":
       return [CONTEXTUAL_GUARD_SCHEMA.wordStart.opcode];
+    case "word-with-affixes":
+      return [CONTEXTUAL_GUARD_SCHEMA.wordWithAffixes.opcode, requireContextualOperandIndex(
+        [...guard.affixes].sort(compareText).join("\u0000"),
+        operandIndexes,
+      )];
   }
 }
 
@@ -348,6 +358,8 @@ function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
       };
     case "not-word-ending":
       return { endings: [...guard.endings], kind: guard.kind };
+    case "word-with-affixes":
+      return { affixes: [...guard.affixes], kind: guard.kind };
     case "first-syllable":
     case "not-word-end":
     case "not-word-start":

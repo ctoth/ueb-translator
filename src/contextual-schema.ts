@@ -16,6 +16,7 @@ export const CONTEXTUAL_GUARD_SCHEMA = {
   wordEnd: { opcode: 13, operands: "none" },
   wordInternal: { opcode: 14, operands: "none" },
   wordStart: { opcode: 15, operands: "none" },
+  wordWithAffixes: { opcode: 18, operands: "string" },
   lowerSignOther: { opcode: 16, operands: "none" },
 } as const;
 

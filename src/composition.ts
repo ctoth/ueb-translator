@@ -491,6 +491,26 @@ export function compose(
                 /* v8 ignore next -- the literal callback receives a character in word. */
                 return unit === undefined ? "" : emitCompositionUnit(unit);
               },
+              (candidate) => {
+                const appliedRange = {
+                  end: range.start + candidate.end,
+                  start: range.start + candidate.start,
+                };
+                const initialLowerGroupsign = candidate.print === "be" ||
+                  candidate.print === "con" || candidate.print === "dis";
+                const internalLowerGroupsign = ["ea", "bb", "cc", "ff", "gg"]
+                  .includes(candidate.print);
+                return (!initialLowerGroupsign || appliedRange.start === component.start) &&
+                  contractionModePlan !== undefined &&
+                  (!internalLowerGroupsign || (
+                    !contractionModePlan.prefixes.has(appliedRange.start) &&
+                    !contractionModePlan.suffixes.has(appliedRange.start - 1)
+                  )) && canCollapseModeSpan(
+                    contractionModePlan,
+                    appliedRange,
+                    initialLowerGroupsign || internalLowerGroupsign,
+                  );
+              },
             );
             for (const applied of translated.rules) {
               const start = range.start + applied.start;
@@ -498,21 +518,9 @@ export function compose(
               const rule = contractions.rules[applied.ruleIndex];
               /* v8 ignore next -- applied rules originate in this program. */
               if (rule === undefined) continue;
-              const appliedRange = { end, start };
-              const initialLowerGroupsign = applied.print === "be" ||
-                applied.print === "con" || applied.print === "dis";
-              if (
-                (initialLowerGroupsign && appliedRange.start !== component.start) ||
-                contractionModePlan === undefined ||
-                !canCollapseModeSpan(
-                  contractionModePlan,
-                  appliedRange,
-                  initialLowerGroupsign,
-                )
-              ) continue;
               emissions[start] = rule[0];
               for (let index = start + 1; index < end; index += 1) emissions[index] = "";
-              collapsedRanges.push(appliedRange);
+              collapsedRanges.push({ end, start });
               rules.push({
                 ...applied,
                 end: (options.globalOffset ?? 0) + (offsets[end] ?? text.length),

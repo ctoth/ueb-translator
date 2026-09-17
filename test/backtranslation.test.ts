@@ -528,7 +528,7 @@ describe("backtranslateGrade2", () => {
       kind: "unique",
       mode: "grade2",
     });
-    expect(translateGrade2("ab")).toMatchObject({ braille: "⠰⠰⠁⠃" });
+    expect(translateGrade2("ab")).toMatchObject({ braille: "⠰⠁⠃" });
   });
 
   it("returns a unique result when UEB determines one print expansion", () => {

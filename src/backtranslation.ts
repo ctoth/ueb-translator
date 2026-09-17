@@ -1103,9 +1103,15 @@ function grade2Candidates(
         translated.ok &&
         withoutGrade1Indicators(translated.braille) ===
           withoutGrade1Indicators(expected);
+      // A word indicator remains valid for literal text even when forward
+      // translation now needs only a symbol indicator (UEB 5.3.1).
+      const retainedGrade1WordScope = translated.ok && translated.rules.length === 0 &&
+        expected.includes(GRADE1_INDICATOR.repeat(2)) &&
+        expected.replaceAll(GRADE1_INDICATOR.repeat(2), GRADE1_INDICATOR) ===
+          translated.braille;
       if (!translated.ok ||
         (translated.braille !== expected && !relaxedCapitalsPassage &&
-          !retainedTypeformContext)) {
+          !retainedTypeformContext && !retainedGrade1WordScope)) {
         valid = false;
         break;
       }

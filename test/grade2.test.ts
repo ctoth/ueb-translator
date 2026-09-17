@@ -314,6 +314,26 @@ describe("translateGrade2", () => {
     }
   });
 
+  // ICEB 8.3.2 and 10.4.1: retain groupsigns inside a capitalization
+  // span when a larger contraction would cross an interior indicator.
+  it.each([
+    ["ThAt", "⠠⠹⠠⠁⠞"],
+    ["ChIlD", "⠠⠡⠠⠊⠇⠠⠙"],
+  ] as const)("selects an eligible contraction within %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.6.6 prohibits ea/bb/cc/ff/gg beside capitals indicators.
+  it.each([
+    ["AaEaA", "⠠⠁⠁⠠⠑⠁⠠⠁"],
+    ["AaGgA", "⠠⠁⠁⠠⠛⠛⠠⠁"],
+    ["SeaWorld", "⠠⠎⠑⠁⠠⠸⠺"],
+    ["EggHead", "⠠⠑⠛⠛⠠⠓⠂⠙"],
+    ["aEaa", "⠁⠠⠑⠁⠁"],
+  ] as const)("does not use internal lower groupsigns beside capitals in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it("uses full lexical coordinates for contractions after an apostrophe", () => {
     expect(translateGrade2("D'Arcy")).toEqual({
       braille: "⠠⠙⠄⠠⠜⠉⠽",
@@ -392,7 +412,7 @@ describe("translateGrade2", () => {
       ok: true,
     });
     expect(translateGrade2("Roßberg")).toEqual({
-      braille: "⠠⠗⠕⠨⠮⠃⠑⠗⠛",
+      braille: "⠠⠗⠕⠨⠮⠃⠻⠛",
       mode: "grade2",
       ok: true,
     });
@@ -530,6 +550,20 @@ describe("translateGrade2", () => {
     ["th'", "⠞⠓⠄"],
     ["sh's", "⠎⠓⠄⠎"],
   ] as const)("uses groupsigns within apostrophe words in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.1.2 and 10.2.2 allow only the listed apostrophe endings.
+  it.each([
+    ["sd'but", "⠎⠙⠄⠃⠥⠞"],
+    ["so'dgkztbclkkzf", "⠎⠕⠄⠙⠛⠅⠵⠞⠃⠉⠇⠅⠅⠵⠋"],
+    ["ufydz'as", "⠥⠋⠽⠙⠵⠄⠁⠎"],
+    ["t'do", "⠞⠄⠙⠕"],
+    ["more'n", "⠍⠕⠗⠑⠄⠝"],
+    ["can't", "⠉⠄⠞"],
+    ["you'll", "⠽⠄⠇⠇"],
+    ["child's", "⠡⠄⠎"],
+  ] as const)("limits wordsigns in apostrophe words in %s", (text, braille) => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 

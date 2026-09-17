@@ -302,6 +302,12 @@ function guardAllows(
       const following = context.word.charAt(end);
       return following !== "" && operandAt(program, guard[1]).includes(following);
     }
+    case 18: {
+      const affixes = operandAt(program, guard[1]).split("\u0000");
+      return [eligibilityWord, ...context.exclusionWords].some((word) =>
+        word === print || affixes.some((affix) => word === print + affix)
+      );
+    }
   }
 }
 
@@ -403,6 +409,7 @@ export function runContextualTransducer(
   program: ContextualTransducerProgram,
   context: ContextualTransducerInput,
   literalCell: (character: string) => string,
+  canApply: (rule: ContextualAppliedRule) => boolean = () => true,
 ): ContextualTransduction {
   const best: (BestPath | undefined)[] = Array.from(
     { length: context.word.length + 1 },
@@ -419,6 +426,12 @@ export function runContextualTransducer(
   for (let start = context.word.length - 1; start >= 0; start -= 1) {
     let selected: BestPath | undefined;
     for (const candidate of candidatesAt(program, context, start, literalCell)) {
+      if (candidate.ruleIndex !== undefined && !canApply({
+        end: candidate.end,
+        print: candidate.print,
+        ruleIndex: candidate.ruleIndex,
+        start,
+      })) continue;
       const suffix = best[candidate.end];
       /* v8 ignore next -- the literal edge makes every suffix reachable. */
       if (suffix === undefined) {
