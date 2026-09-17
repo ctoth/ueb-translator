@@ -51,3 +51,16 @@ remains pronunciation-dependent after the capitals defect is removed.
 A clean reconciliation means no stale or untriaged evidence. It does not mean
 that all previously recorded implementation defects have been repaired or
 that all local outputs are identical to Liblouis.
+
+## Expanded nightly run
+
+After reconciling the full sweeps, increase the nightly sample count from
+10,000 to 100,000. Replay seed `-679952479` at that size. Its diagnostic pass
+identified 38 additional exact inputs; also retain the minimized `(aggh)` case.
+Five cases expose Liblouis contracting `bb` beside a capitals indicator, contrary
+to 10.6.6. Twenty-six have unresolved pronunciation, syllabification, or
+abbreviation context. Eight reproduce pre-existing shortform disambiguation,
+apostrophe-extension, or hyphenated lower-wordsign defects; their outputs are
+unchanged from the last passing source revision `951aa0c7` and remain explicitly
+classified as implementation bugs. Every entry retains exact comparison evidence
+and a cited verdict; the fuzz gate still rejects any unrecorded difference.
