@@ -1,6 +1,173 @@
 {
   "disagreements": [
     {
+      "caseId": "fuzz:888787ff43d038dfea2a289fe9a3892f5a7225571b03db077cbdc6b9dcbc5fec",
+      "input": "ZhBbUjV",
+      "local": {
+        "kind": "test",
+        "output": "⠠⠵⠓⠠⠃⠃⠠⠥⠚⠠⠧",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠠⠵⠓⠠⠆⠠⠥⠚⠠⠧"
+      },
+      "groupId": "fuzz-capitals-adjacent-lower-groupsign"
+    },
+    {
+      "caseId": "fuzz:431a14cca427adfb08f98fb1a5451bb103387b369c36cec964c35b72509bd6d6",
+      "input": "lvwcc-bebxx",
+      "local": {
+        "kind": "test",
+        "output": "⠇⠧⠺⠉⠉⠤⠆⠃⠭⠭",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠇⠧⠺⠉⠉⠤⠃⠑⠃⠭⠭"
+      },
+      "groupId": "fuzz-unknown-be-syllabification"
+    },
+    {
+      "caseId": "fuzz:8b3dd8463729aad95f855999ea78a9b9eb1b56a49aafdf1e85c568134af6a7fb",
+      "input": "(gh'",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠣⠄",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠐⠣⠛⠓⠄"
+      },
+      "groupId": "fuzz-unknown-gh-pronunciation"
+    },
+    {
+      "caseId": "fuzz:2ca679edeb6d7bb618f9374a1fa9af81da1ee3adab056acc12995bf2a8b2e5ad",
+      "input": "oness",
+      "local": {
+        "kind": "test",
+        "output": "⠕⠰⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠐⠕⠎⠎"
+      },
+      "groupId": "fuzz-ness-fewer-cells"
+    },
+    {
+      "caseId": "fuzz:c099edbbd1c9ee91d3146002846fe5c0eb5d053f665feeee970611aeea4caaee",
+      "input": "DwSwDxBbZsR",
+      "local": {
+        "kind": "test",
+        "output": "⠠⠙⠺⠠⠎⠺⠠⠙⠭⠠⠃⠃⠠⠵⠎⠠⠗",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠠⠙⠺⠠⠎⠺⠠⠙⠭⠠⠆⠠⠵⠎⠠⠗"
+      },
+      "groupId": "fuzz-capitals-adjacent-lower-groupsign"
+    },
+    {
+      "caseId": "fuzz:e923444f14f60bf56358fa505c65cbb056e5b5bcbed5f446962e7e49dbb74f00",
+      "input": "benced",
+      "local": {
+        "kind": "test",
+        "output": "⠆⠝⠉⠫",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠃⠰⠑⠙"
+      },
+      "groupId": "fuzz-unknown-be-syllabification"
+    },
+    {
+      "caseId": "fuzz:88d209562b0aa8c87fb38e6bd6c2e6ff37457f5aa450b0b5461fc1364a8fb5be",
+      "input": "bertn-vt",
+      "local": {
+        "kind": "test",
+        "output": "⠆⠗⠞⠝⠤⠧⠞",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠃⠻⠞⠝⠤⠧⠞"
+      },
+      "groupId": "fuzz-unknown-be-syllabification"
+    },
+    {
+      "caseId": "fuzz:9d909f3ccb684b73e0461325d2519357066fc854c279eeef4999c9fca84bc56d",
+      "input": "AaBbA",
+      "local": {
+        "kind": "test",
+        "output": "⠠⠁⠁⠠⠃⠃⠠⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": ["en-ueb-g2.ctb"],
+        "version": "3.38.0",
+        "output": "⠠⠁⠁⠠⠆⠠⠁"
+      },
+      "groupId": "fuzz-capitals-adjacent-lower-groupsign"
+    },
+    {
+      "caseId": "fuzz:4c99c36d7ac5c5865952ae2a971266b966b8deef6557a7e503e7ae3e92876c3d",
+      "input": "aggha-a",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠛⠣⠁⠤⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": ["en-ueb-g2.ctb"],
+        "version": "3.38.0",
+        "output": "⠁⠶⠓⠁⠤⠁"
+      },
+      "groupId": "fuzz-unknown-gh-pronunciation"
+    },
+    {
       "caseId": "scowl:2020.12.07:95:00000095",
       "input": "ACS",
       "local": {
@@ -52612,25 +52779,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00154377",
-      "input": "ab",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠃",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠃"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00154429",
       "input": "abalone",
       "local": {
@@ -52990,44 +53138,6 @@
         "output": "⠁⠃⠗⠑⠁⠉⠞⠎"
       },
       "groupId": "traced-ea"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00155893",
-      "input": "abv",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠃⠧",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠃⠧"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00155925",
-      "input": "ac",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠉",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠉"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00156061",
@@ -53961,25 +54071,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00161011",
-      "input": "af",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠋",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠋"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00161510",
       "input": "afterbirth's",
       "local": {
@@ -54417,25 +54508,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00161751",
-      "input": "ag",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠛",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠛"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00161875",
       "input": "agastroneuria",
       "local": {
@@ -54797,25 +54869,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00163511",
-      "input": "al",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠇",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠇"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00164074",
       "input": "alcyone",
       "local": {
@@ -54966,44 +55019,6 @@
         "output": "⠰⠁⠇⠎"
       },
       "groupId": "exact-grade1-insertion"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00166214",
-      "input": "alt",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠇⠞",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠇⠞"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00166215",
-      "input": "alt's",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠇⠞⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠇⠞⠄⠎"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00166277",
@@ -55175,25 +55190,6 @@
         "output": "⠰⠁⠇⠞⠎"
       },
       "groupId": "exact-grade1-insertion"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00166562",
-      "input": "alw",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠁⠇⠺",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠇⠺"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00166738",
@@ -105451,25 +105447,6 @@
       "groupId": "traced-strong-contraction"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00200016",
-      "input": "bl",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠃⠇",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠃⠇"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00200674",
       "input": "blastoneuropore",
       "local": {
@@ -106722,25 +106699,6 @@
         "output": "⠃⠗⠑⠺⠓⠳⠎⠑⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00208046",
-      "input": "brl",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠃⠗⠇",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠃⠗⠇"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00208635",
@@ -108147,44 +108105,6 @@
         "output": "⠉⠁⠞⠊⠕⠝⠎"
       },
       "groupId": "untraced-final-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00220860",
-      "input": "cd",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠉⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠉⠙"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00220861",
-      "input": "cd's",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠉⠙⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠉⠙⠄⠎"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00221408",
@@ -128175,25 +128095,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00315709",
-      "input": "fr",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠋⠗",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠋⠗"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00317286",
       "input": "froghopper",
       "local": {
@@ -128800,25 +128701,6 @@
         "output": "⠛⠁⠌⠗⠕⠝⠑⠏⠓⠗⠊⠞⠊⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00322626",
-      "input": "gd",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠛⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠛⠙"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00322644",
@@ -133037,25 +132919,6 @@
         "output": "⠓⠊⠙⠑⠁⠺⠁⠽⠎"
       },
       "groupId": "traced-ea"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00345179",
-      "input": "hm's",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠓⠍⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠓⠍⠄⠎"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00345487",
@@ -140468,25 +140331,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00390771",
-      "input": "ll",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠇⠇",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠇⠇"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00390783",
       "input": "llb",
       "local": {
@@ -141017,25 +140861,6 @@
         "output": "⠇⠰⠛⠓⠳⠎⠑⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00393116",
-      "input": "lr",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠇⠗",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠇⠗"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00393289",
@@ -148408,25 +148233,6 @@
         "output": "⠝⠑⠢⠉⠑⠏⠓⠁⠇⠕⠝⠎"
       },
       "groupId": "untraced-final-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00424769",
-      "input": "nei",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠝⠑⠊",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠝⠑⠊"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00425020",
@@ -167978,25 +167784,6 @@
         "output": "⠏⠁⠹⠕⠎⠑⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00463888",
-      "input": "pd",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠏⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠏⠙"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00464153",
@@ -204403,25 +204190,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00538482",
-      "input": "sd",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠎⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠎⠙"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00538506",
       "input": "sds",
       "local": {
@@ -212858,44 +212626,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00597954",
-      "input": "tm",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠞⠍",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠞⠍"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00597962",
-      "input": "tn",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠞⠝",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠞⠝"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00598172",
       "input": "today'll",
       "local": {
@@ -218368,25 +218098,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00646591",
-      "input": "wd",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠺⠙",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠺⠙"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00646694",
       "input": "weaponeer",
       "local": {
@@ -219090,25 +218801,6 @@
       "groupId": "traced-other-lower-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00654078",
-      "input": "xs",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠭⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠭⠎"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00655629",
       "input": "youngstown",
       "local": {
@@ -219221,44 +218913,6 @@
         "output": "⠽⠗⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00655736",
-      "input": "yr",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠽⠗",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠽⠗"
-      },
-      "groupId": "grade1-word-scope-liblouis"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00655737",
-      "input": "yr's",
-      "local": {
-        "kind": "test",
-        "output": "⠰⠰⠽⠗⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠽⠗⠄⠎"
-      },
-      "groupId": "grade1-word-scope-liblouis"
     },
     {
       "caseId": "scowl:2020.12.07:95:00655745",
@@ -228440,6 +228094,26 @@
   ],
   "groups": [
     {
+      "id": "fuzz-unknown-be-syllabification",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "ICEB 2024 10.6.1 and 10.10.4 require and prefer be when it forms the first syllable. The exact generated strings have no established syllabification. Under 10.12.7-10.12.8, unfamiliar or contrived words with unknown syllabification may follow the contraction usage of translation software. These exact examples retain the differing syllabification choices; this does not classify known words or other inputs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf#page=197"
+        ]
+      }
+    },
+    {
+      "id": "fuzz-ness-fewer-cells",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 10.8.1 permits ness following a letter; 10.8.4 does not exclude oness, which has no en or in stem plus feminine ess. Rule 10.10.2 prefers the three-cell local o+ness over the four-cell oracle one+s+s. Even if one is pronounced as one syllable under 10.7.6, it does not override the fewer-cells preference.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf#page=182"
+        ]
+      }
+    },
+    {
       "id": "unsupported",
       "verdict": {
         "kind": "our-bug",
@@ -228636,13 +228310,19 @@
       }
     },
     {
-      "id": "grade1-word-scope-liblouis",
+      "id": "fuzz-capitals-adjacent-lower-groupsign",
       "verdict": {
         "kind": "liblouis-bug",
-        "rationale": "ICEB 2024 Rules 10.9.7-10.9.9 permit the grade-1 word indicator for these standing letter-sequences so every following letters-sequence is read literally. The local double-cell indicator supplies that word scope; Liblouis emits only a single grade-1 symbol indicator and leaves the remaining sequence ambiguous.",
-        "sources": [
-          "https://iceb.org/publications/ueb/"
-        ]
+        "rationale": "ICEB 2024 10.6.6 prohibits ea, bb, cc, ff and gg lower groupsigns immediately before or after a capitals indicator or terminator. The exact local output retains these letters beside the capitals indicators; the oracle incorrectly contracts them.",
+        "sources": ["https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf#page=159"]
+      }
+    },
+    {
+      "id": "fuzz-unknown-gh-pronunciation",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "ICEB 2024 10.10.5 prefers the strong gh groupsign over lower gg, unless 10.11.2 prohibits gh because h is aspirated. This generated word has no known pronunciation. Under 10.12.7-10.12.8, contraction choices for unfamiliar or contrived words with unknown pronunciation may follow translation software. Retain the local strong-groupsign choice and the oracle's uncontracted h as pronunciation-dependent alternatives.",
+        "sources": ["https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf#page=196"]
       }
     }
   ],

@@ -37,13 +37,6 @@ function isUnknownArray(value: unknown): value is readonly unknown[] {
   return Array.isArray(value);
 }
 
-function outputAt(entry: Record<string, unknown>, side: "local" | "oracle"): string {
-  const evidence = entry[side];
-  return isRecord(evidence) && typeof evidence["output"] === "string"
-    ? evidence["output"]
-    : "";
-}
-
 describe("grouped empirical ledger", () => {
   it("retains the reconciled corpus evidence and issue 61 classifications", () => {
     const rawLedger: unknown = JSON.parse(readFileSync(
@@ -73,7 +66,7 @@ describe("grouped empirical ledger", () => {
     });
   });
 
-  it("records Grade 1 word scope separately from symbol insertion defects", () => {
+  it("removes the resolved shortform symbol-indicator disagreements", () => {
     const rawLedger: unknown = JSON.parse(readFileSync(
       new URL("../empirical-disagreements.json", import.meta.url),
       "utf8",
@@ -88,22 +81,14 @@ describe("grouped empirical ledger", () => {
     const wordScoped = disagreements.filter((entry): entry is Record<string, unknown> =>
       isRecord(entry) && entry["groupId"] === "grade1-word-scope-liblouis"
     );
-    expect(wordScoped).toHaveLength(27);
-    expect(wordScoped.every((entry) =>
-      outputAt(entry, "local").startsWith("⠰⠰") &&
-      outputAt(entry, "oracle").startsWith("⠰") &&
-      !outputAt(entry, "oracle").startsWith("⠰⠰")
-    )).toBe(true);
+    expect(wordScoped).toEqual([]);
     const groups = rawLedger["groups"];
     expect(isUnknownArray(groups)).toBe(true);
     if (!isUnknownArray(groups)) return;
     const wordGroup = groups.find((value) =>
       isRecord(value) && value["id"] === "grade1-word-scope-liblouis"
     );
-    expect(wordGroup).toMatchObject({
-      id: "grade1-word-scope-liblouis",
-      verdict: { kind: "liblouis-bug" },
-    });
+    expect(wordGroup).toBeUndefined();
   });
 
   it("expands one source-backed group into exact per-case verdict evidence", () => {
