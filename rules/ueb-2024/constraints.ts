@@ -48,13 +48,23 @@ export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContra
     citation: citeIceb("10.6.1"),
     contraction: "be",
     id: "UEB-10.6.1-be-syllable-exception",
-    words: [...family("bead", ["s", "ed", "ing"]), "beauty"],
+    words: [
+      ...family("bead", ["s", "ed", "ing"]), "beauty",
+      ...family("beat", ["s", "en", "er", "ers", "ing", "ings"]),
+      ...family("bear", ["s", "er", "ers", "ing", "ings"]),
+      ...family("bed", ["s", "ded", "ding"]),
+      ...family("beep", ["s", "ed", "ing"]),
+      ...family("better", ["s", "ed", "ing"]), "belfast",
+      ...family("bend", ["s", "er", "ers", "ing"]), "bent",
+      ...family("bedrock", ["s"]), ...family("bedroom", ["s"]),
+      ...family("best", ["s", "ed", "ing"]), "benfica",
+    ],
   },
   {
     citation: citeIceb("10.6.1"),
     contraction: "con",
     id: "UEB-10.6.1-con-syllable-exception",
-    words: family("cone", ["s"]),
+    words: [...family("cone", ["s"]), "conan"],
   },
 ];
 

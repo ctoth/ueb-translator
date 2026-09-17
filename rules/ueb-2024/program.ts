@@ -176,7 +176,7 @@ export function compileGrade2RuleGuards(
           boundaries: ["braille-line", "compound", "syllable"],
           kind: "not-crossing",
         },
-        { kind: "not-word-start" },
+        { kind: "preceded-by-letter" },
       ];
   }
 }

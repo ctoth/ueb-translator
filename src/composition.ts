@@ -409,12 +409,12 @@ export function compose(
         );
         const standingLiteralInputs = new Set(contractions.standingLiteralInputs);
         for (const lexical of lexicalRanges(units, policies)) {
-          const standing = options.standing ?? standingAt(units, lexical, policies);
           const eligibilityWord = units.slice(lexical.start, lexical.end)
             .map((unit) => eligibilityCharacter(unit, policies, bucketAlphabet))
             .join("");
           for (const range of contractionRanges(units, lexical, bucketAlphabet)) {
             const component = dashComponentAt(units, lexical, range, policies);
+            const standing = options.standing ?? standingAt(units, component, policies);
             const programLiteralComponent = hasOnlyProgramLiteralLetters(
               units,
               component,
@@ -482,6 +482,9 @@ export function compose(
                 hasRestrictingLowerPunctuation:
                   lowerContext.hasRestrictingLowerPunctuation,
                 hasUpperPunctuation: lowerContext.hasUpperPunctuation,
+                atWordStart: !units.slice(component.start, range.start)
+                  .some((unit) => unit.kind === "letter"),
+                precededByLetter: units[range.start - 1]?.kind === "letter",
                 standing: standing && programLiteralComponent,
                 word,
               },
@@ -500,7 +503,8 @@ export function compose(
                   candidate.print === "con" || candidate.print === "dis";
                 const internalLowerGroupsign = ["ea", "bb", "cc", "ff", "gg"]
                   .includes(candidate.print);
-                return (!initialLowerGroupsign || appliedRange.start === component.start) &&
+                return (!initialLowerGroupsign || !units.slice(component.start, appliedRange.start)
+                  .some((unit) => unit.kind === "letter")) &&
                   contractionModePlan !== undefined &&
                   (!internalLowerGroupsign || (
                     !contractionModePlan.prefixes.has(appliedRange.start) &&

@@ -621,12 +621,6 @@ function capitalAfterBoundary(mode: CapitalsMode): CapitalsMode {
   return mode === "passage" ? mode : "none";
 }
 
-function capitalAfterSymbol(mode: CapitalsMode, print: string): CapitalsMode {
-  return mode === "word" && (print === "'" || print === "’")
-    ? mode
-    : capitalAfterBoundary(mode);
-}
-
 function scalarIndexAt(input: string, codeUnitIndex: number): number {
   return Array.from(input.slice(0, codeUnitIndex)).length;
 }
@@ -931,7 +925,7 @@ function decode(
             if (typeformScopes !== undefined) {
               enqueue({
                 ...path,
-                capitals: capitalAfterSymbol(path.capitals, token.print),
+                capitals: capitalAfterBoundary(path.capitals),
                 forwardBraille: path.forwardBraille + token.braille,
                 grade1Next: false,
                 index: nextIndex,

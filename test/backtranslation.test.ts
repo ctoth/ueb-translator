@@ -91,7 +91,7 @@ describe("backtranslateGrade1", () => {
   });
 
   it.each(["DON'T", "B'S", "D’ARTAGNAN’S", "Q\u0301’S"])(
-    "round trips canonical capitals word mode through an apostrophe in %s",
+    "round trips capitals indicators on either side of an apostrophe in %s",
     (print) => {
       const translated = translateGrade1(print);
       expect(translated.ok).toBe(true);
@@ -492,7 +492,7 @@ describe("backtranslateGrade2", () => {
   });
 
   it.each(["DON'T", "B'S", "D’ARTAGNAN’S"])(
-    "round trips canonical Grade 2 capitals word mode through an apostrophe in %s",
+    "round trips Grade 2 capitals indicators on either side of an apostrophe in %s",
     (print) => {
       const translated = translateGrade2(print);
       expect(translated.ok).toBe(true);

@@ -65,6 +65,23 @@ describe("curly apostrophe emission", () => {
         }
       }
     });
+    it("uses a leading quote unless the word has a known initial elision", () => {
+      expect(translate("’Word’")).toEqual(translate("‘Word’"));
+      expect(translate("’Tis")).toEqual(translate("'Tis"));
+      expect(translate("’n’")).toEqual(translate("'n'"));
+    });
+    it("recognizes a closing double quote before a comma", () => {
+      const result = translate("else’s\", he observed.");
+      expect(result.ok && result.braille).toContain("⠄⠎⠴⠂");
+    });
+    it("does not infer a closing quote from punctuation inside the next word", () => {
+      const result = translate('that"...we');
+      expect(result.ok && result.braille).toContain("⠠⠶⠲⠲⠲");
+    });
+    it("recognizes a closing quote before punctuation and an outer single quote", () => {
+      const result = translate('thought"?\' And');
+      expect(result.ok && result.braille).toContain("⠴⠦⠄");
+    });
   }
 
   it("shares punctuation resolution with document and typeformed text paths", () => {

@@ -407,7 +407,7 @@ describe("translateGrade2", () => {
 
   it("keeps letters outside the contraction program alphabet as span breaks", () => {
     expect(translateGrade2("de:Tornados hinterließen")).toEqual({
-      braille: "⠙⠑⠒⠠⠞⠕⠗⠝⠁⠙⠕⠎⠀⠓⠔⠞⠻⠇⠊⠑⠨⠮⠑⠝",
+      braille: "⠙⠑⠒⠠⠞⠕⠗⠝⠁⠙⠕⠎⠀⠓⠔⠞⠻⠇⠊⠑⠨⠮⠢",
       mode: "grade2",
       ok: true,
     });
@@ -459,20 +459,20 @@ describe("translateGrade2", () => {
     if (result.ok) expect(result.rules).toEqual([]);
   });
 
-  it("continues capitals word mode through apostrophes in both grades", () => {
+  it("ends capitals word mode at apostrophes in both grades (UEB 8.4.2)", () => {
     const expected = {
-      braille: "⠠⠠⠙⠕⠝⠄⠞",
+      braille: "⠠⠠⠙⠕⠝⠄⠠⠞",
       ok: true,
     } as const;
     expect(translateGrade1("DON'T")).toMatchObject({ ...expected, mode: "grade1" });
     expect(translateGrade2("DON'T")).toMatchObject({ ...expected, mode: "grade2" });
     expect(translateGrade1("O'NEIL'S")).toMatchObject({
-      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      braille: "⠠⠕⠄⠠⠠⠝⠑⠊⠇⠄⠠⠎",
       mode: "grade1",
       ok: true,
     });
     expect(translateGrade2("O'NEIL'S")).toMatchObject({
-      braille: "⠠⠠⠕⠄⠝⠑⠊⠇⠄⠎",
+      braille: "⠠⠕⠄⠠⠠⠝⠑⠊⠇⠄⠠⠎",
       mode: "grade2",
       ok: true,
     });
@@ -487,7 +487,7 @@ describe("translateGrade2", () => {
       expect(uppercase.ok).toBe(true);
       if (lowercase.ok && uppercase.ok) {
         expect(lowercase.braille).not.toBe(uppercase.braille);
-        expect(uppercase.braille).toBe("⠠⠠⠁⠃⠄⠉");
+        expect(uppercase.braille).toBe("⠠⠠⠁⠃⠄⠠⠉");
       }
     },
   );
@@ -550,6 +550,34 @@ describe("translateGrade2", () => {
     ["th'", "⠞⠓⠄"],
     ["sh's", "⠎⠓⠄⠎"],
   ] as const)("uses groupsigns within apostrophe words in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.4.3 and 10.8.1 retain context outside the matchable letters.
+  it.each([
+    ["OK'd", "⠠⠠⠕⠅⠄⠙"],
+    ["OK'ing", "⠠⠠⠕⠅⠄⠬"],
+    ["Ch'ing", "⠠⠡⠄⠬"],
+    ["'distributed'", "⠄⠲⠞⠗⠊⠃⠥⠞⠫⠄"],
+    ["'dishonesty'", "⠄⠲⠓⠐⠕⠌⠽⠄"],
+    ["can't—“", "⠉⠄⠞⠐⠠⠤⠦"],
+    ["'bend'", "⠄⠃⠢⠙⠄"],
+    ["'bedrock'", "⠄⠃⠫⠗⠕⠉⠅⠄"],
+    ["'bedroom'", "⠄⠃⠫⠗⠕⠕⠍⠄"],
+    ["'beating'", "⠄⠃⠂⠞⠬⠄"],
+    ["'best'", "⠄⠃⠑⠌⠄"],
+    ["'Benfica'", "⠄⠠⠃⠢⠋⠊⠉⠁⠄"],
+    ["'Conan'", "⠄⠠⠉⠕⠝⠁⠝⠄"],
+    ["'bed'", "⠄⠃⠫⠄"],
+    ["'better'", "⠄⠃⠑⠞⠞⠻⠄"],
+    ["'beep'", "⠄⠃⠑⠑⠏⠄"],
+    ["'Bear'", "⠄⠠⠃⠑⠜⠄"],
+    ["'Belfast'", "⠄⠠⠃⠑⠇⠋⠁⠌⠄"],
+    ["'ing", "⠄⠔⠛"],
+    ["a-ing", "⠁⠤⠔⠛"],
+    ["déchéance", "⠙⠘⠌⠑⠡⠘⠌⠑⠨⠑"],
+    ["Féin\".", "⠠⠋⠘⠌⠑⠔⠴⠲"],
+  ] as const)("uses lexical context across contraction ranges in %s", (text, braille) => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 

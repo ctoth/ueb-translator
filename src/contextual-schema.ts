@@ -17,6 +17,7 @@ export const CONTEXTUAL_GUARD_SCHEMA = {
   wordInternal: { opcode: 14, operands: "none" },
   wordStart: { opcode: 15, operands: "none" },
   wordWithAffixes: { opcode: 18, operands: "string" },
+  precededByLetter: { opcode: 19, operands: "none" },
   lowerSignOther: { opcode: 16, operands: "none" },
 } as const;
 

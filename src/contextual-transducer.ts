@@ -156,6 +156,9 @@ export interface ContextualTransducerInput {
   readonly hasLowerPunctuation: boolean;
   readonly hasRestrictingLowerPunctuation: boolean;
   readonly hasUpperPunctuation: boolean;
+  /** Context before this matchable letter range, including modified letters. */
+  readonly precededByLetter?: boolean;
+  readonly atWordStart?: boolean;
   readonly standing: boolean;
   readonly word: string;
 }
@@ -281,9 +284,9 @@ function guardAllows(
     case 8:
       return end !== context.word.length;
     case 9:
-      return start !== 0;
+      return start !== 0 || context.atWordStart === false;
     case 10:
-      return start !== 0 || end !== context.word.length;
+      return start !== 0 || end !== context.word.length || context.precededByLetter === true;
     case 11: {
       const operand = operandAt(program, guard[1]);
       return start === 0 || !operand.includes(context.word.charAt(start - 1));
@@ -308,6 +311,8 @@ function guardAllows(
         word === print || affixes.some((affix) => word === print + affix)
       );
     }
+    case 19:
+      return start !== 0 || context.precededByLetter === true;
   }
 }
 

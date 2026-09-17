@@ -169,7 +169,7 @@ function ruleExample(rule: ContextualRuleSource): string {
   if (following !== undefined) {
     return `a${rule.input}${following.characters.charAt(0)}`;
   }
-  if (guardKinds.has("not-word-start")) {
+  if (guardKinds.has("not-word-start") || guardKinds.has("preceded-by-letter")) {
     return `a${rule.input}`;
   }
   if (guardKinds.has("first-syllable")) {

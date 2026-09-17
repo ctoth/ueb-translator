@@ -1313,7 +1313,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       5,
@@ -1807,7 +1807,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       6,
-      127,
+      125,
       6
     ],
     [
@@ -1818,7 +1818,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      125,
+      126,
       269
     ],
     [
@@ -1826,7 +1826,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       0,
-      126,
+      127,
       269
     ],
     [
@@ -2097,18 +2097,18 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
-    ],
-    [
       17,
       18
+    ],
+    [
+      19
     ],
     [
       5,
       19
     ],
     [
-      9
+      19
     ],
     [
       3
@@ -2431,7 +2431,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       5,
@@ -2762,7 +2762,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       6
     ],
     [
-      9
+      19
     ],
     [
       12
@@ -2799,7 +2799,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       0,
@@ -3001,7 +3001,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       12
@@ -3228,7 +3228,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       6
     ],
     [
-      9
+      19
     ],
     [
       12
@@ -3279,7 +3279,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       5,
@@ -3294,14 +3294,14 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       5,
       19
     ],
     [
-      9
+      19
     ],
     [
       12
@@ -4095,7 +4095,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       12
@@ -4287,7 +4287,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       19
     ],
     [
-      9
+      19
     ],
     [
       12
@@ -7533,7 +7533,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "apperceiver",
     "apperceiving",
     "archdeceiver",
-    "bead\u0000bead's\u0000beaded\u0000beaded's\u0000beading\u0000beading's\u0000beads\u0000beads'\u0000beads's\u0000beauty\u0000beauty's",
+    "bead\u0000bead's\u0000beaded\u0000beaded's\u0000beading\u0000beading's\u0000beads\u0000beads'\u0000beads's\u0000bear\u0000bear's\u0000bearer\u0000bearer's\u0000bearers\u0000bearers'\u0000bearers's\u0000bearing\u0000bearing's\u0000bearings\u0000bearings'\u0000bearings's\u0000bears\u0000bears'\u0000bears's\u0000beat\u0000beat's\u0000beaten\u0000beaten's\u0000beater\u0000beater's\u0000beaters\u0000beaters'\u0000beaters's\u0000beating\u0000beating's\u0000beatings\u0000beatings'\u0000beatings's\u0000beats\u0000beats'\u0000beats's\u0000beauty\u0000beauty's\u0000bed\u0000bed's\u0000bedded\u0000bedded's\u0000bedding\u0000bedding's\u0000bedrock\u0000bedrock's\u0000bedrocks\u0000bedrocks'\u0000bedrocks's\u0000bedroom\u0000bedroom's\u0000bedrooms\u0000bedrooms'\u0000bedrooms's\u0000beds\u0000beds'\u0000beds's\u0000beep\u0000beep's\u0000beeped\u0000beeped's\u0000beeping\u0000beeping's\u0000beeps\u0000beeps'\u0000beeps's\u0000belfast\u0000belfast's\u0000bend\u0000bend's\u0000bender\u0000bender's\u0000benders\u0000benders'\u0000benders's\u0000bending\u0000bending's\u0000bends\u0000bends'\u0000bends's\u0000benfica\u0000benfica's\u0000bent\u0000bent's\u0000best\u0000best's\u0000bested\u0000bested's\u0000besting\u0000besting's\u0000bests\u0000bests'\u0000bests's\u0000better\u0000better's\u0000bettered\u0000bettered's\u0000bettering\u0000bettering's\u0000betters\u0000betters'\u0000betters's",
     "beforehand",
     "beforementioned",
     "befriend",
@@ -7567,9 +7567,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     "colourblind",
     "colourblindness",
     "colourblindnesses",
+    "conan\u0000conan's\u0000cone\u0000cone's\u0000cones\u0000cones'\u0000cones's",
     "conceived",
     "conceiver",
-    "cone\u0000cone's\u0000cones\u0000cones'\u0000cones's",
     "could've",
     "coulda",
     "couldest",
