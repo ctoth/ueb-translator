@@ -6,7 +6,9 @@ Prerelease tags are rejected.
 
 The workflow runs the reusable CI and Liblouis oracle workflows against the
 tagged commit. Publishing waits for `npm run check`, the full dictionary and
-retained-corpus sweeps, and 100,000 fuzz cases with seed `20260917`.
+retained-corpus sweeps, and 100,000 fuzz cases with seed `-679952479`.
+This replays the baseline adjudicated in commit `d94cbdb`; the nightly oracle
+workflow continues exploring fresh seeds independently.
 It builds and packs the package, publishes the tarball with provenance, checks
 the registry's integrity against that tarball, and creates a GitHub release.
 

@@ -104,7 +104,8 @@ jobs:
         env:
           LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
           LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
-          ORACLE_FUZZ_SEED: "20260917"
+          # Replay the 100,000-case baseline adjudicated in d94cbdb.
+          ORACLE_FUZZ_SEED: "-679952479"
           ORACLE_FUZZ_NUM_RUNS: "100000"
         run: npm run oracle:fuzz
 
