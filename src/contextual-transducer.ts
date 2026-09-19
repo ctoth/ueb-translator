@@ -315,6 +315,13 @@ function guardAllows(
     }
     case 19:
       return start !== 0 || context.precededByLetter === true;
+    case 21:
+      if (!context.standing) return true;
+      for (const match of context.word.matchAll(new RegExp(operandAt(program, guard[1]), "gu"))) {
+        const span = match[1];
+        if (span !== undefined && start < match.index + span.length && end > match.index) return false;
+      }
+      return true;
   }
 }
 

@@ -26,6 +26,7 @@ export type ContextualRuleGuard =
       readonly boundaries: readonly ContextualBoundaryKind[];
     }
   | { readonly ignoredCharacters: string; readonly kind: "not-word" | "not-standing-word"; readonly words: readonly string[] }
+  | { readonly kind: "not-standing-match"; readonly pattern: string }
   | { readonly kind: "not-word-ending"; readonly endings: readonly string[] }
   | { readonly kind: "not-word-end" }
   | { readonly kind: "not-word-start" }
@@ -160,6 +161,8 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
       return [[...guard.endings].sort(compareText).join("\u0000")];
     case "word-with-affixes":
       return [[...guard.affixes].sort(compareText).join("\u0000")];
+    case "not-standing-match":
+      return [guard.pattern];
     case "first-syllable":
     case "lower-sign":
     case "preceded-by-letter":
@@ -227,6 +230,8 @@ function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
       return CONTEXTUAL_GUARD_SCHEMA.notWord.opcode;
     case "not-standing-word":
       return CONTEXTUAL_GUARD_SCHEMA.notStandingWord.opcode;
+    case "not-standing-match":
+      return CONTEXTUAL_GUARD_SCHEMA.notStandingMatch.opcode;
     case "not-word-ending":
       return CONTEXTUAL_GUARD_SCHEMA.notWordEnding.opcode;
     case "not-word-end":
@@ -275,6 +280,9 @@ function compileGuard(
   operandIndexes: ReadonlyMap<string, number>,
 ): CompiledContextualGuard {
   switch (guard.kind) {
+    case "not-standing-match":
+      return [CONTEXTUAL_GUARD_SCHEMA.notStandingMatch.opcode,
+        requireContextualOperandIndex(guard.pattern, operandIndexes)];
     case "preceded-by-letter":
       return [CONTEXTUAL_GUARD_SCHEMA.precededByLetter.opcode];
     case "eligibility-word":
@@ -348,6 +356,8 @@ function compileGuard(
 
 function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
   switch (guard.kind) {
+    case "not-standing-match":
+      return { kind: guard.kind, pattern: guard.pattern };
     case "eligibility-word":
       return { kind: guard.kind, pluralSuffix: guard.pluralSuffix, word: guard.word };
     case "following":

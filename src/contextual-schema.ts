@@ -8,6 +8,7 @@ export const CONTEXTUAL_GUARD_SCHEMA = {
   notCrossing: { opcode: 5, operands: "boundary" },
   notWord: { opcode: 6, operands: "two-string" },
   notStandingWord: { opcode: 20, operands: "two-string" },
+  notStandingMatch: { opcode: 21, operands: "string" },
   notWordEnding: { opcode: 7, operands: "string" },
   notWordEnd: { opcode: 8, operands: "none" },
   notWordStart: { opcode: 9, operands: "none" },

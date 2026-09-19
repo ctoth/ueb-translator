@@ -107,6 +107,7 @@ function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRu
     ...SYMBOL_RULES.filter((entry) => entry.kind === "letter" && /^[a-z]$/u.test(entry.print)),
   ].sort((a, b) => b.braille.length - a.braille.length);
   const words = new Set<string>();
+  const patterns: string[] = [];
   for (const shortform of SHORTFORMS) {
     let remaining = shortform.braille, literal = "", usesGroupsign = false;
     while (remaining.length > 0) {
@@ -117,6 +118,11 @@ function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRu
       remaining = remaining.slice(symbol.braille.length);
     }
     if (!usesGroupsign || literal === shortform.print) continue;
+    if (GENERAL_LONGER_SHORTFORMS.has(shortform.print)) {
+      const anywhere = ["children", "braille", "great"].includes(shortform.print);
+      const vowelRestriction = ["braille", "great"].includes(shortform.print) ? "" : "(?![aeiouy])";
+      patterns.push(`${anywhere ? "" : "^"}(?=(${literal})${vowelRestriction})`);
+    }
     const forms = [literal, ...APPENDIX1_LONGER_WORDS
       .filter((entry) => entry.base === shortform.print)
       .map((entry) => entry.print.replace(shortform.print, literal))];
@@ -129,9 +135,12 @@ function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRu
       }
     }
   }
-  return words.size === 0 ? [] : [{
-    ignoredCharacters: "", kind: "not-standing-word", words: [...words].sort(),
-  }];
+  return [
+    ...(words.size === 0 ? [] : [{
+      ignoredCharacters: "", kind: "not-standing-word" as const, words: [...words].sort(),
+    }]),
+    ...patterns.map((pattern): ContextualRuleGuard => ({ kind: "not-standing-match", pattern })),
+  ];
 }
 
 export function compileGrade2RuleGuards(

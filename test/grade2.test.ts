@@ -172,6 +172,10 @@ describe("translateGrade2", () => {
     ["MST's", "⠠⠠⠍⠎⠞⠄⠎"], ["(mst)", "⠐⠣⠍⠎⠞⠐⠜"],
     ["mst-mst", "⠍⠎⠞⠤⠍⠎⠞"], ["Herf", "⠠⠓⠑⠗⠋"],
     ["somesch", "⠐⠎⠎⠉⠓"],
+    ["(chnj)", "⠐⠣⠉⠓⠝⠚⠐⠜"],
+    ["chnchj", "⠉⠓⠝⠡⠚"],
+    ["xchnj", "⠭⠉⠓⠝⠚"],
+    ["chna", "⠡⠝⠁"],
     ["www.sch.edu.au", "⠺⠺⠺⠲⠎⠡⠲⠫⠥⠲⠁⠥"],
   ] as const)("avoids groupsign-created shortforms under 10.9.6 in %s", (text, braille) => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
