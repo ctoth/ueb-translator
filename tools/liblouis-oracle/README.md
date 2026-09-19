@@ -243,6 +243,47 @@ distinct bugs. Unknown or uncertain cases remain pending instead of being
 automatically labelled permitted alternatives.
 
 [release]: https://github.com/liblouis/liblouis/releases/tag/v3.38.0
+## Reconciliation after translator repairs
+
+Build a baseline checkout's `dist/grade2.js` before changing its translator.
+`oracle:reconcile:audit LEDGER SWEEP BASELINE_MODULE dictionary|corpus PATH...`
+replays every stale record using both translator versions and the pinned oracle.
+It fails unless every stale digest is recovered and every changed disagreement
+is accounted for. Source identities sharing a case ID remain separate.
+
+```powershell
+npm run oracle:build
+npm run oracle:reconcile -- list .oracle-artifacts/audit.jsonl
+# After individually reviewing all displayed transitions against ICEB:
+npm run oracle:reconcile -- approve .oracle-artifacts/audit.jsonl reviewed-verdict.json approvals.json
+npm run oracle:reconcile -- apply ledger.json .oracle-artifacts/audit.jsonl approvals.json candidate-ledger.json
+```
+
+`approve` records an explicit review of all transitions in that audit; it does
+not infer a verdict. Supply a verdict with a rationale and official source URLs.
+`apply` refuses unapproved changes and changes not proven to reach agreement
+at the corrected span. It removes only verified whole-input agreements. For partially repaired
+sentences it retains the prior verdict on byte-identical residual differences.
+It checks evidence counts and refuses digest collisions before writing a new
+candidate file. Inspect that candidate before replacing the accepted ledger.
+
+`oracle:reconcile fuzz LEDGER RESULT VERDICT OUTPUT` records an individually
+adjudicated fuzz counterexample. To select a captured record from scan JSONL,
+append its unique evidence digest prefix. All output files are created exclusively.
+
+On Windows, `run-wsl.ps1` provides the same retained corpus paths and portable
+argument handling for `dictionary`, `corpus`, `inventory`, `fuzz`, `scan`,
+`audit-dictionary`, and `audit-corpus`:
+
+```powershell
+./tools/liblouis-oracle/run-wsl.ps1 -Channel dictionary -Output .oracle-artifacts/dictionary.jsonl -OracleBinary /path/to/lou_translate -NodeBinary /path/to/node
+./tools/liblouis-oracle/run-wsl.ps1 -Channel audit-corpus -Output .oracle-artifacts/audit.jsonl -OracleBinary /path/to/lou_translate -NodeBinary /path/to/node -Sweep .oracle-artifacts/corpus.jsonl -BaselineModule /path/to/baseline/dist/grade2.js
+```
+
+Run `npm run oracle:build` first. Audit paths passed to WSL must be WSL paths;
+`-Output` is a Windows path. Fuzz/scan accept `-Seed` and `-Runs`. These commands
+preserve the child exit code and refuse to replace existing logs.
+
 [g1]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g1.ctb
 [g2]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g2.ctb
 [math]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-math.ctb

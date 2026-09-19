@@ -1,10 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { parseManifest } from "../../corpus-benchmark/src/manifest.js";
-import { verifyDocumentRecord } from "../../corpus-benchmark/src/corpus.js";
+import { loadCorpusCases } from "./empirical-inputs.js";
 import {
-  buildCorpusCases,
   buildDictionaryCase,
   parseScowlWordList,
 } from "./empirical.js";
@@ -27,24 +25,6 @@ function writeJson(value: unknown): void {
 
 function messageFrom(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
-}
-
-function* loadCorpusCases(root: string): Generator<DifferentialCase> {
-  const corpusRoot = resolve(root);
-  const manifest = parseManifest(
-    readFileSync(resolve(corpusRoot, "manifest.json"), "utf8"),
-  );
-  for (const document of manifest.documents) {
-    const text = readFileSync(resolve(corpusRoot, document.relativePath), "utf8");
-    if (!verifyDocumentRecord(document, text)) {
-      throw new Error(`Corpus document digest mismatch: ${document.id}`);
-    }
-    yield* buildCorpusCases({
-      documentId: document.id,
-      documentSha256: document.sha256,
-      text,
-    });
-  }
 }
 
 async function sweep(

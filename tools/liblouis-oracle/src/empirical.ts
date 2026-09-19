@@ -80,17 +80,20 @@ export function splitSentences(text: string): readonly string[] {
 
 export function buildCorpusCases(
   input: CorpusCaseInput,
+  selectedCaseIds?: ReadonlySet<string>,
 ): readonly DifferentialCase[] {
   if (!/^[\da-f]{64}$/u.test(input.documentSha256)) {
     throw new Error("Corpus cases require a lowercase document SHA-256 digest.");
   }
-  return splitSentences(input.text).map((sentence, index) =>
-    grade2Case(
-      `corpus:${input.documentSha256}:${String(index).padStart(8, "0")}`,
+  return splitSentences(input.text).flatMap((sentence, index) => {
+    const caseId = `corpus:${input.documentSha256}:${String(index).padStart(8, "0")}`;
+    if (selectedCaseIds !== undefined && !selectedCaseIds.has(caseId)) return [];
+    return [grade2Case(
+      caseId,
       sentence,
       `corpus:${input.documentId}`,
-    )
-  );
+    )];
+  });
 }
 
 export function buildDictionaryCases(
