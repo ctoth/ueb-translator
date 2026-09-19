@@ -423,6 +423,8 @@ export function compose(
             const exact = exactLetterPrint(units, range, bucketAlphabet);
             if (
               programLiteralComponent && standing && ambiguityPrints.has(exact) &&
+              contractionModePlan !== undefined &&
+              canCollapseModeSpan(contractionModePlan, range) &&
               isCompleteAmbiguityLiteral(
                 units,
                 range,
