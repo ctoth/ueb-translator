@@ -93,7 +93,7 @@ describe("official Grade 2 source inventory", () => {
 
   it("cites the conservative implicit-boundary exception data", () => {
     expect(COMPOUND_CONTRACTION_EXCEPTIONS).toHaveLength(2);
-    expect(FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS).toHaveLength(2);
+    expect(FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS).toHaveLength(3);
     for (const constraint of COMPOUND_CONTRACTION_EXCEPTIONS) {
       expect(constraint.citation).toEqual(expect.objectContaining({
         authority: "ICEB",
@@ -810,6 +810,15 @@ describe("translateGrade2", () => {
     ["beauty", "⠃⠂⠥⠞⠽"],
     ["bead", "⠃⠂⠙"],
     ["beads", "⠃⠂⠙⠎"],
+    // ICEB 10.6.1 and the explicit counterexamples in 10.10.4.
+    ["been", "⠃⠑⠢"],
+    ["Been", "⠠⠃⠑⠢"],
+    ["BEEN", "⠠⠠⠃⠑⠢"],
+    ["beautiful", "⠃⠂⠥⠞⠊⠰⠇"],
+    ["beautifully", "⠃⠂⠥⠞⠊⠰⠇⠇⠽"],
+    ["dish", "⠙⠊⠩"],
+    ["dishes", "⠙⠊⠩⠑⠎"],
+    ["dish's", "⠙⠊⠩⠄⠎"],
   ] as const)(
     "does not use a first-syllable groupsign in the official %s counterexample",
     (text, braille) => {

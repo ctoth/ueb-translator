@@ -50,6 +50,7 @@ export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContra
     id: "UEB-10.6.1-be-syllable-exception",
     words: [
       ...family("bead", ["s", "ed", "ing"]), "beauty",
+      "been", ...family("beautiful", ["ly"]),
       ...family("beat", ["s", "en", "er", "ers", "ing", "ings"]),
       ...family("bear", ["s", "er", "ers", "ing", "ings"]),
       ...family("bed", ["s", "ded", "ding"]),
@@ -59,6 +60,12 @@ export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContra
       ...family("bedrock", ["s"]), ...family("bedroom", ["s"]),
       ...family("best", ["s", "ed", "ing"]), "benfica",
     ],
+  },
+  {
+    citation: citeIceb("10.6.1"),
+    contraction: "dis",
+    id: "UEB-10.6.1-dis-syllable-exception",
+    words: family("dish", ["es"]),
   },
   {
     citation: citeIceb("10.6.1"),
