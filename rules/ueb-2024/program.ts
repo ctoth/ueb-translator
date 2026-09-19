@@ -112,26 +112,28 @@ function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRu
     let remaining = shortform.braille, literal = "", usesGroupsign = false;
     while (remaining.length > 0) {
       const symbol = spellings.find((entry) => remaining.startsWith(entry.braille));
+      /* v8 ignore next -- the authored shortform inventory is exhaustively decoded during compilation. */
       if (symbol === undefined) throw new Error(`Cannot decode shortform ${shortform.print}`);
       literal += symbol.print;
       usesGroupsign ||= symbol === rule;
       remaining = remaining.slice(symbol.braille.length);
     }
     if (!usesGroupsign || literal === shortform.print) continue;
-    if (GENERAL_LONGER_SHORTFORMS.has(shortform.print)) {
-      const anywhere = ["children", "braille", "great"].includes(shortform.print);
-      const vowelRestriction = ["braille", "great"].includes(shortform.print) ? "" : "(?![aeiouy])";
-      patterns.push(`${anywhere ? "" : "^"}(?=(${literal})${vowelRestriction})`);
+    const longer = longerShortform(shortform);
+    if (longer !== undefined) {
+      const startsWord = longer.guards.some(guard => guard.kind === "word-start");
+      const following = longer.guards.flatMap(guard => guard.kind === "following-not-vowel-y"
+        ? [`(?![${guard.characters}])`] : []).join("");
+      patterns.push(`${startsWord ? "^" : ""}(?=(${literal})${following})`);
     }
     const forms = [literal, ...APPENDIX1_LONGER_WORDS
       .filter((entry) => entry.base === shortform.print)
       .map((entry) => entry.print.replace(shortform.print, literal))];
     for (const form of forms) {
       words.add(form);
-      words.add(`${form}'s`);
-      if (form !== literal || !["about", "almost", "him"].includes(shortform.print)) {
-        words.add(`${form}s`);
-        words.add(`${form}s'`);
+      for (const suffix of shortformSuffixes(form === literal ? shortform.print : form)) {
+        words.add(form + suffix);
+        if (suffix === "s") words.add(`${form}s'`);
       }
     }
   }
@@ -256,6 +258,10 @@ function contextualRules(rule: Grade2RuleSource): readonly ContextualRuleSource[
   ];
 }
 
+function shortformSuffixes(print: string): readonly string[] {
+  return ["about", "almost", "him"].includes(print) ? ["'s"] : ["s", "'s"];
+}
+
 function wholeShortform(rule: ShortformSource): ContextualRuleSource {
   return {
     braille: rule.braille,
@@ -265,8 +271,7 @@ function wholeShortform(rule: ShortformSource): ContextualRuleSource {
       { kind: "word-start" },
       // ICEB 10.9.5: s and apostrophe-s retain a standing shortform.
       // The three exceptions apply only to s, not to apostrophe-s.
-      { kind: "word-with-affixes", affixes:
-        ["about", "almost", "him"].includes(rule.print) ? ["'s"] : ["s", "'s"] },
+      { kind: "word-with-affixes", affixes: shortformSuffixes(rule.print) },
     ],
     id: rule.id,
     input: rule.print,
