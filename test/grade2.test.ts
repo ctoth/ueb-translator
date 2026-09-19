@@ -505,6 +505,19 @@ describe("translateGrade2", () => {
     });
   });
 
+  // ICEB 2024 10.9.7 requires protection only when the sequence could be
+  // read as a shortform. Internal capitals (8.3) interrupt that sequence.
+  it.each([
+    ["BrL", "⠠⠃⠗⠠⠇"],
+    ["bRl", "⠃⠠⠗⠇"],
+    ["BRl", "⠠⠠⠃⠗⠠⠄⠇"],
+    ["brl", "⠰⠃⠗⠇"],
+    ["Brl", "⠰⠠⠃⠗⠇"],
+    ["BRL", "⠰⠠⠠⠃⠗⠇"],
+  ] as const)("protects shortform spellings only across stable modes in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it("applies the UEB 2.6 standing-alone punctuation rules", () => {
     expect(translateGrade2("(can) out-and-out")).toEqual({
       braille: "⠐⠣⠉⠐⠜⠀⠳⠤⠯⠤⠳",
