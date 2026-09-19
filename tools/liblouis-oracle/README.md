@@ -132,6 +132,56 @@ evidence, and stable semantic fingerprint. Reproduce a run by setting
 result before idempotent issue filing; a fingerprint marker deduplicates both
 open and closed issues, and filing failure leaves the job failed.
 
+## Exploring more cases
+
+Build once with `npm run oracle:build` and set the pinned oracle environment
+described above. A full-length scan continues through translation disagreements:
+
+```powershell
+$env:ORACLE_FUZZ_NUM_RUNS = "1000000"
+$env:ORACLE_SCAN_DIRECTORY = ".oracle-artifacts/million-run"
+npm run oracle:fuzz:scan
+```
+
+The output directory must be new. It retains `configuration.json` before any
+translations, `evidence.jsonl` as findings arrive, and `summary.json` every
+10,000 cases and at completion. Set `ORACLE_FUZZ_SEED` to replay a recorded seed.
+`complete: true` means every requested case ran; `ok: false` and exit code 1
+mean untriaged disagreements remain. Infrastructure errors stop the scan without
+claiming completion. Use the same seed with `npm run oracle:fuzz` to shrink the
+first unknown signature. Scans recognize the existing semantic fuzz signatures,
+but retain each distinct exact evidence digest; `uniqueFingerprints` and
+`uniqueEvidence` deliberately count different things. No command edits a ledger.
+
+Prepare and compare a candidate Wikinews snapshot before spending time sweeping
+unchanged documents:
+
+```powershell
+npm run corpus:prepare -- wikinews --snapshot 20260901
+npm run oracle:corpus:compare -- .corpus-cache/prepared/wikinews-20260801 .corpus-cache/prepared/wikinews-20260901
+```
+
+Comparison verifies every retained document digest and reports added, changed,
+removed and unchanged source IDs. Equal text in different documents remains
+separate evidence. Duplicate source IDs are rejected. A changed snapshot date
+alone does not establish new coverage.
+
+Acquire individual Gutenberg books without harvesting the entire catalog:
+
+```powershell
+npm run oracle:corpus:prepare-book -- 11
+npm run oracle:corpus:prepare-book -- 2701
+npm run oracle:corpus:scan -- PATH_FROM_FIRST_COMMAND PATH_FROM_SECOND_COMMAND > .oracle-artifacts/new-books.jsonl
+```
+
+Book preparation retains the downloaded bytes, their SHA-256 digest, extracted
+text, and a source manifest. The exploratory corpus sweep reports progress and
+an `exploration-summary`; it exits 1 for untriaged evidence. It compares exact
+evidence against the retained ledger without calling unrelated baseline entries
+stale or consuming known entries when a case repeats. Distinct source evidence
+sharing a case ID is preserved. Review findings against ICEB before changing
+translation rules or promoting a new corpus into the CI baseline.
+
 [release]: https://github.com/liblouis/liblouis/releases/tag/v3.38.0
 [g1]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g1.ctb
 [g2]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g2.ctb

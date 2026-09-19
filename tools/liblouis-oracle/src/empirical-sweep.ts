@@ -15,6 +15,9 @@ import {
 } from "./differential.js";
 import { parseEmpiricalLedger } from "./empirical-ledger.js";
 import { runOracleTranslations, verifyOracleVersion } from "./runner.js";
+import { ExplorationTracker } from "./exploration.js";
+import { isCompactEmpiricalEntry } from "./empirical-ledger.js";
+import { comparisonEvidenceDigest } from "./ledger.js";
 
 const BATCH_SIZE = 2_000;
 
@@ -48,6 +51,7 @@ async function sweep(
   cases: Iterable<DifferentialCase>,
   caseIdPrefix: string,
   ledgerName: string,
+  exploratory = false,
 ): Promise<void> {
   const ledgerPath = resolve(
     process.cwd(),
@@ -66,6 +70,13 @@ async function sweep(
       writeJson({ evidence, kind: "untriaged-disagreement", ok: false });
     },
   );
+  const exploration = new ExplorationTracker(new Set(
+    parsedLedger.ledger.disagreements.map((entry) => isCompactEmpiricalEntry(entry)
+      ? entry.evidenceDigest : comparisonEvidenceDigest(entry)),
+  ), comparisonEvidenceDigest, (evidence) => {
+    writeJson({ evidence, evidenceDigest: comparisonEvidenceDigest(evidence),
+      kind: "untriaged-disagreement", ok: false });
+  });
   const executable = process.env["LIBLOUIS_ORACLE_BIN"] ?? "lou_translate";
   const version = await verifyOracleVersion(executable);
   let caseCount = 0;
@@ -91,9 +102,11 @@ async function sweep(
       if (!comparison.ok) {
         disagreements += 1;
       }
-      reconciler.accept(comparison);
+      if (exploratory) exploration.accept(comparison.ok ? undefined : comparison.evidence);
+      else reconciler.accept(comparison);
     }
     caseCount += batch.length;
+    if (exploratory) writeJson({ ...exploration.summary(), kind: "exploration-progress", complete: false });
   };
   for (const case_ of cases) {
     batch.push(case_);
@@ -104,6 +117,12 @@ async function sweep(
   }
   if (batch.length > 0) {
     await runBatch();
+  }
+  if (exploratory) {
+    const result = exploration.summary();
+    writeJson({ ...result, kind: "exploration-summary", complete: true });
+    if (!result.ok) process.exitCode = 1;
+    return;
   }
   const result = reconciler.finish();
   for (const entry of result.stale) {
@@ -129,17 +148,17 @@ async function main(): Promise<void> {
     await sweep(words.map(buildDictionaryCase), "scowl:", "empirical-disagreements.json");
     return;
   }
-  if (channel === "corpus" && paths.length > 0) {
+  if ((channel === "corpus" || channel === "corpus-explore") && paths.length > 0) {
     function* allCorpusCases(): Generator<DifferentialCase> {
       for (const path of paths) {
         yield* loadCorpusCases(path);
       }
     }
-    await sweep(allCorpusCases(), "corpus:", "empirical-corpus-disagreements.json");
+    await sweep(allCorpusCases(), "corpus:", "empirical-corpus-disagreements.json", channel === "corpus-explore");
     return;
   }
   throw new Error(
-    "usage: empirical-sweep dictionary WORDLIST | empirical-sweep corpus CORPUS...",
+    "usage: empirical-sweep dictionary WORDLIST | empirical-sweep corpus|corpus-explore CORPUS...",
   );
 }
 
