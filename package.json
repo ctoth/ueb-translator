@@ -124,6 +124,7 @@
     "oracle:dictionary:check": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/empirical-sweep.js dictionary .corpus-cache/scowl/2020.12.07-level-95/words.txt",
     "oracle:fuzz": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/fuzz-sweep.js",
     "oracle:fuzz:scan": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/fuzz-scan-cli.js",
+    "oracle:review": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/review-cli.js",
     "oracle:corpus:compare": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/corpus-compare-cli.js",
     "oracle:corpus:scan": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/src/empirical-sweep.js corpus-explore",
     "oracle:corpus:prepare-book": "node node_modules/.cache/ueb-translator/liblouis-oracle/tools/liblouis-oracle/prepare-gutenberg-book.mjs",
