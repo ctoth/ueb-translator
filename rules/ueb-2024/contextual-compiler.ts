@@ -25,7 +25,7 @@ export type ContextualRuleGuard =
       readonly kind: "not-crossing";
       readonly boundaries: readonly ContextualBoundaryKind[];
     }
-  | { readonly ignoredCharacters: string; readonly kind: "not-word"; readonly words: readonly string[] }
+  | { readonly ignoredCharacters: string; readonly kind: "not-word" | "not-standing-word"; readonly words: readonly string[] }
   | { readonly kind: "not-word-ending"; readonly endings: readonly string[] }
   | { readonly kind: "not-word-end" }
   | { readonly kind: "not-word-start" }
@@ -154,6 +154,7 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
     case "previous-not":
       return [guard.characters];
     case "not-word":
+    case "not-standing-word":
       return [[...guard.words].sort(compareText).join("\u0000"), guard.ignoredCharacters];
     case "not-word-ending":
       return [[...guard.endings].sort(compareText).join("\u0000")];
@@ -224,6 +225,8 @@ function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
       return CONTEXTUAL_GUARD_SCHEMA.notCrossing.opcode;
     case "not-word":
       return CONTEXTUAL_GUARD_SCHEMA.notWord.opcode;
+    case "not-standing-word":
+      return CONTEXTUAL_GUARD_SCHEMA.notStandingWord.opcode;
     case "not-word-ending":
       return CONTEXTUAL_GUARD_SCHEMA.notWordEnding.opcode;
     case "not-word-end":
@@ -301,8 +304,10 @@ function compileGuard(
     case "not-crossing":
       return [CONTEXTUAL_GUARD_SCHEMA.notCrossing.opcode, boundaryMask(guard.boundaries)];
     case "not-word":
+    case "not-standing-word":
       return [
-        CONTEXTUAL_GUARD_SCHEMA.notWord.opcode,
+        guard.kind === "not-word" ? CONTEXTUAL_GUARD_SCHEMA.notWord.opcode
+          : CONTEXTUAL_GUARD_SCHEMA.notStandingWord.opcode,
         requireContextualOperandIndex(
           [...guard.words].sort(compareText).join("\u0000"),
           operandIndexes,
@@ -357,6 +362,7 @@ function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
     case "not-crossing":
       return { boundaries: [...guard.boundaries], kind: guard.kind };
     case "not-word":
+    case "not-standing-word":
       return {
         ignoredCharacters: guard.ignoredCharacters,
         kind: guard.kind,

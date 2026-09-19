@@ -167,6 +167,16 @@ describe("translateGrade2", () => {
   });
 
   // ICEB 10.9.5 applies to every base shortform, with three explicit exceptions.
+  it.each([
+    ["mst", "⠍⠎⠞"], ["msts", "⠍⠎⠞⠎"],
+    ["MST's", "⠠⠠⠍⠎⠞⠄⠎"], ["(mst)", "⠐⠣⠍⠎⠞⠐⠜"],
+    ["mst-mst", "⠍⠎⠞⠤⠍⠎⠞"], ["Herf", "⠠⠓⠑⠗⠋"],
+    ["somesch", "⠐⠎⠎⠉⠓"],
+    ["www.sch.edu.au", "⠺⠺⠺⠲⠎⠡⠲⠫⠥⠲⠁⠥"],
+  ] as const)("avoids groupsign-created shortforms under 10.9.6 in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it.each(SHORTFORMS)("retains $id with permitted s and possessive endings", (rule) => {
     for (const suffix of ["s", "'s"]) {
       const result = traceGrade2(rule.print + suffix);

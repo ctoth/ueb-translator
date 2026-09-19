@@ -96,6 +96,44 @@ function precedenceFor(rule: Grade2RuleSource): ContextualPrecedence {
   }
 }
 
+/** ICEB 10.9.6: derive conflicting spellings from our own shortform inventory. */
+function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRuleGuard[] {
+  const groupsigns = GRADE2_RULES.filter((entry) =>
+    entry.kind === "strong-groupsign" || entry.kind === "lower-groupsign" ||
+    entry.kind === "strong-contraction" || entry.kind === "initial-letter-contraction");
+  if (!groupsigns.some((entry) => entry === rule)) return [];
+  const spellings = [
+    ...groupsigns,
+    ...SYMBOL_RULES.filter((entry) => entry.kind === "letter" && /^[a-z]$/u.test(entry.print)),
+  ].sort((a, b) => b.braille.length - a.braille.length);
+  const words = new Set<string>();
+  for (const shortform of SHORTFORMS) {
+    let remaining = shortform.braille, literal = "", usesGroupsign = false;
+    while (remaining.length > 0) {
+      const symbol = spellings.find((entry) => remaining.startsWith(entry.braille));
+      if (symbol === undefined) throw new Error(`Cannot decode shortform ${shortform.print}`);
+      literal += symbol.print;
+      usesGroupsign ||= symbol === rule;
+      remaining = remaining.slice(symbol.braille.length);
+    }
+    if (!usesGroupsign || literal === shortform.print) continue;
+    const forms = [literal, ...APPENDIX1_LONGER_WORDS
+      .filter((entry) => entry.base === shortform.print)
+      .map((entry) => entry.print.replace(shortform.print, literal))];
+    for (const form of forms) {
+      words.add(form);
+      words.add(`${form}'s`);
+      if (form !== literal || !["about", "almost", "him"].includes(shortform.print)) {
+        words.add(`${form}s`);
+        words.add(`${form}s'`);
+      }
+    }
+  }
+  return words.size === 0 ? [] : [{
+    ignoredCharacters: "", kind: "not-standing-word", words: [...words].sort(),
+  }];
+}
+
 export function compileGrade2RuleGuards(
   rule: Grade2RuleSource,
 ): readonly ContextualRuleGuard[] {
@@ -185,7 +223,7 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
   return {
     braille: rule.braille,
     citation: rule.citation,
-    guards: compileGrade2RuleGuards(rule),
+    guards: [...compileGrade2RuleGuards(rule), ...shortformCollisionGuards(rule)],
     id: rule.id,
     input: rule.print,
     precedence: precedenceFor(rule),

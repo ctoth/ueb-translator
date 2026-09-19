@@ -158,7 +158,7 @@ function ruleExample(rule: ContextualRuleSource): string {
   if (
     guardKinds.has("standing-alone") &&
     guardKinds.has("word-start") &&
-    guardKinds.has("word-end")
+    (guardKinds.has("word-end") || guardKinds.has("word-with-affixes"))
   ) {
     return rule.input;
   }

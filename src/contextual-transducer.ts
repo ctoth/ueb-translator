@@ -268,7 +268,9 @@ function guardAllows(
     case 4:
     case 5:
       return !crossesBoundaryMask(start, end, context.boundaries, guard[1]);
-    case 6: {
+    case 6:
+    case 20: {
+      if (guard[0] === 20 && !context.standing) return true;
       const operand = operandAt(program, guard[1]);
       const ignored = operandAt(program, guard[2]);
       const excluded = operand.split("\u0000");
