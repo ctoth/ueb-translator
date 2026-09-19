@@ -166,6 +166,32 @@ describe("translateGrade2", () => {
     }
   });
 
+  // ICEB 10.9.5 applies to every base shortform, with three explicit exceptions.
+  it.each(SHORTFORMS)("retains $id with permitted s and possessive endings", (rule) => {
+    for (const suffix of ["s", "'s"]) {
+      const result = traceGrade2(rule.print + suffix);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        const ids = result.rules.map((applied) => applied.id);
+        if (suffix === "s" && ["about", "almost", "him"].includes(rule.print)) {
+          expect(ids).not.toContain(rule.id);
+        } else {
+          expect(ids).toContain(rule.id);
+        }
+      }
+    }
+  });
+
+  it.each([
+    ["afterwards", "⠁⠋⠺⠎"],
+    ["besides", "⠆⠎⠎"],
+    ["(Afterwards)", "⠐⠣⠠⠁⠋⠺⠎⠐⠜"],
+    ["BESIDES", "⠠⠠⠆⠎⠎"],
+    ["about's", "⠁⠃⠄⠎"],
+  ] as const)("retains the shortform plus suffix in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it.each([
     ["do-it-yourselfer", "⠙⠤⠭⠤⠽⠗⠋⠻"],
     ["Do-it-yourselfer", "⠠⠙⠤⠭⠤⠽⠗⠋⠻"],

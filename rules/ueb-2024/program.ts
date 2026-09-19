@@ -216,7 +216,10 @@ function wholeShortform(rule: ShortformSource): ContextualRuleSource {
     guards: [
       { kind: "standing-alone" },
       { kind: "word-start" },
-      { kind: "word-end" },
+      // ICEB 10.9.5: s and apostrophe-s retain a standing shortform.
+      // The three exceptions apply only to s, not to apostrophe-s.
+      { kind: "word-with-affixes", affixes:
+        ["about", "almost", "him"].includes(rule.print) ? ["'s"] : ["s", "'s"] },
     ],
     id: rule.id,
     input: rule.print,
