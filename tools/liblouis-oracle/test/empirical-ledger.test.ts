@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { parseEmpiricalLedger } from "../src/empirical-ledger.js";
+import { parseEmpiricalLedger, isCompactEmpiricalEntry } from "../src/empirical-ledger.js";
 import { EmpiricalReconciler } from "../src/empirical-reconciliation.js";
 import { comparisonEvidenceDigest } from "../src/ledger.js";
 
@@ -50,7 +50,13 @@ describe("grouped empirical ledger", () => {
     const disagreements = rawLedger["disagreements"];
     expect(isUnknownArray(disagreements)).toBe(true);
     if (!isUnknownArray(disagreements)) return;
-    expect(disagreements).toHaveLength(62_012);
+    expect(disagreements).toHaveLength(37_892);
+    if (parsed.ok) {
+      const entries = parsed.ledger.disagreements;
+      expect(new Set(entries.map(entry => isCompactEmpiricalEntry(entry)
+        ? entry.evidenceDigest : comparisonEvidenceDigest(entry))).size).toBe(entries.length);
+      expect(new Set(entries.map(entry => entry.caseId)).size).toBeLessThan(entries.length);
+    }
     const unsupportedForeign = disagreements.filter((entry) =>
       isRecord(entry) && entry["groupId"] === "corpus-unsupported-foreign"
     );

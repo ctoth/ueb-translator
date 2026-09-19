@@ -50,6 +50,12 @@ const suffixGuardProgram: ContextualTransducerProgram = {
   stringOperands: [],
 };
 
+it("protects standing collision spans when no mode override is supplied", () => {
+  expect(translateGuard("ab", [20, 0, 1], ["ab", ""])).toBe("AB");
+  expect(translateGuard("ab", [21, 0], ["(?=(ab))"])).toBe("AB");
+  expect(translateGuard("ab", [21, 0], ["z"])).toBe("X");
+});
+
 function translate(
   boundary: boolean,
   program: ContextualTransducerProgram = suffixGuardProgram,

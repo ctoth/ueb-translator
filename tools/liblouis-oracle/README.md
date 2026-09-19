@@ -132,7 +132,158 @@ evidence, and stable semantic fingerprint. Reproduce a run by setting
 result before idempotent issue filing; a fingerprint marker deduplicates both
 open and closed issues, and filing failure leaves the job failed.
 
+## Exploring more cases
+
+Build once with `npm run oracle:build` and set the pinned oracle environment
+described above. A full-length scan continues through translation disagreements:
+
+```powershell
+$env:ORACLE_FUZZ_NUM_RUNS = "1000000"
+$env:ORACLE_SCAN_DIRECTORY = ".oracle-artifacts/million-run"
+npm run oracle:fuzz:scan
+```
+
+The output directory must be new. It retains `configuration.json` before any
+translations, `evidence.jsonl` as findings arrive, and `summary.json` every
+10,000 cases and at completion. Set `ORACLE_FUZZ_SEED` to replay a recorded seed.
+`complete: true` means every requested case ran; `ok: false` and exit code 1
+mean untriaged disagreements remain. Infrastructure errors stop the scan without
+claiming completion. Use the same seed with `npm run oracle:fuzz` to shrink the
+first unknown signature. Scans recognize the existing semantic fuzz signatures,
+but retain each distinct exact evidence digest; `uniqueFingerprints` and
+`uniqueEvidence` deliberately count different things. No command edits a ledger.
+
+Prepare and compare a candidate Wikinews snapshot before spending time sweeping
+unchanged documents:
+
+```powershell
+npm run corpus:prepare -- wikinews --snapshot 20260901
+npm run oracle:corpus:compare -- .corpus-cache/prepared/wikinews-20260801 .corpus-cache/prepared/wikinews-20260901
+```
+
+Comparison verifies every retained document digest and reports added, changed,
+removed and unchanged source IDs. Equal text in different documents remains
+separate evidence. Duplicate source IDs are rejected. A changed snapshot date
+alone does not establish new coverage.
+
+Acquire individual Gutenberg books without harvesting the entire catalog:
+
+```powershell
+npm run oracle:corpus:prepare-book -- 11
+npm run oracle:corpus:prepare-book -- 2701
+npm run oracle:corpus:scan -- PATH_FROM_FIRST_COMMAND PATH_FROM_SECOND_COMMAND > .oracle-artifacts/new-books.jsonl
+```
+
+Book preparation retains the downloaded bytes, their SHA-256 digest, extracted
+text, and a source manifest. The exploratory corpus sweep reports progress and
+an `exploration-summary`; it exits 1 for untriaged evidence. It compares exact
+evidence against the retained ledger without calling unrelated baseline entries
+stale or consuming known entries when a case repeats. Distinct source evidence
+sharing a case ID is preserved. Review findings against ICEB before changing
+translation rules or promoting a new corpus into the CI baseline.
+
+## Reviewing retained findings
+
+`oracle:review` turns scan artifacts into a persistent review workspace. It does
+not change the translator or the accepted disagreement ledgers.
+
+```powershell
+npm run oracle:build
+npm run oracle:review -- index .oracle-artifacts/review .oracle-artifacts/million-run/evidence.jsonl .oracle-artifacts/new-books.jsonl
+npm run oracle:review -- list .oracle-artifacts/review
+npm run oracle:review -- list .oracle-artifacts/review been
+npm run oracle:review -- list .oracle-artifacts/review "*" 50
+npm run oracle:review -- show .oracle-artifacts/review GROUP_ID_PREFIX
+npm run oracle:review -- evidence .oracle-artifacts/review EVIDENCE_DIGEST_PREFIX
+npm run oracle:review -- ledger tools/liblouis-oracle/empirical-disagreements.json mst
+```
+
+The index validates supplied evidence digests and preserves distinct source
+records sharing a case ID. Exact duplicate records are counted once. Repeated
+token differences are grouped only when their input, outputs, alignment, oracle
+version and tables match. Word alignment is a review aid based on matching
+whitespace-token counts and matching separators; it is not an adjudication. If
+token counts or separators differ, the whole input stays together. `show`
+presents ten source contexts at a time; pass
+the returned `nextOffset` as its final argument to continue. `evidence` retrieves
+the full original record. Group and evidence prefixes must be unambiguous.
+
+Author decisions in a JSON file after checking ICEB/BANA sources and relevant
+contexts. Use `groupId` for one group or `groupIds` for an explicitly selected
+batch with the same reasoning:
+
+```json
+[
+  {
+    "groupId": "GROUP_ID_PREFIX",
+    "rule": "ICEB 2024 10.6.1",
+    "verdict": {
+      "kind": "our-bug",
+      "rationale": "Explain how the cited rule decides this exact difference.",
+      "sources": ["https://iceb.org/publications/ueb/"]
+    }
+  }
+]
+```
+
+```powershell
+npm run oracle:review -- decide .oracle-artifacts/review decisions.json
+npm run oracle:review -- report .oracle-artifacts/review
+npm run oracle:review -- report .oracle-artifacts/review --decisions
+```
+
+An optional `evidenceDigests` array limits a decision to particular source
+records. Otherwise the decision captures the group's current exact evidence
+digests. The complete batch is validated before any decisions are appended.
+Later decisions revise the selected scope while retaining earlier decisions in
+the append-only history. A sentence counts as fully reviewed only when every
+indexed difference in it has a decision; deciding one word never adjudicates
+other differences in that sentence. Counts describe reviewed differences, not
+distinct bugs. Unknown or uncertain cases remain pending instead of being
+automatically labelled permitted alternatives.
+
 [release]: https://github.com/liblouis/liblouis/releases/tag/v3.38.0
+## Reconciliation after translator repairs
+
+Build a baseline checkout's `dist/grade2.js` before changing its translator.
+`oracle:reconcile:audit LEDGER SWEEP BASELINE_MODULE dictionary|corpus PATH...`
+replays every stale record using both translator versions and the pinned oracle.
+It fails unless every stale digest is recovered and every changed disagreement
+is accounted for. Source identities sharing a case ID remain separate.
+
+```powershell
+npm run oracle:build
+npm run oracle:reconcile -- list .oracle-artifacts/audit.jsonl
+# After individually reviewing all displayed transitions against ICEB:
+npm run oracle:reconcile -- approve .oracle-artifacts/audit.jsonl reviewed-verdict.json approvals.json
+npm run oracle:reconcile -- apply ledger.json .oracle-artifacts/audit.jsonl approvals.json candidate-ledger.json
+```
+
+`approve` records an explicit review of all transitions in that audit; it does
+not infer a verdict. Supply a verdict with a rationale and official source URLs.
+`apply` refuses unapproved changes and changes not proven to reach agreement
+at the corrected span. It removes only verified whole-input agreements. For partially repaired
+sentences it retains the prior verdict on byte-identical residual differences.
+It checks evidence counts and refuses digest collisions before writing a new
+candidate file. Inspect that candidate before replacing the accepted ledger.
+
+`oracle:reconcile fuzz LEDGER RESULT VERDICT OUTPUT` records an individually
+adjudicated fuzz counterexample. To select a captured record from scan JSONL,
+append its unique evidence digest prefix. All output files are created exclusively.
+
+On Windows, `run-wsl.ps1` provides the same retained corpus paths and portable
+argument handling for `dictionary`, `corpus`, `inventory`, `fuzz`, `scan`,
+`audit-dictionary`, and `audit-corpus`:
+
+```powershell
+./tools/liblouis-oracle/run-wsl.ps1 -Channel dictionary -Output .oracle-artifacts/dictionary.jsonl -OracleBinary /path/to/lou_translate -NodeBinary /path/to/node
+./tools/liblouis-oracle/run-wsl.ps1 -Channel audit-corpus -Output .oracle-artifacts/audit.jsonl -OracleBinary /path/to/lou_translate -NodeBinary /path/to/node -Sweep .oracle-artifacts/corpus.jsonl -BaselineModule /path/to/baseline/dist/grade2.js
+```
+
+Run `npm run oracle:build` first. Audit paths passed to WSL must be WSL paths;
+`-Output` is a Windows path. Fuzz/scan accept `-Seed` and `-Runs`. These commands
+preserve the child exit code and refuse to replace existing logs.
+
 [g1]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g1.ctb
 [g2]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-g2.ctb
 [math]: https://github.com/liblouis/liblouis/blob/v3.38.0/tables/en-ueb-math.ctb

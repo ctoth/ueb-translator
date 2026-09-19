@@ -148,6 +148,8 @@ export interface ComposedContractionProgram extends ContextualTransducerProgram 
 }
 
 export interface ContextualTransducerInput {
+  /** Whether mode indicators permit a span to be read as one contraction. */
+  readonly isStableSpan?: (start: number, end: number) => boolean;
   readonly boundaries: readonly ContextualBoundary[];
   readonly eligibilityOffset: number;
   readonly eligibilityWord: string;
@@ -268,7 +270,10 @@ function guardAllows(
     case 4:
     case 5:
       return !crossesBoundaryMask(start, end, context.boundaries, guard[1]);
-    case 6: {
+    case 6:
+    case 20: {
+      if (guard[0] === 20 && !context.standing) return true;
+      if (guard[0] === 20 && context.isStableSpan?.(0, context.word.length) === false) return true;
       const operand = operandAt(program, guard[1]);
       const ignored = operandAt(program, guard[2]);
       const excluded = operand.split("\u0000");
@@ -313,6 +318,14 @@ function guardAllows(
     }
     case 19:
       return start !== 0 || context.precededByLetter === true;
+    case 21:
+      if (!context.standing) return true;
+      for (const match of context.word.matchAll(new RegExp(operandAt(program, guard[1]), "gu"))) {
+        const span = match[1];
+        if (span !== undefined && start < match.index + span.length && end > match.index &&
+            context.isStableSpan?.(match.index, match.index + span.length) !== false) return false;
+      }
+      return true;
   }
 }
 

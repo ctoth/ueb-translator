@@ -476,6 +476,8 @@ export function compose(
                   })),
                 eligibilityOffset,
                 eligibilityWord,
+                isStableSpan: (start, end) => contractionModePlan !== undefined &&
+                  canCollapseModeSpan(contractionModePlan, { start: range.start + start, end: range.start + end }),
                 exclusionWords: [
                   exclusionComponent(units, lexical, range, policies, bucketAlphabet),
                   exclusionComponent(units, component, range, policies, bucketAlphabet),

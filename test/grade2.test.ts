@@ -93,7 +93,7 @@ describe("official Grade 2 source inventory", () => {
 
   it("cites the conservative implicit-boundary exception data", () => {
     expect(COMPOUND_CONTRACTION_EXCEPTIONS).toHaveLength(2);
-    expect(FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS).toHaveLength(2);
+    expect(FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS).toHaveLength(3);
     for (const constraint of COMPOUND_CONTRACTION_EXCEPTIONS) {
       expect(constraint.citation).toEqual(expect.objectContaining({
         authority: "ICEB",
@@ -164,6 +164,48 @@ describe("translateGrade2", () => {
     if (result.ok) {
       expect(result.rules.map((applied) => applied.id)).toContain(rule.id);
     }
+  });
+
+  // ICEB 10.9.5 applies to every base shortform, with three explicit exceptions.
+  it.each([
+    ["mst", "⠍⠎⠞"], ["msts", "⠍⠎⠞⠎"],
+    ["MST's", "⠠⠠⠍⠎⠞⠄⠎"], ["(mst)", "⠐⠣⠍⠎⠞⠐⠜"],
+    ["mst-mst", "⠍⠎⠞⠤⠍⠎⠞"], ["Herf", "⠠⠓⠑⠗⠋"],
+    ["somesch", "⠐⠎⠎⠉⠓"],
+    ["(chnj)", "⠐⠣⠉⠓⠝⠚⠐⠜"],
+    ["chnchj", "⠉⠓⠝⠡⠚"],
+    ["xchnj", "⠭⠉⠓⠝⠚"],
+    ["chna", "⠡⠝⠁"],
+    ["ChNz", "⠠⠡⠠⠝⠵"],
+    ["HerF", "⠠⠓⠻⠠⠋"],
+    ["www.sch.edu.au", "⠺⠺⠺⠲⠎⠡⠲⠫⠥⠲⠁⠥"],
+  ] as const)("avoids groupsign-created shortforms under 10.9.6 in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  it.each(SHORTFORMS)("retains $id with permitted s and possessive endings", (rule) => {
+    for (const suffix of ["s", "'s"]) {
+      const result = traceGrade2(rule.print + suffix);
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        const ids = result.rules.map((applied) => applied.id);
+        if (suffix === "s" && ["about", "almost", "him"].includes(rule.print)) {
+          expect(ids).not.toContain(rule.id);
+        } else {
+          expect(ids).toContain(rule.id);
+        }
+      }
+    }
+  });
+
+  it.each([
+    ["afterwards", "⠁⠋⠺⠎"],
+    ["besides", "⠆⠎⠎"],
+    ["(Afterwards)", "⠐⠣⠠⠁⠋⠺⠎⠐⠜"],
+    ["BESIDES", "⠠⠠⠆⠎⠎"],
+    ["about's", "⠁⠃⠄⠎"],
+  ] as const)("retains the shortform plus suffix in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
   it.each([
@@ -810,6 +852,15 @@ describe("translateGrade2", () => {
     ["beauty", "⠃⠂⠥⠞⠽"],
     ["bead", "⠃⠂⠙"],
     ["beads", "⠃⠂⠙⠎"],
+    // ICEB 10.6.1 and the explicit counterexamples in 10.10.4.
+    ["been", "⠃⠑⠢"],
+    ["Been", "⠠⠃⠑⠢"],
+    ["BEEN", "⠠⠠⠃⠑⠢"],
+    ["beautiful", "⠃⠂⠥⠞⠊⠰⠇"],
+    ["beautifully", "⠃⠂⠥⠞⠊⠰⠇⠇⠽"],
+    ["dish", "⠙⠊⠩"],
+    ["dishes", "⠙⠊⠩⠑⠎"],
+    ["dish's", "⠙⠊⠩⠄⠎"],
   ] as const)(
     "does not use a first-syllable groupsign in the official %s counterexample",
     (text, braille) => {

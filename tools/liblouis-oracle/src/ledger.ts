@@ -163,7 +163,7 @@ function parseOracle(
   };
 }
 
-function parseVerdict(
+export function parseVerdict(
   value: unknown,
 ): DisagreementVerdict | InvalidDisagreementLedger {
   if (!isRecord(value)) {
@@ -255,6 +255,22 @@ function parseEntry(
     return verdict;
   }
   return { caseId, input, local, oracle, verdict };
+}
+
+/** Validate raw review evidence without inventing an adjudication verdict. */
+export function parseComparisonEvidence(
+  value: unknown,
+): ComparisonEvidence | InvalidDisagreementLedger {
+  if (!isRecord(value)) return invalid("evidence must be an object");
+  const extra = unknownField(value, new Set(["caseId", "input", "local", "oracle"]));
+  if (extra !== undefined) return invalid(`unknown evidence field: ${extra}`);
+  const caseId = value["caseId"], input = value["input"];
+  if (!isNonEmptyString(caseId) || typeof input !== "string") return invalid("invalid evidence identity");
+  const local = parseLocal(value["local"]);
+  if ("ok" in local) return local;
+  const oracle = parseOracle(value["oracle"]);
+  if ("ok" in oracle) return oracle;
+  return { caseId, input, local, oracle };
 }
 
 export function parseDisagreementLedger(
