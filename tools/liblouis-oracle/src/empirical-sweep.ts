@@ -50,10 +50,12 @@ async function sweep(
       writeJson({ evidence, kind: "untriaged-disagreement", ok: false });
     },
   );
-  const exploration = new ExplorationTracker(new Set(
+  const knownDigests = new Set(
     parsedLedger.ledger.disagreements.map((entry) => isCompactEmpiricalEntry(entry)
       ? entry.evidenceDigest : comparisonEvidenceDigest(entry)),
-  ), comparisonEvidenceDigest, (evidence) => {
+  );
+  const exploration = new ExplorationTracker((evidence) =>
+    knownDigests.has(comparisonEvidenceDigest(evidence)), (evidence) => {
     writeJson({ evidence, evidenceDigest: comparisonEvidenceDigest(evidence),
       kind: "untriaged-disagreement", ok: false });
   });

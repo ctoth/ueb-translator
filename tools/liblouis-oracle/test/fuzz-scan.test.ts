@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { scanFuzzCases } from "../src/fuzz-scan.js";
 import { ExplorationTracker } from "../src/exploration.js";
-import { divergenceFingerprint } from "../src/empirical.js";
 
 describe("full-length fuzz scanning", () => {
   it("continues beyond disagreements and reports progress through the requested count", async () => {
-    const tracker = new ExplorationTracker(new Set(), divergenceFingerprint, () => { /* Count only. */ });
+    const tracker = new ExplorationTracker(() => false, () => { /* Count only. */ });
     let progress = 0;
     await scanFuzzCases({ numRuns: 10_001, seed: 19 }, tracker,
       (id) => Promise.resolve({ id, ok: true, output: "different",
@@ -16,7 +15,7 @@ describe("full-length fuzz scanning", () => {
   });
 
   it("stops on infrastructure errors without reporting a complete scan or shrinking them", async () => {
-    const tracker = new ExplorationTracker(new Set(), divergenceFingerprint, () => { /* No evidence expected. */ });
+    const tracker = new ExplorationTracker(() => false, () => { /* No evidence expected. */ });
     let calls = 0;
     await expect(scanFuzzCases({ numRuns: 100, seed: 19 }, tracker, () => {
       calls += 1;

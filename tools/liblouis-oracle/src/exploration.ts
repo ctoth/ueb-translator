@@ -4,8 +4,7 @@ import { comparisonEvidenceDigest } from "./ledger.js";
 
 /** Collect findings without consuming or modifying the adjudicated baseline. */
 export class ExplorationTracker {
-  readonly #known: ReadonlySet<string>;
-  readonly #key: (evidence: ComparisonEvidence) => string;
+  readonly #isKnown: (evidence: ComparisonEvidence) => boolean;
   readonly #write: (evidence: ComparisonEvidence) => void;
   readonly #digests = new Set<string>();
   readonly #fingerprints = new Set<string>();
@@ -14,12 +13,10 @@ export class ExplorationTracker {
   #knownCount = 0;
 
   constructor(
-    known: ReadonlySet<string>,
-    key: (evidence: ComparisonEvidence) => string,
+    isKnown: (evidence: ComparisonEvidence) => boolean,
     write: (evidence: ComparisonEvidence) => void,
   ) {
-    this.#known = known;
-    this.#key = key;
+    this.#isKnown = isKnown;
     this.#write = write;
   }
 
@@ -27,7 +24,7 @@ export class ExplorationTracker {
     this.#cases += 1;
     if (evidence === undefined) return;
     this.#disagreements += 1;
-    if (this.#known.has(this.#key(evidence))) {
+    if (this.#isKnown(evidence)) {
       this.#knownCount += 1;
       return;
     }

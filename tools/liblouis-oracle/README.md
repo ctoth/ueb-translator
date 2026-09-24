@@ -135,6 +135,24 @@ of failing the job: a fingerprint marker finds an open issue, reopens a closed
 one with the new replay evidence, or creates one. Infrastructure errors,
 filing failures, and divergences found by manual runs leave the job failed.
 
+### Divergence families
+
+Generated strings reproduce an adjudicated divergence type in endless new
+contexts, which an exact fingerprint cannot recognize. `src/fuzz-families.ts`
+describes such types as rule-level predicates. A fuzz divergence counts as
+triaged when its fingerprint is ledgered or when every differing braille run
+(split along the longest common subsequence) matches a family. A family has no
+verdict of its own: it extends an existing ledger group whose ICEB rationale,
+here 10.12.7-10.12.8 for contrived words with unknown syllabification or
+pronunciation, covers every string the predicate accepts. Families apply to
+the fuzz channel only; dictionary and corpus evidence stays exact.
+
+Predicates are deliberately narrow. Inputs containing capital letters or an
+`encea`/`enced`/`encer` sequence (rule 10.10.6, #94) never match, and `be`
+before a vowel (#100) is left for adjudication. A test runs every family over
+the full ledger and fails if any family matches the group it extends nowhere,
+or would give a recorded divergence a different verdict kind.
+
 ## Exploring more cases
 
 Build once with `npm run oracle:build` and set the pinned oracle environment
@@ -152,8 +170,8 @@ translations, `evidence.jsonl` as findings arrive, and `summary.json` every
 `complete: true` means every requested case ran; `ok: false` and exit code 1
 mean untriaged disagreements remain. Infrastructure errors stop the scan without
 claiming completion. Use the same seed with `npm run oracle:fuzz` to shrink the
-first unknown signature. Scans recognize the existing semantic fuzz signatures,
-but retain each distinct exact evidence digest; `uniqueFingerprints` and
+first unknown signature. Scans recognize ledgered fuzz signatures and
+divergence families, but retain each distinct exact evidence digest; `uniqueFingerprints` and
 `uniqueEvidence` deliberately count different things. No command edits a ledger.
 
 Prepare and compare a candidate Wikinews snapshot before spending time sweeping

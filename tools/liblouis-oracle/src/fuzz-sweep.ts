@@ -8,6 +8,7 @@ import {
   divergenceFingerprint,
 } from "./empirical.js";
 import { buildFuzzArbitrary, parseFuzzRunConfiguration } from "./fuzz.js";
+import { createFuzzTriage } from "./fuzz-families.js";
 import { classifyFuzzResult, describeFuzzResult } from "./fuzz-issue.js";
 import {
   compareOracleTranslation,
@@ -45,13 +46,13 @@ async function main(): Promise<void> {
   if (!parsedLedger.ok) {
     throw new Error(`Invalid empirical disagreement ledger: ${parsedLedger.error}`);
   }
-  const known = new Set(
+  const triaged = createFuzzTriage(new Set(
     parsedLedger.ledger.disagreements
       .filter((entry): entry is DisagreementLedgerEntry =>
         !isCompactEmpiricalEntry(entry)
       )
       .map(divergenceFingerprint),
-  );
+  ));
   const configuration = parseFuzzRunConfiguration(process.env);
   const executable = process.env["LIBLOUIS_ORACLE_BIN"] ?? "lou_translate";
   const version = await verifyOracleVersion(executable);
@@ -63,7 +64,7 @@ async function main(): Promise<void> {
         const case_ = buildFuzzCase(input);
         const translation = await session.translate(case_.caseId, input);
         const comparison = compareOracleTranslation(case_, translation);
-        if (comparison.ok || known.has(divergenceFingerprint(comparison.evidence))) {
+        if (comparison.ok || triaged(comparison.evidence)) {
           return true;
         }
         unexpected = comparison.evidence;
