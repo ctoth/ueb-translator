@@ -128,9 +128,12 @@ group. An `our-bug` verdict carries the owning GitHub issue number.
 The separate scheduled workflow runs fast-check with a fresh signed 32-bit
 seed and records the seed, shrink path, shrink count, minimal input, exact
 evidence, and stable semantic fingerprint. Reproduce a run by setting
-`ORACLE_FUZZ_SEED` and `ORACLE_FUZZ_NUM_RUNS`. Scheduled failures upload the
-result before idempotent issue filing; a fingerprint marker deduplicates both
-open and closed issues, and filing failure leaves the job failed.
+`ORACLE_FUZZ_SEED` and `ORACLE_FUZZ_NUM_RUNS`. `npm run oracle:fuzz` prints
+the outcome and evidence to the log and exits 1 for a divergence or error.
+Scheduled divergences upload the result, then report through an issue instead
+of failing the job: a fingerprint marker finds an open issue, reopens a closed
+one with the new replay evidence, or creates one. Infrastructure errors,
+filing failures, and divergences found by manual runs leave the job failed.
 
 ## Exploring more cases
 
