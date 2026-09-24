@@ -8,6 +8,8 @@ import {
   divergenceFingerprint,
 } from "./empirical.js";
 import { buildFuzzArbitrary, parseFuzzRunConfiguration } from "./fuzz.js";
+import { createFuzzTriage } from "./fuzz-families.js";
+import { classifyFuzzResult, describeFuzzResult } from "./fuzz-issue.js";
 import {
   compareOracleTranslation,
   type ComparisonEvidence,
@@ -22,6 +24,11 @@ import { verifyOracleVersion } from "./runner.js";
 
 function messageFrom(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function recordResult(outputPath: string, value: unknown): void {
+  writeFileSync(outputPath, `${JSON.stringify(value, undefined, 2)}\n`);
+  console.log(describeFuzzResult(classifyFuzzResult(value)));
 }
 
 async function main(): Promise<void> {
@@ -39,13 +46,13 @@ async function main(): Promise<void> {
   if (!parsedLedger.ok) {
     throw new Error(`Invalid empirical disagreement ledger: ${parsedLedger.error}`);
   }
-  const known = new Set(
+  const triaged = createFuzzTriage(new Set(
     parsedLedger.ledger.disagreements
       .filter((entry): entry is DisagreementLedgerEntry =>
         !isCompactEmpiricalEntry(entry)
       )
       .map(divergenceFingerprint),
-  );
+  ));
   const configuration = parseFuzzRunConfiguration(process.env);
   const executable = process.env["LIBLOUIS_ORACLE_BIN"] ?? "lou_translate";
   const version = await verifyOracleVersion(executable);
@@ -57,7 +64,7 @@ async function main(): Promise<void> {
         const case_ = buildFuzzCase(input);
         const translation = await session.translate(case_.caseId, input);
         const comparison = compareOracleTranslation(case_, translation);
-        if (comparison.ok || known.has(divergenceFingerprint(comparison.evidence))) {
+        if (comparison.ok || triaged(comparison.evidence)) {
           return true;
         }
         unexpected = comparison.evidence;
@@ -69,7 +76,7 @@ async function main(): Promise<void> {
       if (unexpected === undefined) {
         throw new Error("fast-check failed without differential evidence");
       }
-      writeFileSync(outputPath, `${JSON.stringify({
+      recordResult(outputPath, {
         counterexample: result.counterexample,
         counterexamplePath: result.counterexamplePath,
         evidence: unexpected,
@@ -78,16 +85,16 @@ async function main(): Promise<void> {
         numShrinks: result.numShrinks,
         ok: false,
         seed: result.seed,
-      }, undefined, 2)}\n`);
+      });
       process.exitCode = 1;
       return;
     }
-    writeFileSync(outputPath, `${JSON.stringify({
+    recordResult(outputPath, {
       numRuns: result.numRuns,
       numShrinks: result.numShrinks,
       ok: true,
       seed: result.seed,
-    }, undefined, 2)}\n`);
+    });
   } finally {
     await session.close();
   }
@@ -98,9 +105,9 @@ void main().catch((error: unknown) => {
     process.env["ORACLE_FUZZ_RESULT"] ?? ".oracle-artifacts/fuzz-result.json",
   );
   mkdirSync(dirname(outputPath), { recursive: true });
-  writeFileSync(outputPath, `${JSON.stringify({
+  recordResult(outputPath, {
     error: messageFrom(error),
     ok: false,
-  }, undefined, 2)}\n`);
+  });
   process.exitCode = 1;
 });

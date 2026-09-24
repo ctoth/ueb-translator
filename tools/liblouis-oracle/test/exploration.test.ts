@@ -15,8 +15,7 @@ const evidence: ComparisonEvidence = {
 describe("exploratory evidence collection", () => {
   it("preserves distinct source evidence sharing a case ID and a fingerprint", () => {
     const saved: ComparisonEvidence[] = [];
-    const tracker = new ExplorationTracker(new Set(), comparisonEvidenceDigest,
-      (entry) => saved.push(entry));
+    const tracker = new ExplorationTracker(() => false, (entry) => saved.push(entry));
     const second = { ...evidence, local: { ...evidence.local, testId: "document:two" } };
     tracker.accept(evidence);
     tracker.accept(second);
@@ -29,8 +28,9 @@ describe("exploratory evidence collection", () => {
   });
 
   it("does not consume known evidence when the same case occurs twice", () => {
-    const tracker = new ExplorationTracker(new Set([comparisonEvidenceDigest(evidence)]),
-      comparisonEvidenceDigest, () => { throw new Error("Known evidence emitted"); });
+    const known = new Set([comparisonEvidenceDigest(evidence)]);
+    const tracker = new ExplorationTracker((entry) => known.has(comparisonEvidenceDigest(entry)),
+      () => { throw new Error("Known evidence emitted"); });
     tracker.accept(evidence);
     tracker.accept(evidence);
     tracker.accept();
@@ -39,8 +39,9 @@ describe("exploratory evidence collection", () => {
   });
 
   it("can recognize fuzz signatures without conflating exact evidence identities", () => {
-    const tracker = new ExplorationTracker(new Set([divergenceFingerprint(evidence)]),
-      divergenceFingerprint, () => { throw new Error("Known signature emitted"); });
+    const known = new Set([divergenceFingerprint(evidence)]);
+    const tracker = new ExplorationTracker((entry) => known.has(divergenceFingerprint(entry)),
+      () => { throw new Error("Known signature emitted"); });
     tracker.accept({ ...evidence, caseId: "another" });
     expect(tracker.summary()).toMatchObject({ known: 1, uniqueEvidence: 0 });
   });

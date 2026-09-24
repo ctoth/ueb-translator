@@ -54,14 +54,18 @@ jobs:
       - name: Build oracle adapter
         run: npm run oracle:build
 
+      # A divergence is reported through its issue rather than a red nightly.
+      # Infrastructure errors still fail the filing step, and so the job.
       - name: Fuzz with a fresh recorded seed and shrink new divergences
+        id: fuzz
+        continue-on-error: true
         env:
           LIBLOUIS_ORACLE_BIN: ${{ runner.temp }}/liblouis-install/bin/lou_translate
           LOUIS_TABLEPATH: ${{ runner.temp }}/liblouis-install/share/liblouis/tables
         run: npm run oracle:fuzz
 
       - name: Retain seed, shrink path, minimal input, and exact evidence
-        if: failure()
+        if: steps.fuzz.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: oracle-fuzz-${{ github.run_id }}-${{ github.run_attempt }}
@@ -70,8 +74,12 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-      - name: File one deduplicated issue for a new minimal divergence
-        if: failure() && github.event_name == 'schedule'
+      - name: File, reopen, or find the issue for this minimal divergence
+        if: steps.fuzz.outcome == 'failure' && github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ github.token }}
         run: npm run oracle:fuzz:file
+
+      - name: Fail manual runs that found an unledgered divergence
+        if: steps.fuzz.outcome == 'failure' && github.event_name != 'schedule'
+        run: exit 1

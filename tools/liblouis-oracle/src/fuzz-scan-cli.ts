@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import { divergenceFingerprint } from "./empirical.js";
 import { isCompactEmpiricalEntry, parseEmpiricalLedger } from "./empirical-ledger.js";
 import { ExplorationTracker } from "./exploration.js";
+import { createFuzzTriage } from "./fuzz-families.js";
 import { parseFuzzRunConfiguration } from "./fuzz.js";
 import { scanFuzzCases } from "./fuzz-scan.js";
 import { comparisonEvidenceDigest } from "./ledger.js";
@@ -19,9 +20,9 @@ async function main(): Promise<void> {
   writeFileSync(resolve(output, "configuration.json"), `${JSON.stringify(configuration)}\n`, { flag: "wx" });
   const ledger = parseEmpiricalLedger(JSON.parse(readFileSync("tools/liblouis-oracle/empirical-disagreements.json", "utf8")));
   if (!ledger.ok) throw new Error(ledger.error);
-  const known = new Set(ledger.ledger.disagreements.flatMap((entry) =>
-    isCompactEmpiricalEntry(entry) ? [] : [divergenceFingerprint(entry)]));
-  const tracker = new ExplorationTracker(known, divergenceFingerprint, (evidence) => {
+  const triaged = createFuzzTriage(new Set(ledger.ledger.disagreements.flatMap((entry) =>
+    isCompactEmpiricalEntry(entry) ? [] : [divergenceFingerprint(entry)])));
+  const tracker = new ExplorationTracker(triaged, (evidence) => {
     appendFileSync(resolve(output, "evidence.jsonl"), `${JSON.stringify({
       evidence, evidenceDigest: comparisonEvidenceDigest(evidence),
       fingerprint: divergenceFingerprint(evidence),
