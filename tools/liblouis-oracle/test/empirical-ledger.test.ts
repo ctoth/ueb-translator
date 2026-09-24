@@ -50,7 +50,7 @@ describe("grouped empirical ledger", () => {
     const disagreements = rawLedger["disagreements"];
     expect(isUnknownArray(disagreements)).toBe(true);
     if (!isUnknownArray(disagreements)) return;
-    expect(disagreements).toHaveLength(37_892);
+    expect(disagreements).toHaveLength(35_917);
     if (parsed.ok) {
       const entries = parsed.ledger.disagreements;
       expect(new Set(entries.map(entry => isCompactEmpiricalEntry(entry)
