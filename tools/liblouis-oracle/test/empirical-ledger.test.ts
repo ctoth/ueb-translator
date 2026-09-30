@@ -5,6 +5,9 @@ import { describe, expect, it } from "vitest";
 import { parseEmpiricalLedger, isCompactEmpiricalEntry } from "../src/empirical-ledger.js";
 import { EmpiricalReconciler } from "../src/empirical-reconciliation.js";
 import { comparisonEvidenceDigest } from "../src/ledger.js";
+import { divergenceFingerprint } from "../src/empirical.js";
+import { createFuzzTriage } from "../src/fuzz-families.js";
+import { translateGrade2 } from "../../../src/grade2.js";
 
 const evidence = {
   caseId: "scowl:case",
@@ -38,6 +41,26 @@ function isUnknownArray(value: unknown): value is readonly unknown[] {
 }
 
 describe("grouped empirical ledger", () => {
+  it("triages the reviewed cc overlap as an oracle defect with current local evidence", () => {
+    const parsed = parseEmpiricalLedger(JSON.parse(readFileSync(
+      new URL("../empirical-disagreements.json", import.meta.url), "utf8",
+    )));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    const entries = parsed.ledger.disagreements;
+    const entry = entries.find((entry) =>
+      !isCompactEmpiricalEntry(entry) && entry.input === "acchns-a"
+    );
+    expect(entry).toBeDefined();
+    if (entry === undefined || isCompactEmpiricalEntry(entry)) return;
+    expect(entry.verdict.kind).toBe("liblouis-bug");
+    expect(translateGrade2(entry.input)).toMatchObject({ braille: entry.local.output, ok: true });
+    const triaged = createFuzzTriage(new Set(entries.flatMap((entry) =>
+      isCompactEmpiricalEntry(entry) ? [] : [divergenceFingerprint(entry)]
+    )));
+    expect(triaged(entry)).toBe(true);
+  });
+
   it("retains the reconciled corpus evidence and issue 61 classifications", () => {
     const rawLedger: unknown = JSON.parse(readFileSync(
       new URL("../empirical-corpus-disagreements.json", import.meta.url),
@@ -50,7 +73,8 @@ describe("grouped empirical ledger", () => {
     const disagreements = rawLedger["disagreements"];
     expect(isUnknownArray(disagreements)).toBe(true);
     if (!isUnknownArray(disagreements)) return;
-    expect(disagreements).toHaveLength(35_917);
+    // #91 resolves ten exact source records and adds one reviewed oracle omission.
+    expect(disagreements).toHaveLength(35_908);
     if (parsed.ok) {
       const entries = parsed.ledger.disagreements;
       expect(new Set(entries.map(entry => isCompactEmpiricalEntry(entry)

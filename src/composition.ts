@@ -379,6 +379,10 @@ export function compose(
     throw new Error("A composition requires compiled symbol and mode programs.");
   }
   const symbolRuntime = loadSymbolProgram(symbols);
+  const ambiguityPrints = new Set(
+    contractions?.grade1Ambiguities.map(([print]) => print),
+  );
+  const standingLiteralInputs = new Set(contractions?.standingLiteralInputs);
 
   return {
     translate(text, options = {}) {
@@ -404,10 +408,6 @@ export function compose(
 
       if (contractions !== undefined) {
         const [bucketAlphabet] = contractions.matcher;
-        const ambiguityPrints = new Set(
-          contractions.grade1Ambiguities.map(([print]) => print),
-        );
-        const standingLiteralInputs = new Set(contractions.standingLiteralInputs);
         for (const lexical of lexicalRanges(units, policies)) {
           const eligibilityWord = units.slice(lexical.start, lexical.end)
             .map((unit) => eligibilityCharacter(unit, policies, bucketAlphabet))
@@ -433,10 +433,9 @@ export function compose(
                 bucketAlphabet,
               )
             ) {
-              // UEB 10.9.7: one symbol indicator disambiguates a whole
-              // shortform spelling; the remaining letters need no grade 1 mode.
+              // UEB 10.9.7–10.9.8: one symbol indicator disambiguates the
+              // initial shortform spelling; later contractions remain eligible.
               required.add(range.start);
-              continue;
             }
             if (
               standing && standingLiteralInputs.has(exact) &&

@@ -204,6 +204,20 @@ describe("translateGrade2", () => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
+  // ICEB 10.6.5 permits internal cc. Rejecting ch under 10.9.6 does not
+  // forbid an overlapping cc groupsign that creates no shortform reading.
+  it.each([
+    ["acchns", "⠁⠒⠓⠝⠎", "cc"],
+    ["acchns-a", "⠁⠒⠓⠝⠎⠤⠁", "cc"],
+    ["acchnb-a", "⠁⠒⠓⠝⠃⠤⠁", "cc"],
+    ["acchna-a", "⠁⠉⠡⠝⠁⠤⠁", "ch"],
+  ] as const)("keeps lawful overlapping groupsigns in %s", (text, braille, groupsign) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.print)).toEqual([groupsign]);
+  });
+
   it.each(SHORTFORMS)("retains $id with permitted s and possessive endings", (rule) => {
     for (const suffix of ["s", "'s"]) {
       const result = traceGrade2(rule.print + suffix);
@@ -587,6 +601,25 @@ describe("translateGrade2", () => {
       mode: "grade2",
       ok: true,
     });
+  });
+
+  // ICEB 10.9.8 and Appendix 1: gd+y would be read as goody.
+  it.each([
+    ["gdy", "⠰⠛⠙⠽"],
+    ["(gdy'", "⠐⠣⠰⠛⠙⠽⠄"],
+    ["gdy's", "⠰⠛⠙⠽⠄⠎"],
+    ["gdys", "⠰⠛⠙⠽⠎"],
+    ["Gdy", "⠰⠠⠛⠙⠽"],
+    ["GDY", "⠰⠠⠠⠛⠙⠽"],
+    ["gDy", "⠛⠠⠙⠽"],
+    ["goody", "⠛⠙⠽"],
+    ["gda", "⠛⠙⠁"],
+    ["gdy-a", "⠰⠛⠙⠽⠤⠁"],
+    ["gdy'a", "⠛⠙⠽⠄⠁"],
+    ["aflight", "⠰⠁⠋⠇⠊⠣⠞"],
+    ["gdevening", "⠰⠛⠙⠑⠧⠢⠬"],
+  ] as const)("protects Appendix 1 initial shortform spellings in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
   // ICEB 2024 §§2.6.2–2.6.3 and 5.7: outer apostrophes do not

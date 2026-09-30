@@ -52,6 +52,46 @@ A clean reconciliation means no stale or untriaged evidence. It does not mean
 that all previously recorded implementation defects have been repaired or
 that all local outputs are identical to Liblouis.
 
+## Appendix 1 ambiguity repair (#91)
+
+The reopened `(gdy'` case is a missing Grade 1 symbol indicator. Appendix 1
+allows `good` in `goody`, so the literal abbreviation `gdy` could be read as
+that word. Rules 5.7.2 and 10.9.8 require protection; outer punctuation does
+not remove standing-alone status under 2.6.2–2.6.3. The ambiguity inventory
+now derives initial letter-only abbreviations and their allowed plurals from
+the authored Appendix rules. Internal mode changes still prevent a shortform
+reading, and later contractions remain eligible after the symbol indicator.
+
+The dictionary repair resolves `CDA`, `RCVR`, `aclys`, and `rcvr`. Retained
+sentences containing `CDA` retain their unchanged residual disagreements and
+distinct source digests. The new exact `aflight` and `(CDST).` differences are
+oracle defects: Appendix 1 lists `afterlight` and `couldst`, and 10.9.8 requires
+the initial indicator that Liblouis omits. This adjudication covers those exact
+changed spans, not unrelated contractions in their surrounding sentences.
+
+The same nightly seed also found `acchns-a`. Rule 10.9.6 prevents the `ch`
+groupsign there because `ch` plus `n` would look like the shortform `children`.
+The overlapping `cc` groupsign is still legal under 10.6.5: it has a letter
+on each side and creates no shortform reading. Rules 10.10.2 and 10.10.5
+permit the shorter lawful `cc` choice once `ch` is unavailable. Liblouis
+unnecessarily spells `cc`, so retain the exact evidence as an oracle defect.
+Rule-linked regressions cover the overlapping choice and the contrasting
+vowel context where `ch` remains available. The fuzz triage regression checks
+that the captured evidence matches the current local translation and is known.
+
+The replay also encountered the `be`-before-vowel bug from issue #100.
+After incorporating its merged repair from PR #114, these captured cases
+agree with the oracle and need no disagreement entries. The final sweeps
+validate both changes together.
+
+The complete daily scan also captures `{llb.` and `jpzc-ttbiofjloc`.
+The former reproduces the existing dictionary `llb` defect: general longer
+shortforms under 10.9.3(c) still require the indicator under 5.7.2 and 10.9.8.
+Keep it classified as an implementation bug. The latter has an `of` contraction
+under 10.3.1 in an invented word of unknown syllabification; 10.12.7–10.12.8
+permit the exact contracted and spelled alternatives. These reviewed entries
+allow the complete seed replay to finish without hiding either verdict.
+
 ## Expanded nightly run
 
 After reconciling the full sweeps, increase the nightly sample count from

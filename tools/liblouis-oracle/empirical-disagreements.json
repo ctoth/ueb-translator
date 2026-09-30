@@ -27741,25 +27741,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00023091",
-      "input": "CDA",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠉⠙⠁",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠉⠙⠁"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00023106",
       "input": "CDS",
       "local": {
@@ -41858,25 +41839,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00117002",
-      "input": "RCVR",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠗⠉⠧⠗",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠗⠉⠧⠗"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00117003",
       "input": "RCVS",
       "local": {
@@ -47651,25 +47613,6 @@
         "output": "⠁⠉⠑⠞⠕⠝⠑⠍⠊⠉"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00157628",
-      "input": "aclys",
-      "local": {
-        "kind": "test",
-        "output": "⠁⠉⠇⠽⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠉⠇⠽⠎"
-      },
-      "groupId": "exact-grade1-insertion"
     },
     {
       "caseId": "scowl:2020.12.07:95:00157676",
@@ -163287,25 +163230,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00509073",
-      "input": "rcvr",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠉⠧⠗",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠗⠉⠧⠗"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00509079",
       "input": "reabandon",
       "local": {
@@ -198359,6 +198283,82 @@
         "version": "3.38.0"
       },
       "groupId": "reviewed-fuzz-967ce9526d455f73"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00161436",
+      "input": "aflight",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠁⠋⠇⠊⠣⠞",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠁⠋⠇⠊⠣⠞",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-bbae943d8d2a73df"
+    },
+    {
+      "caseId": "fuzz:1cc421c76107371534db250e7da6aa4a908f8f27d38bd4c44a339b4c14ca1392",
+      "input": "acchns-a",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠒⠓⠝⠎⠤⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠁⠉⠉⠓⠝⠎⠤⠁",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-ffa1c1881dcf60a7"
+    },
+    {
+      "caseId": "fuzz:35dd6e1d85b3904647c82b2a6a4324cd4740349114186884f4e9148a42b4a709",
+      "input": "{llb.",
+      "local": {
+        "kind": "test",
+        "output": "⠸⠣⠇⠇⠃⠲",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠸⠣⠰⠇⠇⠃⠲",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-30549fdc6ceb6a51"
+    },
+    {
+      "caseId": "fuzz:bbb5ede3d674c1acc430c53d5205c329d0ca7af15a969082c93e23ba4e242e5f",
+      "input": "jpzc-ttbiofjloc",
+      "local": {
+        "kind": "test",
+        "output": "⠚⠏⠵⠉⠤⠞⠞⠃⠊⠷⠚⠇⠕⠉",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠚⠏⠵⠉⠤⠞⠞⠃⠊⠕⠋⠚⠇⠕⠉",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-772292a64ad9dbf6"
     }
   ],
   "groups": [
@@ -198831,6 +198831,46 @@
         "rationale": "ICEB 2024 10.6.1 and 10.10.4 use the be lower groupsign only where be forms the first syllable. This generated string has no established syllabification, so 10.12.7-10.12.8 allow either reading. The local translation deliberately spells be before a vowel or y unless the word is a reviewed be-syllable word (#100), keeping contrived words unambiguous; Liblouis contracts it.",
         "sources": [
           "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-bbae943d8d2a73df",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 5.7.2 and 10.9.8 require a grade 1 symbol before an initial literal letters-sequence which would otherwise be read as an Appendix 1 longer shortform word. Appendix 1 lists afterlight, whose initial after shortform is af. The literal print aflight therefore needs the indicator before af; the later gh contraction remains eligible. The comparator omits the required indicator in this exact dictionary evidence.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-ffa1c1881dcf60a7",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 10.6.5 permits cc when both letters are preceded and followed by letters. In acchns-a, a precedes cc and h follows it, and 10.6.6 supplies no capitals restriction. Rule 10.9.6 forbids ch here because contracted ch+n would read as the shortform children under 10.9.3(b). The alternative cc groupsign produces a+cc+h+n+s, containing neither the children shortform cells nor another permitted shortform reading. The ch restriction therefore does not prohibit cc. Rules 10.10.2 and 10.10.5 retain the shorter lawful lower-groupsign choice once ch is unavailable. Liblouis unnecessarily spells cc in the exact captured evidence.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-30549fdc6ceb6a51",
+      "verdict": {
+        "kind": "our-bug",
+        "rationale": "ICEB 2024 10.9.3(c) permits the little shortform at the beginning of a longer standing-alone word before a consonant other than y. The literal llb can therefore be read as littleb and requires the Grade 1 symbol indicator under 5.7.2 and 10.9.8. Opening brace and terminal full stop do not change standing-alone status under 2.6.2-2.6.3. This is additional exact evidence of the already-recorded dictionary llb disambiguation defect, not a permitted alternative or an oracle defect. The Appendix 1-specific repair in #91 does not resolve the general longer-shortform case.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-772292a64ad9dbf6",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "ICEB 2024 10.3.1 permits the of strong contraction wherever its letters occur unless another rule limits it. The exact invented component ttbiofjloc has no established pronunciation, word structure, or syllabification; it is not the source example biofeedback. Its local of contraction and the oracle's spelled of can reflect different syllable readings. Rules 10.12.7-10.12.8 permit translation-software choices for contrived words with unknown pronunciation, and 10.12.10 recognizes differing transcriptions. The hyphen is outside the contracted span. Retain only this exact evidence; do not infer pronunciation from Liblouis or generalize it to known words.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
         ]
       }
     }
