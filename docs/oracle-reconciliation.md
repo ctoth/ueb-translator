@@ -52,6 +52,23 @@ A clean reconciliation means no stale or untriaged evidence. It does not mean
 that all previously recorded implementation defects have been repaired or
 that all local outputs are identical to Liblouis.
 
+## Appendix 1 ambiguity repair (#91)
+
+The reopened `(gdy'` case is a missing Grade 1 symbol indicator. Appendix 1
+allows `good` in `goody`, so the literal abbreviation `gdy` could be read as
+that word. Rules 5.7.2 and 10.9.8 require protection; outer punctuation does
+not remove standing-alone status under 2.6.2–2.6.3. The ambiguity inventory
+now derives initial letter-only abbreviations and their allowed plurals from
+the authored Appendix rules. Internal mode changes still prevent a shortform
+reading, and later contractions remain eligible after the symbol indicator.
+
+The dictionary repair resolves `CDA`, `RCVR`, `aclys`, and `rcvr`. Retained
+sentences containing `CDA` retain their unchanged residual disagreements and
+distinct source digests. The new exact `aflight` and `(CDST).` differences are
+oracle defects: Appendix 1 lists `afterlight` and `couldst`, and 10.9.8 requires
+the initial indicator that Liblouis omits. This adjudication covers those exact
+changed spans, not unrelated contractions in their surrounding sentences.
+
 ## Expanded nightly run
 
 After reconciling the full sweeps, increase the nightly sample count from

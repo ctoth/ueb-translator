@@ -589,6 +589,25 @@ describe("translateGrade2", () => {
     });
   });
 
+  // ICEB 10.9.8 and Appendix 1: gd+y would be read as goody.
+  it.each([
+    ["gdy", "⠰⠛⠙⠽"],
+    ["(gdy'", "⠐⠣⠰⠛⠙⠽⠄"],
+    ["gdy's", "⠰⠛⠙⠽⠄⠎"],
+    ["gdys", "⠰⠛⠙⠽⠎"],
+    ["Gdy", "⠰⠠⠛⠙⠽"],
+    ["GDY", "⠰⠠⠠⠛⠙⠽"],
+    ["gDy", "⠛⠠⠙⠽"],
+    ["goody", "⠛⠙⠽"],
+    ["gda", "⠛⠙⠁"],
+    ["gdy-a", "⠰⠛⠙⠽⠤⠁"],
+    ["gdy'a", "⠛⠙⠽⠄⠁"],
+    ["aflight", "⠰⠁⠋⠇⠊⠣⠞"],
+    ["gdevening", "⠰⠛⠙⠑⠧⠢⠬"],
+  ] as const)("protects Appendix 1 initial shortform spellings in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   // ICEB 2024 §§2.6.2–2.6.3 and 5.7: outer apostrophes do not
   // remove standing-alone ambiguity protection. t' and X' are source examples;
   // the remaining cases apply the same rule to letters and shortform spellings.

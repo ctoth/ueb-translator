@@ -368,6 +368,10 @@ const LATIN_LETTER_BY_CELL: ReadonlyMap<string, string> = new Map(
     .map((rule): readonly [string, string] => [rule.braille, rule.print]),
 );
 
+const LATIN_CELL_BY_LETTER: ReadonlyMap<string, string> = new Map(
+  [...LATIN_LETTER_BY_CELL].map(([cell, letter]) => [letter, cell]),
+);
+
 /**
  * Literal letter sequences whose cells are also a compiled contraction output.
  * The source is the compiled inventory itself, so additions cannot bypass the
@@ -380,9 +384,22 @@ export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
     const print = Array.from(rule.braille)
       .map((cell) => LATIN_LETTER_BY_CELL.get(cell))
       .join("");
-    return print.length === Array.from(rule.braille).length
-      ? [[print, rule.braille] as const]
-      : [];
+    if (print.length !== Array.from(rule.braille).length) return [];
+    const entries: (readonly [string, string])[] = [[print, rule.braille]];
+    for (const guard of rule.guards) {
+      // ICEB 10.9.8: Appendix 1 longer words beginning with a shortform
+      // also make their literal abbreviation ambiguous (e.g. gd+y).
+      if (guard.kind !== "eligibility-word" || !guard.word.startsWith(rule.input) ||
+        !/^[a-z]+$/u.test(guard.word)) continue;
+      const ending = guard.word.slice(rule.input.length);
+      for (const suffix of [ending, ending + guard.pluralSuffix]) {
+        const suffixCells = Array.from(suffix).map((letter) =>
+          LATIN_CELL_BY_LETTER.get(letter)
+        ).join("");
+        entries.push([print + suffix, rule.braille + suffixCells]);
+      }
+    }
+    return entries;
   }).map((entry) => [entry[0], entry] as const),
 ).values()].sort((left, right) => left[0].localeCompare(right[0], "en"));
 

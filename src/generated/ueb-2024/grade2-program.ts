@@ -8,12 +8,92 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠁⠃"
     ],
     [
+      "abface",
+      "⠁⠃⠋⠁⠉⠑"
+    ],
+    [
+      "abfaced",
+      "⠁⠃⠋⠁⠉⠑⠙"
+    ],
+    [
+      "abfaceds",
+      "⠁⠃⠋⠁⠉⠑⠙⠎"
+    ],
+    [
+      "abfacer",
+      "⠁⠃⠋⠁⠉⠑⠗"
+    ],
+    [
+      "abfacers",
+      "⠁⠃⠋⠁⠉⠑⠗⠎"
+    ],
+    [
+      "abfaces",
+      "⠁⠃⠋⠁⠉⠑⠎"
+    ],
+    [
+      "abfacing",
+      "⠁⠃⠋⠁⠉⠊⠝⠛"
+    ],
+    [
+      "abfacings",
+      "⠁⠃⠋⠁⠉⠊⠝⠛⠎"
+    ],
+    [
+      "abturn",
+      "⠁⠃⠞⠥⠗⠝"
+    ],
+    [
+      "abturned",
+      "⠁⠃⠞⠥⠗⠝⠑⠙"
+    ],
+    [
+      "abturneds",
+      "⠁⠃⠞⠥⠗⠝⠑⠙⠎"
+    ],
+    [
+      "abturns",
+      "⠁⠃⠞⠥⠗⠝⠎"
+    ],
+    [
       "abv",
       "⠁⠃⠧"
     ],
     [
+      "abvboard",
+      "⠁⠃⠧⠃⠕⠁⠗⠙"
+    ],
+    [
+      "abvboards",
+      "⠁⠃⠧⠃⠕⠁⠗⠙⠎"
+    ],
+    [
+      "abvground",
+      "⠁⠃⠧⠛⠗⠕⠥⠝⠙"
+    ],
+    [
+      "abvgrounds",
+      "⠁⠃⠧⠛⠗⠕⠥⠝⠙⠎"
+    ],
+    [
+      "abvmentioned",
+      "⠁⠃⠧⠍⠑⠝⠞⠊⠕⠝⠑⠙"
+    ],
+    [
+      "abvmentioneds",
+      "⠁⠃⠧⠍⠑⠝⠞⠊⠕⠝⠑⠙⠎"
+    ],
+    [
       "ac",
       "⠁⠉"
+    ],
+    [
+      "acly",
+      "⠁⠉⠇⠽"
+    ],
+    [
+      "aclys",
+      "⠁⠉⠇⠽⠎"
     ],
     [
       "acr",
@@ -24,12 +104,500 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠁⠋"
     ],
     [
+      "afbattle",
+      "⠁⠋⠃⠁⠞⠞⠇⠑"
+    ],
+    [
+      "afbattles",
+      "⠁⠋⠃⠁⠞⠞⠇⠑⠎"
+    ],
+    [
+      "afbirth",
+      "⠁⠋⠃⠊⠗⠞⠓"
+    ],
+    [
+      "afbirths",
+      "⠁⠋⠃⠊⠗⠞⠓⠎"
+    ],
+    [
+      "afbreakfast",
+      "⠁⠋⠃⠗⠑⠁⠅⠋⠁⠎⠞"
+    ],
+    [
+      "afbreakfasts",
+      "⠁⠋⠃⠗⠑⠁⠅⠋⠁⠎⠞⠎"
+    ],
+    [
+      "afburn",
+      "⠁⠋⠃⠥⠗⠝"
+    ],
+    [
+      "afburned",
+      "⠁⠋⠃⠥⠗⠝⠑⠙"
+    ],
+    [
+      "afburneds",
+      "⠁⠋⠃⠥⠗⠝⠑⠙⠎"
+    ],
+    [
+      "afburner",
+      "⠁⠋⠃⠥⠗⠝⠑⠗"
+    ],
+    [
+      "afburners",
+      "⠁⠋⠃⠥⠗⠝⠑⠗⠎"
+    ],
+    [
+      "afburning",
+      "⠁⠋⠃⠥⠗⠝⠊⠝⠛"
+    ],
+    [
+      "afburnings",
+      "⠁⠋⠃⠥⠗⠝⠊⠝⠛⠎"
+    ],
+    [
+      "afburns",
+      "⠁⠋⠃⠥⠗⠝⠎"
+    ],
+    [
+      "afcare",
+      "⠁⠋⠉⠁⠗⠑"
+    ],
+    [
+      "afcares",
+      "⠁⠋⠉⠁⠗⠑⠎"
+    ],
+    [
+      "afclap",
+      "⠁⠋⠉⠇⠁⠏"
+    ],
+    [
+      "afclaps",
+      "⠁⠋⠉⠇⠁⠏⠎"
+    ],
+    [
+      "afcoffee",
+      "⠁⠋⠉⠕⠋⠋⠑⠑"
+    ],
+    [
+      "afcoffees",
+      "⠁⠋⠉⠕⠋⠋⠑⠑⠎"
+    ],
+    [
+      "afdamp",
+      "⠁⠋⠙⠁⠍⠏"
+    ],
+    [
+      "afdamps",
+      "⠁⠋⠙⠁⠍⠏⠎"
+    ],
+    [
+      "afdark",
+      "⠁⠋⠙⠁⠗⠅"
+    ],
+    [
+      "afdarks",
+      "⠁⠋⠙⠁⠗⠅⠎"
+    ],
+    [
+      "afdeck",
+      "⠁⠋⠙⠑⠉⠅"
+    ],
+    [
+      "afdecks",
+      "⠁⠋⠙⠑⠉⠅⠎"
+    ],
+    [
+      "afdinner",
+      "⠁⠋⠙⠊⠝⠝⠑⠗"
+    ],
+    [
+      "afdinners",
+      "⠁⠋⠙⠊⠝⠝⠑⠗⠎"
+    ],
+    [
+      "afflow",
+      "⠁⠋⠋⠇⠕⠺"
+    ],
+    [
+      "afflows",
+      "⠁⠋⠋⠇⠕⠺⠎"
+    ],
+    [
+      "afgame",
+      "⠁⠋⠛⠁⠍⠑"
+    ],
+    [
+      "afgames",
+      "⠁⠋⠛⠁⠍⠑⠎"
+    ],
+    [
+      "afglow",
+      "⠁⠋⠛⠇⠕⠺"
+    ],
+    [
+      "afglows",
+      "⠁⠋⠛⠇⠕⠺⠎"
+    ],
+    [
+      "afguard",
+      "⠁⠋⠛⠥⠁⠗⠙"
+    ],
+    [
+      "afguards",
+      "⠁⠋⠛⠥⠁⠗⠙⠎"
+    ],
+    [
+      "afhatch",
+      "⠁⠋⠓⠁⠞⠉⠓"
+    ],
+    [
+      "afhatches",
+      "⠁⠋⠓⠁⠞⠉⠓⠑⠎"
+    ],
+    [
+      "afhatchess",
+      "⠁⠋⠓⠁⠞⠉⠓⠑⠎⠎"
+    ],
+    [
+      "afhatchs",
+      "⠁⠋⠓⠁⠞⠉⠓⠎"
+    ],
+    [
+      "afhour",
+      "⠁⠋⠓⠕⠥⠗"
+    ],
+    [
+      "afhours",
+      "⠁⠋⠓⠕⠥⠗⠎"
+    ],
+    [
+      "aflife",
+      "⠁⠋⠇⠊⠋⠑"
+    ],
+    [
+      "aflifes",
+      "⠁⠋⠇⠊⠋⠑⠎"
+    ],
+    [
+      "aflight",
+      "⠁⠋⠇⠊⠛⠓⠞"
+    ],
+    [
+      "aflights",
+      "⠁⠋⠇⠊⠛⠓⠞⠎"
+    ],
+    [
+      "aflives",
+      "⠁⠋⠇⠊⠧⠑⠎"
+    ],
+    [
+      "aflivess",
+      "⠁⠋⠇⠊⠧⠑⠎⠎"
+    ],
+    [
+      "aflunch",
+      "⠁⠋⠇⠥⠝⠉⠓"
+    ],
+    [
+      "aflunches",
+      "⠁⠋⠇⠥⠝⠉⠓⠑⠎"
+    ],
+    [
+      "aflunchess",
+      "⠁⠋⠇⠥⠝⠉⠓⠑⠎⠎"
+    ],
+    [
+      "aflunchs",
+      "⠁⠋⠇⠥⠝⠉⠓⠎"
+    ],
+    [
+      "afmarket",
+      "⠁⠋⠍⠁⠗⠅⠑⠞"
+    ],
+    [
+      "afmarkets",
+      "⠁⠋⠍⠁⠗⠅⠑⠞⠎"
+    ],
+    [
+      "afmatch",
+      "⠁⠋⠍⠁⠞⠉⠓"
+    ],
+    [
+      "afmatches",
+      "⠁⠋⠍⠁⠞⠉⠓⠑⠎"
+    ],
+    [
+      "afmatchess",
+      "⠁⠋⠍⠁⠞⠉⠓⠑⠎⠎"
+    ],
+    [
+      "afmatchs",
+      "⠁⠋⠍⠁⠞⠉⠓⠎"
+    ],
+    [
+      "afmath",
+      "⠁⠋⠍⠁⠞⠓"
+    ],
+    [
+      "afmaths",
+      "⠁⠋⠍⠁⠞⠓⠎"
+    ],
+    [
+      "afmeeting",
+      "⠁⠋⠍⠑⠑⠞⠊⠝⠛"
+    ],
+    [
+      "afmeetings",
+      "⠁⠋⠍⠑⠑⠞⠊⠝⠛⠎"
+    ],
+    [
+      "afmentioned",
+      "⠁⠋⠍⠑⠝⠞⠊⠕⠝⠑⠙"
+    ],
+    [
+      "afmentioneds",
+      "⠁⠋⠍⠑⠝⠞⠊⠕⠝⠑⠙⠎"
+    ],
+    [
+      "afmidday",
+      "⠁⠋⠍⠊⠙⠙⠁⠽"
+    ],
+    [
+      "afmiddays",
+      "⠁⠋⠍⠊⠙⠙⠁⠽⠎"
+    ],
+    [
+      "afmidnight",
+      "⠁⠋⠍⠊⠙⠝⠊⠛⠓⠞"
+    ],
+    [
+      "afmidnights",
+      "⠁⠋⠍⠊⠙⠝⠊⠛⠓⠞⠎"
+    ],
+    [
+      "afmost",
+      "⠁⠋⠍⠕⠎⠞"
+    ],
+    [
+      "afmosts",
+      "⠁⠋⠍⠕⠎⠞⠎"
+    ],
+    [
       "afn",
       "⠁⠋⠝"
     ],
     [
+      "afntea",
+      "⠁⠋⠝⠞⠑⠁"
+    ],
+    [
+      "afnteas",
+      "⠁⠋⠝⠞⠑⠁⠎"
+    ],
+    [
+      "afpain",
+      "⠁⠋⠏⠁⠊⠝"
+    ],
+    [
+      "afpains",
+      "⠁⠋⠏⠁⠊⠝⠎"
+    ],
+    [
+      "afparties",
+      "⠁⠋⠏⠁⠗⠞⠊⠑⠎"
+    ],
+    [
+      "afpartiess",
+      "⠁⠋⠏⠁⠗⠞⠊⠑⠎⠎"
+    ],
+    [
+      "afparty",
+      "⠁⠋⠏⠁⠗⠞⠽"
+    ],
+    [
+      "afpartys",
+      "⠁⠋⠏⠁⠗⠞⠽⠎"
+    ],
+    [
+      "afpiece",
+      "⠁⠋⠏⠊⠑⠉⠑"
+    ],
+    [
+      "afpieces",
+      "⠁⠋⠏⠊⠑⠉⠑⠎"
+    ],
+    [
+      "afplay",
+      "⠁⠋⠏⠇⠁⠽"
+    ],
+    [
+      "afplays",
+      "⠁⠋⠏⠇⠁⠽⠎"
+    ],
+    [
+      "afsale",
+      "⠁⠋⠎⠁⠇⠑"
+    ],
+    [
+      "afsales",
+      "⠁⠋⠎⠁⠇⠑⠎"
+    ],
+    [
+      "afschool",
+      "⠁⠋⠎⠉⠓⠕⠕⠇"
+    ],
+    [
+      "afschools",
+      "⠁⠋⠎⠉⠓⠕⠕⠇⠎"
+    ],
+    [
+      "afsensation",
+      "⠁⠋⠎⠑⠝⠎⠁⠞⠊⠕⠝"
+    ],
+    [
+      "afsensations",
+      "⠁⠋⠎⠑⠝⠎⠁⠞⠊⠕⠝⠎"
+    ],
+    [
+      "afshave",
+      "⠁⠋⠎⠓⠁⠧⠑"
+    ],
+    [
+      "afshaves",
+      "⠁⠋⠎⠓⠁⠧⠑⠎"
+    ],
+    [
+      "afshock",
+      "⠁⠋⠎⠓⠕⠉⠅"
+    ],
+    [
+      "afshocks",
+      "⠁⠋⠎⠓⠕⠉⠅⠎"
+    ],
+    [
+      "afshow",
+      "⠁⠋⠎⠓⠕⠺"
+    ],
+    [
+      "afshower",
+      "⠁⠋⠎⠓⠕⠺⠑⠗"
+    ],
+    [
+      "afshowers",
+      "⠁⠋⠎⠓⠕⠺⠑⠗⠎"
+    ],
+    [
+      "afshows",
+      "⠁⠋⠎⠓⠕⠺⠎"
+    ],
+    [
+      "afsupper",
+      "⠁⠋⠎⠥⠏⠏⠑⠗"
+    ],
+    [
+      "afsuppers",
+      "⠁⠋⠎⠥⠏⠏⠑⠗⠎"
+    ],
+    [
+      "aftaste",
+      "⠁⠋⠞⠁⠎⠞⠑"
+    ],
+    [
+      "aftastes",
+      "⠁⠋⠞⠁⠎⠞⠑⠎"
+    ],
+    [
+      "aftax",
+      "⠁⠋⠞⠁⠭"
+    ],
+    [
+      "aftaxes",
+      "⠁⠋⠞⠁⠭⠑⠎"
+    ],
+    [
+      "aftaxess",
+      "⠁⠋⠞⠁⠭⠑⠎⠎"
+    ],
+    [
+      "aftaxs",
+      "⠁⠋⠞⠁⠭⠎"
+    ],
+    [
+      "aftea",
+      "⠁⠋⠞⠑⠁"
+    ],
+    [
+      "afteas",
+      "⠁⠋⠞⠑⠁⠎"
+    ],
+    [
+      "aftheater",
+      "⠁⠋⠞⠓⠑⠁⠞⠑⠗"
+    ],
+    [
+      "aftheaters",
+      "⠁⠋⠞⠓⠑⠁⠞⠑⠗⠎"
+    ],
+    [
+      "aftheatre",
+      "⠁⠋⠞⠓⠑⠁⠞⠗⠑"
+    ],
+    [
+      "aftheatres",
+      "⠁⠋⠞⠓⠑⠁⠞⠗⠑⠎"
+    ],
+    [
+      "afthought",
+      "⠁⠋⠞⠓⠕⠥⠛⠓⠞"
+    ],
+    [
+      "afthoughts",
+      "⠁⠋⠞⠓⠕⠥⠛⠓⠞⠎"
+    ],
+    [
+      "aftime",
+      "⠁⠋⠞⠊⠍⠑"
+    ],
+    [
+      "aftimes",
+      "⠁⠋⠞⠊⠍⠑⠎"
+    ],
+    [
+      "aftreatment",
+      "⠁⠋⠞⠗⠑⠁⠞⠍⠑⠝⠞"
+    ],
+    [
+      "aftreatments",
+      "⠁⠋⠞⠗⠑⠁⠞⠍⠑⠝⠞⠎"
+    ],
+    [
       "afw",
       "⠁⠋⠺"
+    ],
+    [
+      "afword",
+      "⠁⠋⠺⠕⠗⠙"
+    ],
+    [
+      "afwords",
+      "⠁⠋⠺⠕⠗⠙⠎"
+    ],
+    [
+      "afwork",
+      "⠁⠋⠺⠕⠗⠅"
+    ],
+    [
+      "afworks",
+      "⠁⠋⠺⠕⠗⠅⠎"
+    ],
+    [
+      "afworld",
+      "⠁⠋⠺⠕⠗⠇⠙"
+    ],
+    [
+      "afworlds",
+      "⠁⠋⠺⠕⠗⠇⠙⠎"
     ],
     [
       "ag",
@@ -76,6 +644,30 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠉⠙"
     ],
     [
+      "cda",
+      "⠉⠙⠁"
+    ],
+    [
+      "cdas",
+      "⠉⠙⠁⠎"
+    ],
+    [
+      "cdest",
+      "⠉⠙⠑⠎⠞"
+    ],
+    [
+      "cdests",
+      "⠉⠙⠑⠎⠞⠎"
+    ],
+    [
+      "cdst",
+      "⠉⠙⠎⠞"
+    ],
+    [
+      "cdsts",
+      "⠉⠙⠎⠞⠎"
+    ],
+    [
       "d",
       "⠙"
     ],
@@ -84,16 +676,48 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠙⠉⠇"
     ],
     [
+      "dcld",
+      "⠙⠉⠇⠙"
+    ],
+    [
+      "dclds",
+      "⠙⠉⠇⠙⠎"
+    ],
+    [
       "dclg",
       "⠙⠉⠇⠛"
+    ],
+    [
+      "dclr",
+      "⠙⠉⠇⠗"
+    ],
+    [
+      "dclrs",
+      "⠙⠉⠇⠗⠎"
     ],
     [
       "dcv",
       "⠙⠉⠧"
     ],
     [
+      "dcvd",
+      "⠙⠉⠧⠙"
+    ],
+    [
+      "dcvds",
+      "⠙⠉⠧⠙⠎"
+    ],
+    [
       "dcvg",
       "⠙⠉⠧⠛"
+    ],
+    [
+      "dcvr",
+      "⠙⠉⠧⠗"
+    ],
+    [
+      "dcvrs",
+      "⠙⠉⠧⠗⠎"
     ],
     [
       "e",
@@ -120,6 +744,78 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠛⠙"
     ],
     [
+      "gdafternoon",
+      "⠛⠙⠁⠋⠞⠑⠗⠝⠕⠕⠝"
+    ],
+    [
+      "gdafternoons",
+      "⠛⠙⠁⠋⠞⠑⠗⠝⠕⠕⠝⠎"
+    ],
+    [
+      "gder",
+      "⠛⠙⠑⠗"
+    ],
+    [
+      "gders",
+      "⠛⠙⠑⠗⠎"
+    ],
+    [
+      "gdest",
+      "⠛⠙⠑⠎⠞"
+    ],
+    [
+      "gdests",
+      "⠛⠙⠑⠎⠞⠎"
+    ],
+    [
+      "gdevening",
+      "⠛⠙⠑⠧⠑⠝⠊⠝⠛"
+    ],
+    [
+      "gdevenings",
+      "⠛⠙⠑⠧⠑⠝⠊⠝⠛⠎"
+    ],
+    [
+      "gdie",
+      "⠛⠙⠊⠑"
+    ],
+    [
+      "gdies",
+      "⠛⠙⠊⠑⠎"
+    ],
+    [
+      "gdish",
+      "⠛⠙⠊⠎⠓"
+    ],
+    [
+      "gdishs",
+      "⠛⠙⠊⠎⠓⠎"
+    ],
+    [
+      "gdun",
+      "⠛⠙⠥⠝"
+    ],
+    [
+      "gduns",
+      "⠛⠙⠥⠝⠎"
+    ],
+    [
+      "gdy",
+      "⠛⠙⠽"
+    ],
+    [
+      "gdyear",
+      "⠛⠙⠽⠑⠁⠗"
+    ],
+    [
+      "gdyears",
+      "⠛⠙⠽⠑⠁⠗⠎"
+    ],
+    [
+      "gdys",
+      "⠛⠙⠽⠎"
+    ],
+    [
       "grt",
       "⠛⠗⠞"
     ],
@@ -132,12 +828,44 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠓⠍"
     ],
     [
+      "hmbo",
+      "⠓⠍⠃⠕"
+    ],
+    [
+      "hmboes",
+      "⠓⠍⠃⠕⠑⠎"
+    ],
+    [
+      "hmboess",
+      "⠓⠍⠃⠕⠑⠎⠎"
+    ],
+    [
+      "hmbos",
+      "⠓⠍⠃⠕⠎"
+    ],
+    [
       "hmf",
       "⠓⠍⠋"
     ],
     [
       "imm",
       "⠊⠍⠍"
+    ],
+    [
+      "immly",
+      "⠊⠍⠍⠇⠽"
+    ],
+    [
+      "immlys",
+      "⠊⠍⠍⠇⠽⠎"
+    ],
+    [
+      "immness",
+      "⠊⠍⠍⠝⠑⠎⠎"
+    ],
+    [
+      "immnesss",
+      "⠊⠍⠍⠝⠑⠎⠎⠎"
     ],
     [
       "j",
@@ -158,6 +886,38 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "lr",
       "⠇⠗"
+    ],
+    [
+      "lred",
+      "⠇⠗⠑⠙"
+    ],
+    [
+      "lreds",
+      "⠇⠗⠑⠙⠎"
+    ],
+    [
+      "lrer",
+      "⠇⠗⠑⠗"
+    ],
+    [
+      "lrers",
+      "⠇⠗⠑⠗⠎"
+    ],
+    [
+      "lring",
+      "⠇⠗⠊⠝⠛"
+    ],
+    [
+      "lrings",
+      "⠇⠗⠊⠝⠛⠎"
+    ],
+    [
+      "lropener",
+      "⠇⠗⠕⠏⠑⠝⠑⠗"
+    ],
+    [
+      "lropeners",
+      "⠇⠗⠕⠏⠑⠝⠑⠗⠎"
     ],
     [
       "m",
@@ -196,6 +956,86 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠟⠅"
     ],
     [
+      "qken",
+      "⠟⠅⠑⠝"
+    ],
+    [
+      "qkened",
+      "⠟⠅⠑⠝⠑⠙"
+    ],
+    [
+      "qkeneds",
+      "⠟⠅⠑⠝⠑⠙⠎"
+    ],
+    [
+      "qkener",
+      "⠟⠅⠑⠝⠑⠗"
+    ],
+    [
+      "qkeners",
+      "⠟⠅⠑⠝⠑⠗⠎"
+    ],
+    [
+      "qkening",
+      "⠟⠅⠑⠝⠊⠝⠛"
+    ],
+    [
+      "qkenings",
+      "⠟⠅⠑⠝⠊⠝⠛⠎"
+    ],
+    [
+      "qkens",
+      "⠟⠅⠑⠝⠎"
+    ],
+    [
+      "qker",
+      "⠟⠅⠑⠗"
+    ],
+    [
+      "qkers",
+      "⠟⠅⠑⠗⠎"
+    ],
+    [
+      "qkest",
+      "⠟⠅⠑⠎⠞"
+    ],
+    [
+      "qkests",
+      "⠟⠅⠑⠎⠞⠎"
+    ],
+    [
+      "qkie",
+      "⠟⠅⠊⠑"
+    ],
+    [
+      "qkies",
+      "⠟⠅⠊⠑⠎"
+    ],
+    [
+      "qkish",
+      "⠟⠅⠊⠎⠓"
+    ],
+    [
+      "qkishly",
+      "⠟⠅⠊⠎⠓⠇⠽"
+    ],
+    [
+      "qkishlys",
+      "⠟⠅⠊⠎⠓⠇⠽⠎"
+    ],
+    [
+      "qkishs",
+      "⠟⠅⠊⠎⠓⠎"
+    ],
+    [
+      "qky",
+      "⠟⠅⠽"
+    ],
+    [
+      "qkys",
+      "⠟⠅⠽⠎"
+    ],
+    [
       "r",
       "⠗"
     ],
@@ -204,16 +1044,88 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠗⠉⠧"
     ],
     [
+      "rcvd",
+      "⠗⠉⠧⠙"
+    ],
+    [
+      "rcvds",
+      "⠗⠉⠧⠙⠎"
+    ],
+    [
       "rcvg",
       "⠗⠉⠧⠛"
+    ],
+    [
+      "rcvr",
+      "⠗⠉⠧⠗"
+    ],
+    [
+      "rcvrs",
+      "⠗⠉⠧⠗⠎"
+    ],
+    [
+      "rcvrship",
+      "⠗⠉⠧⠗⠎⠓⠊⠏"
+    ],
+    [
+      "rcvrships",
+      "⠗⠉⠧⠗⠎⠓⠊⠏⠎"
     ],
     [
       "rjc",
       "⠗⠚⠉"
     ],
     [
+      "rjcd",
+      "⠗⠚⠉⠙"
+    ],
+    [
+      "rjcds",
+      "⠗⠚⠉⠙⠎"
+    ],
+    [
+      "rjcful",
+      "⠗⠚⠉⠋⠥⠇"
+    ],
+    [
+      "rjcfully",
+      "⠗⠚⠉⠋⠥⠇⠇⠽"
+    ],
+    [
+      "rjcfullys",
+      "⠗⠚⠉⠋⠥⠇⠇⠽⠎"
+    ],
+    [
+      "rjcfulness",
+      "⠗⠚⠉⠋⠥⠇⠝⠑⠎⠎"
+    ],
+    [
+      "rjcfulnesss",
+      "⠗⠚⠉⠋⠥⠇⠝⠑⠎⠎⠎"
+    ],
+    [
+      "rjcfuls",
+      "⠗⠚⠉⠋⠥⠇⠎"
+    ],
+    [
       "rjcg",
       "⠗⠚⠉⠛"
+    ],
+    [
+      "rjcgly",
+      "⠗⠚⠉⠛⠇⠽"
+    ],
+    [
+      "rjcglys",
+      "⠗⠚⠉⠛⠇⠽⠎"
+    ],
+    [
+      "rjcr",
+      "⠗⠚⠉⠗"
+    ],
+    [
+      "rjcrs",
+      "⠗⠚⠉⠗⠎"
     ],
     [
       "s",
@@ -222,6 +1134,22 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "sd",
       "⠎⠙"
+    ],
+    [
+      "sdest",
+      "⠎⠙⠑⠎⠞"
+    ],
+    [
+      "sdests",
+      "⠎⠙⠑⠎⠞⠎"
+    ],
+    [
+      "sdst",
+      "⠎⠙⠎⠞"
+    ],
+    [
+      "sdsts",
+      "⠎⠙⠎⠞⠎"
     ],
     [
       "t",
@@ -234,6 +1162,14 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "tgr",
       "⠞⠛⠗"
+    ],
+    [
+      "tgrness",
+      "⠞⠛⠗⠝⠑⠎⠎"
+    ],
+    [
+      "tgrnesss",
+      "⠞⠛⠗⠝⠑⠎⠎⠎"
     ],
     [
       "tm",
@@ -258,6 +1194,30 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "wd",
       "⠺⠙"
+    ],
+    [
+      "wda",
+      "⠺⠙⠁"
+    ],
+    [
+      "wdas",
+      "⠺⠙⠁⠎"
+    ],
+    [
+      "wdest",
+      "⠺⠙⠑⠎⠞"
+    ],
+    [
+      "wdests",
+      "⠺⠙⠑⠎⠞⠎"
+    ],
+    [
+      "wdst",
+      "⠺⠙⠎⠞"
+    ],
+    [
+      "wdsts",
+      "⠺⠙⠎⠞⠎"
     ],
     [
       "x",
