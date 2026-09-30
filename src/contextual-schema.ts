@@ -3,6 +3,7 @@ export const CONTEXTUAL_GUARD_SCHEMA = {
   firstSyllable: { opcode: 1, operands: "none" },
   following: { opcode: 17, operands: "string" },
   followingNotVowelY: { opcode: 2, operands: "string" },
+  followingNotVowelYExceptWords: { opcode: 22, operands: "two-string" },
   lowerSignEnoughOrIn: { opcode: 3, operands: "none" },
   notBoundary: { opcode: 4, operands: "boundary" },
   notCrossing: { opcode: 5, operands: "boundary" },

@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { parseComparisonEvidence, comparisonEvidenceDigest, parseVerdict } from "./ledger.js";
+import { parseComparisonEvidence, comparisonEvidenceDigest, parseVerdict, type DisagreementVerdict } from "./ledger.js";
+import { addLedgerEvidence, regroupLedgerEvidence, supersedeLedgerEvidence } from "./ledger-edits.js";
 import { evidenceRepairs, repairDigest, repairAgrees, assertReviewedRepairs } from "./reconciliation-audit.js";
 import { parseEmpiricalLedger, isCompactEmpiricalEntry } from "./empirical-ledger.js";
 import type { ComparisonEvidence } from "./differential.js";
@@ -32,7 +33,7 @@ function readAudit(path: string): readonly { before: ComparisonEvidence; after: 
 }
 function main(): void {
   const [command, input, ...args] = process.argv.slice(2);
-  if (!input) throw new Error("usage: reconcile-review list AUDIT | apply LEDGER AUDIT APPROVALS OUTPUT | fuzz LEDGER RESULT VERDICT OUTPUT");
+  if (!input) throw new Error("usage: reconcile-review list AUDIT | apply LEDGER AUDIT APPROVALS OUTPUT | fuzz LEDGER RESULT VERDICT OUTPUT | add LEDGER SWEEP VERDICT|- GROUP OUTPUT PREFIX... | supersede LEDGER AUDIT GROUP OUTPUT PREFIX... | regroup LEDGER GROUP OUTPUT PREFIX...");
   if (command === "approve") {
     const [verdictPath, output] = args;
     if (!verdictPath || !output) throw new Error("usage: reconcile-review approve AUDIT REVIEWED_VERDICT OUTPUT");
@@ -73,6 +74,68 @@ function main(): void {
       : Object.keys(record(JSON.parse(readFileSync(reference, "utf8"))));
     if (keys.length !== Object.keys(raw).length || keys.some(key => !(key in raw))) throw new Error("Reference schema differs");
     writeFileSync(output, JSON.stringify(Object.fromEntries(keys.map(key => [key, raw[key]])), null, 2) + "\n", { flag: "wx" });
+    return;
+  }
+  const indent = ledgerText.includes("\n  ") ? 2 : undefined;
+  const writeLedger = (output: string, result: Record<string, unknown>): void => {
+    writeFileSync(output, JSON.stringify(result, null, indent) + "\n", { flag: "wx" });
+  };
+  if (command === "add") {
+    const [sweepPath, verdictPath, groupId, output, ...prefixes] = args;
+    if (!sweepPath || !verdictPath || !groupId || !output || prefixes.length === 0) {
+      throw new Error("usage: reconcile-review add LEDGER SWEEP VERDICT|- GROUP OUTPUT DIGEST_PREFIX...");
+    }
+    const untriaged = readFileSync(sweepPath, "utf8").trim().split(/\r?\n/u)
+      .map((line) => record(JSON.parse(line)))
+      .filter((item) => item["kind"] === "untriaged-disagreement")
+      .map((item) => evidence(item["evidence"]));
+    const selected = prefixes.map((prefix) => {
+      const matches = untriaged.filter((entry) => comparisonEvidenceDigest(entry).startsWith(prefix));
+      const match = matches[0];
+      if (matches.length !== 1 || match === undefined) throw new Error(`Prefix ${prefix} must select exactly one untriaged record`);
+      return match;
+    });
+    let verdict: DisagreementVerdict | undefined;
+    if (verdictPath !== "-") {
+      const parsedVerdict = parseVerdict(JSON.parse(readFileSync(verdictPath, "utf8")));
+      if ("ok" in parsedVerdict) throw new Error(parsedVerdict.error);
+      verdict = parsedVerdict;
+    }
+    writeLedger(output, addLedgerEvidence(raw, selected, groupId, verdict));
+    console.log(JSON.stringify({ output, added: selected.length, groupId }));
+    return;
+  }
+  if (command === "supersede") {
+    const [auditPath, groupId, output, ...prefixes] = args;
+    if (!auditPath || !groupId || !output || prefixes.length === 0) {
+      throw new Error("usage: reconcile-review supersede LEDGER AUDIT GROUP OUTPUT PREVIOUS_DIGEST_PREFIX...");
+    }
+    const audited = readAudit(auditPath);
+    const selected = prefixes.map((prefix) => {
+      const matches = audited.filter(({ before }) => comparisonEvidenceDigest(before).startsWith(prefix));
+      const match = matches[0];
+      if (matches.length !== 1 || match === undefined) throw new Error(`Prefix ${prefix} must select exactly one audited record`);
+      return match;
+    });
+    writeLedger(output, supersedeLedgerEvidence(raw, selected, groupId));
+    console.log(JSON.stringify({ output, superseded: selected.length, groupId }));
+    return;
+  }
+  if (command === "regroup") {
+    const [groupId, output, ...prefixes] = args;
+    if (!groupId || !output || prefixes.length === 0) {
+      throw new Error("usage: reconcile-review regroup LEDGER GROUP OUTPUT DIGEST_PREFIX...");
+    }
+    const digests = parsed.ledger.disagreements.map((entry) =>
+      isCompactEmpiricalEntry(entry) ? entry.evidenceDigest : comparisonEvidenceDigest(entry));
+    const selected = prefixes.map((prefix) => {
+      const matches = digests.filter((digest) => digest.startsWith(prefix));
+      const match = matches[0];
+      if (matches.length !== 1 || match === undefined) throw new Error(`Prefix ${prefix} must select exactly one ledger record`);
+      return match;
+    });
+    writeLedger(output, regroupLedgerEvidence(raw, selected, groupId));
+    console.log(JSON.stringify({ output, regrouped: selected.length, groupId }));
     return;
   }
   const rawEntries = raw["disagreements"], rawGroups = raw["groups"];

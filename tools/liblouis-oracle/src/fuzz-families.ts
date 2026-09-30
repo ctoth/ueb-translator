@@ -159,6 +159,22 @@ function firstShortformCollision(hunk: DivergenceHunk, input: string): boolean {
     wordInitialOccurrences(input, "fst").every((index) => consonant.test(input.charAt(index + 3)));
 }
 
+/**
+ * The translator spells be before a vowel or y unless the word is a reviewed
+ * be-syllable word (#100); Liblouis sometimes contracts it. The local run is
+ * b plus e (or ea before a), the oracle's is be plus the same letters.
+ */
+function spelledBeBeforeVowel(hunk: DivergenceHunk, input: string): boolean {
+  const occurrences = wordInitialOccurrences(input, "be");
+  if (occurrences.length === 0 || !occurrences.some((index) =>
+    /^[aeiouy]$/u.test(input.charAt(index + 2))
+  )) {
+    return false;
+  }
+  return (hunk.local.startsWith("⠃⠑") && hunk.oracle === `⠆${hunk.local.slice(2)}`) ||
+    (hunk.local.startsWith("⠃⠂") && hunk.oracle === `⠆⠁${hunk.local.slice(2)}`);
+}
+
 export const fuzzFamilies: readonly DivergenceFamily[] = [
   { groupId: "fuzz-sep19-first-syllable", id: "first-syllable-be", matches: firstSyllableSign("be", "⠆") },
   { groupId: "fuzz-sep19-first-syllable", id: "first-syllable-con", matches: firstSyllableSign("con", "⠒") },
@@ -177,6 +193,7 @@ export const fuzzFamilies: readonly DivergenceFamily[] = [
     id: "initial-ing",
     matches: (hunk, input) => hunk.local === "⠔⠛" && hunk.oracle === "⠬" && onlyWordInitial(input, "ing"),
   },
+  { groupId: "reviewed-fuzz-967ce9526d455f73", id: "spelled-be-before-vowel", matches: spelledBeBeforeVowel },
 ];
 
 /**

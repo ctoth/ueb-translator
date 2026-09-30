@@ -24,6 +24,7 @@ function evidence(input: string, local: string, oracle: string): ComparisonEvide
 }
 
 interface LedgerRecord {
+  readonly caseId: string;
   readonly groupId: string;
   readonly input: string;
   readonly local: string;
@@ -62,12 +63,13 @@ function readLedger(name: string): LedgerView {
   }
   const records: LedgerRecord[] = [];
   for (const entry of raw["disagreements"]) {
-    if (!isRecord(entry) || typeof entry["groupId"] !== "string") {
-      throw new Error("ledger disagreement must reference a group");
+    if (!isRecord(entry) || typeof entry["groupId"] !== "string" ||
+      typeof entry["caseId"] !== "string") {
+      throw new Error("ledger disagreement must have a case ID and group");
     }
     if (typeof entry["input"] !== "string") continue;
     records.push({
-      groupId: entry["groupId"], input: entry["input"],
+      caseId: entry["caseId"], groupId: entry["groupId"], input: entry["input"],
       local: outputOf(entry["local"]), oracle: outputOf(entry["oracle"]),
     });
   }
@@ -104,6 +106,8 @@ describe("fuzz divergence families", () => {
     ["fsthxbev", "⠋⠎⠹⠭⠃⠑⠧", "⠋⠌⠓⠭⠃⠑⠧", ["reviewed-fuzz-49135499c92932b3"]],
     ["'ing}", "⠄⠔⠛⠸⠜", "⠄⠬⠸⠜", ["fuzz-sep19-initial-ing"]],
     ["(ingvtttfzzbs:", "⠐⠣⠔⠛⠧⠞⠞⠞⠋⠵⠵⠃⠎⠒", "⠐⠣⠬⠧⠞⠞⠞⠋⠵⠵⠃⠎⠒", ["fuzz-sep19-initial-ing"]],
+    ["a-beoa", "⠁⠤⠃⠑⠕⠁", "⠁⠤⠆⠕⠁", ["reviewed-fuzz-967ce9526d455f73"]],
+    ["(beamx", "⠐⠣⠃⠂⠍⠭", "⠐⠣⠆⠁⠍⠭", ["reviewed-fuzz-967ce9526d455f73"]],
   ])("recognizes %s as an already-judged type", (input, local, oracle, groups) => {
     expect(matchFuzzFamilies(evidence(input, local, oracle))).toEqual(groups);
   });
@@ -124,6 +128,8 @@ describe("fuzz divergence families", () => {
     ["fsty", "⠋⠎⠞⠽", "⠋⠌⠽", "first is not read before y (10.9.3)"],
     ["xfstb", "⠭⠋⠎⠞⠃", "⠭⠋⠌⠃", "fst is not at the beginning of a word"],
     ["xing ingb", "⠭⠔⠛ ⠔⠛⠃", "⠭⠬ ⠬⠃", "a medial ing is outside the family"],
+    ["befc", "⠃⠑⠋⠉", "⠆⠋⠉", "spelling be before a consonant is not the be-vowel policy"],
+    ["xbeoa", "⠭⠃⠑⠕⠁", "⠭⠆⠕⠁", "be is not at the beginning of a word"],
   ])("leaves %s for adjudication: %s", (input, local, oracle) => {
     expect(matchFuzzFamilies(evidence(input, local, oracle))).toBeUndefined();
   });
@@ -162,12 +168,28 @@ describe("family consistency with the adjudicated ledger", () => {
     }
   });
 
-  it("never assigns a recorded divergence a verdict different from its own", () => {
-    const conflicts = records.flatMap((record) =>
-      groupsOf(record)
-        .filter((group) => kinds.get(group) !== kinds.get(record.groupId))
-        .map((group) => `${JSON.stringify(record.input)} ${record.groupId} -> ${group}`)
-    );
+  // Families apply to generated strings only. A dictionary word's verdict can
+  // rest on its known pronunciation (one-syllable beinly), which a contrived
+  // string lacks, so verdict kinds are compared against fuzz evidence.
+  it("never assigns a recorded fuzz divergence a verdict different from its own", () => {
+    const conflicts = records
+      .filter((record) => record.caseId.startsWith("fuzz:"))
+      .flatMap((record) =>
+        groupsOf(record)
+          .filter((group) => kinds.get(group) !== kinds.get(record.groupId))
+          .map((group) => `${JSON.stringify(record.input)} ${record.groupId} -> ${group}`)
+      );
     expect(conflicts).toEqual([]);
+  });
+
+  it("never recognizes a recorded translator bug in any channel as another kind", () => {
+    const masked = records
+      .filter((record) => kinds.get(record.groupId) === "our-bug")
+      .flatMap((record) =>
+        groupsOf(record)
+          .filter((group) => kinds.get(group) !== "our-bug")
+          .map((group) => `${JSON.stringify(record.input)} ${record.groupId} -> ${group}`)
+      );
+    expect(masked).toEqual([]);
   });
 });

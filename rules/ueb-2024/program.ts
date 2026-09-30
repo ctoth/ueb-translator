@@ -3,6 +3,7 @@ import {
   COMPOUND_CONTRACTION_EXCEPTIONS,
   FINAL_GROUPSIGN_EXCEPTIONS,
   FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS,
+  FIRST_SYLLABLE_VOWEL_WORDS,
   INITIAL_CONTRACTION_EXCEPTIONS,
 } from "./constraints.js";
 import {
@@ -46,14 +47,18 @@ function firstSyllableExceptionWords(print: string): readonly string[] {
     .flatMap((constraint) => constraint.words);
 }
 
-function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
+function withPossessives(words: readonly string[]): readonly string[] {
   // A possessive does not change the restricted letters inside its base word.
   // Expand at compilation, keeping English morphology out of the interpreter.
   // ICEB 2024 10.12.12 retains contraction rules around medial punctuation.
   // Composition canonicalizes apostrophe spellings to ASCII for eligibility.
-  const possessiveWords = words.flatMap((word) => [
+  return words.flatMap((word) => [
     word, `${word}'s`, ...(word.endsWith("s") ? [`${word}'`] : []),
   ]);
+}
+
+function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
+  const possessiveWords = withPossessives(words);
   return optionalExceptionGuard(possessiveWords, {
     ignoredCharacters: "-", kind: "not-word", words: possessiveWords,
   });
@@ -185,6 +190,13 @@ export function compileGrade2RuleGuards(
           { kind: "first-syllable" },
           NO_STRUCTURAL_CROSSING,
           ...exceptionWordGuard(firstSyllableExceptionWords(rule.print)),
+          ...(rule.print === FIRST_SYLLABLE_VOWEL_WORDS.contraction
+            ? [{
+              characters: "aeiouy",
+              kind: "following-not-vowel-y-except-words" as const,
+              words: withPossessives(FIRST_SYLLABLE_VOWEL_WORDS.words),
+            }]
+            : []),
           { kind: "not-word-end" },
           { kind: "word-start" },
         ];

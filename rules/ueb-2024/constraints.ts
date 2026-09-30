@@ -48,13 +48,9 @@ export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContra
     citation: citeIceb("10.6.1"),
     contraction: "be",
     id: "UEB-10.6.1-be-syllable-exception",
+    // Before a vowel be is spelled by default (FIRST_SYLLABLE_VOWEL_WORDS).
     words: [
-      ...family("bead", ["s", "ed", "ing"]), "beauty",
-      "been", ...family("beautiful", ["ly"]),
-      ...family("beat", ["s", "en", "er", "ers", "ing", "ings"]),
-      ...family("bear", ["s", "er", "ers", "ing", "ings"]),
       ...family("bed", ["s", "ded", "ding"]),
-      ...family("beep", ["s", "ed", "ing"]),
       ...family("better", ["s", "ed", "ing"]), "belfast",
       ...family("bend", ["s", "er", "ers", "ing"]), "bent",
       ...family("bedrock", ["s"]), ...family("bedroom", ["s"]),
@@ -74,6 +70,40 @@ export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContra
     words: [...family("cone", ["s"]), "conan"],
   },
 ];
+
+export interface FirstSyllableVowelWordsSource {
+  readonly citation: IcebRuleCitation<"10.6.1">;
+  readonly contraction: "be";
+  readonly id: "UEB-10.6.1-be-vowel-syllable-words";
+  readonly words: readonly string[];
+}
+
+/**
+ * ICEB 10.6.1 uses be only when it forms the first syllable. Before a vowel or
+ * y it usually does not (bee, beef, beach), so be is spelled there unless the
+ * word is listed here: words whose be is its own syllable (be·ing, be·yond,
+ * be·a·ti·tude, be- prefixes). Unlisted and unknown words are spelled, which
+ * keeps contrived words unambiguous (#100).
+ */
+export const FIRST_SYLLABLE_VOWEL_WORDS: FirstSyllableVowelWordsSource = {
+  citation: citeIceb("10.6.1"),
+  contraction: "be",
+  id: "UEB-10.6.1-be-vowel-syllable-words",
+  words: [
+    ...family("being", ["s", "less", "ness", "nesses"]),
+    ...family("beyond", ["s", "ness"]),
+    ...family("beatific", ["al", "ally"]), "beatificate",
+    ...family("beatification", ["s"]),
+    "beatified", "beatifies", "beatify", "beatifying",
+    ...family("beatitude", ["s"]),
+    "beata", "beatae", "beati", "beatus",
+    "beatrice", "beatrisa", "beatrix", "beatriz",
+    "beelzebub", "beelzebubian", "beelzebul",
+    "beode", "beograd", "beothuk", "beothukan", "beowawe", "beowulf",
+    "bealtared", "beaproned", "beearn", "beedged", "beelbow", "beinked",
+    "beuncled", "beuniformed",
+  ],
+};
 
 export type ContextualInitialContraction =
   | "ever"
