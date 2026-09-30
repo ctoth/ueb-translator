@@ -69,6 +69,29 @@ oracle defects: Appendix 1 lists `afterlight` and `couldst`, and 10.9.8 requires
 the initial indicator that Liblouis omits. This adjudication covers those exact
 changed spans, not unrelated contractions in their surrounding sentences.
 
+The same nightly seed also found `acchns-a`. Rule 10.9.6 prevents the `ch`
+groupsign there because `ch` plus `n` would look like the shortform `children`.
+The overlapping `cc` groupsign is still legal under 10.6.5: it has a letter
+on each side and creates no shortform reading. Rules 10.10.2 and 10.10.5
+permit the shorter lawful `cc` choice once `ch` is unavailable. Liblouis
+unnecessarily spells `cc`, so retain the exact evidence as an oracle defect.
+Rule-linked regressions cover the overlapping choice and the contrasting
+vowel context where `ch` remains available. The fuzz triage regression checks
+that the captured evidence matches the current local translation and is known.
+
+The replay also encountered the `be`-before-vowel bug from issue #100.
+After incorporating its merged repair from PR #114, these captured cases
+agree with the oracle and need no disagreement entries. The final sweeps
+validate both changes together.
+
+The complete daily scan also captures `{llb.` and `jpzc-ttbiofjloc`.
+The former reproduces the existing dictionary `llb` defect: general longer
+shortforms under 10.9.3(c) still require the indicator under 5.7.2 and 10.9.8.
+Keep it classified as an implementation bug. The latter has an `of` contraction
+under 10.3.1 in an invented word of unknown syllabification; 10.12.7–10.12.8
+permit the exact contracted and spelled alternatives. These reviewed entries
+allow the complete seed replay to finish without hiding either verdict.
+
 ## Expanded nightly run
 
 After reconciling the full sweeps, increase the nightly sample count from

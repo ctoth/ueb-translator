@@ -204,6 +204,20 @@ describe("translateGrade2", () => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 
+  // ICEB 10.6.5 permits internal cc. Rejecting ch under 10.9.6 does not
+  // forbid an overlapping cc groupsign that creates no shortform reading.
+  it.each([
+    ["acchns", "⠁⠒⠓⠝⠎", "cc"],
+    ["acchns-a", "⠁⠒⠓⠝⠎⠤⠁", "cc"],
+    ["acchnb-a", "⠁⠒⠓⠝⠃⠤⠁", "cc"],
+    ["acchna-a", "⠁⠉⠡⠝⠁⠤⠁", "ch"],
+  ] as const)("keeps lawful overlapping groupsigns in %s", (text, braille, groupsign) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.print)).toEqual([groupsign]);
+  });
+
   it.each(SHORTFORMS)("retains $id with permitted s and possessive endings", (rule) => {
     for (const suffix of ["s", "'s"]) {
       const result = traceGrade2(rule.print + suffix);
