@@ -356,22 +356,42 @@ const LATIN_LETTER_BY_CELL: ReadonlyMap<string, string> = new Map(
     .map((rule): readonly [string, string] => [rule.braille, rule.print]),
 );
 
+const CELL_BY_LATIN_LETTER: ReadonlyMap<string, string> = new Map(
+  [...LATIN_LETTER_BY_CELL].map(([cell, letter]): readonly [string, string] => [letter, cell]),
+);
+
+/** Letter affixes a rule keeps its contraction before (ICEB 10.9.5 plural s). */
+function letterAffixCells(rule: ContextualRuleSource): readonly string[] {
+  return rule.guards.flatMap((guard) =>
+    guard.kind === "word-with-affixes" ? guard.affixes : []
+  ).flatMap((affix) => {
+    const cells = Array.from(affix).map((letter) => CELL_BY_LATIN_LETTER.get(letter));
+    return cells.every((cell) => cell !== undefined) ? [cells.join("")] : [];
+  });
+}
+
+function literalLetters(braille: string): string | undefined {
+  const cells = Array.from(braille);
+  const print = cells.map((cell) => LATIN_LETTER_BY_CELL.get(cell)).join("");
+  return print.length === cells.length ? print : undefined;
+}
+
 /**
  * Literal letter sequences whose cells are also a compiled contraction output.
  * The source is the compiled inventory itself, so additions cannot bypass the
- * Grade 1 disambiguation pass.
+ * Grade 1 disambiguation pass. ICEB 10.9.7 also covers the suffixed readings
+ * of 10.9.5, so each rule contributes its output with every letter affix.
  */
 export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
   readonly [print: string, braille: string]
 )[] = [...new Map(
-  GRADE2_CONTEXTUAL_RULES.flatMap((rule) => {
-    const print = Array.from(rule.braille)
-      .map((cell) => LATIN_LETTER_BY_CELL.get(cell))
-      .join("");
-    return print.length === Array.from(rule.braille).length
-      ? [[print, rule.braille] as const]
-      : [];
-  }).map((entry) => [entry[0], entry] as const),
+  GRADE2_CONTEXTUAL_RULES.flatMap((rule) =>
+    ["", ...letterAffixCells(rule)].flatMap((affix) => {
+      const braille = rule.braille + affix;
+      const print = literalLetters(braille);
+      return print === undefined ? [] : [[print, braille] as const];
+    })
+  ).map((entry) => [entry[0], entry] as const),
 ).values()].sort((left, right) => left[0].localeCompare(right[0], "en"));
 
 const STANDING_WORD_OUTPUTS = new Set(

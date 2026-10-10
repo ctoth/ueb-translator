@@ -195,6 +195,16 @@ describe("Grade 2 source compilation", () => {
     ]);
   });
 
+  it("derives suffixed ambiguity guards from the 10.9.5 affixes (issue #90)", () => {
+    const prints = GRADE2_AMBIGUOUS_LETTER_SEQUENCES.map(([print]) => print);
+    expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["ags", "⠁⠛⠎"]);
+    expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["yrs", "⠽⠗⠎"]);
+    // abouts, almosts and hims are not shortform readings; wordsigns take no s.
+    for (const print of ["abs", "alms", "hms", "bs", "qs"]) {
+      expect(prints).not.toContain(print);
+    }
+  });
+
   it("keeps the lower groupsign whole-word guard limited to en and in", () => {
     expect(compileGrade2RuleGuards({
       braille: "⠢",
