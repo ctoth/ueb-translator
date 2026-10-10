@@ -159,6 +159,20 @@ function firstShortformCollision(hunk: DivergenceHunk, input: string): boolean {
     wordInitialOccurrences(input, "fst").every((index) => consonant.test(input.charAt(index + 3)));
 }
 
+/**
+ * 10.9.5 keeps these shortforms before an added s, so 10.9.7 requires a grade 1
+ * indicator before the standing letters-sequence. The oracle writes the
+ * suffixed shortform word and the literal spelling with the same cells.
+ */
+const unprotectedSuffixedShortforms = [
+  "bls", "dclgs", "dcvgs", "frs", "gds", "grts", "lls", "lrs", "qks", "rcvgs", "rjcgs", "xss",
+];
+
+function suffixedShortformProtection(hunk: DivergenceHunk, input: string): boolean {
+  return hunk.local === "⠰" && hunk.oracle === "" &&
+    input.split(/[^a-z]+/u).some((word) => unprotectedSuffixedShortforms.includes(word));
+}
+
 export const fuzzFamilies: readonly DivergenceFamily[] = [
   { groupId: "fuzz-sep19-first-syllable", id: "first-syllable-be", matches: firstSyllableSign("be", "⠆") },
   { groupId: "fuzz-sep19-first-syllable", id: "first-syllable-con", matches: firstSyllableSign("con", "⠒") },
@@ -171,6 +185,11 @@ export const fuzzFamilies: readonly DivergenceFamily[] = [
   { groupId: "fuzz-unexpanded-ar-gh", id: "standalone-ar", matches: standaloneGroupsign("ar", "⠜") },
   { groupId: "fuzz-unexpanded-ar-gh", id: "standalone-gh", matches: standaloneGroupsign("gh", "⠣") },
   { groupId: "reviewed-fuzz-49135499c92932b3", id: "first-shortform-collision", matches: firstShortformCollision },
+  {
+    groupId: "reviewed-fuzz-d35e49f5f897d3b1",
+    id: "suffixed-shortform-protection",
+    matches: suffixedShortformProtection,
+  },
   {
     // 10.4.3 forbids ing at the beginning of a word; the oracle uses it there.
     groupId: "fuzz-sep19-initial-ing",
