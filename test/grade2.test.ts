@@ -507,6 +507,22 @@ describe("translateGrade2", () => {
     },
   );
 
+  // ICEB 2024 10.9.7 over 10.9.5: a standing shortform spelling plus s reads
+  // as the suffixed shortform word, except for abouts, almosts and hims.
+  // Alphabetic wordsigns take no s. A following 's keeps the protection, as it
+  // does for the bare shortform spelling.
+  it.each([
+    ["ags", "⠰⠁⠛⠎"], ["agains", "⠁⠛⠎"],
+    ["'ags)", "⠄⠰⠁⠛⠎⠐⠜"], ["(ags)", "⠐⠣⠰⠁⠛⠎⠐⠜"],
+    ["yrs", "⠰⠽⠗⠎"], ["yours", "⠽⠗⠎"],
+    ["Ags", "⠰⠠⠁⠛⠎"], ["ags-ags", "⠰⠁⠛⠎⠤⠰⠁⠛⠎"],
+    ["abs", "⠁⠃⠎"], ["alms", "⠁⠇⠍⠎"], ["hms", "⠓⠍⠎"],
+    ["qs", "⠟⠎"], ["bags", "⠃⠁⠛⠎"],
+    ["ags's", "⠰⠁⠛⠎⠄⠎"], ["ALS's", "⠰⠠⠠⠁⠇⠎⠄⠎"],
+  ] as const)("protects suffixed shortform spellings in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   it("resolves capitals around contractions with the shared mode program", () => {
     expect(translateGrade2("THE CAT SAT ON")).toEqual({
       braille: "⠠⠠⠠⠮⠀⠉⠁⠞⠀⠎⠁⠞⠀⠕⠝⠠⠄",

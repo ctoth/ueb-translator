@@ -372,20 +372,38 @@ const LATIN_CELL_BY_LETTER: ReadonlyMap<string, string> = new Map(
   [...LATIN_LETTER_BY_CELL].map(([cell, letter]) => [letter, cell]),
 );
 
+/** Letter affixes a rule keeps its contraction before (ICEB 10.9.5 plural s). */
+function letterAffixes(rule: ContextualRuleSource): readonly string[] {
+  return rule.guards.flatMap((guard) =>
+    guard.kind === "word-with-affixes" ? guard.affixes : []
+  ).filter((affix) => Array.from(affix).every((letter) => LATIN_CELL_BY_LETTER.has(letter)));
+}
+
+function letterCells(letters: string): string {
+  return Array.from(letters).map((letter) => LATIN_CELL_BY_LETTER.get(letter)).join("");
+}
+
+function literalLetters(braille: string): string | undefined {
+  const cells = Array.from(braille);
+  const print = cells.map((cell) => LATIN_LETTER_BY_CELL.get(cell)).join("");
+  return print.length === cells.length ? print : undefined;
+}
+
 /**
  * Literal letter sequences whose cells are also a compiled contraction output.
  * The source is the compiled inventory itself, so additions cannot bypass the
- * Grade 1 disambiguation pass.
+ * Grade 1 disambiguation pass. ICEB 10.9.7 also covers the suffixed readings
+ * of 10.9.5, so each rule contributes its output with every letter affix.
  */
 export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
   readonly [print: string, braille: string]
 )[] = [...new Map(
   GRADE2_CONTEXTUAL_RULES.flatMap((rule) => {
-    const print = Array.from(rule.braille)
-      .map((cell) => LATIN_LETTER_BY_CELL.get(cell))
-      .join("");
-    if (print.length !== Array.from(rule.braille).length) return [];
-    const entries: (readonly [string, string])[] = [[print, rule.braille]];
+    const print = literalLetters(rule.braille);
+    if (print === undefined) return [];
+    const entries: (readonly [string, string])[] = ["", ...letterAffixes(rule)].map(
+      (affix) => [print + affix, rule.braille + letterCells(affix)],
+    );
     for (const guard of rule.guards) {
       // ICEB 10.9.8: Appendix 1 longer words beginning with a shortform
       // also make their literal abbreviation ambiguous (e.g. gd+y).
@@ -393,10 +411,7 @@ export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
         !/^[a-z]+$/u.test(guard.word)) continue;
       const ending = guard.word.slice(rule.input.length);
       for (const suffix of [ending, ending + guard.pluralSuffix]) {
-        const suffixCells = Array.from(suffix).map((letter) =>
-          LATIN_CELL_BY_LETTER.get(letter)
-        ).join("");
-        entries.push([print + suffix, rule.braille + suffixCells]);
+        entries.push([print + suffix, rule.braille + letterCells(suffix)]);
       }
     }
     return entries;

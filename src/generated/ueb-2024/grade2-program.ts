@@ -84,6 +84,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠁⠃⠧⠍⠑⠝⠞⠊⠕⠝⠑⠙⠎"
     ],
     [
+      "abvs",
+      "⠁⠃⠧⠎"
+    ],
+    [
       "ac",
       "⠁⠉"
     ],
@@ -98,6 +102,14 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "acr",
       "⠁⠉⠗"
+    ],
+    [
+      "acrs",
+      "⠁⠉⠗⠎"
+    ],
+    [
+      "acs",
+      "⠁⠉⠎"
     ],
     [
       "af",
@@ -388,6 +400,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠁⠋⠝"
     ],
     [
+      "afns",
+      "⠁⠋⠝⠎"
+    ],
+    [
       "afntea",
       "⠁⠋⠝⠞⠑⠁"
     ],
@@ -434,6 +450,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "afplays",
       "⠁⠋⠏⠇⠁⠽⠎"
+    ],
+    [
+      "afs",
+      "⠁⠋⠎"
     ],
     [
       "afsale",
@@ -600,8 +620,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠁⠋⠺⠕⠗⠇⠙⠎"
     ],
     [
+      "afws",
+      "⠁⠋⠺⠎"
+    ],
+    [
       "ag",
       "⠁⠛"
+    ],
+    [
+      "ags",
+      "⠁⠛⠎"
     ],
     [
       "al",
@@ -616,12 +644,28 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠁⠇⠗"
     ],
     [
+      "alrs",
+      "⠁⠇⠗⠎"
+    ],
+    [
+      "als",
+      "⠁⠇⠎"
+    ],
+    [
       "alt",
       "⠁⠇⠞"
     ],
     [
+      "alts",
+      "⠁⠇⠞⠎"
+    ],
+    [
       "alw",
       "⠁⠇⠺"
+    ],
+    [
+      "alws",
+      "⠁⠇⠺⠎"
     ],
     [
       "b",
@@ -632,8 +676,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠃⠇"
     ],
     [
+      "bls",
+      "⠃⠇⠎"
+    ],
+    [
       "brl",
       "⠃⠗⠇"
+    ],
+    [
+      "brls",
+      "⠃⠗⠇⠎"
     ],
     [
       "c",
@@ -658,6 +710,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "cdests",
       "⠉⠙⠑⠎⠞⠎"
+    ],
+    [
+      "cds",
+      "⠉⠙⠎"
     ],
     [
       "cdst",
@@ -688,12 +744,20 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠙⠉⠇⠛"
     ],
     [
+      "dclgs",
+      "⠙⠉⠇⠛⠎"
+    ],
+    [
       "dclr",
       "⠙⠉⠇⠗"
     ],
     [
       "dclrs",
       "⠙⠉⠇⠗⠎"
+    ],
+    [
+      "dcls",
+      "⠙⠉⠇⠎"
     ],
     [
       "dcv",
@@ -712,12 +776,20 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠙⠉⠧⠛"
     ],
     [
+      "dcvgs",
+      "⠙⠉⠧⠛⠎"
+    ],
+    [
       "dcvr",
       "⠙⠉⠧⠗"
     ],
     [
       "dcvrs",
       "⠙⠉⠧⠗⠎"
+    ],
+    [
+      "dcvs",
+      "⠙⠉⠧⠎"
     ],
     [
       "e",
@@ -728,12 +800,20 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠑⠊"
     ],
     [
+      "eis",
+      "⠑⠊⠎"
+    ],
+    [
       "f",
       "⠋"
     ],
     [
       "fr",
       "⠋⠗"
+    ],
+    [
+      "frs",
+      "⠋⠗⠎"
     ],
     [
       "g",
@@ -792,6 +872,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠛⠙⠊⠎⠓⠎"
     ],
     [
+      "gds",
+      "⠛⠙⠎"
+    ],
+    [
       "gdun",
       "⠛⠙⠥⠝"
     ],
@@ -818,6 +902,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "grt",
       "⠛⠗⠞"
+    ],
+    [
+      "grts",
+      "⠛⠗⠞⠎"
     ],
     [
       "h",
@@ -848,6 +936,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠓⠍⠋"
     ],
     [
+      "hmfs",
+      "⠓⠍⠋⠎"
+    ],
+    [
       "imm",
       "⠊⠍⠍"
     ],
@@ -868,6 +960,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠊⠍⠍⠝⠑⠎⠎⠎"
     ],
     [
+      "imms",
+      "⠊⠍⠍⠎"
+    ],
+    [
       "j",
       "⠚"
     ],
@@ -882,6 +978,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "ll",
       "⠇⠇"
+    ],
+    [
+      "lls",
+      "⠇⠇⠎"
     ],
     [
       "lr",
@@ -920,12 +1020,20 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠇⠗⠕⠏⠑⠝⠑⠗⠎"
     ],
     [
+      "lrs",
+      "⠇⠗⠎"
+    ],
+    [
       "m",
       "⠍"
     ],
     [
       "myf",
       "⠍⠽⠋"
+    ],
+    [
+      "myfs",
+      "⠍⠽⠋⠎"
     ],
     [
       "n",
@@ -936,8 +1044,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠝⠑⠉"
     ],
     [
+      "necs",
+      "⠝⠑⠉⠎"
+    ],
+    [
       "nei",
       "⠝⠑⠊"
+    ],
+    [
+      "neis",
+      "⠝⠑⠊⠎"
     ],
     [
       "p",
@@ -946,6 +1062,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "pd",
       "⠏⠙"
+    ],
+    [
+      "pds",
+      "⠏⠙⠎"
     ],
     [
       "q",
@@ -1028,6 +1148,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠟⠅⠊⠎⠓⠎"
     ],
     [
+      "qks",
+      "⠟⠅⠎"
+    ],
+    [
       "qky",
       "⠟⠅⠽"
     ],
@@ -1056,6 +1180,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠗⠉⠧⠛"
     ],
     [
+      "rcvgs",
+      "⠗⠉⠧⠛⠎"
+    ],
+    [
       "rcvr",
       "⠗⠉⠧⠗"
     ],
@@ -1070,6 +1198,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "rcvrships",
       "⠗⠉⠧⠗⠎⠓⠊⠏⠎"
+    ],
+    [
+      "rcvs",
+      "⠗⠉⠧⠎"
     ],
     [
       "rjc",
@@ -1120,12 +1252,20 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠗⠚⠉⠛⠇⠽⠎"
     ],
     [
+      "rjcgs",
+      "⠗⠚⠉⠛⠎"
+    ],
+    [
       "rjcr",
       "⠗⠚⠉⠗"
     ],
     [
       "rjcrs",
       "⠗⠚⠉⠗⠎"
+    ],
+    [
+      "rjcs",
+      "⠗⠚⠉⠎"
     ],
     [
       "s",
@@ -1144,6 +1284,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠎⠙⠑⠎⠞⠎"
     ],
     [
+      "sds",
+      "⠎⠙⠎"
+    ],
+    [
       "sdst",
       "⠎⠙⠎⠞"
     ],
@@ -1160,6 +1304,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠞⠙"
     ],
     [
+      "tds",
+      "⠞⠙⠎"
+    ],
+    [
       "tgr",
       "⠞⠛⠗"
     ],
@@ -1172,12 +1320,24 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠞⠛⠗⠝⠑⠎⠎⠎"
     ],
     [
+      "tgrs",
+      "⠞⠛⠗⠎"
+    ],
+    [
       "tm",
       "⠞⠍"
     ],
     [
+      "tms",
+      "⠞⠍⠎"
+    ],
+    [
       "tn",
       "⠞⠝"
+    ],
+    [
+      "tns",
+      "⠞⠝⠎"
     ],
     [
       "u",
@@ -1212,6 +1372,10 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠺⠙⠑⠎⠞⠎"
     ],
     [
+      "wds",
+      "⠺⠙⠎"
+    ],
+    [
       "wdst",
       "⠺⠙⠎⠞"
     ],
@@ -1228,8 +1392,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠭⠋"
     ],
     [
+      "xfs",
+      "⠭⠋⠎"
+    ],
+    [
       "xs",
       "⠭⠎"
+    ],
+    [
+      "xss",
+      "⠭⠎⠎"
     ],
     [
       "y",
@@ -1244,8 +1416,20 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠽⠗⠋"
     ],
     [
+      "yrfs",
+      "⠽⠗⠋⠎"
+    ],
+    [
+      "yrs",
+      "⠽⠗⠎"
+    ],
+    [
       "yrvs",
       "⠽⠗⠧⠎"
+    ],
+    [
+      "yrvss",
+      "⠽⠗⠧⠎⠎"
     ],
     [
       "z",

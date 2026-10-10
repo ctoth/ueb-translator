@@ -191,101 +191,6 @@
       "groupId": "fuzz-unknown-gh-pronunciation"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00000095",
-      "input": "ACS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠁⠉⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠁⠉⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00000175",
-      "input": "AFS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠁⠋⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠁⠋⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00000193",
-      "input": "AGS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠁⠛⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠁⠛⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00000249",
-      "input": "ALS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠁⠇⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠁⠇⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00000250",
-      "input": "ALS's",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠁⠇⠎⠄⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠁⠇⠎⠄⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00000352",
       "input": "AR",
       "local": {
@@ -27741,25 +27646,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00023106",
-      "input": "CDS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠉⠙⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠉⠙⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00023293",
       "input": "CONS",
       "local": {
@@ -31083,25 +30969,6 @@
         "output": "⠠⠙⠥⠍⠃⠇⠑⠙⠕⠗⠑⠄⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00043096",
-      "input": "EIS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠑⠊⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠑⠊⠎"
-      },
-      "groupId": "exact-grade1-insertion"
     },
     {
       "caseId": "scowl:2020.12.07:95:00043519",
@@ -40262,25 +40129,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00106329",
-      "input": "PDS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠏⠙⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠏⠙⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00106776",
       "input": "Pagedale",
       "local": {
@@ -41839,25 +41687,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00117003",
-      "input": "RCVS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠗⠉⠧⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠗⠉⠧⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00117822",
       "input": "Randallstown",
       "local": {
@@ -42787,25 +42616,6 @@
         "output": "⠠⠗⠥⠝⠽⠕⠝⠑⠎⠟⠥⠑"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00122706",
-      "input": "SDS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠎⠙⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠎⠙⠎"
-      },
-      "groupId": "exact-grade1-insertion"
     },
     {
       "caseId": "scowl:2020.12.07:95:00122881",
@@ -45487,25 +45297,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00136008",
-      "input": "TMS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠞⠍⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠞⠍⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00136828",
       "input": "Tamonea",
       "local": {
@@ -47043,25 +46834,6 @@
         "output": "⠠⠺⠐⠗⠎⠞⠪⠝⠄⠎"
       },
       "groupId": "traced-strong-groupsign"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00152005",
-      "input": "YRS",
-      "local": {
-        "kind": "test",
-        "output": "⠠⠠⠽⠗⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠠⠠⠽⠗⠎"
-      },
-      "groupId": "exact-grade1-insertion"
     },
     {
       "caseId": "scowl:2020.12.07:95:00152770",
@@ -48907,25 +48679,6 @@
       "groupId": "traced-ea"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00162706",
-      "input": "ags",
-      "local": {
-        "kind": "test",
-        "output": "⠁⠛⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠛⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00162868",
       "input": "aidoneus",
       "local": {
@@ -49154,25 +48907,6 @@
       "groupId": "traced-strong-groupsign"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00166187",
-      "input": "als",
-      "local": {
-        "kind": "test",
-        "output": "⠁⠇⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠇⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00166277",
       "input": "alternamente",
       "local": {
@@ -49285,25 +49019,6 @@
         "output": "⠁⠇⠞⠊⠍⠑⠞⠗⠽⠄⠎"
       },
       "groupId": "traced-initial-letter"
-    },
-    {
-      "caseId": "scowl:2020.12.07:95:00166410",
-      "input": "alts",
-      "local": {
-        "kind": "test",
-        "output": "⠁⠇⠞⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠁⠇⠞⠎"
-      },
-      "groupId": "exact-grade1-insertion"
     },
     {
       "caseId": "scowl:2020.12.07:95:00166738",
@@ -181527,25 +181242,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00538506",
-      "input": "sds",
-      "local": {
-        "kind": "test",
-        "output": "⠎⠙⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠎⠙⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00539961",
       "input": "seismotherapy",
       "local": {
@@ -195853,25 +195549,6 @@
       "groupId": "traced-initial-letter"
     },
     {
-      "caseId": "scowl:2020.12.07:95:00655745",
-      "input": "yrs",
-      "local": {
-        "kind": "test",
-        "output": "⠽⠗⠎",
-        "testId": "SCOWL-2020.12.07-level-95"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠰⠽⠗⠎"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00655926",
       "input": "zabaglione",
       "local": {
@@ -196191,25 +195868,6 @@
         ],
         "version": "3.38.0",
         "output": "⠐⠣⠰⠇⠇⠗⠐⠜"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
-      "caseId": "fuzz:74047801890d0bf206b8c9a4bfd752a3eb6c32c377069aa8fe89488861639ea9",
-      "input": "\"wds:",
-      "local": {
-        "kind": "test",
-        "output": "⠦⠺⠙⠎⠒",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠦⠰⠺⠙⠎⠒"
       },
       "groupId": "exact-grade1-insertion"
     },
@@ -196630,25 +196288,6 @@
         "output": "⠊⠞⠎⠄⠍⠥⠛⠕⠝⠞⠺"
       },
       "groupId": "fuzz-its-apostrophe-extension"
-    },
-    {
-      "caseId": "fuzz:46cf90261c9cc30a3301690783d8ed8efe63722db8adfeab688295197576f1b7",
-      "input": "(pds,",
-      "local": {
-        "kind": "test",
-        "output": "⠐⠣⠏⠙⠎⠂",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠐⠣⠰⠏⠙⠎⠂"
-      },
-      "groupId": "exact-grade1-insertion"
     },
     {
       "caseId": "fuzz:e0aaf0f7e726a5cf8e54f8cfe3ed60e099dde636bfb0ee3b3c77aabfc5538a5b",
@@ -197259,25 +196898,6 @@
       "groupId": "fuzz-sep19-first-syllable"
     },
     {
-      "caseId": "fuzz:f45e72e735b296ef8667400767a0ebf185e66190b950dabb235b88983066b4ed",
-      "input": "{eis}",
-      "local": {
-        "kind": "test",
-        "output": "⠸⠣⠑⠊⠎⠸⠜",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠸⠣⠰⠑⠊⠎⠸⠜"
-      },
-      "groupId": "fuzz-sep19-plural-shortform-ambiguity"
-    },
-    {
       "caseId": "fuzz:b1b8c7ef215d716ac5f6c1e4e80d3bd386848ddda628d77824bd7319f4e16662",
       "input": "\"beuodqhsrbm.",
       "local": {
@@ -197409,25 +197029,6 @@
         "output": "⠦⠃⠑⠟⠐⠜"
       },
       "groupId": "fuzz-sep19-first-syllable"
-    },
-    {
-      "caseId": "fuzz:b16d1e3fb6fb25cc2619348a1e21b92e275826a34404356deb7d31be89883df2",
-      "input": "{eis!",
-      "local": {
-        "kind": "test",
-        "output": "⠸⠣⠑⠊⠎⠖",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠸⠣⠰⠑⠊⠎⠖"
-      },
-      "groupId": "fuzz-sep19-plural-shortform-ambiguity"
     },
     {
       "caseId": "fuzz:20b852c211a996fde7533b3707ba53de147c94c3f34ad75f936dc64d72f13cb5",
@@ -198359,6 +197960,177 @@
         "version": "3.38.0"
       },
       "groupId": "reviewed-fuzz-772292a64ad9dbf6"
+    },
+    {
+      "caseId": "fuzz:3a1bb1d08ee2e534a717cfd80404801535e7fc1df3bfa92dce0b2e56eb5dd40e",
+      "input": "a-frs",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠤⠰⠋⠗⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠁⠤⠋⠗⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-d35e49f5f897d3b1"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00012512",
+      "input": "BLS",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠠⠠⠃⠇⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠠⠠⠃⠇⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-10b100cca98eab3b"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00048686",
+      "input": "FRS",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠠⠠⠋⠗⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠠⠠⠋⠗⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-54df59a08b921964"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00052571",
+      "input": "Frs",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠠⠋⠗⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠠⠋⠗⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-68b8c67e33548b10"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00052985",
+      "input": "GDS",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠠⠠⠛⠙⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠠⠠⠛⠙⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-41411fd5c5249ad8"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00078979",
+      "input": "LRS",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠠⠠⠇⠗⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠠⠠⠇⠗⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-b58a9793735c970a"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00201870",
+      "input": "bls",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠃⠇⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠃⠇⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1bf893498d94b380"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00317670",
+      "input": "frs",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠋⠗⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠋⠗⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-db956297f893e9a3"
+    },
+    {
+      "caseId": "scowl:2020.12.07:95:00322630",
+      "input": "gds",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠛⠙⠎",
+        "testId": "SCOWL-2020.12.07-level-95"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠛⠙⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-b232cb5e67414bae"
     }
   ],
   "groups": [
@@ -198709,19 +198481,6 @@
       }
     },
     {
-      "id": "fuzz-sep19-plural-shortform-ambiguity",
-      "verdict": {
-        "kind": "our-bug",
-        "rationale": "ICEB 2024 10.9.5 permits adding s to a shortform, so standing eis can be read as eithers. Rule 10.9.7 therefore requires grade 1 protection. The local literal eis lacks that indicator. Both exact punctuation contexts preserve standing alone under 2.6.2-2.6.3. This is an existing plural-shortform ambiguity defect.",
-        "sources": [
-          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
-        ],
-        "issues": [
-          59
-        ]
-      }
-    },
-    {
       "id": "fuzz-sep19-bee-first-syllable",
       "verdict": {
         "kind": "our-bug",
@@ -198869,6 +198628,96 @@
       "verdict": {
         "kind": "permitted-alternative",
         "rationale": "ICEB 2024 10.3.1 permits the of strong contraction wherever its letters occur unless another rule limits it. The exact invented component ttbiofjloc has no established pronunciation, word structure, or syllabification; it is not the source example biofeedback. Its local of contraction and the oracle's spelled of can reflect different syllable readings. Rules 10.12.7-10.12.8 permit translation-software choices for contrived words with unknown pronunciation, and 10.12.10 recognizes differing transcriptions. The hyphen is outside the contracted span. Retain only this exact evidence; do not infer pronunciation from Liblouis or generalize it to known words.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-d35e49f5f897d3b1",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-10b100cca98eab3b",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-54df59a08b921964",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-68b8c67e33548b10",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-41411fd5c5249ad8",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-b58a9793735c970a",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-1bf893498d94b380",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-db956297f893e9a3",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-b232cb5e67414bae",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
         "sources": [
           "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
         ]

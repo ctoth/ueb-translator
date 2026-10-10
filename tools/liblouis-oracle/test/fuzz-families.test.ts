@@ -104,6 +104,8 @@ describe("fuzz divergence families", () => {
     ["fstcvw'lb", "⠋⠎⠞⠉⠧⠺⠄⠇⠃", "⠋⠌⠉⠧⠺⠄⠇⠃", ["reviewed-fuzz-49135499c92932b3"]],
     ["ehpwqi-fstbv", "⠑⠓⠏⠺⠟⠊⠤⠋⠎⠞⠃⠧", "⠑⠓⠏⠺⠟⠊⠤⠋⠌⠃⠧", ["reviewed-fuzz-49135499c92932b3"]],
     ["fsthxbev", "⠋⠎⠹⠭⠃⠑⠧", "⠋⠌⠓⠭⠃⠑⠧", ["reviewed-fuzz-49135499c92932b3"]],
+    ["a-frs", "⠁⠤⠰⠋⠗⠎", "⠁⠤⠋⠗⠎", ["reviewed-fuzz-d35e49f5f897d3b1"]],
+    ["a-gds", "⠁⠤⠰⠛⠙⠎", "⠁⠤⠛⠙⠎", ["reviewed-fuzz-d35e49f5f897d3b1"]],
     ["'ing}", "⠄⠔⠛⠸⠜", "⠄⠬⠸⠜", ["fuzz-sep19-initial-ing"]],
     ["(ingvtttfzzbs:", "⠐⠣⠔⠛⠧⠞⠞⠞⠋⠵⠵⠃⠎⠒", "⠐⠣⠬⠧⠞⠞⠞⠋⠵⠵⠃⠎⠒", ["fuzz-sep19-initial-ing"]],
     ["a-beoa", "⠁⠤⠃⠑⠕⠁", "⠁⠤⠆⠕⠁", ["reviewed-fuzz-967ce9526d455f73"]],
@@ -128,6 +130,7 @@ describe("fuzz divergence families", () => {
     ["fsty", "⠋⠎⠞⠽", "⠋⠌⠽", "first is not read before y (10.9.3)"],
     ["xfstb", "⠭⠋⠎⠞⠃", "⠭⠋⠌⠃", "fst is not at the beginning of a word"],
     ["xing ingb", "⠭⠔⠛ ⠔⠛⠃", "⠭⠬ ⠬⠃", "a medial ing is outside the family"],
+    ["Frs", "⠰⠠⠋⠗⠎", "⠠⠋⠗⠎", "capitals rules are out of scope"],
     ["befc", "⠃⠑⠋⠉", "⠆⠋⠉", "spelling be before a consonant is not the be-vowel policy"],
     ["xbeoa", "⠭⠃⠑⠕⠁", "⠭⠆⠕⠁", "be is not at the beginning of a word"],
   ])("leaves %s for adjudication: %s", (input, local, oracle) => {
