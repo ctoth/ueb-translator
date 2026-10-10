@@ -4,7 +4,16 @@ import { divergenceFingerprint } from "./empirical.js";
 /** One contiguous difference between the local and oracle braille. */
 export interface DivergenceHunk {
   readonly local: string;
+  /** Index in the local output where this difference begins. */
+  readonly localStart: number;
   readonly oracle: string;
+}
+
+/** Where a difference sits among all differences of one comparison. */
+export interface DivergenceContext {
+  readonly hunks: readonly DivergenceHunk[];
+  readonly index: number;
+  readonly local: string;
 }
 
 /**
@@ -15,7 +24,7 @@ export interface DivergenceHunk {
 export interface DivergenceFamily {
   readonly groupId: string;
   readonly id: string;
-  matches(hunk: DivergenceHunk, input: string): boolean;
+  matches(hunk: DivergenceHunk, input: string, context: DivergenceContext): boolean;
 }
 
 type FamilyEvidence = Pick<ComparisonEvidence, "input" | "local" | "oracle">;
@@ -44,9 +53,9 @@ export function divergenceHunks(local: string, oracle: string): readonly Diverge
   const hunks: DivergenceHunk[] = [];
   let pendingLocal = "";
   let pendingOracle = "";
-  const flush = (): void => {
+  const flush = (localStart: number): void => {
     if (pendingLocal !== "" || pendingOracle !== "") {
-      hunks.unshift({ local: pendingLocal, oracle: pendingOracle });
+      hunks.unshift({ local: pendingLocal, localStart, oracle: pendingOracle });
       pendingLocal = "";
       pendingOracle = "";
     }
@@ -55,7 +64,7 @@ export function divergenceHunks(local: string, oracle: string): readonly Diverge
   let j = oracle.length;
   while (i > 0 || j > 0) {
     if (i > 0 && j > 0 && local.charAt(i - 1) === oracle.charAt(j - 1)) {
-      flush();
+      flush(i);
       i -= 1;
       j -= 1;
     } else if (i > 0 && (j === 0 || (lengths[i - 1]?.[j] ?? 0) >= (lengths[i]?.[j - 1] ?? 0))) {
@@ -66,7 +75,7 @@ export function divergenceHunks(local: string, oracle: string): readonly Diverge
       j -= 1;
     }
   }
-  flush();
+  flush(0);
   return hunks;
 }
 
@@ -189,6 +198,28 @@ function spelledBeBeforeVowel(hunk: DivergenceHunk, input: string): boolean {
     (hunk.local.startsWith("⠃⠂") && hunk.oracle === `⠆⠁${hunk.local.slice(2)}`);
 }
 
+/**
+ * 10.7.6 uses one where its letters are pronounced as one syllable, which a
+ * contrived string does not establish. The translator contracts and the oracle
+ * spells: the shared o separates the local dot 5 from the oracle's n and e, so
+ * the two differences are accepted only as that adjacent pair.
+ */
+function unknownSyllableOne(
+  hunk: DivergenceHunk,
+  input: string,
+  { hunks, index, local }: DivergenceContext,
+): boolean {
+  const first = hunk.local === "⠐" ? index : index - 1;
+  const dot5 = hunks[first];
+  const letters = hunks[first + 1];
+  return dot5 !== undefined && letters !== undefined &&
+    dot5.local === "⠐" && dot5.oracle === "" &&
+    letters.local === "" && letters.oracle === "⠝⠑" &&
+    local.charAt(dot5.localStart + 1) === "⠕" &&
+    letters.localStart === dot5.localStart + 2 &&
+    /(?:^|[^o])one/u.test(input);
+}
+
 export const fuzzFamilies: readonly DivergenceFamily[] = [
   { groupId: "fuzz-sep19-first-syllable", id: "first-syllable-be", matches: firstSyllableSign("be", "⠆") },
   { groupId: "fuzz-sep19-first-syllable", id: "first-syllable-con", matches: firstSyllableSign("con", "⠒") },
@@ -213,6 +244,7 @@ export const fuzzFamilies: readonly DivergenceFamily[] = [
     matches: (hunk, input) => hunk.local === "⠔⠛" && hunk.oracle === "⠬" && onlyWordInitial(input, "ing"),
   },
   { groupId: "reviewed-fuzz-967ce9526d455f73", id: "spelled-be-before-vowel", matches: spelledBeBeforeVowel },
+  { groupId: "fuzz-sep19-one-syllable", id: "unknown-syllable-one", matches: unknownSyllableOne },
 ];
 
 /**
@@ -228,8 +260,9 @@ export function matchFuzzFamilies(evidence: FamilyEvidence): readonly string[] |
   }
   const hunks = divergenceHunks(evidence.local.output, evidence.oracle.output);
   const groups: string[] = [];
-  for (const hunk of hunks) {
-    const family = fuzzFamilies.find((candidate) => candidate.matches(hunk, input));
+  for (const [index, hunk] of hunks.entries()) {
+    const context = { hunks, index, local: evidence.local.output };
+    const family = fuzzFamilies.find((candidate) => candidate.matches(hunk, input, context));
     if (family === undefined) {
       return undefined;
     }

@@ -151,7 +151,10 @@ Predicates are deliberately narrow. Inputs containing capital letters or an
 `encea`/`enced`/`encer` sequence (rule 10.10.6, #94) never match. Since #100
 the translator spells `be` before a vowel unless the word is a reviewed
 be-syllable word; the `spelled-be-before-vowel` family records Liblouis
-contracting such contrived strings. Tests run every family over the ledger and
+contracting such contrived strings. A predicate also receives the position of
+its run among the comparison's differences: the `unknown-syllable-one` family
+accepts the local dot 5 and the oracle's spelled `n` and `e` only as the
+adjacent pair around a shared `o`. Tests run every family over the ledger and
 fail if a family matches nothing in the group it extends, gives a recorded fuzz
 divergence a different verdict kind, or recognizes a recorded translator bug in
 any channel. Dictionary verdicts may rest on a word's known pronunciation,
