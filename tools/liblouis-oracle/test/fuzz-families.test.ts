@@ -79,8 +79,15 @@ function readLedger(name: string): LedgerView {
 describe("divergence hunks", () => {
   it("splits independent differences so each can be judged separately", () => {
     expect(divergenceHunks("⠆⠆⠵⠧⠛⠣⠏", "⠃⠑⠆⠵⠧⠶⠓⠏")).toEqual([
-      { local: "⠆", oracle: "⠃⠑" },
-      { local: "⠛⠣", oracle: "⠶⠓" },
+      { local: "⠆", localStart: 0, oracle: "⠃⠑" },
+      { local: "⠛⠣", localStart: 4, oracle: "⠶⠓" },
+    ]);
+  });
+
+  it("locates each difference in the local output", () => {
+    expect(divergenceHunks("⠁⠐⠕⠁", "⠁⠕⠝⠑⠁")).toEqual([
+      { local: "⠐", localStart: 1, oracle: "" },
+      { local: "", localStart: 3, oracle: "⠝⠑" },
     ]);
   });
 
@@ -110,6 +117,8 @@ describe("fuzz divergence families", () => {
     ["(ingvtttfzzbs:", "⠐⠣⠔⠛⠧⠞⠞⠞⠋⠵⠵⠃⠎⠒", "⠐⠣⠬⠧⠞⠞⠞⠋⠵⠵⠃⠎⠒", ["fuzz-sep19-initial-ing"]],
     ["a-beoa", "⠁⠤⠃⠑⠕⠁", "⠁⠤⠆⠕⠁", ["reviewed-fuzz-967ce9526d455f73"]],
     ["(beamx", "⠐⠣⠃⠂⠍⠭", "⠐⠣⠆⠁⠍⠭", ["reviewed-fuzz-967ce9526d455f73"]],
+    ["(aonea)", "⠐⠣⠁⠐⠕⠁⠐⠜", "⠐⠣⠁⠕⠝⠑⠁⠐⠜", ["fuzz-sep19-one-syllable"]],
+    ["xonez-aonel", "⠭⠐⠕⠵⠤⠁⠐⠕⠇", "⠭⠕⠝⠑⠵⠤⠁⠕⠝⠑⠇", ["fuzz-sep19-one-syllable"]],
   ])("recognizes %s as an already-judged type", (input, local, oracle, groups) => {
     expect(matchFuzzFamilies(evidence(input, local, oracle))).toEqual(groups);
   });
@@ -133,6 +142,11 @@ describe("fuzz divergence families", () => {
     ["Frs", "⠰⠠⠋⠗⠎", "⠠⠋⠗⠎", "capitals rules are out of scope"],
     ["befc", "⠃⠑⠋⠉", "⠆⠋⠉", "spelling be before a consonant is not the be-vowel policy"],
     ["xbeoa", "⠭⠃⠑⠕⠁", "⠭⠆⠕⠁", "be is not at the beginning of a word"],
+    ["caez-onedihp", "⠉⠁⠑⠵⠤⠕⠝⠫⠊⠓⠏", "⠉⠁⠑⠵⠤⠐⠕⠙⠊⠓⠏", "the oracle's one is not the local one"],
+    ["aonea", "⠁⠐⠕⠁", "⠁⠕⠁", "a lone dot 5 is not the one contraction"],
+    ["aonea", "⠁⠕⠁", "⠁⠕⠝⠑⠁", "spelled n and e without a local one"],
+    ["onea aob", "⠐⠕⠁ ⠁⠕⠃", "⠕⠁ ⠁⠕⠝⠑⠃", "the two runs are not one contraction"],
+    ["oonea", "⠕⠐⠕⠁", "⠕⠕⠝⠑⠁", "10.7.6 forbids one after o"],
   ])("leaves %s for adjudication: %s", (input, local, oracle) => {
     expect(matchFuzzFamilies(evidence(input, local, oracle))).toBeUndefined();
   });

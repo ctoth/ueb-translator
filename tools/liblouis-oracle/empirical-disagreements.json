@@ -1217,25 +1217,6 @@
       "groupId": "untraced-final-letter"
     },
     {
-      "caseId": "fuzz:b6e1557a1ed3900d7be8e28bb5f137d91812f31e59a90ceddac0276bc532d18e",
-      "input": "bea",
-      "local": {
-        "kind": "test",
-        "output": "⠆⠁",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠃⠑⠁"
-      },
-      "groupId": "fuzz-first-syllable-be"
-    },
-    {
       "caseId": "scowl:2020.12.07:95:00009035",
       "input": "Aredale",
       "local": {
@@ -195834,25 +195815,6 @@
       "groupId": "fuzz-unknown-gh-pronunciation"
     },
     {
-      "caseId": "fuzz:5821d99ebc840387959ae2ee28ad6b80a9a56aebcefc0bbad1b15de65160b73b",
-      "input": "chnfpnbnbn'elkrctczesds",
-      "local": {
-        "kind": "test",
-        "output": "⠡⠝⠋⠏⠝⠃⠝⠃⠝⠄⠑⠇⠅⠗⠉⠞⠉⠵⠑⠎⠙⠎",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠓⠝⠋⠏⠝⠃⠝⠃⠝⠄⠑⠇⠅⠗⠉⠞⠉⠵⠑⠎⠙⠎"
-      },
-      "groupId": "fuzz-children-ambiguity"
-    },
-    {
       "caseId": "fuzz:d5bf00ff4474227f017260f78eddaf146989386a3fcbcdc6bfa195bd23a28900",
       "input": "(llr)",
       "local": {
@@ -196176,25 +196138,6 @@
       "groupId": "fuzz-unexpanded-ar-gh"
     },
     {
-      "caseId": "fuzz:5f9e4389fe1e508dc724374279d231252f0b0ca7900e034a2cc2d5314961fac1",
-      "input": "chnbwn-yomhamttvaga",
-      "local": {
-        "kind": "test",
-        "output": "⠡⠝⠃⠺⠝⠤⠽⠕⠍⠓⠁⠍⠞⠞⠧⠁⠛⠁",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠓⠝⠃⠺⠝⠤⠽⠕⠍⠓⠁⠍⠞⠞⠧⠁⠛⠁"
-      },
-      "groupId": "fuzz-children-ambiguity"
-    },
-    {
       "caseId": "fuzz:a517e89d0e7c1bb5caed2724be8726ecac09f317690a30f8337e3a631608f317",
       "input": "onenn-zqdfarkqvvpa",
       "local": {
@@ -196269,25 +196212,6 @@
         "output": "⠐⠣⠃⠑⠓⠝⠐⠜"
       },
       "groupId": "fuzz-unknown-be-syllabification"
-    },
-    {
-      "caseId": "fuzz:abbcbd1c00db740cb9bc75d555b01f0a41c798b29b44a83229385f1413f9e6b9",
-      "input": "its'mugontw",
-      "local": {
-        "kind": "test",
-        "output": "⠭⠎⠄⠍⠥⠛⠕⠝⠞⠺",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠊⠞⠎⠄⠍⠥⠛⠕⠝⠞⠺"
-      },
-      "groupId": "fuzz-its-apostrophe-extension"
     },
     {
       "caseId": "fuzz:e0aaf0f7e726a5cf8e54f8cfe3ed60e099dde636bfb0ee3b3c77aabfc5538a5b",
@@ -196575,25 +196499,6 @@
       "groupId": "fuzz-unknown-gh-pronunciation"
     },
     {
-      "caseId": "fuzz:2e6fc304928f1a563aa89918248a971fc11e3f3322e7bf74ec091e74b0a27fb5",
-      "input": "[bef?",
-      "local": {
-        "kind": "test",
-        "output": "⠨⠣⠆⠋⠦",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠨⠣⠃⠑⠋⠦"
-      },
-      "groupId": "fuzz-sep19-first-syllable"
-    },
-    {
       "caseId": "fuzz:6988eb5d170247a4cd347625bbb7de77c63bd0a1628b1f608139c30668e78bdd",
       "input": "q-reaff",
       "local": {
@@ -196630,25 +196535,6 @@
         "output": "⠨⠣⠃⠻⠐⠜"
       },
       "groupId": "fuzz-sep19-first-syllable"
-    },
-    {
-      "caseId": "fuzz:52a5026ecef0a205badc5abbecf5840ea70e7a0767867428224b769d8e367303",
-      "input": "conchnpyyozxtl",
-      "local": {
-        "kind": "test",
-        "output": "⠒⠡⠝⠏⠽⠽⠕⠵⠭⠞⠇",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠉⠕⠝⠉⠓⠝⠏⠽⠽⠕⠵⠭⠞⠇"
-      },
-      "groupId": "fuzz-sep19-children-ambiguity"
     },
     {
       "caseId": "fuzz:ee2579fce41d18e5ce3b8ec6c12fba47f36fe7dbe78ee9f311afed923f498ed6",
@@ -196841,25 +196727,6 @@
       "groupId": "fuzz-sep19-first-syllable"
     },
     {
-      "caseId": "fuzz:de5cc0ebe4b490bac32403426482cfa70ee5eb771b3a25d4c64afeb716ddf3f0",
-      "input": "'ytlsschn'",
-      "local": {
-        "kind": "test",
-        "output": "⠄⠽⠞⠇⠎⠎⠡⠝⠄",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠄⠽⠞⠇⠎⠎⠉⠓⠝⠄"
-      },
-      "groupId": "fuzz-sep19-children-ambiguity"
-    },
-    {
       "caseId": "fuzz:76efe5a534557a69d190e183f50107598107a9a4fbe5b0474db60a12d64f5d86",
       "input": "obaeyepcchadnhnvnzdk",
       "local": {
@@ -196898,44 +196765,6 @@
       "groupId": "fuzz-sep19-first-syllable"
     },
     {
-      "caseId": "fuzz:b1b8c7ef215d716ac5f6c1e4e80d3bd386848ddda628d77824bd7319f4e16662",
-      "input": "\"beuodqhsrbm.",
-      "local": {
-        "kind": "test",
-        "output": "⠦⠆⠥⠕⠙⠟⠓⠎⠗⠃⠍⠲",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠦⠃⠑⠥⠕⠙⠟⠓⠎⠗⠃⠍⠲"
-      },
-      "groupId": "fuzz-sep19-first-syllable"
-    },
-    {
-      "caseId": "fuzz:fb5296f0087adfba05f948aa47ee231180048f75d7931acdc8ba116b1732a25f",
-      "input": "[chnqpzmkxa.",
-      "local": {
-        "kind": "test",
-        "output": "⠨⠣⠡⠝⠟⠏⠵⠍⠅⠭⠁⠲",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠨⠣⠉⠓⠝⠟⠏⠵⠍⠅⠭⠁⠲"
-      },
-      "groupId": "fuzz-sep19-children-ambiguity"
-    },
-    {
       "caseId": "fuzz:7383ccf31d583a58eed3d5adcf04978e7ab135074a13866f4f884be09611c0e6",
       "input": "\"ber!",
       "local": {
@@ -196953,25 +196782,6 @@
         "output": "⠦⠃⠻⠖"
       },
       "groupId": "fuzz-sep19-first-syllable"
-    },
-    {
-      "caseId": "fuzz:31c5678d292b54265a6b3dd4467e19f3d69af0fc822d18423ddd154d262f13e1",
-      "input": "{bee.",
-      "local": {
-        "kind": "test",
-        "output": "⠸⠣⠆⠑⠲",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠸⠣⠃⠑⠑⠲"
-      },
-      "groupId": "fuzz-sep19-bee-first-syllable"
     },
     {
       "caseId": "fuzz:fb04d8c93cdc56d7b9af3177e6b99b1444a073b7f82c75cb7ce541ade1807b44",
@@ -197145,44 +196955,6 @@
       "groupId": "fuzz-sep19-first-syllable"
     },
     {
-      "caseId": "fuzz:1541d261cc4decfd26b6e91a33eed6af6e22ea034c7d109afd0c6e4e0a912e05",
-      "input": "\"jzguymhkchnp'",
-      "local": {
-        "kind": "test",
-        "output": "⠦⠚⠵⠛⠥⠽⠍⠓⠅⠡⠝⠏⠄",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠦⠚⠵⠛⠥⠽⠍⠓⠅⠉⠓⠝⠏⠄"
-      },
-      "groupId": "fuzz-sep19-children-ambiguity"
-    },
-    {
-      "caseId": "fuzz:a0199c401113f721c63f25bed1d61fcc77692f3897b296f103e7ec6ad817ff78",
-      "input": "(chnbvthqmehs;",
-      "local": {
-        "kind": "test",
-        "output": "⠐⠣⠡⠝⠃⠧⠹⠟⠍⠑⠓⠎⠆",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠐⠣⠉⠓⠝⠃⠧⠹⠟⠍⠑⠓⠎⠆"
-      },
-      "groupId": "fuzz-sep19-children-ambiguity"
-    },
-    {
       "caseId": "fuzz:1af8f541a5140ceaeebe25c26f3f901d6c8802eb0022c71459f6837129fcdaed",
       "input": "reaness",
       "local": {
@@ -197276,25 +197048,6 @@
         "output": "⠵⠌⠓⠑⠤⠙⠝⠺⠕⠙⠃⠵⠧⠺⠎"
       },
       "groupId": "fuzz-sep19-strong-preference"
-    },
-    {
-      "caseId": "fuzz:7c714b2bafda44234a391551013bfdbabff2a4e9a5027c415270f9421d5157e9",
-      "input": "'beyx!",
-      "local": {
-        "kind": "test",
-        "output": "⠄⠆⠽⠭⠖",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠄⠃⠑⠽⠭⠖"
-      },
-      "groupId": "fuzz-sep19-first-syllable"
     },
     {
       "caseId": "fuzz:9a1de88e15af8693b15f628b633894bce537697a27db477896a33d4053dd5b22",
@@ -197411,25 +197164,6 @@
       "groupId": "fuzz-sep19-first-syllable"
     },
     {
-      "caseId": "fuzz:f0f31d7f529cffc2e46434324f16a5168910c8390b2331152398aa699403ebfe",
-      "input": "(beytgxiefp?",
-      "local": {
-        "kind": "test",
-        "output": "⠐⠣⠆⠽⠞⠛⠭⠊⠑⠋⠏⠦",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠐⠣⠃⠑⠽⠞⠛⠭⠊⠑⠋⠏⠦"
-      },
-      "groupId": "fuzz-sep19-first-syllable"
-    },
-    {
       "caseId": "fuzz:e3bc72e98b4d23ec42863c57d67ea3cb1114c3acaf1928f58c013b088b57c266",
       "input": "{beqpx?",
       "local": {
@@ -197487,30 +197221,11 @@
       "groupId": "fuzz-sep19-strong-preference"
     },
     {
-      "caseId": "fuzz:b831c78c30b1b5c006392edea2fccdfb4b8e71afe1308aa1b925c8c366648fb7",
-      "input": "[beh,",
-      "local": {
-        "kind": "test",
-        "output": "⠨⠣⠆⠓⠂",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠨⠣⠃⠑⠓⠂"
-      },
-      "groupId": "fuzz-sep19-first-syllable"
-    },
-    {
       "caseId": "fuzz:4de9d776bd8752041c8489eaca0ea40fcd84603a85f19285ede5b41b57fc2c32",
       "input": "conegachnth",
       "local": {
         "kind": "test",
-        "output": "⠒⠑⠛⠁⠡⠝⠹",
+        "output": "⠒⠑⠛⠁⠉⠓⠝⠹",
         "testId": "fast-check:grade2-hard-shapes"
       },
       "oracle": {
@@ -197522,7 +197237,7 @@
         "version": "3.38.0",
         "output": "⠉⠐⠕⠛⠁⠉⠓⠝⠹"
       },
-      "groupId": "fuzz-sep19-children-ambiguity"
+      "groupId": "fuzz-unknown-syllable-preference"
     },
     {
       "caseId": "fuzz:4be24451bef36bb274cd65befdac2a906a1f6e3e9149c36681f81e50469c705b",
@@ -198315,19 +198030,6 @@
       }
     },
     {
-      "id": "fuzz-first-syllable-be",
-      "verdict": {
-        "issues": [
-          59
-        ],
-        "kind": "our-bug",
-        "rationale": "ICEB 2024 Rule 10.6 permits the be lower groupsign only at the beginning of a word as the first syllable. In the exact minimized input bea, be is not the first syllable, so the local contraction is invalid; issue 59 owns the composed Grade 2 contraction repair.",
-        "sources": [
-          "https://iceb.org/publications/ueb/"
-        ]
-      }
-    },
-    {
       "id": "fuzz-capitals-adjacent-lower-groupsign",
       "verdict": {
         "kind": "liblouis-bug",
@@ -198358,30 +198060,10 @@
       }
     },
     {
-      "id": "fuzz-children-ambiguity",
-      "verdict": {
-        "kind": "our-bug",
-        "rationale": "ICEB 2024 10.9.3(b) permits children within a longer word before a consonant; 10.9.6 requires avoiding ch when the resulting ch+n sequence would instead be read as that shortform. These exact generated letter strings need literal c and h. This is a pre-existing shortform-disambiguation defect: the local output is identical at the last passing source revision 951aa0c7. It is not classified as permitted UEB.",
-        "sources": [
-          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
-        ]
-      }
-    },
-    {
       "id": "fuzz-in-hyphen-sequence",
       "verdict": {
         "kind": "our-bug",
         "rationale": "ICEB 2024 10.5.3-10.5.4 allow in with lower punctuation when the joined sequence has an upper-dot sign; the examples include mother-in-law and IN-DEPTH. The letters after the hyphen supply that upper-dot sign in this exact case. Local code incorrectly limits the lower-sign context to adjacent punctuation. The output is unchanged from the last passing source revision 951aa0c7.",
-        "sources": [
-          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
-        ]
-      }
-    },
-    {
-      "id": "fuzz-its-apostrophe-extension",
-      "verdict": {
-        "kind": "our-bug",
-        "rationale": "ICEB 2024 10.9.1-10.9.5 require a standing-alone shortform or a permitted longer form. Its is not one of the ten general longer-word shortforms, and apostrophe plus an arbitrary suffix is not the s/apostrophe-s extension. The local shortform in this exact invented word is invalid. It is unchanged from source revision 951aa0c7 and belongs to the same pre-existing defect as the retained today-ll and your-n cases.",
         "sources": [
           "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
         ]
@@ -198464,32 +198146,6 @@
         "rationale": "These exact invented strings overlap st with the, and in jthead overlap the with ea. ICEB 2024 10.10.3 prefers the strong contraction where it fits, subject to the pronunciation and word-form limitations in 10.10.8 and 10.11. In zdvssthenced, the ence+ed choice also depends on selecting st+h rather than the; 10.10.6 governs enced. With no established pronunciation or syllabification, 10.12.7-10.12.8 allow the retained alternatives.",
         "sources": [
           "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
-        ]
-      }
-    },
-    {
-      "id": "fuzz-sep19-children-ambiguity",
-      "verdict": {
-        "kind": "our-bug",
-        "rationale": "ICEB 2024 10.9.3(b) permits the children shortform before a consonant and 10.9.6 prohibits a groupsign sequence that would be read as a shortform. The local ch+n sequence in each exact input violates that restriction. Two inputs also differ in con/one syllable choices governed by 10.6.1, 10.7.6 and 10.12.7; those do not excuse the children ambiguity. These are additional evidence of the existing Grade 2 shortform defect, not permitted UEB.",
-        "sources": [
-          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
-        ],
-        "issues": [
-          59
-        ]
-      }
-    },
-    {
-      "id": "fuzz-sep19-bee-first-syllable",
-      "verdict": {
-        "kind": "our-bug",
-        "rationale": "ICEB 2024 10.6.1 permits be only as the first syllable of a word. The single-syllable word bee has no separate be syllable; the local be+e is invalid. Outer brace and period preserve the word boundary under 2.6.2-2.6.3. This is an existing lexical exclusion defect, not an unknown-pronunciation alternative.",
-        "sources": [
-          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
-        ],
-        "issues": [
-          59
         ]
       }
     },
