@@ -6,6 +6,7 @@ import {
   COMPOUND_CONTRACTION_EXCEPTIONS,
   FINAL_GROUPSIGN_EXCEPTIONS,
   FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS,
+  FIRST_SYLLABLE_VOWEL_WORDS,
   INITIAL_CONTRACTION_EXCEPTIONS,
 } from "../rules/ueb-2024/constraints.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
@@ -107,6 +108,22 @@ describe("official Grade 2 source inventory", () => {
       }));
     }
   });
+
+  it("cites the words whose be forms a syllable before a vowel", () => {
+    expect(FIRST_SYLLABLE_VOWEL_WORDS.citation).toEqual(expect.objectContaining({
+      authority: "ICEB",
+      locator: "10.6.1",
+    }));
+    expect(FIRST_SYLLABLE_VOWEL_WORDS.contraction).toBe("be");
+    for (const word of FIRST_SYLLABLE_VOWEL_WORDS.words) {
+      expect(word).toMatch(/^be[aeiouy][a-z']*$/u);
+    }
+  });
+
+  it("keeps be-before-vowel words out of the denylist once the default spells them", () => {
+    const be = FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS.find((entry) => entry.contraction === "be");
+    expect(be?.words.filter((word) => /^be[aeiouy]/u.test(word))).toEqual([]);
+  });
 });
 
 describe("translateGrade2", () => {
@@ -133,11 +150,15 @@ describe("translateGrade2", () => {
         if (rule.kind === "final-letter-groupsign") {
           return rule.print === "ence" ? "aenceb" : `a${rule.print}`;
         }
-        if (
-          rule.kind === "lower-groupsign" &&
-          ["be", "con", "dis"].includes(rule.print)
-        ) {
-          return `${rule.print}a`;
+        // ICEB 10.6.1: a word whose first syllable is be, con or dis.
+        const firstSyllableWords: Readonly<Record<string, string>> = {
+          be: "believe", con: "concern", dis: "disturb",
+        };
+        const firstSyllableWord = rule.kind === "lower-groupsign"
+          ? firstSyllableWords[rule.print]
+          : undefined;
+        if (firstSyllableWord !== undefined) {
+          return firstSyllableWord;
         }
         return `a${rule.print}a`;
       })();
@@ -181,6 +202,20 @@ describe("translateGrade2", () => {
     ["www.sch.edu.au", "⠺⠺⠺⠲⠎⠡⠲⠫⠥⠲⠁⠥"],
   ] as const)("avoids groupsign-created shortforms under 10.9.6 in %s", (text, braille) => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.6.5 permits internal cc. Rejecting ch under 10.9.6 does not
+  // forbid an overlapping cc groupsign that creates no shortform reading.
+  it.each([
+    ["acchns", "⠁⠒⠓⠝⠎", "cc"],
+    ["acchns-a", "⠁⠒⠓⠝⠎⠤⠁", "cc"],
+    ["acchnb-a", "⠁⠒⠓⠝⠃⠤⠁", "cc"],
+    ["acchna-a", "⠁⠉⠡⠝⠁⠤⠁", "ch"],
+  ] as const)("keeps lawful overlapping groupsigns in %s", (text, braille, groupsign) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+    const result = traceGrade2(text);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.rules.map((rule) => rule.print)).toEqual([groupsign]);
   });
 
   it.each(SHORTFORMS)("retains $id with permitted s and possessive endings", (rule) => {
@@ -584,6 +619,25 @@ describe("translateGrade2", () => {
     });
   });
 
+  // ICEB 10.9.8 and Appendix 1: gd+y would be read as goody.
+  it.each([
+    ["gdy", "⠰⠛⠙⠽"],
+    ["(gdy'", "⠐⠣⠰⠛⠙⠽⠄"],
+    ["gdy's", "⠰⠛⠙⠽⠄⠎"],
+    ["gdys", "⠰⠛⠙⠽⠎"],
+    ["Gdy", "⠰⠠⠛⠙⠽"],
+    ["GDY", "⠰⠠⠠⠛⠙⠽"],
+    ["gDy", "⠛⠠⠙⠽"],
+    ["goody", "⠛⠙⠽"],
+    ["gda", "⠛⠙⠁"],
+    ["gdy-a", "⠰⠛⠙⠽⠤⠁"],
+    ["gdy'a", "⠛⠙⠽⠄⠁"],
+    ["aflight", "⠰⠁⠋⠇⠊⠣⠞"],
+    ["gdevening", "⠰⠛⠙⠑⠧⠢⠬"],
+  ] as const)("protects Appendix 1 initial shortform spellings in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
   // ICEB 2024 §§2.6.2–2.6.3 and 5.7: outer apostrophes do not
   // remove standing-alone ambiguity protection. t' and X' are source examples;
   // the remaining cases apply the same rule to letters and shortform spellings.
@@ -906,6 +960,49 @@ describe("translateGrade2", () => {
     ["disturb", "⠲⠞⠥⠗⠃"],
     ["believe", "⠆⠇⠊⠑⠧⠑"],
   ] as const)("keeps the valid first-syllable contraction in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  // ICEB 10.6.1: be only as a first syllable. Before a vowel it rarely is, so
+  // it is spelled unless the word is a reviewed be-syllable word (#100).
+  it.each([
+    ["bee", "⠃⠑⠑"],
+    ["Bee", "⠠⠃⠑⠑"],
+    ["bea", "⠃⠑⠁"],
+    ["beef", "⠃⠑⠑⠋"],
+    ["beef's", "⠃⠑⠑⠋⠄⠎"],
+    ["beehive", "⠃⠑⠑⠓⠊⠧⠑"],
+    ["beer", "⠃⠑⠻"],
+    ["beast", "⠃⠂⠌"],
+    ["beach", "⠃⠂⠡"],
+    ["beaches", "⠃⠂⠡⠑⠎"],
+    ["beacon", "⠃⠂⠉⠕⠝"],
+    ["beige", "⠃⠑⠊⠛⠑"],
+    ["bead", "⠃⠂⠙"],
+    ["beauty", "⠃⠂⠥⠞⠽"],
+    ["{bee.", "⠸⠣⠃⠑⠑⠲"],
+    ["a-beaa", "⠁⠤⠃⠂⠁"],
+    ["beidc", "⠃⠑⠊⠙⠉"],
+    ["'beyck:", "⠄⠃⠑⠽⠉⠅⠒"],
+    // One-syllable bein and Bey: Liblouis contracts these, 10.6.1 does not.
+    ["beinly", "⠃⠑⠔⠇⠽"],
+    ["Beyoglu", "⠠⠃⠑⠽⠕⠛⠇⠥"],
+  ] as const)("spells be before a vowel in %s", (text, braille) => {
+    expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
+  });
+
+  it.each([
+    ["being", "⠆⠬"],
+    ["Being", "⠠⠆⠬"],
+    ["beings", "⠆⠬⠎"],
+    ["being's", "⠆⠬⠄⠎"],
+    ["beyond", "⠆⠽"],
+    ["BEYOND", "⠠⠠⠆⠽"],
+    ["beatitude", "⠆⠁⠞⠊⠞⠥⠙⠑"],
+    ["Beatrix", "⠠⠆⠁⠞⠗⠊⠭"],
+    ["Beothuk's", "⠠⠆⠕⠹⠥⠅⠄⠎"],
+    ["beuncled", "⠆⠥⠝⠉⠇⠫"],
+  ] as const)("keeps be where it forms the first syllable before a vowel in %s", (text, braille) => {
     expect(translateGrade2(text)).toEqual({ braille, mode: "grade2", ok: true });
   });
 

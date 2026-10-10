@@ -148,10 +148,14 @@ pronunciation, covers every string the predicate accepts. Families apply to
 the fuzz channel only; dictionary and corpus evidence stays exact.
 
 Predicates are deliberately narrow. Inputs containing capital letters or an
-`encea`/`enced`/`encer` sequence (rule 10.10.6, #94) never match, and `be`
-before a vowel (#100) is left for adjudication. A test runs every family over
-the full ledger and fails if any family matches the group it extends nowhere,
-or would give a recorded divergence a different verdict kind.
+`encea`/`enced`/`encer` sequence (rule 10.10.6, #94) never match. Since #100
+the translator spells `be` before a vowel unless the word is a reviewed
+be-syllable word; the `spelled-be-before-vowel` family records Liblouis
+contracting such contrived strings. Tests run every family over the ledger and
+fail if a family matches nothing in the group it extends, gives a recorded fuzz
+divergence a different verdict kind, or recognizes a recorded translator bug in
+any channel. Dictionary verdicts may rest on a word's known pronunciation,
+which contrived strings lack, so only translator bugs are guarded there.
 
 ## Exploring more cases
 
@@ -291,6 +295,25 @@ candidate file. Inspect that candidate before replacing the accepted ledger.
 `oracle:reconcile fuzz LEDGER RESULT VERDICT OUTPUT` records an individually
 adjudicated fuzz counterexample. To select a captured record from scan JSONL,
 append its unique evidence digest prefix. All output files are created exclusively.
+
+A translator change can also create disagreements the audit cannot account
+for. The audit refuses to complete while untriaged sweep evidence is not a
+transition of stale evidence, and `approve` refuses transitions that still
+disagree. Three commands resolve those cases one reviewed group at a time;
+each selects records by unique digest prefix:
+
+```powershell
+# New disagreements from a sweep: create a group with its verdict, or join one (-)
+npm run oracle:reconcile -- add LEDGER SWEEP VERDICT_OR_- GROUP OUTPUT PREFIX...
+# Audited transitions that still disagree: replace the old evidence under the
+# group whose verdict describes the residual difference
+npm run oracle:reconcile -- supersede LEDGER AUDIT GROUP OUTPUT PREVIOUS_PREFIX...
+# Move recorded evidence to an existing group
+npm run oracle:reconcile -- regroup LEDGER GROUP OUTPUT PREFIX...
+```
+
+Rerun the sweep and audit after each edit: the audit should then report only
+transitions that reach agreement, which `approve` and `apply` remove.
 
 On Windows, `run-wsl.ps1` provides the same retained corpus paths and portable
 argument handling for `dictionary`, `corpus`, `inventory`, `fuzz`, `scan`,

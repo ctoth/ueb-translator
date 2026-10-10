@@ -318,6 +318,13 @@ function guardAllows(
     }
     case 19:
       return start !== 0 || context.precededByLetter === true;
+    case 22: {
+      // Permit a following vowel only within the listed words.
+      const following = context.word.charAt(end);
+      if (following === "" || !operandAt(program, guard[1]).includes(following)) return true;
+      const words = operandAt(program, guard[2]).split("\u0000");
+      return [eligibilityWord, ...context.exclusionWords].some((word) => words.includes(word));
+    }
     case 21:
       if (!context.standing) return true;
       for (const match of context.word.matchAll(new RegExp(operandAt(program, guard[1]), "gu"))) {

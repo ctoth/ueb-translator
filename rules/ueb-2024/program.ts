@@ -3,6 +3,7 @@ import {
   COMPOUND_CONTRACTION_EXCEPTIONS,
   FINAL_GROUPSIGN_EXCEPTIONS,
   FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS,
+  FIRST_SYLLABLE_VOWEL_WORDS,
   INITIAL_CONTRACTION_EXCEPTIONS,
 } from "./constraints.js";
 import {
@@ -46,14 +47,18 @@ function firstSyllableExceptionWords(print: string): readonly string[] {
     .flatMap((constraint) => constraint.words);
 }
 
-function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
+function withPossessives(words: readonly string[]): readonly string[] {
   // A possessive does not change the restricted letters inside its base word.
   // Expand at compilation, keeping English morphology out of the interpreter.
   // ICEB 2024 10.12.12 retains contraction rules around medial punctuation.
   // Composition canonicalizes apostrophe spellings to ASCII for eligibility.
-  const possessiveWords = words.flatMap((word) => [
+  return words.flatMap((word) => [
     word, `${word}'s`, ...(word.endsWith("s") ? [`${word}'`] : []),
   ]);
+}
+
+function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
+  const possessiveWords = withPossessives(words);
   return optionalExceptionGuard(possessiveWords, {
     ignoredCharacters: "-", kind: "not-word", words: possessiveWords,
   });
@@ -185,6 +190,13 @@ export function compileGrade2RuleGuards(
           { kind: "first-syllable" },
           NO_STRUCTURAL_CROSSING,
           ...exceptionWordGuard(firstSyllableExceptionWords(rule.print)),
+          ...(rule.print === FIRST_SYLLABLE_VOWEL_WORDS.contraction
+            ? [{
+              characters: "aeiouy",
+              kind: "following-not-vowel-y-except-words" as const,
+              words: withPossessives(FIRST_SYLLABLE_VOWEL_WORDS.words),
+            }]
+            : []),
           { kind: "not-word-end" },
           { kind: "word-start" },
         ];
@@ -356,18 +368,19 @@ const LATIN_LETTER_BY_CELL: ReadonlyMap<string, string> = new Map(
     .map((rule): readonly [string, string] => [rule.braille, rule.print]),
 );
 
-const CELL_BY_LATIN_LETTER: ReadonlyMap<string, string> = new Map(
-  [...LATIN_LETTER_BY_CELL].map(([cell, letter]): readonly [string, string] => [letter, cell]),
+const LATIN_CELL_BY_LETTER: ReadonlyMap<string, string> = new Map(
+  [...LATIN_LETTER_BY_CELL].map(([cell, letter]) => [letter, cell]),
 );
 
 /** Letter affixes a rule keeps its contraction before (ICEB 10.9.5 plural s). */
-function letterAffixCells(rule: ContextualRuleSource): readonly string[] {
+function letterAffixes(rule: ContextualRuleSource): readonly string[] {
   return rule.guards.flatMap((guard) =>
     guard.kind === "word-with-affixes" ? guard.affixes : []
-  ).flatMap((affix) => {
-    const cells = Array.from(affix).map((letter) => CELL_BY_LATIN_LETTER.get(letter));
-    return cells.every((cell) => cell !== undefined) ? [cells.join("")] : [];
-  });
+  ).filter((affix) => Array.from(affix).every((letter) => LATIN_CELL_BY_LETTER.has(letter)));
+}
+
+function letterCells(letters: string): string {
+  return Array.from(letters).map((letter) => LATIN_CELL_BY_LETTER.get(letter)).join("");
 }
 
 function literalLetters(braille: string): string | undefined {
@@ -385,13 +398,24 @@ function literalLetters(braille: string): string | undefined {
 export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
   readonly [print: string, braille: string]
 )[] = [...new Map(
-  GRADE2_CONTEXTUAL_RULES.flatMap((rule) =>
-    ["", ...letterAffixCells(rule)].flatMap((affix) => {
-      const braille = rule.braille + affix;
-      const print = literalLetters(braille);
-      return print === undefined ? [] : [[print, braille] as const];
-    })
-  ).map((entry) => [entry[0], entry] as const),
+  GRADE2_CONTEXTUAL_RULES.flatMap((rule) => {
+    const print = literalLetters(rule.braille);
+    if (print === undefined) return [];
+    const entries: (readonly [string, string])[] = ["", ...letterAffixes(rule)].map(
+      (affix) => [print + affix, rule.braille + letterCells(affix)],
+    );
+    for (const guard of rule.guards) {
+      // ICEB 10.9.8: Appendix 1 longer words beginning with a shortform
+      // also make their literal abbreviation ambiguous (e.g. gd+y).
+      if (guard.kind !== "eligibility-word" || !guard.word.startsWith(rule.input) ||
+        !/^[a-z]+$/u.test(guard.word)) continue;
+      const ending = guard.word.slice(rule.input.length);
+      for (const suffix of [ending, ending + guard.pluralSuffix]) {
+        entries.push([print + suffix, rule.braille + letterCells(suffix)]);
+      }
+    }
+    return entries;
+  }).map((entry) => [entry[0], entry] as const),
 ).values()].sort((left, right) => left[0].localeCompare(right[0], "en"));
 
 const STANDING_WORD_OUTPUTS = new Set(

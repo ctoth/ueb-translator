@@ -19,6 +19,11 @@ export type ContextualRuleGuard =
   | { readonly kind: "first-syllable" }
   | { readonly characters: string; readonly kind: "following" }
   | { readonly characters: string; readonly kind: "following-not-vowel-y" }
+  | {
+      readonly characters: string;
+      readonly kind: "following-not-vowel-y-except-words";
+      readonly words: readonly string[];
+    }
   | { readonly kind: "lower-sign"; readonly policy: "enough-or-in" | "other" }
   | { readonly kind: "not-boundary"; readonly boundary: ContextualBoundaryKind }
   | {
@@ -152,6 +157,8 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
     case "following":
     case "following-not-vowel-y":
       return [guard.characters];
+    case "following-not-vowel-y-except-words":
+      return [guard.characters, [...guard.words].sort(compareText).join("\u0000")];
     case "previous-not":
       return [guard.characters];
     case "not-word":
@@ -218,6 +225,8 @@ function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
       return CONTEXTUAL_GUARD_SCHEMA.following.opcode;
     case "following-not-vowel-y":
       return CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode;
+    case "following-not-vowel-y-except-words":
+      return CONTEXTUAL_GUARD_SCHEMA.followingNotVowelYExceptWords.opcode;
     case "lower-sign":
       return guard.policy === "enough-or-in"
         ? CONTEXTUAL_GUARD_SCHEMA.lowerSignEnoughOrIn.opcode
@@ -303,6 +312,15 @@ function compileGuard(
         CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode,
         requireContextualOperandIndex(guard.characters, operandIndexes),
       ];
+    case "following-not-vowel-y-except-words":
+      return [
+        CONTEXTUAL_GUARD_SCHEMA.followingNotVowelYExceptWords.opcode,
+        requireContextualOperandIndex(guard.characters, operandIndexes),
+        requireContextualOperandIndex(
+          [...guard.words].sort(compareText).join("\u0000"),
+          operandIndexes,
+        ),
+      ];
     case "lower-sign":
       return guard.policy === "enough-or-in"
         ? [CONTEXTUAL_GUARD_SCHEMA.lowerSignEnoughOrIn.opcode]
@@ -363,6 +381,8 @@ function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
     case "following":
     case "following-not-vowel-y":
       return { characters: guard.characters, kind: guard.kind };
+    case "following-not-vowel-y-except-words":
+      return { characters: guard.characters, kind: guard.kind, words: [...guard.words] };
     case "previous-not":
       return { characters: guard.characters, kind: guard.kind };
     case "lower-sign":
