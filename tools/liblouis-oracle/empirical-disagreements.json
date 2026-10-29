@@ -198722,25 +198722,6 @@
       "groupId": "fuzz-unknown-gh-pronunciation"
     },
     {
-      "caseId": "fuzz:d5bf00ff4474227f017260f78eddaf146989386a3fcbcdc6bfa195bd23a28900",
-      "input": "(llr)",
-      "local": {
-        "kind": "test",
-        "output": "⠐⠣⠇⠇⠗⠐⠜",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠐⠣⠰⠇⠇⠗⠐⠜"
-      },
-      "groupId": "exact-grade1-insertion"
-    },
-    {
       "caseId": "fuzz:0aae3fc8a9b48e4c2beb9f70264205a39dc90dda10963ff80ee9d2591ce57f2c",
       "input": "TkSvBbQm",
       "local": {
@@ -198986,25 +198967,6 @@
         "output": "⠦⠃⠑⠉⠍⠳⠍⠺⠇⠂"
       },
       "groupId": "fuzz-unknown-be-syllabification"
-    },
-    {
-      "caseId": "fuzz:ac250c694ce981a7b376ae043835bfad75464de8285e26710255e602ec4b9d3d",
-      "input": "ro-blt",
-      "local": {
-        "kind": "test",
-        "output": "⠗⠕⠤⠃⠇⠞",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0",
-        "output": "⠗⠕⠤⠰⠃⠇⠞"
-      },
-      "groupId": "exact-grade1-insertion"
     },
     {
       "caseId": "fuzz:4d78505a2498f7890b3979646df0a012c6e3720dbfaf229e8516049c7d2c4571",
@@ -200546,25 +200508,6 @@
       "groupId": "reviewed-fuzz-ffa1c1881dcf60a7"
     },
     {
-      "caseId": "fuzz:35dd6e1d85b3904647c82b2a6a4324cd4740349114186884f4e9148a42b4a709",
-      "input": "{llb.",
-      "local": {
-        "kind": "test",
-        "output": "⠸⠣⠇⠇⠃⠲",
-        "testId": "fast-check:grade2-hard-shapes"
-      },
-      "oracle": {
-        "engine": "liblouis",
-        "output": "⠸⠣⠰⠇⠇⠃⠲",
-        "status": "non-normative development oracle; ICEB sources decide disagreements",
-        "tables": [
-          "en-ueb-g2.ctb"
-        ],
-        "version": "3.38.0"
-      },
-      "groupId": "reviewed-fuzz-30549fdc6ceb6a51"
-    },
-    {
       "caseId": "fuzz:bbb5ede3d674c1acc430c53d5205c329d0ca7af15a969082c93e23ba4e242e5f",
       "input": "jpzc-ttbiofjloc",
       "local": {
@@ -201301,16 +201244,6 @@
       "verdict": {
         "kind": "liblouis-bug",
         "rationale": "ICEB 2024 10.6.5 permits cc when both letters are preceded and followed by letters. In acchns-a, a precedes cc and h follows it, and 10.6.6 supplies no capitals restriction. Rule 10.9.6 forbids ch here because contracted ch+n would read as the shortform children under 10.9.3(b). The alternative cc groupsign produces a+cc+h+n+s, containing neither the children shortform cells nor another permitted shortform reading. The ch restriction therefore does not prohibit cc. Rules 10.10.2 and 10.10.5 retain the shorter lawful lower-groupsign choice once ch is unavailable. Liblouis unnecessarily spells cc in the exact captured evidence.",
-        "sources": [
-          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
-        ]
-      }
-    },
-    {
-      "id": "reviewed-fuzz-30549fdc6ceb6a51",
-      "verdict": {
-        "kind": "our-bug",
-        "rationale": "ICEB 2024 10.9.3(c) permits the little shortform at the beginning of a longer standing-alone word before a consonant other than y. The literal llb can therefore be read as littleb and requires the Grade 1 symbol indicator under 5.7.2 and 10.9.8. Opening brace and terminal full stop do not change standing-alone status under 2.6.2-2.6.3. This is additional exact evidence of the already-recorded dictionary llb disambiguation defect, not a permitted alternative or an oracle defect. The Appendix 1-specific repair in #91 does not resolve the general longer-shortform case.",
         "sources": [
           "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
         ]
