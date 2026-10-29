@@ -75,7 +75,8 @@ describe("grouped empirical ledger", () => {
     if (!isUnknownArray(disagreements)) return;
     // #91 resolves ten exact source records and adds one reviewed oracle omission.
     // #90 resolves 36 suffixed-shortform sentences and adds three oracle omissions.
-    expect(disagreements).toHaveLength(35_875);
+    // #144 removes 58 verified agreements and adds 145 exact indicator differences.
+    expect(disagreements).toHaveLength(35_962);
     if (parsed.ok) {
       const entries = parsed.ledger.disagreements;
       expect(new Set(entries.map(entry => isCompactEmpiricalEntry(entry)
