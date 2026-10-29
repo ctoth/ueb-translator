@@ -1,0 +1,222 @@
+[
+  {
+    "issue": 143,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `8a0ef94fbdb134ceae78c342f4c45ce39d666a0d57b5873404a861d95f751051`\n- Seed: `-60949542`\n- Replay path: `42916:2:0:0:0:3:4:3:10`\n- Shrinks: `8`\n- Minimal print input: `\"onenonea\"`\n- Local output: `⠕⠝⠢⠐⠕⠁`\n- Liblouis 3.38.0: `⠐⠕⠝⠕⠝⠑⠁`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:8a0ef94fbdb134ceae78c342f4c45ce39d666a0d57b5873404a861d95f751051 -->",
+    "evidence": {
+      "caseId": "fuzz:36eab259e3a7d512834b3f3e3bff94c1a017773217d4ab0b98ba50fa8577381c",
+      "input": "onenonea",
+      "local": {
+        "kind": "test",
+        "output": "⠕⠝⠢⠐⠕⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠐⠕⠝⠕⠝⠑⠁"
+      }
+    }
+  },
+  {
+    "issue": 142,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `61fbd8b420c607d97dacb10025f9dd0b6ac62859f736c4b537eb56676f39f117`\n- Seed: `1477531816`\n- Replay path: `94228:1:0:19:16:15:15`\n- Shrinks: `6`\n- Minimal print input: `\"a'goodna\"`\n- Local output: `⠁⠄⠛⠙⠝⠁`\n- Liblouis 3.38.0: `⠁⠄⠛⠕⠕⠙⠝⠁`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:61fbd8b420c607d97dacb10025f9dd0b6ac62859f736c4b537eb56676f39f117 -->",
+    "evidence": {
+      "caseId": "fuzz:2a28ec58de5b0939237552f6ae314d5e017444ead72b63b970d510d341366cb1",
+      "input": "a'goodna",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠄⠛⠕⠕⠙⠝⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠁⠄⠛⠕⠕⠙⠝⠁"
+      }
+    }
+  },
+  {
+    "issue": 141,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `9610126d566c45265d1d9013902b1b7e1c4af8fa0e855dae167424733a495b54`\n- Seed: `-1990816235`\n- Replay path: `12514:3:4:20:15`\n- Shrinks: `4`\n- Minimal print input: `\"bevmyofa\"`\n- Local output: `⠆⠧⠍⠽⠷⠁`\n- Liblouis 3.38.0: `⠃⠑⠧⠍⠽⠕⠋⠁`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:9610126d566c45265d1d9013902b1b7e1c4af8fa0e855dae167424733a495b54 -->",
+    "evidence": {
+      "caseId": "fuzz:ef42cc66b7b2aff6be57d310de4e5479afa7e6ca73f11dddfed17bdc2bd25055",
+      "input": "bevmyofa",
+      "local": {
+        "kind": "test",
+        "output": "⠆⠧⠍⠽⠷⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠃⠑⠧⠍⠽⠕⠋⠁"
+      }
+    }
+  },
+  {
+    "issue": 139,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `5deb2ee2d8e1d477dc6c0363a93f64fe9b4feb9e72a78316b710628ab2518284`\n- Seed: `646351956`\n- Replay path: `12529:3:1`\n- Shrinks: `2`\n- Minimal print input: `\"aencenced\"`\n- Local output: `⠁⠢⠉⠰⠑⠙`\n- Liblouis 3.38.0: `⠁⠰⠑⠝⠉⠫`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:5deb2ee2d8e1d477dc6c0363a93f64fe9b4feb9e72a78316b710628ab2518284 -->",
+    "evidence": {
+      "caseId": "fuzz:54e119b201522d922230a74a03f25c8671864f9d75ec1ca5e667eb5849055dfe",
+      "input": "aencenced",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠢⠉⠰⠑⠙",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠁⠰⠑⠝⠉⠫"
+      }
+    }
+  },
+  {
+    "issue": 138,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `1f9f3d3984dd3d8116d8509cb4e9be663ab4d10f431fcf4da6a8a8f73f03a75b`\n- Seed: `-148320636`\n- Replay path: `5388:3:18:19:19`\n- Shrinks: `4`\n- Minimal print input: `\"isomeda'a\"`\n- Local output: `⠊⠐⠎⠙⠁⠄⠁`\n- Liblouis 3.38.0: `⠊⠎⠕⠍⠫⠁⠄⠁`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:1f9f3d3984dd3d8116d8509cb4e9be663ab4d10f431fcf4da6a8a8f73f03a75b -->",
+    "evidence": {
+      "caseId": "fuzz:662c8d1e4c5e43786e97cd76fa71489db1919a3420f25c74e9cfbe6d3150e9da",
+      "input": "isomeda'a",
+      "local": {
+        "kind": "test",
+        "output": "⠊⠐⠎⠙⠁⠄⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠊⠎⠕⠍⠫⠁⠄⠁"
+      }
+    }
+  },
+  {
+    "issue": 137,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `d21c7e0709f4611883e92fb5ce9dad165feeb3137802b537eb02491a4150c25d`\n- Seed: `-1309776098`\n- Replay path: `18254:3:0:10:11`\n- Shrinks: `4`\n- Minimal print input: `\"(sthea)\"`\n- Local output: `⠐⠣⠎⠮⠁⠐⠜`\n- Liblouis 3.38.0: `⠐⠣⠌⠓⠑⠁⠐⠜`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:d21c7e0709f4611883e92fb5ce9dad165feeb3137802b537eb02491a4150c25d -->",
+    "evidence": {
+      "caseId": "fuzz:f9b61b3fd1108df23a0992f43b8ee5a686cbcf7a90b3e5f15e0cbf87fe12f43d",
+      "input": "(sthea)",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠎⠮⠁⠐⠜",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠐⠣⠌⠓⠑⠁⠐⠜"
+      }
+    }
+  },
+  {
+    "issue": 136,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `1fe2208f5bc0e3bb4c86933f07d9b050f1e7f27e055282ae13fe30e50558716d`\n- Seed: `-1530547988`\n- Replay path: `32352:1:0:1:12:10`\n- Shrinks: `5`\n- Minimal print input: `\"a-oneaa\"`\n- Local output: `⠁⠤⠕⠝⠂⠁`\n- Liblouis 3.38.0: `⠁⠤⠐⠕⠁⠁`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:1fe2208f5bc0e3bb4c86933f07d9b050f1e7f27e055282ae13fe30e50558716d -->",
+    "evidence": {
+      "caseId": "fuzz:4545d23102b6af19b56c5a7285ffa24dc94a0a6cb56bc4b821a190588932ac11",
+      "input": "a-oneaa",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠤⠕⠝⠂⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠁⠤⠐⠕⠁⠁"
+      }
+    }
+  },
+  {
+    "issue": 135,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `a15c55fc2396059059987717f5c342653bc63770a770d84fdf9b09a4105a3b67`\n- Seed: `-1406558636`\n- Replay path: `37440:1`\n- Shrinks: `1`\n- Minimal print input: `\"(llp:\"`\n- Local output: `⠐⠣⠇⠇⠏⠒`\n- Liblouis 3.38.0: `⠐⠣⠰⠇⠇⠏⠒`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:a15c55fc2396059059987717f5c342653bc63770a770d84fdf9b09a4105a3b67 -->",
+    "evidence": {
+      "caseId": "fuzz:e53da098473195717b859870969075032e613eea6f83935845a849941cd334a5",
+      "input": "(llp:",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠰⠇⠇⠏⠒",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠐⠣⠰⠇⠇⠏⠒"
+      }
+    }
+  },
+  {
+    "issue": 134,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `58b857cf5e05995d17266771365747e0cda67d2999c6aa0f1ff9ed19ee96400b`\n- Seed: `-520877589`\n- Replay path: `36000:1:0:4:20:14`\n- Shrinks: `5`\n- Minimal print input: `\"a-aongha\"`\n- Local output: `⠁⠤⠁⠕⠝⠣⠁`\n- Liblouis 3.38.0: `⠁⠤⠁⠰⠛⠓⠁`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:58b857cf5e05995d17266771365747e0cda67d2999c6aa0f1ff9ed19ee96400b -->",
+    "evidence": {
+      "caseId": "fuzz:87b40742e4bd907801b439c12cfc965e3a1d33842b515fc5dd1243c84828ff08",
+      "input": "a-aongha",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠤⠁⠕⠝⠣⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠁⠤⠁⠰⠛⠓⠁"
+      }
+    }
+  },
+  {
+    "issue": 133,
+    "report": "Nightly differential fuzzing found a new minimal Liblouis disagreement.\n\n- Fingerprint: `23e08b7809fe029b558b621793e470206fb55ba6b9ab0026e6d5c1ef4e8a24b4`\n- Seed: `2075443328`\n- Replay path: `50093:13:7`\n- Shrinks: `2`\n- Minimal print input: `\"beonea\"`\n- Local output: `⠃⠑⠐⠕⠁`\n- Liblouis 3.38.0: `⠆⠕⠝⠑⠁`\n\nThis is differential evidence only. Adjudicate against the official ICEB/BANA sources before changing translator behavior.\n\n<!-- ueb-divergence:23e08b7809fe029b558b621793e470206fb55ba6b9ab0026e6d5c1ef4e8a24b4 -->",
+    "evidence": {
+      "caseId": "fuzz:817334b86a445c1e2272998a468cf30c9d00f7a1630a67b4fbcdad1cd9a8d38e",
+      "input": "beonea",
+      "local": {
+        "kind": "test",
+        "output": "⠃⠑⠐⠕⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠆⠕⠝⠑⠁"
+      }
+    }
+  }
+]

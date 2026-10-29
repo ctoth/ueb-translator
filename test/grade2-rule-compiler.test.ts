@@ -283,6 +283,7 @@ describe("Grade 2 runtime architecture", () => {
         ...compiled,
         code: "ueb-2024",
         grade1Ambiguities: [],
+        grade1LongerAmbiguities: [],
         matcher: [
           compiled.matcher.bucketAlphabet,
           compiled.matcher.inputs,
@@ -317,6 +318,7 @@ describe("Grade 2 runtime architecture", () => {
         ...compiled,
         code: "ueb-2024",
         grade1Ambiguities: [],
+        grade1LongerAmbiguities: [],
         matcher: [
           compiled.matcher.bucketAlphabet,
           compiled.matcher.inputs,
@@ -353,6 +355,7 @@ describe("Grade 2 runtime architecture", () => {
         ...compiled,
         code: "ueb-2024",
         grade1Ambiguities: [],
+        grade1LongerAmbiguities: [],
         matcher: [
           compiled.matcher.bucketAlphabet,
           compiled.matcher.inputs,
@@ -381,6 +384,7 @@ describe("Grade 2 runtime architecture", () => {
       ...compiled,
       code: "ueb-2024",
       grade1Ambiguities: [],
+      grade1LongerAmbiguities: [],
       matcher: [
         compiled.matcher.bucketAlphabet,
         compiled.matcher.inputs,
