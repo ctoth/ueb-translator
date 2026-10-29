@@ -1436,6 +1436,16 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       "⠵"
     ]
   ],
+  "grade1LongerAmbiguities": [
+    "^(?=(bl)(?![aeiouy]))",
+    "(?=(brl))",
+    "^(?=(fr)(?![aeiouy]))",
+    "^(?=(gd)(?![aeiouy]))",
+    "(?=(grt))",
+    "^(?=(ll)(?![aeiouy]))",
+    "^(?=(lr)(?![aeiouy]))",
+    "^(?=(qk)(?![aeiouy]))"
+  ],
   "guards": [
     [
       0,

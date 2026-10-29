@@ -1,6 +1,158 @@
 {
   "disagreements": [
     {
+      "caseId": "fuzz:36eab259e3a7d512834b3f3e3bff94c1a017773217d4ab0b98ba50fa8577381c",
+      "input": "onenonea",
+      "local": {
+        "kind": "test",
+        "output": "⠕⠝⠢⠐⠕⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠐⠕⠝⠕⠝⠑⠁"
+      },
+      "groupId": "latest-conformance-143"
+    },
+    {
+      "caseId": "fuzz:ef42cc66b7b2aff6be57d310de4e5479afa7e6ca73f11dddfed17bdc2bd25055",
+      "input": "bevmyofa",
+      "local": {
+        "kind": "test",
+        "output": "⠆⠧⠍⠽⠷⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠃⠑⠧⠍⠽⠕⠋⠁"
+      },
+      "groupId": "latest-conformance-141"
+    },
+    {
+      "caseId": "fuzz:54e119b201522d922230a74a03f25c8671864f9d75ec1ca5e667eb5849055dfe",
+      "input": "aencenced",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠢⠉⠰⠑⠙",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠁⠰⠑⠝⠉⠫"
+      },
+      "groupId": "latest-conformance-139"
+    },
+    {
+      "caseId": "fuzz:662c8d1e4c5e43786e97cd76fa71489db1919a3420f25c74e9cfbe6d3150e9da",
+      "input": "isomeda'a",
+      "local": {
+        "kind": "test",
+        "output": "⠊⠐⠎⠙⠁⠄⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠊⠎⠕⠍⠫⠁⠄⠁"
+      },
+      "groupId": "latest-conformance-138"
+    },
+    {
+      "caseId": "fuzz:f9b61b3fd1108df23a0992f43b8ee5a686cbcf7a90b3e5f15e0cbf87fe12f43d",
+      "input": "(sthea)",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠎⠮⠁⠐⠜",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠐⠣⠌⠓⠑⠁⠐⠜"
+      },
+      "groupId": "latest-conformance-137"
+    },
+    {
+      "caseId": "fuzz:4545d23102b6af19b56c5a7285ffa24dc94a0a6cb56bc4b821a190588932ac11",
+      "input": "a-oneaa",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠤⠕⠝⠂⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠁⠤⠐⠕⠁⠁"
+      },
+      "groupId": "latest-conformance-136"
+    },
+    {
+      "caseId": "fuzz:87b40742e4bd907801b439c12cfc965e3a1d33842b515fc5dd1243c84828ff08",
+      "input": "a-aongha",
+      "local": {
+        "kind": "test",
+        "output": "⠁⠤⠁⠕⠝⠣⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠁⠤⠁⠰⠛⠓⠁"
+      },
+      "groupId": "latest-conformance-134"
+    },
+    {
+      "caseId": "fuzz:817334b86a445c1e2272998a468cf30c9d00f7a1630a67b4fbcdad1cd9a8d38e",
+      "input": "beonea",
+      "local": {
+        "kind": "test",
+        "output": "⠃⠑⠐⠕⠁",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "version": "3.38.0",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "output": "⠆⠕⠝⠑⠁"
+      },
+      "groupId": "latest-conformance-133"
+    },
+    {
       "caseId": "fuzz:8df33c804af46fa1ad2113f0eb3cbbddd8fe24c30ed6d68a62b62f56b5938dc2",
       "input": "eness",
       "local": {
@@ -197849,6 +198001,110 @@
     }
   ],
   "groups": [
+    {
+      "id": "latest-conformance-143",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "issues": [
+          143
+        ],
+        "rationale": "ICEB 2024 10.7.6 makes one dependent on syllabification. This contrived onenonea has no supplied pronunciation. The local en plus later one uses six cells, versus seven for the oracle's initial one with the remainder spelled; 10.10.2 favors the shorter eligible rendering. Rules 10.12.7-10 permit software contraction choices when pronunciation is unknown. This adjudication covers this exact input and both one occurrences.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "latest-conformance-141",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "issues": [
+          141
+        ],
+        "rationale": "ICEB 2024 10.6.1 makes initial be dependent on the first syllable; 10.3.1 permits internal of unless another rule limits it. This contrived bevmyofa supplies no pronunciation establishing a restriction on either be or of. The local contracts both; the oracle spells both. Rules 10.10.8-9 and 10.12.7-10 permit differing software choices where pronunciation is unknown. Both differing spans are included in this exact-input adjudication.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "latest-conformance-139",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "issues": [
+          139
+        ],
+        "rationale": "ICEB 2024 10.10.6 requires ence in enced. In aencenced the local preserves the second ence followed by d; the oracle takes the earlier overlapping ence and ends with ed instead. Both outputs occupy seven cells. The explicit ence exception decides this choice; retain the local output.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "latest-conformance-138",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "issues": [
+          138
+        ],
+        "rationale": "ICEB 2024 10.7.7 restricts some according to syllabification. The contrived isomeda'a supplies no pronunciation. The local contracts some while the oracle spells som and contracts ed. Rules 10.10.8-9 and 10.12.7-10 allow differing software transcription where pronunciation cannot be ascertained; this is not evidence for a dictionary exception.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "latest-conformance-137",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "issues": [
+          137
+        ],
+        "rationale": "ICEB 2024 10.3.1 permits the wherever the letters occur, unless another rule limits it. In (sthea), local s+the+a occupies three content cells versus four for the oracle's st+h+e+a. Rules 10.10.2-3 favor the shorter strong contraction. The input supplies no pronunciation establishing aspirated h under 10.11.2; 10.12.7-10 allows software judgment on this contrived spelling.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "latest-conformance-136",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "issues": [
+          136
+        ],
+        "rationale": "ICEB 2024 10.7.6 depends on syllabification of one. In contrived a-oneaa, local on+ea+a and oracle one+a+a each use four cells after the hyphen. Rule 10.10.7 favors a lower groupsign over an initial-letter contraction when neither wastes space. Rules 10.12.7-10 allow the software choices when syllabification is unknown; no change to the translator's preference is warranted.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "latest-conformance-134",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "issues": [
+          134
+        ],
+        "rationale": "ICEB 2024 10.10.7 prefers strong groupsigns over final-letter groupsigns when neither wastes space. In a-aongha, on+gh+a and ong+h+a occupy equal cells; the local uses strong gh. No supplied pronunciation disallows gh or establishes that ong is preferable under 10.10.8-9. Rules 10.12.7-10 permit differing software choices for this contrived spelling.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "latest-conformance-133",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "issues": [
+          133
+        ],
+        "rationale": "ICEB 2024 10.6.1 restricts be to the first syllable and 10.7.6 makes one syllabification-dependent. The contrived beonea supplies neither pronunciation. The existing translator spells unreviewed be before a vowel and contracts one; the oracle contracts be and spells one. Both renderings occupy five cells. Rules 10.12.7-10 permit software judgment on these unknown syllables. This exact evidence does not justify altering the reviewed be-word list.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
     {
       "id": "fuzz-unknown-en-ess-boundary",
       "verdict": {

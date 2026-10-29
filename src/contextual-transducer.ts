@@ -141,6 +141,7 @@ export interface ContextualTransducerProgram {
 
 export interface ComposedContractionProgram extends ContextualTransducerProgram {
   readonly code: string;
+  readonly grade1LongerAmbiguities: readonly string[];
   readonly grade1Ambiguities: readonly (
     readonly [print: string, braille: string]
   )[];
@@ -291,7 +292,8 @@ function guardAllows(
     case 9:
       return start !== 0 || context.atWordStart === false;
     case 10:
-      return start !== 0 || end !== context.word.length || context.precededByLetter === true;
+      return start !== 0 || end !== context.word.length ||
+        context.atWordStart === false || context.precededByLetter === true;
     case 11: {
       const operand = operandAt(program, guard[1]);
       return start === 0 || !operand.includes(context.word.charAt(start - 1));
@@ -303,7 +305,7 @@ function guardAllows(
     case 14:
       return start !== 0 && end !== context.word.length;
     case 15:
-      return start === 0;
+      return start === 0 && context.atWordStart !== false;
     case 16:
       return !context.hasLowerPunctuation;
     case 17: {
@@ -325,14 +327,17 @@ function guardAllows(
       const words = operandAt(program, guard[2]).split("\u0000");
       return [eligibilityWord, ...context.exclusionWords].some((word) => words.includes(word));
     }
-    case 21:
+    case 21: {
       if (!context.standing) return true;
-      for (const match of context.word.matchAll(new RegExp(operandAt(program, guard[1]), "gu"))) {
+      const pattern = operandAt(program, guard[1]);
+      if (pattern.startsWith("^") && context.atWordStart === false) return true;
+      for (const match of context.word.matchAll(new RegExp(pattern, "gu"))) {
         const span = match[1];
         if (span !== undefined && start < match.index + span.length && end > match.index &&
             context.isStableSpan?.(match.index, match.index + span.length) !== false) return false;
       }
       return true;
+    }
   }
 }
 

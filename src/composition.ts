@@ -383,6 +383,9 @@ export function compose(
     contractions?.grade1Ambiguities.map(([print]) => print),
   );
   const standingLiteralInputs = new Set(contractions?.standingLiteralInputs);
+  const longerAmbiguities = contractions?.grade1LongerAmbiguities.map(
+    (pattern) => new RegExp(pattern, "gu"),
+  ) ?? [];
 
   return {
     translate(text, options = {}) {
@@ -421,8 +424,12 @@ export function compose(
               bucketAlphabet,
             );
             const exact = exactLetterPrint(units, range, bucketAlphabet);
+            const ambiguityPositions = longerAmbiguities.flatMap((pattern) =>
+              [...exact.matchAll(pattern)].map((match) => match.index),
+            );
             if (
-              programLiteralComponent && standing && ambiguityPrints.has(exact) &&
+              programLiteralComponent && standing &&
+              (ambiguityPrints.has(exact) || ambiguityPositions.length > 0) &&
               contractionModePlan !== undefined &&
               canCollapseModeSpan(contractionModePlan, range) &&
               isCompleteAmbiguityLiteral(
@@ -433,6 +440,11 @@ export function compose(
                 bucketAlphabet,
               )
             ) {
+              if (ambiguityPositions.some((position) => position > 0)) {
+                // UEB 10.9.9 requires word Grade 1 and forbids all contractions.
+                for (let index = range.start; index < range.end; index += 1) required.add(index);
+                continue;
+              }
               // UEB 10.9.7–10.9.8: one symbol indicator disambiguates the
               // initial shortform spelling; later contractions remain eligible.
               required.add(range.start);

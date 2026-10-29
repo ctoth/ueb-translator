@@ -20,6 +20,33 @@ import {
   type Grade2DocumentResult,
 } from "../src/grade2.js";
 
+describe("latest conformance reports", () => {
+  it.each([
+    ["a'goodna", "⠁⠄⠛⠕⠕⠙⠝⠁"],
+    ["a'fstda", "⠁⠄⠋⠌⠙⠁"],
+    ["(llp:", "⠐⠣⠰⠇⠇⠏⠒"],
+    ["llb", "⠰⠇⠇⠃"],
+    ["lland", "⠇⠇⠯"],
+    ["lly", "⠇⠇⠽"],
+    ["gdna", "⠰⠛⠙⠝⠁"],
+    ["xgrtand", "⠰⠰⠭⠛⠗⠞⠁⠝⠙"],
+    ["aencenced", "⠁⠢⠉⠰⠑⠙"],
+  ])("translates %s under the applicable ICEB rule", (input, braille) => {
+    expect(translateGrade2(input)).toMatchObject({ ok: true, braille });
+  });
+
+  it.each(["good", "first", "blind", "friend", "letter", "little", "quick"])(
+    "does not restart %s after a medial apostrophe", (shortform) => {
+      const result = traceGrade2(`a'${shortform}na`);
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.rules.some(rule => rule.id.endsWith("-longer-word"))).toBe(false);
+      const control = traceGrade2(`a-${shortform}na`);
+      expect(control.ok).toBe(true);
+      if (control.ok) expect(control.rules.some(rule => rule.id.endsWith("-longer-word"))).toBe(true);
+    },
+  );
+});
+
 describe("official Grade 2 source inventory", () => {
   it("cites every Section 10 contraction", () => {
     expect(GRADE2_RULES).toHaveLength(GRADE2_INVENTORY_COUNTS.rules);

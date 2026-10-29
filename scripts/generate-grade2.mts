@@ -124,6 +124,9 @@ function loadCompilation(module: unknown): LoadedCompilation {
   const rawAmbiguities = isRecord(module)
     ? module["GRADE2_AMBIGUOUS_LETTER_SEQUENCES"]
     : undefined;
+  const rawLongerAmbiguities = isRecord(module)
+    ? module["GRADE2_AMBIGUOUS_LONGER_PATTERNS"]
+    : undefined;
   const rawStandingLiteralInputs = isRecord(module)
     ? module["GRADE2_STANDING_LITERAL_INPUTS"]
     : undefined;
@@ -131,7 +134,8 @@ function loadCompilation(module: unknown): LoadedCompilation {
     !Array.isArray(rawRules) || !Array.isArray(rawGuards) ||
     !isRecord(rawMatcher) ||
     !Array.isArray(rawOperands) || !Array.isArray(rawProvenance) ||
-    !Array.isArray(rawAmbiguities) || !Array.isArray(rawStandingLiteralInputs) ||
+    !Array.isArray(rawAmbiguities) || !Array.isArray(rawLongerAmbiguities) ||
+    !Array.isArray(rawStandingLiteralInputs) ||
     !rawOperands.every((operand) => typeof operand === "string")
   ) {
     throw new Error("Compiled Grade 2 contextual program is malformed.");
@@ -290,11 +294,16 @@ function loadCompilation(module: unknown): LoadedCompilation {
     }
     return input;
   });
+  const grade1LongerAmbiguities = rawLongerAmbiguities.map((pattern): string => {
+    if (typeof pattern !== "string") throw new Error("Compiled longer-word ambiguity is malformed.");
+    return pattern;
+  });
   return {
     ids,
     runtime: {
       code: "ueb-2024",
       grade1Ambiguities,
+      grade1LongerAmbiguities,
       guards,
       matcher: compactMatcher(matcher),
       rules,

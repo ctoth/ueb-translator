@@ -126,10 +126,7 @@ function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRu
     if (!usesGroupsign || literal === shortform.print) continue;
     const longer = longerShortform(shortform);
     if (longer !== undefined) {
-      const startsWord = longer.guards.some(guard => guard.kind === "word-start");
-      const following = longer.guards.flatMap(guard => guard.kind === "following-not-vowel-y"
-        ? [`(?![${guard.characters}])`] : []).join("");
-      patterns.push(`${startsWord ? "^" : ""}(?=(${literal})${following})`);
+      patterns.push(longerShortformPattern(longer, literal));
     }
     const forms = [literal, ...APPENDIX1_LONGER_WORDS
       .filter((entry) => entry.base === shortform.print)
@@ -319,6 +316,13 @@ function longerShortform(rule: ShortformSource): ContextualRuleSource | undefine
   };
 }
 
+function longerShortformPattern(rule: ContextualRuleSource, literal: string): string {
+  const startsWord = rule.guards.some(guard => guard.kind === "word-start");
+  const following = rule.guards.flatMap(guard => guard.kind === "following-not-vowel-y"
+    ? [`(?![${guard.characters}])`] : []).join("");
+  return `${startsWord ? "^" : ""}(?=(${literal})${following})`;
+}
+
 const SHORTFORM_BY_PRINT: ReadonlyMap<string, ShortformSource> = new Map(
   SHORTFORMS.map((rule): readonly [string, ShortformSource] => [rule.print, rule]),
 );
@@ -388,6 +392,14 @@ function literalLetters(braille: string): string | undefined {
   const print = cells.map((cell) => LATIN_LETTER_BY_CELL.get(cell)).join("");
   return print.length === cells.length ? print : undefined;
 }
+
+/** ICEB 10.9.8–9: include the general longer-word readings of 10.9.3. */
+export const GRADE2_AMBIGUOUS_LONGER_PATTERNS: readonly string[] = longerShortforms.flatMap(
+  (rule) => {
+    const literal = literalLetters(rule.braille);
+    return literal === undefined ? [] : [longerShortformPattern(rule, literal)];
+  },
+);
 
 /**
  * Literal letter sequences whose cells are also a compiled contraction output.
