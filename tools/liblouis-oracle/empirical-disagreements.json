@@ -1,6 +1,25 @@
 {
   "disagreements": [
     {
+      "caseId": "fuzz:2951d3b6ae7b52e3ddd720edb364e75116bcfc301f6845ed3a2d82bac1b17fc6",
+      "input": "(blpa)",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠰⠃⠇⠏⠁⠐⠜",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0",
+        "output": "⠐⠣⠃⠇⠏⠁⠐⠜"
+      },
+      "groupId": "latest-longer-shortform-symbol"
+    },
+    {
       "caseId": "scowl:2020.12.07:95:00012502",
       "input": "BLDS",
       "local": {
@@ -200704,6 +200723,7 @@
       "verdict": {
         "kind": "liblouis-bug",
         "issues": [
+          97,
           135
         ],
         "rationale": "ICEB 2024 10.9.3 allows blind, friend, good, letter, little and quick before a consonant other than y at the beginning of a longer word, and braille/great wherever they occur. Under 10.9.8 the corresponding literal initial abbreviation requires a Grade 1 symbol indicator. Each retained exact input matches that authored longer-word eligibility; its changed span is the initial indicator absent from Liblouis. Capitals do not remove the ambiguity. Later eligible contractions remain unchanged.",

@@ -21,6 +21,19 @@ import {
 } from "../src/grade2.js";
 
 describe("latest conformance reports", () => {
+  // ICEB 10.9.3(c), 10.9.8: bl before p can mean blind in a longer word.
+  // A following vowel or y prevents that reading; punctuation preserves standing.
+  it.each([
+    ["(blpa)", "⠐⠣⠰⠃⠇⠏⠁⠐⠜"],
+    ["blpa", "⠰⠃⠇⠏⠁"],
+    ["(bla)", "⠐⠣⠃⠇⠁⠐⠜"],
+    ["(bly)", "⠐⠣⠃⠇⠽⠐⠜"],
+    ["blindpa", "⠃⠇⠏⠁"],
+    ["(td)", "⠐⠣⠰⠞⠙⠐⠜"],
+  ])("preserves rule-derived shortform disambiguation in %s (#97)", (input, braille) => {
+    expect(translateGrade2(input)).toMatchObject({ ok: true, braille });
+  });
+
   it.each([
     ["a'goodna", "⠁⠄⠛⠕⠕⠙⠝⠁"],
     ["a'fstda", "⠁⠄⠋⠌⠙⠁"],

@@ -4,6 +4,18 @@ Authority: the local `papers/ICEB_2024_RulesUnifiedEnglishBraille/paper.pdf`
 and the [ICEB 2024 rules](https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf).
 Liblouis is a comparator, not the specification.
 
+## Reopened issue 97: `(blpa)`
+
+Seed `1266080880`, replay path `1465:1:10:8:7:7:7`, reports a different
+cause from the previously repaired `(td)` case. Rule 10.9.3(c) permits
+`blind` at the beginning of a longer standing word before a consonant other
+than `y`; literal `blpa` could therefore be read as `blindpa`. Rule 10.9.8
+requires the initial Grade 1 symbol indicator, including inside parentheses
+under 2.6.2. The translator already supplies it correctly; pinned Liblouis
+3.38.0 omits it. Retain this exact comparison in the existing initial-shortform
+oracle-defect group. Rule-derived regressions contrast the literal spelling
+with `blindpa`, following vowels and `y`, and the earlier `(td)` case.
+
 ## Code corrections
 
 - Rule 8.4.2 and its printed-page-91 examples terminate capitals word mode at
