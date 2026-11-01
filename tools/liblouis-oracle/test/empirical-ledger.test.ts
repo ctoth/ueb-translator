@@ -41,7 +41,7 @@ function isUnknownArray(value: unknown): value is readonly unknown[] {
 }
 
 describe("grouped empirical ledger", () => {
-  it("triages the reopened issue 97 case with current local evidence", () => {
+  it.each(["(blpa)", "(blpa'"])("triages issue 97 input %s with current local evidence", (input) => {
     const parsed = parseEmpiricalLedger(JSON.parse(readFileSync(
       new URL("../empirical-disagreements.json", import.meta.url), "utf8",
     )));
@@ -49,7 +49,7 @@ describe("grouped empirical ledger", () => {
     if (!parsed.ok) return;
     const entries = parsed.ledger.disagreements;
     const entry = entries.find((entry) =>
-      !isCompactEmpiricalEntry(entry) && entry.input === "(blpa)"
+      !isCompactEmpiricalEntry(entry) && entry.input === input
     );
     expect(entry).toBeDefined();
     if (entry === undefined || isCompactEmpiricalEntry(entry)) return;

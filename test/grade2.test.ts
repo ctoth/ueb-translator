@@ -25,6 +25,8 @@ describe("latest conformance reports", () => {
   // A following vowel or y prevents that reading; punctuation preserves standing.
   it.each([
     ["(blpa)", "⠐⠣⠰⠃⠇⠏⠁⠐⠜"],
+    ["(blpa'", "⠐⠣⠰⠃⠇⠏⠁⠄"],
+    ["(blpas'", "⠐⠣⠰⠃⠇⠏⠁⠎⠄"],
     ["blpa", "⠰⠃⠇⠏⠁"],
     ["(bla)", "⠐⠣⠃⠇⠁⠐⠜"],
     ["(bly)", "⠐⠣⠃⠇⠽⠐⠜"],

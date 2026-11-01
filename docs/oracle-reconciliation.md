@@ -16,6 +16,16 @@ under 2.6.2. The translator already supplies it correctly; pinned Liblouis
 oracle-defect group. Rule-derived regressions contrast the literal spelling
 with `blindpa`, following vowels and `y`, and the earlier `(td)` case.
 
+The complete 100,000-case seed scan also captures `(blpa'` and 63 further
+exact comparisons. Of the latter, 23 have the same initial indicator omission
+and 35 require word Grade 1 for internal `brl` or `grt` under 10.9.9, which
+also forbids the oracle's remaining contractions within that word. The other
+five are reviewed separately: `vqgoongguxx-xhvth` repeats the equal-space
+`gg`-over-`ong` preference of 10.10.7; `'oner'`, `jepinesshr`, and `'lxhggha.`
+retain pronunciation-dependent alternatives; `qkmqkqtxoneaxvnzgoft` combines
+a definite missing initial indicator with an uncertain `one` syllable choice.
+Retain each exact evidence record without broadening the fuzz-family predicates.
+
 ## Code corrections
 
 - Rule 8.4.2 and its printed-page-91 examples terminate capitals word mode at
