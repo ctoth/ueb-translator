@@ -115,7 +115,7 @@ const imports: string[] = [];
 const readers = new Set<string>();
 const report: string[] = [];
 function data(name: string, filename: string, value: unknown, expression: string): void {
-  const raw = `json${imports.length}`;
+  const raw = `json${String(imports.length)}`;
   imports.push(`import ${raw} from "./${filename}" with { type: "json" };`);
   files.push({ path: directory + requested.replace(/[^/]+$/u, "") + filename,
     content: JSON.stringify(value, undefined, 2) + "\n" });
@@ -163,7 +163,7 @@ switch (requested) {
     if (!ts.isArrayLiteralExpression(array)) throw new Error("Expected symbol list");
     const last = array.elements.at(-1);
     if (last === undefined || !ts.isCallExpression(last)) throw new Error("Expected final symbol");
-    const raw = `json${imports.length}`;
+    const raw = `json${String(imports.length)}`;
     imports.push(`import ${raw} from "./vertical-bar.json" with { type: "json" };`);
     files.push({ path: directory + "symbols/vertical-bar.json",
       content: JSON.stringify([compiled.at(-1)], undefined, 2) + "\n" });
@@ -267,7 +267,7 @@ for (const statement of source.statements) {
   const printer = ts.createPrinter();
   const updated = retained.length === 0 ? "" : printer.printNode(ts.EmitHint.Unspecified,
     ts.factory.updateImportDeclaration(statement, statement.modifiers,
-      ts.factory.updateImportClause(statement.importClause, statement.importClause.isTypeOnly,
+      ts.factory.updateImportClause(statement.importClause, statement.importClause.phaseModifier,
         statement.importClause.name, ts.factory.updateNamedImports(statement.importClause.namedBindings, retained)),
       statement.moduleSpecifier, statement.attributes), source);
   edits.push({ start: statement.getStart(source), end: statement.end, text: updated });

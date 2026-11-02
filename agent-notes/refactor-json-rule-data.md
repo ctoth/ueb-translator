@@ -4,7 +4,7 @@ Mechanically move authored UEB rule data to JSON, preserving meaningful TypeScri
 
 # State
 
-Published PR #165 against main on refactor/json-rule-data. Implementation: 35 JSON source files, retained typed source boundaries and compact compiler derivations. Generated runtime/provenance unchanged; focused JSON tests passed. First hosted CI passed generation/build/corpus checks, then caught TS18048 in the one-time extractor: its nested helper could not retain module-level argument narrowing. Fixed by binding the validated argument to an explicit string variable. Pushing the scoped repair; oracle runs remain in progress. Merge after all gates pass.
+Published PR #165 against main on refactor/json-rule-data. Generated output unchanged; focused JSON tests passed. Hosted typechecks now pass after the extractor argument narrowing repair. Lint identified two numeric template interpolations and the deprecated boolean import-clause overload/isTypeOnly property. Converted numbers explicitly and switched to the installed TypeScript 6 phaseModifier overload after reading typescript.d.ts. Pushing this scoped repair; oracle runs remain in progress. Merge after all gates pass.
 
 # Decisions and why
 
