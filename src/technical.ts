@@ -227,8 +227,9 @@ function symbolCell(print: string): string {
 }
 
 const UNPREFIXED_LATIN_LETTER_CELLS = new Set(
-  Array.from("⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"),
+  TECHNICAL_SIGN_PROGRAM.functionSpacing.letterCells,
 );
+const FUNCTION_NAME_BOUNDARY = new RegExp(TECHNICAL_SIGN_PROGRAM.functionSpacing.namePattern, "u");
 
 function shapeCell(shape: TechnicalShape): string {
   const signs = TECHNICAL_SIGN_PROGRAM.shapes;
@@ -299,7 +300,7 @@ function needsSpaceBeforeFunction(
   return previous !== undefined &&
     UNPREFIXED_LATIN_LETTER_CELLS.has(previous.braille.at(-1) ?? "") &&
     expression.kind === "function" &&
-    /^[a-z]/u.test(expression.name);
+    FUNCTION_NAME_BOUNDARY.test(expression.name);
 }
 
 function joinRendered(results: readonly RenderResult[]): RenderResult {

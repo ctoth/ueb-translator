@@ -861,6 +861,30 @@ describe("preferred grade-1 scope edges", () => {
   });
 
   it.each([
+    ["X", "sin", ",X SIN#FJ"],
+    ["x", "Sin", "X,SIN#FJ"],
+  ])("preserves capitalization boundaries for %s%s", (value, name, expected) => {
+    expect(expressionBraille({
+      kind: "sequence",
+      items: [
+        { kind: "identifier", value },
+        { kind: "function", name, argument: { kind: "number", value: "60" } },
+      ],
+    })).toBe(fromBrf(expected));
+  });
+
+  it.each([
+    [{ kind: "identifier", value: "x" }, "SIN X"],
+    [{ kind: "identifier", value: "A" }, "SIN,A"],
+    [{ kind: "identifier", value: "θ" }, "SIN.?"],
+    [{ kind: "group", enclosure: "round", content: { kind: "identifier", value: "x" } }, 'SIN"<X">'],
+  ] satisfies readonly (readonly [TechnicalExpression, string])[])(
+    "preserves function argument spacing for %j", (argument, expected) => {
+      expect(expressionBraille({ kind: "function", name: "sin", argument })).toBe(fromBrf(expected));
+    },
+  );
+
+  it.each([
     [
       "comparison",
       {

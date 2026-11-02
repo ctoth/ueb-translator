@@ -224,6 +224,11 @@ export interface TechnicalGrade1Protection {
 
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
+  readonly functionSpacing: {
+    readonly letterCells: readonly string[];
+    /** Function names matched with Unicode semantics. */
+    readonly namePattern: string;
+  };
   readonly grade1Protection: TechnicalGrade1Protection;
   readonly operationSpacing: {
     readonly international: Readonly<Record<InternationalTechnicalProfile["operationSpacing"], boolean>>;

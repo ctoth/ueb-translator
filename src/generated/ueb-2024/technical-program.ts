@@ -232,5 +232,36 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
     ],
     "maxSymbolsPerSequence": 1,
     "passageSequenceThreshold": 3
+  },
+  "functionSpacing": {
+    "letterCells": [
+      "⠁",
+      "⠃",
+      "⠉",
+      "⠙",
+      "⠑",
+      "⠋",
+      "⠛",
+      "⠓",
+      "⠊",
+      "⠚",
+      "⠅",
+      "⠇",
+      "⠍",
+      "⠝",
+      "⠕",
+      "⠏",
+      "⠟",
+      "⠗",
+      "⠎",
+      "⠞",
+      "⠥",
+      "⠧",
+      "⠺",
+      "⠭",
+      "⠽",
+      "⠵"
+    ],
+    "namePattern": "^[a-z]"
   }
 };
