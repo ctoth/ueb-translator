@@ -28,7 +28,7 @@ import {
 import { citeIceb } from "../rules/ueb-2024/source.js";
 import { SYMBOL_RULES } from "../rules/ueb-2024/symbols/source.js";
 import {
-  compileTechnicalSigns, TECHNICAL_SCRIPT_RULES, TECHNICAL_SHAPE_RULES, TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SYMBOL_RULES,
+  compileTechnicalSigns, TECHNICAL_MODIFIER_RULES, TECHNICAL_SCRIPT_RULES, TECHNICAL_SHAPE_RULES, TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SYMBOL_RULES,
 } from "../rules/ueb-2024/technical-signs.js";
 import { TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS } from "../src/technical-program.js";
 import {
@@ -142,7 +142,7 @@ describe("compiled Grade 1 symbols", () => {
 describe("compiled technical signs", () => {
   it("emits only additions without copying shared symbol definitions", () => {
     const program = compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
-      TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_SHAPE_RULES);
+      TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES);
     expect(program.symbols).toHaveLength(6);
     const generalPrints = new Set(SYMBOL_RULES.map((rule) => rule.print));
     expect(program.symbols.some((entry) => generalPrints.has(entry.print))).toBe(false);
@@ -155,21 +155,21 @@ describe("compiled technical signs", () => {
     expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, {
       ...TECHNICAL_SIGN_MAPPINGS,
       operations: { ...TECHNICAL_SIGN_MAPPINGS.operations, [operation]: "missing" },
-    }, TECHNICAL_SCRIPT_RULES, TECHNICAL_SHAPE_RULES)).toThrow("references missing symbol");
+    }, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES)).toThrow("references missing symbol");
   });
 
   it.each(TECHNICAL_COMPARISONS)("rejects a missing comparison reference for %s", (comparison) => {
     expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, {
       ...TECHNICAL_SIGN_MAPPINGS,
       comparisons: { ...TECHNICAL_SIGN_MAPPINGS.comparisons, [comparison]: "missing" },
-    }, TECHNICAL_SCRIPT_RULES, TECHNICAL_SHAPE_RULES)).toThrow("references missing symbol");
+    }, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES)).toThrow("references missing symbol");
   });
 
   it("rejects additions that overwrite general symbol definitions", () => {
     expect(() => compileTechnicalSigns(SYMBOL_RULES,
       [...TECHNICAL_SYMBOL_RULES, symbol("test-duplicate-plus", "+")],
       TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES,
-      TECHNICAL_SHAPE_RULES,
+      TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES,
     )).toThrow(expect.objectContaining({ code: "conflicting-print" }));
   });
 
@@ -182,7 +182,7 @@ describe("compiled technical signs", () => {
           "left-superscript": { indicator, position: "before" },
         },
       },
-      TECHNICAL_SHAPE_RULES,
+      TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES,
     )).toThrow("malformed indicator");
   });
 
@@ -192,13 +192,36 @@ describe("compiled technical signs", () => {
         ...TECHNICAL_SCRIPT_RULES,
         citation: { ...TECHNICAL_SCRIPT_RULES.citation, locator: "" },
       },
-      TECHNICAL_SHAPE_RULES,
+      TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES,
     )).toThrow("official ICEB citation");
     const uncited = structuredClone(TECHNICAL_SCRIPT_RULES);
     Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
     expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
       TECHNICAL_SIGN_MAPPINGS, uncited,
-      TECHNICAL_SHAPE_RULES,
+      TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES,
+    )).toThrow("official ICEB citation");
+  });
+
+  it.each(["", "not-braille"])("rejects malformed modifier cells %j", (cells) => {
+    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
+      TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, {
+        ...TECHNICAL_MODIFIER_RULES,
+        definitions: { ...TECHNICAL_MODIFIER_RULES.definitions, "bar-above": cells },
+      }, TECHNICAL_SHAPE_RULES,
+    )).toThrow("malformed cells");
+  });
+
+  it("rejects modifier definitions without an official citation", () => {
+    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
+      TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, {
+        ...TECHNICAL_MODIFIER_RULES,
+        citation: { ...TECHNICAL_MODIFIER_RULES.citation, locator: "" },
+      }, TECHNICAL_SHAPE_RULES,
+    )).toThrow("official ICEB citation");
+    const uncited = structuredClone(TECHNICAL_MODIFIER_RULES);
+    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
+      TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, uncited, TECHNICAL_SHAPE_RULES,
     )).toThrow("official ICEB citation");
   });
 
@@ -210,7 +233,7 @@ describe("compiled technical signs", () => {
       { ...definitions, terminator: cells },
     ]) {
       expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
-        TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES,
+        TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES,
         { ...TECHNICAL_SHAPE_RULES, definitions: replacement },
       )).toThrow("malformed cells");
     }
@@ -224,7 +247,7 @@ describe("compiled technical signs", () => {
       citation: { ...TECHNICAL_SHAPE_RULES.citation, locator: "" },
     }]) {
       expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
-        TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, source,
+        TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, source,
       )).toThrow("official ICEB citation");
     }
   });

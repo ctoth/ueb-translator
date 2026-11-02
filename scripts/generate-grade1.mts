@@ -6,7 +6,7 @@ import type { ModeProgram } from "../src/mode-engine.js";
 import type { CompiledSymbol, SymbolProgram } from "../src/symbol-program.js";
 import type { CompositionPolicies } from "../src/composition.js";
 import {
-  TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
+  TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
   TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
 } from "../src/technical-program.ts";
 
@@ -72,13 +72,14 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const operations = isRecord(value) ? value["operations"] : undefined;
   const comparisons = isRecord(value) ? value["comparisons"] : undefined;
   const scripts = isRecord(value) ? value["scripts"] : undefined;
+  const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
   if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
-    !isShapeMap(shapes)) {
+    !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons, scripts, shapes };
+  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes };
 }
 
 function isShapeMap(value: unknown): value is TechnicalSignProgram["shapes"] {

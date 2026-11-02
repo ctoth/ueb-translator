@@ -4,6 +4,8 @@
 Move the existing eight shape names, three fill prefixes and optional terminator into the existing cited technical-sign source and generated program. Preserve the public shape API and rendering behavior.
 
 ## State
+PR #155 previously passed hosted CI. After PR #154 merged normally into main, parent began merging main into this branch. Shared-owner conflicts are now resolved, preserving both integrated modifiers and shape data; compiler argument order is scripts, modifiers, shapes. Regenerated technical output contains both inventories; general Grade 1 and Grade 2 outputs are unchanged. The edited compiler test file passed after resolution. Parent alone publishes and merges; hosted CI must validate this integrated head.
+
 Implemented on independent branch `refactor/declarative-shapes` from integrated main. The existing technical source now owns the shape inventory and citation; the generator emits `TechnicalSignProgram.shapes`; the renderer reads it. The public shape name and fill values are preserved.
 
 Completed `npm ci --ignore-scripts`, `npm run grade1:generate`, and `npx vitest run --coverage.enabled=false test/grade1-rule-compiler.test.ts`. Generation compiled the rule source successfully; the edited compiler test file passed. The generated diff changes only `src/generated/ueb-2024/technical-program.ts`; general Grade 1 and Grade 2 programs are unchanged. Full CI was not run locally and remains for parent publication.
@@ -21,4 +23,11 @@ Extended the existing directional-single-quote test in `test/contraction-context
 `npx vitest run --coverage.enabled=false test/contraction-context.test.ts` passed after this repair. Full-suite coverage remains for hosted CI; it was not rerun locally.
 
 ## Next step
-Parent verifies and publishes the local commit as an independent PR against main, then reads hosted CI. PR body draft is `.oracle-artifacts/pr-body.md`. This worker does not push or publish.
+Parent inspected and published this independent branch as PR #155 against main,
+then inspected and pushed the scoped test repair. Full hosted CI and both
+push/PR oracle runs passed on the repaired head. The PR oracle summary reports
+1,048 inventory cases, 658,033 dictionary cases and 441,223 retained corpus
+cases, with zero stale or untriaged disagreements. PR remains open/unmerged.
+The subsequent merge resolution integrates main's modifier implementation in
+the shared owners. Parent must inspect and push this local merge resolution,
+then read hosted CI before merging PR #155. No full CI ran locally.

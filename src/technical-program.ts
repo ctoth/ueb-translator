@@ -25,6 +25,13 @@ export type TechnicalShapeName = (typeof TECHNICAL_SHAPE_NAMES)[number];
 export const TECHNICAL_SHAPE_FILLS = ["filled", "outline", "shaded"] as const;
 export type TechnicalShapeFill = (typeof TECHNICAL_SHAPE_FILLS)[number];
 
+export const TECHNICAL_MODIFIERS = [
+  "arc-above", "bar-above", "bar-below", "dot-above", "dot-below",
+  "hat-above", "hat-below", "line-through", "right-arrow-above",
+  "right-arrow-below", "tilde-above", "tilde-below",
+] as const;
+export type TechnicalModifier = (typeof TECHNICAL_MODIFIERS)[number];
+
 export interface TechnicalScriptRule {
   readonly indicator: string;
   readonly position: "before" | "after";
@@ -35,6 +42,7 @@ export interface TechnicalSignProgram extends SymbolProgram {
   readonly operations: Readonly<Record<TechnicalOperation, string>>;
   readonly comparisons: Readonly<Record<TechnicalComparison, string>>;
   readonly scripts: Readonly<Record<TechnicalScriptPlacement, TechnicalScriptRule>>;
+  readonly modifiers: Readonly<Record<TechnicalModifier, string>>;
   readonly shapes: {
     readonly fills: Readonly<Record<TechnicalShapeFill, string>>;
     readonly names: Readonly<Record<TechnicalShapeName, string>>;

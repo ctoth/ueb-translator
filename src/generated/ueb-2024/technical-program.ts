@@ -89,6 +89,20 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "position": "after"
     }
   },
+  "modifiers": {
+    "arc-above": "⠨⠸⠱",
+    "bar-above": "⠱",
+    "bar-below": "⠠⠱",
+    "dot-above": "⠘⠲",
+    "dot-below": "⠠⠘⠲",
+    "hat-above": "⠐⠱",
+    "hat-below": "⠠⠐⠱",
+    "line-through": "⠈⠱",
+    "right-arrow-above": "⠘⠱",
+    "right-arrow-below": "⠠⠘⠱",
+    "tilde-above": "⠸⠱",
+    "tilde-below": "⠠⠸⠱"
+  },
   "shapes": {
     "fills": {
       "filled": "⠸⠫",
