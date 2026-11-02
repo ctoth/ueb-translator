@@ -26,6 +26,10 @@ guards, using the same closed precedence type as the contextual compiler.
 Inventory rules carry their declared priority directly into the existing
 runtime tuple. Explicit contextual variants retain their own priorities.
 
+Individual inventory entries also declare word-position and preceding-character
+restrictions in their authored guards. The compiler combines those with shared
+category guards and exception-derived guards before canonicalizing the program.
+
 The Grade 1 symbol, mode, and composition-policy compilers use the same
 source-to-runtime boundary. Generated modules contain only opaque runtime data
 and stable provenance identifiers. There is no second development compiler and

@@ -94,8 +94,11 @@ export const GRADE2_RULES: readonly Grade2RuleSource[] = [
   ...rules("strong-groupsign", 2, [
     ["ch", "⠡"], ["gh", "⠣"], ["sh", "⠩"], ["th", "⠹"],
     ["wh", "⠱"], ["ed", "⠫"], ["er", "⠻"], ["ou", "⠳"],
-    ["ow", "⠪"], ["st", "⠌"], ["ing", "⠬"], ["ar", "⠜"],
+    ["ow", "⠪"], ["st", "⠌"], ["ar", "⠜"],
   ]),
+  ...rules("strong-groupsign", 2, [
+    ["ing", "⠬"],
+  ], [{ kind: "not-word-start" }]),
   // Preserve the existing following-mode restriction for the be wordsign too.
   ...rules("lower-wordsign", 0, [
     ["be", "⠆"],
@@ -120,15 +123,24 @@ export const GRADE2_RULES: readonly Grade2RuleSource[] = [
     ["whose", "⠘⠱"], ["word", "⠘⠺"], ["cannot", "⠸⠉"],
     ["had", "⠸⠓"], ["many", "⠸⠍"], ["spirit", "⠸⠎"],
     ["their", "⠸⠮"], ["world", "⠸⠺"], ["day", "⠐⠙"],
-    ["ever", "⠐⠑"], ["father", "⠐⠋"], ["here", "⠐⠓"],
+    ["father", "⠐⠋"], ["here", "⠐⠓"],
     ["know", "⠐⠅"], ["lord", "⠐⠇"], ["mother", "⠐⠍"],
-    ["name", "⠐⠝"], ["one", "⠐⠕"], ["part", "⠐⠏"],
+    ["name", "⠐⠝"], ["part", "⠐⠏"],
     ["question", "⠐⠟"], ["right", "⠐⠗"], ["some", "⠐⠎"],
-    ["time", "⠐⠞"], ["under", "⠐⠥"], ["young", "⠐⠽"],
+    ["time", "⠐⠞"], ["young", "⠐⠽"],
     ["there", "⠐⠮"], ["character", "⠐⠡"],
     ["through", "⠐⠹"], ["where", "⠐⠱"], ["ought", "⠐⠳"],
     ["work", "⠐⠺"],
   ]),
+  ...rules("initial-letter-contraction", 4, [
+    ["ever", "⠐⠑"],
+  ], [{ characters: "ei", kind: "previous-not" }]),
+  ...rules("initial-letter-contraction", 4, [
+    ["one", "⠐⠕"],
+  ], [{ characters: "o", kind: "previous-not" }]),
+  ...rules("initial-letter-contraction", 4, [
+    ["under", "⠐⠥"],
+  ], [{ characters: "ao", kind: "previous-not" }]),
   ...rules("final-letter-groupsign", 5, [
     ["ound", "⠨⠙"], ["ance", "⠨⠑"], ["sion", "⠨⠝"],
     ["less", "⠨⠎"], ["ount", "⠨⠞"], ["ence", "⠰⠑"],
