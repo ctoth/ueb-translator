@@ -191,9 +191,13 @@ export interface TechnicalItemPolicy {
   readonly identifierPattern: string;
 }
 
+export const TECHNICAL_VALUE_KINDS = ["chemical-element", "function-name", "identifier", "number"] as const;
+
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
   readonly itemPolicy: TechnicalItemPolicy;
+  /** Accepted API input grammars, matched with Unicode semantics. */
+  readonly valuePatterns: Readonly<Record<(typeof TECHNICAL_VALUE_KINDS)[number], string>>;
   readonly operations: Readonly<Record<TechnicalOperation, string>>;
   readonly comparisons: Readonly<Record<TechnicalComparison, string>>;
   readonly arrows: Readonly<Record<SimpleArrowDirection, string>>;
