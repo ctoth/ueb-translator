@@ -8,7 +8,7 @@ import type { CompositionPolicies } from "../src/composition.js";
 import {
   TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
   TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
-  TECHNICAL_ITEM_KINDS, TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
+  TECHNICAL_VALUE_KINDS, TECHNICAL_ITEM_KINDS, TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
 } from "../src/technical-program.ts";
 
 interface LoadedCompilation {
@@ -75,15 +75,16 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const scripts = isRecord(value) ? value["scripts"] : undefined;
   const delimiters = isRecord(value) ? value["delimiters"] : undefined;
   const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
+  const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
   if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
-    !isItemPolicy(itemPolicy)) {
+    !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy };
+  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns };
 }
 
 function isItemPolicy(value: unknown): value is TechnicalSignProgram["itemPolicy"] {

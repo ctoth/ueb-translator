@@ -190,5 +190,11 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "simple-fraction": true
     },
     "identifierPattern": "^\\p{L}\\p{M}*$"
+  },
+  "valuePatterns": {
+    "chemical-element": "^[A-Z][a-z]?$",
+    "function-name": "^\\p{L}[\\p{L}\\p{M}]*$",
+    "identifier": "^\\p{L}[\\p{L}\\p{M}\\d]*$",
+    "number": "^\\d+(?:[,.]\\d+)*$"
   }
 };

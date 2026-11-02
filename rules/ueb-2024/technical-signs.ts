@@ -1,5 +1,5 @@
 import { loadSymbolProgram } from "../../src/symbol-program.js";
-import { TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
+import { TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
 import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
@@ -159,6 +159,14 @@ export const TECHNICAL_ITEM_RULES: TechnicalItemSource = {
   },
 };
 
+/** Accepted structured API inputs, not a normative list of chemical elements. */
+export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = {
+  "chemical-element": "^[A-Z][a-z]?$",
+  "function-name": "^\\p{L}[\\p{L}\\p{M}]*$",
+  identifier: "^\\p{L}[\\p{L}\\p{M}\\d]*$",
+  number: "^\\d+(?:[,.]\\d+)*$",
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
@@ -168,6 +176,7 @@ export function compileTechnicalSigns(
   shapes: TechnicalShapeSource,
   delimiters: TechnicalDelimiterSource,
   items: TechnicalItemSource,
+  valuePatterns: TechnicalSignProgram["valuePatterns"],
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -180,6 +189,13 @@ export function compileTechnicalSigns(
     throw new Error("Technical item identifier pattern is empty.");
   }
   const identifierPattern = new RegExp(items.definitions.identifierPattern, "u");
+  const compiledPatterns = { ...valuePatterns };
+  for (const kind of TECHNICAL_VALUE_KINDS) {
+    if (compiledPatterns[kind].length === 0) {
+      throw new Error(`Technical value pattern ${kind} is empty.`);
+    }
+    compiledPatterns[kind] = new RegExp(compiledPatterns[kind], "u").source;
+  }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
   for (const source of [scripts, modifiers, shapes, delimiters, items]) {
     if (source.citation.locator.trim().length === 0 ||
@@ -236,6 +252,7 @@ export function compileTechnicalSigns(
     }
   }
   return {
+    valuePatterns: compiledPatterns,
     itemPolicy: { kinds: { ...items.definitions.kinds }, identifierPattern: identifierPattern.source },
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },

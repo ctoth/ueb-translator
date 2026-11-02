@@ -155,6 +155,11 @@ The expression types live once in the shared technical contract and retain
 their public exports. Group delimiters and protection offsets remain renderer
 mechanics.
 
+Accepted leaf values use generated Unicode-matched API grammar patterns for
+numbers, identifiers, function names and chemical-element spelling. One numeric
+pattern serves numbers and both simple-fraction fields. These describe the API's
+accepted input syntax; chemical spelling does not validate an actual element.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

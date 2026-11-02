@@ -213,6 +213,12 @@ const SYMBOL_RUNTIME = loadSymbolProgram({
 });
 const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
 const ITEM_IDENTIFIER = new RegExp(TECHNICAL_SIGN_PROGRAM.itemPolicy.identifierPattern, "u");
+const VALUE_PATTERNS = {
+  "chemical-element": new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns["chemical-element"], "u"),
+  "function-name": new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns["function-name"], "u"),
+  identifier: new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns.identifier, "u"),
+  number: new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns.number, "u"),
+};
 const VISIBLE_SPACE = "⠬";
 
 const ARROW_PRINT = {
@@ -272,10 +278,6 @@ function renderPrintValue(
     return { ...translated, mode: "technical" };
   }
   return renderSuccess(translated.braille);
-}
-
-function renderNumber(value: string): RenderResult {
-  return renderPrintValue(value, "number", /^\d+(?:[,.]\d+)*$/u);
 }
 
 function renderStandingValue(
@@ -363,7 +365,7 @@ function renderExpression(
       return renderStandingValue(
         expression.symbol,
         "chemical-element",
-        /^[A-Z][a-z]?$/u,
+        VALUE_PATTERNS["chemical-element"],
       );
     case "comparison": {
       const left = renderExpression(expression.left, profile);
@@ -440,14 +442,14 @@ function renderExpression(
       return renderStandingValue(
         expression.value,
         "identifier",
-        /^\p{L}[\p{L}\p{M}\d]*$/u,
+        VALUE_PATTERNS.identifier,
       );
     }
     case "function": {
       const name = renderPrintValue(
         expression.name,
         "function-name",
-        /^\p{L}[\p{L}\p{M}]*$/u,
+        VALUE_PATTERNS["function-name"],
       );
       const argument = renderExpression(expression.argument, profile);
       if (!name.ok) {
@@ -496,7 +498,7 @@ function renderExpression(
       );
     }
     case "number":
-      return renderNumber(expression.value);
+      return renderPrintValue(expression.value, "number", VALUE_PATTERNS.number);
     case "operation": {
       const left = renderExpression(expression.left, profile);
       const right = renderExpression(expression.right, profile);
@@ -629,12 +631,12 @@ function renderExpression(
       const numerator = renderPrintValue(
         expression.numerator,
         "simple-fraction-numerator",
-        /^\d+(?:[,.]\d+)*$/u,
+        VALUE_PATTERNS.number,
       );
       const denominator = renderPrintValue(
         expression.denominator,
         "simple-fraction-denominator",
-        /^\d+(?:[,.]\d+)*$/u,
+        VALUE_PATTERNS.number,
       );
       if (!numerator.ok) {
         return numerator;
