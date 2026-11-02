@@ -137,6 +137,13 @@ The eight simple arrow directions also reference the shared symbols through
 the generated technical program (GTM 13.1, p.60). The renderer has no separate
 arrow map or accessor.
 
+Technical Grade 1 protection data declares the ordered standing-value classifiers
+(including their regex flags) and the per-sequence and passage thresholds. The
+classifiers preserve the existing API behavior; the indicator counts are cited
+to replacement Section 1.7 (2025), 1.7.3(a)–(b), p.2. The renderer still tracks
+whole-sequence scope and insertion offsets, forces words where already required,
+and excludes numeric-mode requirements from escalation counts.
+
 The same technical program declares each script's indicator and whether its
 expression appears before or after the base. These six descriptors are cited
 to GTM Section 7. The renderer uses the declared position for concatenation and

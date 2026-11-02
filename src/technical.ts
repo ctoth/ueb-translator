@@ -197,6 +197,10 @@ const SYMBOL_RUNTIME = loadSymbolProgram({
 });
 const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
 const ITEM_IDENTIFIER = new RegExp(TECHNICAL_SIGN_PROGRAM.itemPolicy.identifierPattern, "u");
+const STANDING_VALUES = TECHNICAL_SIGN_PROGRAM.grade1Protection.standingValues.map((rule) => ({
+  kind: rule.kind,
+  pattern: new RegExp(rule.pattern, rule.flags),
+}));
 const VALUE_PATTERNS = {
   "chemical-element": new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns["chemical-element"], "u"),
   "function-name": new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns["function-name"], "u"),
@@ -256,19 +260,14 @@ function renderStandingValue(
 ): RenderResult {
   const rendered = renderPrintValue(value, kind, pattern);
   if (!rendered.ok) return rendered;
-  if (/^[b-hj-np-z]$/iu.test(value)) {
-    return renderSuccess(rendered.braille, [{
-      end: rendered.braille.length,
-      kind: "standing-symbol",
-      offset: 0,
-    }]);
-  }
-  if (/^\p{L}[\p{L}\p{M}\d]+$/u.test(value)) {
-    return renderSuccess(rendered.braille, [{
-      end: rendered.braille.length,
-      kind: "standing-word",
-      offset: 0,
-    }]);
+  for (const rule of STANDING_VALUES) {
+    if (rule.pattern.test(value)) {
+      return renderSuccess(rendered.braille, [{
+        end: rendered.braille.length,
+        kind: rule.kind,
+        offset: 0,
+      }]);
+    }
   }
   return rendered;
 }
@@ -859,7 +858,7 @@ function applyGrade1Protection(
     protectedSequenceCount += 1;
     const wordRequired =
       counted.some((requirement) => requirement.kind === "standing-word") ||
-      counted.length > 1;
+      counted.length > TECHNICAL_SIGN_PROGRAM.grade1Protection.maxSymbolsPerSequence;
     if (wordRequired) {
       insertions.push({
         indicator: GRADE1_WORD_INDICATOR,
@@ -875,7 +874,7 @@ function applyGrade1Protection(
       break;
     }
   }
-  if (protectedSequenceCount >= 3) {
+  if (protectedSequenceCount >= TECHNICAL_SIGN_PROGRAM.grade1Protection.passageSequenceThreshold) {
     return renderSuccess(
       `${GRADE1_PASSAGE_INDICATOR}${applyInsertions(braille, requiredNumericMode)}${GRADE1_TERMINATOR}`,
     );

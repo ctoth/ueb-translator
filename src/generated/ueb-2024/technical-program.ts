@@ -216,5 +216,21 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "standardized": false,
       "teaching": true
     }
+  },
+  "grade1Protection": {
+    "standingValues": [
+      {
+        "pattern": "^[b-hj-np-z]$",
+        "flags": "iu",
+        "kind": "standing-symbol"
+      },
+      {
+        "pattern": "^\\p{L}[\\p{L}\\p{M}\\d]+$",
+        "flags": "u",
+        "kind": "standing-word"
+      }
+    ],
+    "maxSymbolsPerSequence": 1,
+    "passageSequenceThreshold": 3
   }
 };
