@@ -21,7 +21,7 @@ import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
 import type {
-  SimpleArrowDirection, TechnicalComparison, TechnicalExpression, TechnicalOperation, TechnicalShape,
+  TechnicalComparison, TechnicalExpression, TechnicalOperation, TechnicalShape,
 } from "./technical-program.js";
 export type {
   TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement,
@@ -215,17 +215,6 @@ const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
 const ITEM_IDENTIFIER = new RegExp(TECHNICAL_SIGN_PROGRAM.itemPolicy.identifierPattern, "u");
 const VISIBLE_SPACE = "⠬";
 
-const ARROW_PRINT = {
-  down: "↓",
-  "down-left": "↙",
-  "down-right": "↘",
-  left: "←",
-  right: "→",
-  up: "↑",
-  "up-left": "↖",
-  "up-right": "↗",
-} satisfies Readonly<Record<SimpleArrowDirection, string>>;
-
 function operationCell(operation: TechnicalOperation): string {
   return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
 }
@@ -246,10 +235,6 @@ function symbolCell(print: string): string {
 const UNPREFIXED_LATIN_LETTER_CELLS = new Set(
   Array.from("⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"),
 );
-
-function arrowCell(direction: SimpleArrowDirection): string {
-  return symbolCell(ARROW_PRINT[direction]);
-}
 
 function shapeCell(shape: TechnicalShape): string {
   const signs = TECHNICAL_SIGN_PROGRAM.shapes;
@@ -622,7 +607,7 @@ function renderExpression(
         { end: 1, kind: "symbol", offset: 0 },
       ]);
     case "simple-arrow":
-      return renderSuccess(arrowCell(expression.direction), [
+      return renderSuccess(symbolCell(TECHNICAL_SIGN_PROGRAM.arrows[expression.direction]), [
         { end: 1, kind: "symbol", offset: 0 },
       ]);
     case "simple-fraction": {
