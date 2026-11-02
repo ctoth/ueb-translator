@@ -7,6 +7,7 @@ import type { CompiledSymbol, SymbolProgram } from "../src/symbol-program.js";
 import type { CompositionPolicies } from "../src/composition.js";
 import {
   TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS, type TechnicalSignProgram,
+  TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
 } from "../src/technical-program.ts";
 
 interface LoadedCompilation {
@@ -71,11 +72,25 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const operations = isRecord(value) ? value["operations"] : undefined;
   const comparisons = isRecord(value) ? value["comparisons"] : undefined;
   const scripts = isRecord(value) ? value["scripts"] : undefined;
+  const delimiters = isRecord(value) ? value["delimiters"] : undefined;
   if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
-    !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts)) {
+    !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
+    !isDelimiterMap(delimiters)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons, scripts };
+  return { ...symbolProgram(value), operations, comparisons, scripts, delimiters };
+}
+
+function isDelimiterMap(value: unknown): value is TechnicalSignProgram["delimiters"] {
+  if (!isRecord(value)) return false;
+  const { enclosures, matrixEnclosures, ...signs } = value;
+  const pairs = (mapping: unknown, keys: readonly string[]): boolean =>
+    isRecord(mapping) && Object.keys(mapping).length === keys.length && keys.every((key) => {
+      const pair = mapping[key];
+      return isPrintMap(pair, ["open", "close"]);
+    });
+  return isPrintMap(signs, TECHNICAL_DELIMITER_SIGNS) &&
+    pairs(enclosures, TECHNICAL_ENCLOSURES) && pairs(matrixEnclosures, TECHNICAL_MATRIX_ENCLOSURES);
 }
 
 function isScriptMap(value: unknown): value is TechnicalSignProgram["scripts"] {

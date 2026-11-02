@@ -138,6 +138,13 @@ expression appears before or after the base. These six descriptors are cited
 to GTM Section 7. The renderer uses the declared position for concatenation and
 protection offsets, without classifying left-script names in code.
 
+The program also carries Braille grouping, fraction and radical delimiters,
+cited to GTM Sections 6–8. Ordinary enclosures reference the shared symbol
+inventory (Section 5); enlarged matrix enclosures add the declared dot 6 prefix
+to those same cells (Section 15.1). The compiler resolves these references once,
+so the renderer reads compiled delimiter cells without its own sign tables.
+Indexed radicals reuse the declared right-superscript indicator.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

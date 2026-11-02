@@ -88,5 +88,55 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "indicator": "⠔",
       "position": "after"
     }
+  },
+  "delimiters": {
+    "groupOpen": "⠣",
+    "groupClose": "⠜",
+    "simpleFractionLine": "⠌",
+    "fractionOpen": "⠷",
+    "fractionLine": "⠨⠌",
+    "fractionClose": "⠾",
+    "radicalOpen": "⠩",
+    "radicalClose": "⠬",
+    "enclosures": {
+      "absolute": {
+        "open": "⠸⠳",
+        "close": "⠸⠳"
+      },
+      "angle": {
+        "open": "⠈⠣",
+        "close": "⠈⠜"
+      },
+      "curly": {
+        "open": "⠸⠣",
+        "close": "⠸⠜"
+      },
+      "round": {
+        "open": "⠐⠣",
+        "close": "⠐⠜"
+      },
+      "square": {
+        "open": "⠨⠣",
+        "close": "⠨⠜"
+      }
+    },
+    "matrixEnclosures": {
+      "curly": {
+        "open": "⠠⠸⠣",
+        "close": "⠠⠸⠜"
+      },
+      "determinant": {
+        "open": "⠠⠸⠳",
+        "close": "⠠⠸⠳"
+      },
+      "round": {
+        "open": "⠠⠐⠣",
+        "close": "⠠⠐⠜"
+      },
+      "square": {
+        "open": "⠠⠨⠣",
+        "close": "⠠⠨⠜"
+      }
+    }
   }
 };
