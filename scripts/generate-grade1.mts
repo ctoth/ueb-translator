@@ -6,7 +6,7 @@ import type { ModeProgram } from "../src/mode-engine.js";
 import type { CompiledSymbol, SymbolProgram } from "../src/symbol-program.js";
 import type { CompositionPolicies } from "../src/composition.js";
 import {
-  TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS, type TechnicalSignProgram,
+  TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS, type TechnicalSignProgram,
 } from "../src/technical-program.ts";
 
 interface LoadedCompilation {
@@ -70,11 +70,21 @@ function isPrintMap<Key extends string>(
 function technicalProgram(value: unknown): TechnicalSignProgram {
   const operations = isRecord(value) ? value["operations"] : undefined;
   const comparisons = isRecord(value) ? value["comparisons"] : undefined;
+  const scripts = isRecord(value) ? value["scripts"] : undefined;
   if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
-    !isPrintMap(comparisons, TECHNICAL_COMPARISONS)) {
+    !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons };
+  return { ...symbolProgram(value), operations, comparisons, scripts };
+}
+
+function isScriptMap(value: unknown): value is TechnicalSignProgram["scripts"] {
+  return isRecord(value) && Object.keys(value).length === TECHNICAL_SCRIPT_PLACEMENTS.length &&
+    TECHNICAL_SCRIPT_PLACEMENTS.every((placement) => {
+      const rule = value[placement];
+      return isRecord(rule) && typeof rule["indicator"] === "string" &&
+        (rule["position"] === "before" || rule["position"] === "after");
+    });
 }
 
 function modeProgram(value: unknown): ModeProgram {
