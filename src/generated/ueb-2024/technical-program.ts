@@ -216,5 +216,12 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "standardized": false,
       "teaching": true
     }
+  },
+  "numericContinuation": {
+    "precedingKinds": [
+      "number",
+      "simple-fraction"
+    ],
+    "identifierPattern": "^[a-j]"
   }
 };

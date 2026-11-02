@@ -207,6 +207,27 @@ export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource 
   },
 };
 
+export interface TechnicalNumericContinuationSource {
+  readonly citation: RuleCitation<
+    "ICEB", "Guidelines for Technical Material: Grade 1 Indicators (July 2025)",
+    string, "https://iceb.org/publications/ueb/"
+  >;
+  readonly definitions: TechnicalSignProgram["numericContinuation"];
+}
+
+export const TECHNICAL_NUMERIC_CONTINUATION_RULES: TechnicalNumericContinuationSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Guidelines for Technical Material: Grade 1 Indicators (July 2025)",
+    locator: "1.7.2-1.7.3, pp.1-2 (numeric a-j exclusion)",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    precedingKinds: ["number", "simple-fraction"],
+    identifierPattern: "^[a-j]",
+  },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
@@ -218,6 +239,7 @@ export function compileTechnicalSigns(
   items: TechnicalItemSource,
   valuePatterns: TechnicalSignProgram["valuePatterns"],
   spacing: TechnicalOperationSpacingSource,
+  numericContinuation: TechnicalNumericContinuationSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -231,6 +253,10 @@ export function compileTechnicalSigns(
     throw new Error("Technical item identifier pattern is empty.");
   }
   const identifierPattern = new RegExp(items.definitions.identifierPattern, "u");
+  if (numericContinuation.definitions.identifierPattern.length === 0) {
+    throw new Error("Technical numeric continuation identifier pattern is empty.");
+  }
+  const numericIdentifierPattern = new RegExp(numericContinuation.definitions.identifierPattern, "u");
   const compiledPatterns = { ...valuePatterns };
   for (const kind of TECHNICAL_VALUE_KINDS) {
     if (compiledPatterns[kind].length === 0) {
@@ -239,7 +265,7 @@ export function compileTechnicalSigns(
     compiledPatterns[kind] = new RegExp(compiledPatterns[kind], "u").source;
   }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"]]) {
+  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], numericContinuation]) {
     const authority = source.citation.authority;
     const officialHost = authority === "BANA" ? "https://brailleauthority.org/" : "https://iceb.org/";
     if (source.citation.locator.trim().length === 0 ||
@@ -296,6 +322,10 @@ export function compileTechnicalSigns(
     }
   }
   return {
+    numericContinuation: {
+      precedingKinds: [...numericContinuation.definitions.precedingKinds],
+      identifierPattern: numericIdentifierPattern.source,
+    },
     operationSpacing: {
       international: { ...spacing.international.definitions },
       "bana-2026": { ...spacing["bana-2026"].definitions },

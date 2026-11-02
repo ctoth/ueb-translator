@@ -83,6 +83,7 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const scripts = isRecord(value) ? value["scripts"] : undefined;
   const delimiters = isRecord(value) ? value["delimiters"] : undefined;
   const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
+  const numericContinuation = isRecord(value) ? value["numericContinuation"] : undefined;
   const operationSpacing = isRecord(value) ? value["operationSpacing"] : undefined;
   const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
@@ -92,10 +93,19 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
     !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS) ||
-    !isOperationSpacing(operationSpacing)) {
+    !isOperationSpacing(operationSpacing) || !isNumericContinuation(numericContinuation)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing };
+  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, numericContinuation };
+}
+
+function isNumericContinuation(value: unknown): value is TechnicalSignProgram["numericContinuation"] {
+  if (!isRecord(value)) return false;
+  const kinds = value["precedingKinds"];
+  const expressionKinds: readonly string[] = [...TECHNICAL_ITEM_KINDS, "identifier"];
+  return Array.isArray(kinds) && kinds.every((kind: unknown) =>
+    typeof kind === "string" && expressionKinds.includes(kind)) &&
+    typeof value["identifierPattern"] === "string";
 }
 
 function isOperationSpacing(value: unknown): value is TechnicalSignProgram["operationSpacing"] {

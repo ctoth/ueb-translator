@@ -610,6 +610,33 @@ describe("preferred grade-1 scope edges", () => {
     ).toMatchObject({ braille: fromBrf(";(#A;A./#B)"), ok: true });
   });
 
+  it.each([
+    ["a", "#A;A"], ["j", "#A;J"], ["k", "#AK"], ["A", "#A,A"],
+    ["aj", "#A;AJ"], ["ka", "#AKA"],
+  ])("preserves the raw numeric continuation prefix for %s", (value, expected) => {
+    expect(expressionBraille({
+      kind: "sequence",
+      items: [{ kind: "number", value: "1" }, { kind: "identifier", value }],
+    })).toBe(fromBrf(expected));
+  });
+
+  it("preserves simple-fraction and nested sequence predecessor distinctions", () => {
+    expect(expressionBraille({
+      kind: "sequence",
+      items: [
+        { kind: "simple-fraction", numerator: "1", denominator: "2" },
+        { kind: "identifier", value: "j" },
+      ],
+    })).toBe(fromBrf("#A/B;J"));
+    expect(expressionBraille({
+      kind: "sequence",
+      items: [
+        { kind: "sequence", items: [{ kind: "number", value: "1" }] },
+        { kind: "identifier", value: "a" },
+      ],
+    })).toBe(fromBrf("#AA"));
+  });
+
   it("protects a-j after numeric mode in every Grade 1 path (issue #34)", () => {
     const numericLetter: TechnicalExpression = {
       items: [
