@@ -56,6 +56,13 @@ describe("curly apostrophe emission", () => {
       },
     );
     it("preserves real directional single quotes, including words ending in s", () => {
+      for (const [text, braille] of [["’", "⠠⠴"], ["’!", "⠠⠴⠖"]] as const) {
+        expect(translate(text)).toEqual({
+          ok: true,
+          mode: translate === translateGrade1 ? "grade1" : "grade2",
+          braille,
+        });
+      }
       for (const text of ["‘cat’", "‘cats’", "‘don’t’"]) {
         const result = translate(text);
         expect(result.ok).toBe(true);

@@ -102,5 +102,23 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
     "right-arrow-below": "⠠⠘⠱",
     "tilde-above": "⠸⠱",
     "tilde-below": "⠠⠸⠱"
+  },
+  "shapes": {
+    "fills": {
+      "filled": "⠸⠫",
+      "outline": "⠫",
+      "shaded": "⠨⠫"
+    },
+    "names": {
+      "circle": "⠿",
+      "hexagon": "⠼⠋",
+      "heptagon": "⠼⠛",
+      "octagon": "⠼⠓",
+      "parallelogram": "⠈⠼⠙",
+      "pentagon": "⠼⠑",
+      "square": "⠼⠙",
+      "triangle": "⠼⠉"
+    },
+    "terminator": "⠱"
   }
 };

@@ -20,8 +20,8 @@ import {
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
-import type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
-export type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
+import type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeFill, TechnicalShapeName } from "./technical-program.js";
+export type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeName } from "./technical-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -57,16 +57,6 @@ export type TechnicalEnclosure =
   | "curly"
   | "round"
   | "square";
-
-export type TechnicalShapeName =
-  | "circle"
-  | "hexagon"
-  | "heptagon"
-  | "octagon"
-  | "parallelogram"
-  | "pentagon"
-  | "square"
-  | "triangle";
 
 export interface TechnicalIdentifier {
   readonly kind: "identifier";
@@ -165,7 +155,7 @@ export interface TechnicalModifiedItem {
 }
 
 export interface TechnicalShape {
-  readonly fill: "filled" | "outline" | "shaded";
+  readonly fill: TechnicalShapeFill;
   readonly kind: "shape";
   readonly shape: TechnicalShapeName;
   readonly terminator: "omitted" | "present";
@@ -357,7 +347,6 @@ const GENERAL_FRACTION_LINE = "⠨⠌";
 const GENERAL_FRACTION_CLOSE = "⠾";
 const RADICAL_OPEN = "⠩";
 const RADICAL_CLOSE = "⠬";
-const SHAPE_TERMINATOR = "⠱";
 const VISIBLE_SPACE = "⠬";
 
 interface EnclosureCells {
@@ -414,27 +403,11 @@ function enclosureCells(enclosure: TechnicalEnclosure): EnclosureCells {
   return { close: symbolCell(print.close), open: symbolCell(print.open) };
 }
 
-const SHAPE_FILL_CELLS = {
-  filled: "⠸⠫",
-  outline: "⠫",
-  shaded: "⠨⠫",
-} satisfies Readonly<Record<TechnicalShape["fill"], string>>;
-
-const SHAPE_NAME_CELLS = {
-  circle: "⠿",
-  hexagon: "⠼⠋",
-  heptagon: "⠼⠛",
-  octagon: "⠼⠓",
-  parallelogram: "⠈⠼⠙",
-  pentagon: "⠼⠑",
-  square: "⠼⠙",
-  triangle: "⠼⠉",
-} satisfies Readonly<Record<TechnicalShapeName, string>>;
-
 function shapeCell(shape: TechnicalShape): string {
-  const braille = `${SHAPE_FILL_CELLS[shape.fill]}${SHAPE_NAME_CELLS[shape.shape]}`;
+  const signs = TECHNICAL_SIGN_PROGRAM.shapes;
+  const braille = `${signs.fills[shape.fill]}${signs.names[shape.shape]}`;
   return shape.terminator === "present"
-    ? `${braille}${SHAPE_TERMINATOR}`
+    ? `${braille}${signs.terminator}`
     : braille;
 }
 
