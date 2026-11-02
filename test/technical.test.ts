@@ -110,7 +110,7 @@ describe("ICEB GTM 2014 sections 6-8 and 2018 section 3", () => {
 });
 
 describe("BANA May 2026 regional supplement", () => {
-  it("makes standardized and teaching operation spacing explicit", () => {
+  it("makes international and BANA operation spacing choices explicit", () => {
     const expression = {
       kind: "operation",
       left: { kind: "number", value: "3" },
@@ -118,35 +118,24 @@ describe("BANA May 2026 regional supplement", () => {
       right: { kind: "number", value: "2" },
     } as const;
 
-    const standardized: TechnicalDocument = {
-      blocks: [{ expression, kind: "expression" }],
-      kind: "technical-document",
-      profile: {
-        grade1: "all-technical",
-        jurisdiction: "bana-2026",
-        production: "standardized",
-      },
-    };
-    const teaching: TechnicalDocument = {
-      blocks: [{ expression, kind: "expression" }],
-      kind: "technical-document",
-      profile: {
-        grade1: "all-technical",
-        jurisdiction: "bana-2026",
-        production: "teaching",
-      },
-    };
+    const profiles = [
+      [{ grade1: "all-technical", jurisdiction: "bana-2026", production: "standardized" }, ';;;#C"6#B;\''],
+      [{ grade1: "all-technical", jurisdiction: "bana-2026", production: "teaching" }, ';;;#C "6 #B;\''],
+      [{ grade1: "all-technical", jurisdiction: "international", operationSpacing: "unspaced" }, ';;;#C"6#B;\''],
+      [{ grade1: "all-technical", jurisdiction: "international", operationSpacing: "spaced" }, ';;;#C "6 #B;\''],
+    ] as const satisfies readonly (readonly [TechnicalDocument["profile"], string])[];
 
-    expect(translateTechnical(standardized)).toEqual({
-      braille: fromBrf(';;;#C"6#B;\''),
-      mode: "technical",
-      ok: true,
-    });
-    expect(translateTechnical(teaching)).toEqual({
-      braille: fromBrf(';;;#C "6 #B;\''),
-      mode: "technical",
-      ok: true,
-    });
+    for (const [profile, expected] of profiles) {
+      expect(translateTechnical({
+        blocks: [{ expression, kind: "expression" }],
+        kind: "technical-document",
+        profile,
+      })).toEqual({
+        braille: fromBrf(expected),
+        mode: "technical",
+        ok: true,
+      });
+    }
   });
 });
 

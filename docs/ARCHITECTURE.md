@@ -164,6 +164,11 @@ numbers, identifiers, function names and chemical-element spelling. One numeric
 pattern serves numbers and both simple-fraction fields. These describe the API's
 accepted input syntax; chemical spelling does not validate an actual element.
 
+Operation spacing is declared per existing profile option in the same program:
+international spaced/unspaced choices follow the caller's presentation choice
+(GTM 1.1.2); BANA standardized/teaching choices retain the API's selected
+presentation (BANA 2026 Section 2). The runtime reads that declared boolean.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

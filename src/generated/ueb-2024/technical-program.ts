@@ -206,5 +206,15 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
     "function-name": "^\\p{L}[\\p{L}\\p{M}]*$",
     "identifier": "^\\p{L}[\\p{L}\\p{M}\\d]*$",
     "number": "^\\d+(?:[,.]\\d+)*$"
+  },
+  "operationSpacing": {
+    "international": {
+      "spaced": true,
+      "unspaced": false
+    },
+    "bana-2026": {
+      "standardized": false,
+      "teaching": true
+    }
   }
 };

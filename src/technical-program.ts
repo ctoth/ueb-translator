@@ -53,6 +53,24 @@ export type TechnicalDelimiters = Readonly<Record<(typeof TECHNICAL_DELIMITER_SI
   readonly matrixEnclosures: Readonly<Record<(typeof TECHNICAL_MATRIX_ENCLOSURES)[number], TechnicalEnclosureCells>>;
 };
 
+export type TechnicalGrade1Policy = "all-technical" | "preferred";
+
+export interface InternationalTechnicalProfile {
+  readonly grade1: TechnicalGrade1Policy;
+  readonly jurisdiction: "international";
+  readonly operationSpacing: "spaced" | "unspaced";
+}
+
+export interface BanaTechnicalProfile {
+  readonly grade1: TechnicalGrade1Policy;
+  readonly jurisdiction: "bana-2026";
+  readonly production: "standardized" | "teaching";
+}
+
+export type TechnicalProfile =
+  | BanaTechnicalProfile
+  | InternationalTechnicalProfile;
+
 export const TECHNICAL_ARROW_DIRECTIONS = [
   "down", "down-left", "down-right", "left", "right", "up", "up-left", "up-right",
 ] as const;
@@ -195,6 +213,10 @@ export const TECHNICAL_VALUE_KINDS = ["chemical-element", "function-name", "iden
 
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
+  readonly operationSpacing: {
+    readonly international: Readonly<Record<InternationalTechnicalProfile["operationSpacing"], boolean>>;
+    readonly "bana-2026": Readonly<Record<BanaTechnicalProfile["production"], boolean>>;
+  };
   readonly itemPolicy: TechnicalItemPolicy;
   /** Accepted API input grammars, matched with Unicode semantics. */
   readonly valuePatterns: Readonly<Record<(typeof TECHNICAL_VALUE_KINDS)[number], string>>;
