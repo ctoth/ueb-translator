@@ -20,8 +20,8 @@ import {
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
-import type { TechnicalComparison, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
-export type { TechnicalComparison, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
+import type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
+export type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -57,20 +57,6 @@ export type TechnicalEnclosure =
   | "curly"
   | "round"
   | "square";
-
-export type TechnicalModifier =
-  | "arc-above"
-  | "bar-above"
-  | "bar-below"
-  | "dot-above"
-  | "dot-below"
-  | "hat-above"
-  | "hat-below"
-  | "line-through"
-  | "right-arrow-above"
-  | "right-arrow-below"
-  | "tilde-above"
-  | "tilde-below";
 
 export type TechnicalShapeName =
   | "circle"
@@ -398,21 +384,6 @@ const ENCLOSURE_PRINT = {
   square: { close: "]", open: "[" },
 } satisfies Readonly<Record<TechnicalEnclosure, { readonly close: string; readonly open: string }>>;
 
-const MODIFIER_CELLS = {
-  "arc-above": "⠨⠸⠱",
-  "bar-above": "⠱",
-  "bar-below": "⠠⠱",
-  "dot-above": "⠘⠲",
-  "dot-below": "⠠⠘⠲",
-  "hat-above": "⠐⠱",
-  "hat-below": "⠠⠐⠱",
-  "line-through": "⠈⠱",
-  "right-arrow-above": "⠘⠱",
-  "right-arrow-below": "⠠⠘⠱",
-  "tilde-above": "⠸⠱",
-  "tilde-below": "⠠⠸⠱",
-} satisfies Readonly<Record<TechnicalModifier, string>>;
-
 function operationCell(operation: TechnicalOperation): string {
   return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
 }
@@ -441,10 +412,6 @@ function arrowCell(direction: SimpleArrowDirection): string {
 function enclosureCells(enclosure: TechnicalEnclosure): EnclosureCells {
   const print = ENCLOSURE_PRINT[enclosure];
   return { close: symbolCell(print.close), open: symbolCell(print.open) };
-}
-
-function modifierCell(modifier: TechnicalModifier): string {
-  return MODIFIER_CELLS[modifier];
 }
 
 const SHAPE_FILL_CELLS = {
@@ -707,7 +674,7 @@ function renderExpression(
       if (!item.ok) {
         return item;
       }
-      const modifier = modifierCell(expression.modifier);
+      const modifier = TECHNICAL_SIGN_PROGRAM.modifiers[expression.modifier];
       return renderSuccess(`${item.braille}${modifier}`, [
         ...item.requirements,
         {

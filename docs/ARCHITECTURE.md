@@ -138,6 +138,10 @@ expression appears before or after the base. These six descriptors are cited
 to GTM Section 7. The renderer uses the declared position for concatenation and
 protection offsets, without classifying left-script names in code.
 
+Its twelve modifier cell strings are cited to the GTM Section 12 indicator list
+on page 57. The renderer appends the declared cells to the item and retains
+the existing grade-1 protection offsets.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful
