@@ -263,5 +263,12 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "⠵"
     ],
     "namePattern": "^[a-z]"
+  },
+  "numericContinuation": {
+    "precedingKinds": [
+      "number",
+      "simple-fraction"
+    ],
+    "identifierPattern": "^[a-j]"
   }
 };

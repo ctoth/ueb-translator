@@ -197,6 +197,9 @@ const SYMBOL_RUNTIME = loadSymbolProgram({
 });
 const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
 const ITEM_IDENTIFIER = new RegExp(TECHNICAL_SIGN_PROGRAM.itemPolicy.identifierPattern, "u");
+const NUMERIC_CONTINUATION_IDENTIFIER = new RegExp(
+  TECHNICAL_SIGN_PROGRAM.numericContinuation.identifierPattern, "u",
+);
 const STANDING_VALUES = TECHNICAL_SIGN_PROGRAM.grade1Protection.standingValues.map((rule) => ({
   kind: rule.kind,
   pattern: new RegExp(rule.pattern, rule.flags),
@@ -565,10 +568,10 @@ function renderExpression(
           ...shiftRequirements(itemRendered.requirements, offset),
         );
         if (
-          (previous?.kind === "number" ||
-            previous?.kind === "simple-fraction") &&
+          previous !== undefined &&
+          TECHNICAL_SIGN_PROGRAM.numericContinuation.precedingKinds.includes(previous.kind) &&
           item.kind === "identifier" &&
-          /^[a-j]/u.test(item.value)
+          NUMERIC_CONTINUATION_IDENTIFIER.test(item.value)
         ) {
           requirements.push({
             end: offset + 1,
