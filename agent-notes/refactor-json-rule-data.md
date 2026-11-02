@@ -4,7 +4,7 @@ Mechanically move authored UEB rule data to JSON, preserving meaningful TypeScri
 
 # State
 
-Implementation complete: 35 JSON source files extracted mechanically, typed source adapters/readers retained, compact family/group tables preserved, compiler expansions have one owner. Both generators completed after source integration with no changes to any generated runtime/provenance artifact. Focused test/rule-json.test.ts passed after final schema integration, including the full retained guard union and actual compiler-derived guard inputs. Documentation preserves moved source annotations. Publishing one atomic PR next; hosted full CI/oracles not yet verified.
+Published PR #165 against main on refactor/json-rule-data. Implementation: 35 JSON source files, retained typed source boundaries and compact compiler derivations. Generated runtime/provenance unchanged; focused JSON tests passed. First hosted CI passed generation/build/corpus checks, then caught TS18048 in the one-time extractor: its nested helper could not retain module-level argument narrowing. Fixed by binding the validated argument to an explicit string variable. Pushing the scoped repair; oracle runs remain in progress. Merge after all gates pass.
 
 # Decisions and why
 
@@ -20,4 +20,4 @@ Generator compilation caught an object narrowing error, redundant import-type mo
 
 # Next step
 
-Commit and publish one atomic PR; wait for full hosted CI and dictionary/corpus oracles, repair scoped failures, merge when gates pass, verify integrated main and clean up. Generated runtime/provenance, normative behavior and ledgers must remain unchanged. No second-language compiler port.
+Wait for PR #165 full hosted CI and dictionary/corpus oracles; repair scoped failures, merge when gates pass, verify integrated main and clean up. Generated runtime/provenance, normative behavior and ledgers must remain unchanged. No second-language compiler port.

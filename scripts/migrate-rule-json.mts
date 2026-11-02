@@ -7,13 +7,14 @@ import ts from "typescript";
 
 const root = resolve(import.meta.dirname, "..");
 const directory = "rules/ueb-2024/";
-const requested = process.argv[2];
+const requestedArgument = process.argv[2];
 const sourceFiles = ["symbols/source.ts", "modes/source.ts", "policies/source.ts",
   "grade2-rules.ts", "shortforms.ts", "appendix1.ts", "constraints.ts",
   "apostrophes.ts", "technical-signs.ts", "inventory.ts", "program.ts"];
-if (requested === undefined || !sourceFiles.includes(requested)) {
+if (requestedArgument === undefined || !sourceFiles.includes(requestedArgument)) {
   throw new Error(`Choose one source: ${sourceFiles.join(", ")}`);
 }
+const requested: string = requestedArgument;
 const path = directory + requested;
 const reference = process.argv[3];
 const original = reference === undefined ? await readFile(resolve(root, path), "utf8")
