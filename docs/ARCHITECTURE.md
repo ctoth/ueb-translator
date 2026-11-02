@@ -120,6 +120,15 @@ Braille-grouping semantics that cannot be recovered from plain text.
 
 ## Structured technical runtime
 
+Operations and comparisons resolve semantic print references through the symbol
+inventory. Eight signs reuse general symbol definitions; six additions are
+authored in `rules/ueb-2024/technical-signs.ts` with citations to the October 2018
+replacement Section 3. The existing symbol compiler validates the combined
+inventory and references; the existing Grade 1 generator emits a separate
+technical program containing only additions and semantic maps. These additions
+are loaded only for structured technical sign lookup, preserving ordinary
+Grade 1 and raw technical-text support. Negation uses the same minus mapping.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

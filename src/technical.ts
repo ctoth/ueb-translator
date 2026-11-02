@@ -19,6 +19,9 @@ import {
 } from "./generated/ueb-2024/grade1-program.js";
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
+import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
+import type { TechnicalComparison, TechnicalOperation } from "./technical-program.js";
+export type { TechnicalComparison, TechnicalOperation } from "./technical-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -37,24 +40,6 @@ export interface BanaTechnicalProfile {
 export type TechnicalProfile =
   | BanaTechnicalProfile
   | InternationalTechnicalProfile;
-
-export type TechnicalOperation =
-  | "asterisk"
-  | "divide"
-  | "dot"
-  | "minus"
-  | "multiply"
-  | "plus"
-  | "plus-or-minus";
-
-export type TechnicalComparison =
-  | "approximately-equal"
-  | "equals"
-  | "greater-than"
-  | "greater-than-or-equal"
-  | "less-than"
-  | "less-than-or-equal"
-  | "not-equal";
 
 export type TechnicalScriptPlacement =
   | "directly-above"
@@ -383,7 +368,9 @@ const GRADE1_PASSAGE_INDICATOR = modeIndicator(
 const GRADE1_TERMINATOR = modeIndicator(
   GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.grade1, "terminator",
 );
-const SYMBOL_RUNTIME = loadSymbolProgram(GRADE1_SYMBOL_PROGRAM);
+const SYMBOL_RUNTIME = loadSymbolProgram({
+  symbols: [...GRADE1_SYMBOL_PROGRAM.symbols, ...TECHNICAL_SIGN_PROGRAM.symbols],
+});
 const BRAILLE_GROUP_OPEN = "⠣";
 const BRAILLE_GROUP_CLOSE = "⠜";
 const GENERAL_FRACTION_OPEN = "⠷";
@@ -392,7 +379,6 @@ const GENERAL_FRACTION_LINE = "⠨⠌";
 const GENERAL_FRACTION_CLOSE = "⠾";
 const RADICAL_OPEN = "⠩";
 const RADICAL_CLOSE = "⠬";
-const MATHEMATICAL_MINUS = "⠐⠤";
 const SHAPE_TERMINATOR = "⠱";
 const VISIBLE_SPACE = "⠬";
 
@@ -400,26 +386,6 @@ interface EnclosureCells {
   readonly close: string;
   readonly open: string;
 }
-
-const OPERATION_CELLS = {
-  asterisk: "⠐⠔",
-  divide: "⠐⠌",
-  dot: "⠐⠲",
-  minus: MATHEMATICAL_MINUS,
-  multiply: "⠐⠦",
-  plus: "⠐⠖",
-  "plus-or-minus": "⠸⠖",
-} satisfies Readonly<Record<TechnicalOperation, string>>;
-
-const COMPARISON_CELLS = {
-  "approximately-equal": "⠸⠔",
-  equals: "⠐⠶",
-  "greater-than": "⠈⠜",
-  "greater-than-or-equal": "⠸⠈⠜",
-  "less-than": "⠈⠣",
-  "less-than-or-equal": "⠸⠈⠣",
-  "not-equal": "⠐⠶⠈⠱",
-} satisfies Readonly<Record<TechnicalComparison, string>>;
 
 const SCRIPT_INDICATORS = {
   "directly-above": "⠨⠔",
@@ -465,11 +431,11 @@ const MODIFIER_CELLS = {
 } satisfies Readonly<Record<TechnicalModifier, string>>;
 
 function operationCell(operation: TechnicalOperation): string {
-  return OPERATION_CELLS[operation];
+  return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
 }
 
 function comparisonCell(comparison: TechnicalComparison): string {
-  return COMPARISON_CELLS[comparison];
+  return symbolCell(TECHNICAL_SIGN_PROGRAM.comparisons[comparison]);
 }
 
 function scriptIndicator(placement: TechnicalScriptPlacement): string {
@@ -480,7 +446,7 @@ function symbolCell(print: string): string {
   const braille = SYMBOL_RUNTIME.symbols.get(print)?.braille;
   /* v8 ignore next -- semantic maps are closed over the generated inventory. */
   if (braille === undefined) {
-    throw new Error(`Compiled Grade 1 symbol inventory lacks ${JSON.stringify(print)}.`);
+    throw new Error(`Compiled symbol inventory lacks ${JSON.stringify(print)}.`);
   }
   return braille;
 }
@@ -777,9 +743,10 @@ function renderExpression(
       if (!operand.ok) {
         return operand;
       }
+      const minus = operationCell("minus");
       return renderSuccess(
-        `${MATHEMATICAL_MINUS}${operand.braille}`,
-        shiftRequirements(operand.requirements, MATHEMATICAL_MINUS.length),
+        `${minus}${operand.braille}`,
+        shiftRequirements(operand.requirements, minus.length),
       );
     }
     case "number":

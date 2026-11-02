@@ -77,3 +77,23 @@ export function citeIceb<const Locator extends IcebRuleLocator>(
     url: "https://iceb.org/publications/ueb/",
   };
 }
+
+export type TechnicalSignLocator =
+  | "Operation signs table, p. 1"
+  | "Comparison signs table, p. 1"
+  | "Comparison signs table, p. 2";
+export type TechnicalSignCitation = RuleCitation<
+  "ICEB",
+  "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+  TechnicalSignLocator,
+  "https://iceb.org/publications/ueb/"
+>;
+
+export function citeTechnicalSign(locator: TechnicalSignLocator): TechnicalSignCitation {
+  return {
+    authority: "ICEB",
+    document: "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+    locator,
+    url: "https://iceb.org/publications/ueb/",
+  };
+}

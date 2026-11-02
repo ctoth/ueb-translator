@@ -6,6 +6,8 @@ import {
   type TechnicalDocument,
 } from "../src/technical.js";
 import { fromBrf } from "./brf.js";
+import { translateGrade1 } from "../src/grade1.js";
+import { TECHNICAL_SIGN_PROGRAM } from "../src/generated/ueb-2024/technical-program.js";
 
 const internationalAllTechnical = {
   grade1: "all-technical",
@@ -402,6 +404,15 @@ describe("ICEB GTM 2014 sections 5, 9, 12, 14, and 15", () => {
 });
 
 describe("raw technical text", () => {
+  it.each(TECHNICAL_SIGN_PROGRAM.symbols)("keeps $print restricted to structured signs", ({ print }) => {
+    expect(translateGrade1(print)).toMatchObject({
+      ok: false, reason: "unsupported-character", character: print, mode: "grade1",
+    });
+    expect(translateTechnicalText(print)).toMatchObject({
+      ok: false, reason: "unsupported-character", character: print, mode: "technical-text",
+    });
+  });
+
   it("translates only the print identity that the caller actually supplied", () => {
     expect(translateTechnicalText("3+2=5")).toEqual({
       braille: "⠼⠉⠐⠖⠼⠃⠐⠶⠼⠑",
