@@ -53,15 +53,10 @@ export type TechnicalDelimiters = Readonly<Record<(typeof TECHNICAL_DELIMITER_SI
   readonly matrixEnclosures: Readonly<Record<(typeof TECHNICAL_MATRIX_ENCLOSURES)[number], TechnicalEnclosureCells>>;
 };
 
-export type SimpleArrowDirection =
-  | "down"
-  | "down-left"
-  | "down-right"
-  | "left"
-  | "right"
-  | "up"
-  | "up-left"
-  | "up-right";
+export const TECHNICAL_ARROW_DIRECTIONS = [
+  "down", "down-left", "down-right", "left", "right", "up", "up-left", "up-right",
+] as const;
+export type SimpleArrowDirection = (typeof TECHNICAL_ARROW_DIRECTIONS)[number];
 
 export interface TechnicalIdentifier {
   readonly kind: "identifier";
@@ -205,6 +200,7 @@ export interface TechnicalSignProgram extends SymbolProgram {
   readonly valuePatterns: Readonly<Record<(typeof TECHNICAL_VALUE_KINDS)[number], string>>;
   readonly operations: Readonly<Record<TechnicalOperation, string>>;
   readonly comparisons: Readonly<Record<TechnicalComparison, string>>;
+  readonly arrows: Readonly<Record<SimpleArrowDirection, string>>;
   readonly scripts: Readonly<Record<TechnicalScriptPlacement, TechnicalScriptRule>>;
   readonly delimiters: TechnicalDelimiters;
   readonly modifiers: Readonly<Record<TechnicalModifier, string>>;

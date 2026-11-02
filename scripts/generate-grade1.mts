@@ -6,7 +6,7 @@ import type { ModeProgram } from "../src/mode-engine.js";
 import type { CompiledSymbol, SymbolProgram } from "../src/symbol-program.js";
 import type { CompositionPolicies } from "../src/composition.js";
 import {
-  TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
+  TECHNICAL_ARROW_DIRECTIONS, TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
   TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
   TECHNICAL_VALUE_KINDS, TECHNICAL_ITEM_KINDS, TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
 } from "../src/technical-program.ts";
@@ -70,6 +70,7 @@ function isPrintMap<Key extends string>(
 }
 
 function technicalProgram(value: unknown): TechnicalSignProgram {
+  const arrows = isRecord(value) ? value["arrows"] : undefined;
   const operations = isRecord(value) ? value["operations"] : undefined;
   const comparisons = isRecord(value) ? value["comparisons"] : undefined;
   const scripts = isRecord(value) ? value["scripts"] : undefined;
@@ -78,13 +79,14 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
-  if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
+  if (!isPrintMap(arrows, TECHNICAL_ARROW_DIRECTIONS) ||
+    !isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
     !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns };
+  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns };
 }
 
 function isItemPolicy(value: unknown): value is TechnicalSignProgram["itemPolicy"] {

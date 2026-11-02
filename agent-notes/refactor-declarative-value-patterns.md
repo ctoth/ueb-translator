@@ -48,7 +48,15 @@ is clean. No full local CI/typecheck/coverage gate was run.
 
 # Next step
 
-Implementation and note are committed locally. PR draft is available in the
-ignored .oracle-artifacts/pr-body.md. Parent inspects, publishes and waits for
-full hosted CI/oracle verification.
-No push, PR publication, review, merge or release by this worker.
+Parent inspected and published independent PR #159 against main. Its original
+head passed full hosted CI and both oracle runs, with zero stale or untriaged
+disagreements. Q subsequently authorized normal merges of the three PRs.
+
+After #158 merged, integration from main retained both arrow and value-pattern
+fields and validators. Resolved generator return shape and combined compiler
+imports/test cases; inspected the auto-merged contract, source, runtime,
+documentation and generated artifact. npm run grade1:generate and the edited
+compiler test passed after integration; git diff --check is clean. General
+Grade 1/2 generated files remain unchanged against main. Integration merge is
+committed locally for parent inspection/push; await changed-head hosted checks
+before normal merge. Worker does not publish; no full local CI was run.

@@ -3,8 +3,16 @@ import { TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS
 import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
-/** ICEB October 2018 replacement Section 3, sign tables on pages 1-2. */
-export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons"> = {
+/**
+ * Semantic print references: operations/comparisons follow ICEB October 2018
+ * replacement Section 3 (pp.1-2); arrows follow GTM 2014 13.1 (p.60).
+ * Cell definitions remain in the shared symbol inventory.
+ */
+export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows"> = {
+  arrows: {
+    down: "↓", "down-left": "↙", "down-right": "↘", left: "←",
+    right: "→", up: "↑", "up-left": "↖", "up-right": "↗",
+  },
   operations: {
     asterisk: "*", divide: "÷", dot: "⋅", minus: "−", multiply: "×",
     plus: "+", "plus-or-minus": "±",
@@ -170,7 +178,7 @@ export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = {
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
-  mappings: Pick<TechnicalSignProgram, "operations" | "comparisons">,
+  mappings: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows">,
   scripts: TechnicalScriptSource,
   modifiers: TechnicalModifierSource,
   shapes: TechnicalShapeSource,
@@ -180,7 +188,8 @@ export function compileTechnicalSigns(
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
-  for (const print of [...Object.values(mappings.operations), ...Object.values(mappings.comparisons)]) {
+  for (const print of [...Object.values(mappings.operations), ...Object.values(mappings.comparisons),
+    ...Object.values(mappings.arrows)]) {
     if (!runtime.symbols.has(print)) {
       throw new Error(`Technical sign references missing symbol ${JSON.stringify(print)}.`);
     }
@@ -256,6 +265,7 @@ export function compileTechnicalSigns(
     itemPolicy: { kinds: { ...items.definitions.kinds }, identifierPattern: identifierPattern.source },
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
+    arrows: { ...mappings.arrows },
     scripts: { ...scripts.definitions },
     delimiters: { ...signs, enclosures, matrixEnclosures },
     modifiers: { ...modifiers.definitions },

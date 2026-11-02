@@ -45,6 +45,16 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "uppercasePrint": null
     }
   ],
+  "arrows": {
+    "down": "↓",
+    "down-left": "↙",
+    "down-right": "↘",
+    "left": "←",
+    "right": "→",
+    "up": "↑",
+    "up-left": "↖",
+    "up-right": "↗"
+  },
   "operations": {
     "asterisk": "*",
     "divide": "÷",
