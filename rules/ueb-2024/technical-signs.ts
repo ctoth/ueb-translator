@@ -139,6 +139,26 @@ export const TECHNICAL_SHAPE_RULES: TechnicalShapeSource = {
   },
 };
 
+export type TechnicalItemSource = TechnicalRuleSource<TechnicalSignProgram["itemPolicy"]>;
+
+export const TECHNICAL_ITEM_RULES: TechnicalItemSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "7.1, p.34; 12.1, p.57",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    kinds: {
+      "chemical-element": true, comparison: false, function: false,
+      "general-fraction": true, group: true, modifier: false, negation: false,
+      number: true, operation: false, radical: true, script: false,
+      sequence: false, shape: true, "simple-arrow": true, "simple-fraction": true,
+    },
+    identifierPattern: "^\\p{L}\\p{M}*$",
+  },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
@@ -147,6 +167,7 @@ export function compileTechnicalSigns(
   modifiers: TechnicalModifierSource,
   shapes: TechnicalShapeSource,
   delimiters: TechnicalDelimiterSource,
+  items: TechnicalItemSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -155,8 +176,12 @@ export function compileTechnicalSigns(
       throw new Error(`Technical sign references missing symbol ${JSON.stringify(print)}.`);
     }
   }
+  if (items.definitions.identifierPattern.length === 0) {
+    throw new Error("Technical item identifier pattern is empty.");
+  }
+  const identifierPattern = new RegExp(items.definitions.identifierPattern, "u");
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, modifiers, shapes, delimiters]) {
+  for (const source of [scripts, modifiers, shapes, delimiters, items]) {
     if (source.citation.locator.trim().length === 0 ||
       !source.citation.url.startsWith("https://iceb.org/")) {
       throw new Error("Technical definitions lack an official ICEB citation.");
@@ -211,6 +236,7 @@ export function compileTechnicalSigns(
     }
   }
   return {
+    itemPolicy: { kinds: { ...items.definitions.kinds }, identifierPattern: identifierPattern.source },
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
     scripts: { ...scripts.definitions },

@@ -8,7 +8,7 @@ import type { CompositionPolicies } from "../src/composition.js";
 import {
   TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
   TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
-  TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
+  TECHNICAL_ITEM_KINDS, TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
 } from "../src/technical-program.ts";
 
 interface LoadedCompilation {
@@ -74,14 +74,24 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const comparisons = isRecord(value) ? value["comparisons"] : undefined;
   const scripts = isRecord(value) ? value["scripts"] : undefined;
   const delimiters = isRecord(value) ? value["delimiters"] : undefined;
+  const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
   if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
-    !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters)) {
+    !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
+    !isItemPolicy(itemPolicy)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters };
+  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy };
+}
+
+function isItemPolicy(value: unknown): value is TechnicalSignProgram["itemPolicy"] {
+  if (!isRecord(value)) return false;
+  const kinds = value["kinds"];
+  return isRecord(kinds) && Object.keys(kinds).length === TECHNICAL_ITEM_KINDS.length &&
+    TECHNICAL_ITEM_KINDS.every((kind) => typeof kinds[kind] === "boolean") &&
+    typeof value["identifierPattern"] === "string";
 }
 
 function isDelimiterMap(value: unknown): value is TechnicalSignProgram["delimiters"] {
