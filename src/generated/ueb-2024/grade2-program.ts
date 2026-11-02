@@ -2513,6 +2513,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       14
     ],
     [
+      24
+    ],
+    [
       12
     ],
     [
@@ -2523,6 +2526,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       16
+    ],
+    [
+      23
     ],
     [
       1
@@ -2551,6 +2557,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       22,
       24,
       99
+    ],
+    [
+      23
     ],
     [
       12
@@ -2943,6 +2952,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       14
     ],
     [
+      24
+    ],
+    [
       5,
       3
     ],
@@ -3019,6 +3031,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       20,
       139,
       0
+    ],
+    [
+      23
     ],
     [
       0,
@@ -3265,6 +3280,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
       15
     ],
     [
+      23
+    ],
+    [
       12
     ],
     [
@@ -3287,6 +3305,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       14
+    ],
+    [
+      24
     ],
     [
       5,
@@ -3384,6 +3405,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       14
+    ],
+    [
+      24
     ],
     [
       0,
@@ -3663,6 +3687,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     [
       14
+    ],
+    [
+      24
     ],
     [
       5,
@@ -6124,9 +6151,9 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     ],
     "ĀēĠīĲĻłŇŎŕŖŘŝŤũŴźŽƃƎƟƢƣƯƯƴƴ",
     "ĀƁƯǄǖǠȃȖȟȩȪȬɄɜɢɭʍʞʹ˕˧˪˫̂̂̈̈",
-    "Āȑʀʵˡ˼͆ͯΈΤΨέϢЕЦр҅ҪӥԦՓ՜ՠ֑֑֡֡",
+    "Āȑʃʺ˧͎̃͸ΑέαζϫОЯщҎҳӮԯ՜եթ֪֪֚֚",
     "ĘąĄĂńĄāćĄāāāāāāāāāāāĂāăĂĄăāĄāĕĂāāāāāāāăāăāćāćĂąāāāāāāāĂāāāāāāćāėāāāāāĎĂāāāāăāāăĂāāāāāāāāāďāĆāāāāāćČāāĂāāāāāāāāāāāāāāčāāċĄĂāďāāćĂČĄāĈāāćāāāāāāąāāāāāāāāāāāāāāĂāāāāāāāāāāāāāāāāāČāāāĂā",
-    "ıċĉąƉĉăďĉăăăăăăĂāāĄĂċăćąĉćăĉăĬĄĄĄāĂăāĄćĆćăďāďąċăąĄăāăĂąĄĂăĄāĂĐāİĄĂĂāĄĞĄĂĄĂăćăĄćĆĂĄăăăĄāĄĂĠĄĎāāĂĄāďęăĂąăăĄĂĄăĂĂāĂĂăĄāěāĄėĉąāĠĄĄďąęĉāđĂĄďĂĄĂāăĄċĂĄăāăĂĂĄĂāăĂĂăąăăăĂĄĄĄĄāāĄĂĄāāāāęĄāăąă"
+    "ıċĉąƉĉăďĉăăăăăăĂāāĄăčăćąĉćăĉăĬĄĄĄāăăāĄćććăďāďąċăĆĄĄāăĂąĄĂăĄāăĐāİĄĂăāĄĞĄĂĄĂăćăĄćĆĂĄăăăĄāĄĂĠĄĎāāĂĄāďęăĂąăăĄĂĄăĂĂāĂĂăĄāěāĄėĉąāĠĄĄďąęĉāđĂĄďĂĄĂāăĄċĂĄăāăĂĂĄĂāăĂĂăąăăăĂĄĄĄĄāāĄĂĄāāāāęĄāăąă"
   ],
   "rules": [
     [
@@ -6777,17 +6804,17 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠆",
       3,
-      2
+      3
     ],
     [
       "⠆",
       0,
-      4
+      5
     ],
     [
       "⠆",
       1,
-      7
+      8
     ],
     [
       "⠆⠉",
@@ -7017,7 +7044,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠒",
       3,
-      2
+      3
     ],
     [
       "⠡",
@@ -7052,7 +7079,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠒",
       1,
-      6
+      7
     ],
     [
       "⠒⠉⠧",
@@ -7192,7 +7219,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠲",
       1,
-      5
+      6
     ],
     [
       "⠙",
@@ -7202,7 +7229,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠂",
       3,
-      3
+      4
     ],
     [
       "⠫",
@@ -7257,7 +7284,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠖",
       3,
-      2
+      3
     ],
     [
       "⠋⠌",
@@ -7427,7 +7454,7 @@ export const GRADE2_PROGRAM: ComposedContractionProgram = {
     [
       "⠶",
       3,
-      2
+      3
     ],
     [
       "⠣",

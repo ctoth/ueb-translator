@@ -22,6 +22,8 @@ export const CONTEXTUAL_GUARD_SCHEMA = {
   wordWithAffixes: { opcode: 18, operands: "string" },
   precededByLetter: { opcode: 19, operands: "none" },
   lowerSignOther: { opcode: 16, operands: "none" },
+  stableFollowingModes: { opcode: 23, operands: "none" },
+  stableAdjacentModes: { opcode: 24, operands: "none" },
 } as const;
 
 type ContextualGuardSchema =

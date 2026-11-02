@@ -2,6 +2,7 @@ import {
   citeIceb,
   type IcebRuleCitation,
 } from "./source.js";
+import type { ContextualRuleGuard } from "./contextual-compiler.js";
 
 export type Grade2RuleKind =
   | "alphabetic-wordsign"
@@ -46,6 +47,7 @@ interface Grade2RuleSourceFor<Kind extends Grade2RuleKind> {
   readonly id: Grade2RuleId<Kind>;
   readonly kind: Kind;
   readonly print: string;
+  readonly guards: readonly ContextualRuleGuard[];
 }
 
 export type Grade2RuleSource = {
@@ -55,6 +57,7 @@ export type Grade2RuleSource = {
 const rules = <const Kind extends Grade2RuleKind>(
   kind: Kind,
   entries: readonly (readonly [print: string, braille: string])[],
+  guards: readonly ContextualRuleGuard[] = [],
 ): readonly Grade2RuleSourceFor<Kind>[] => {
   const locator = GRADE2_RULE_LOCATOR_BY_KIND[kind];
   return entries.map(([print, braille]) => ({
@@ -63,6 +66,7 @@ const rules = <const Kind extends Grade2RuleKind>(
     id: `UEB-${locator}-${print}`,
     kind,
     print,
+    guards,
   }));
 };
 
@@ -89,14 +93,24 @@ export const GRADE2_RULES: readonly Grade2RuleSource[] = [
     ["wh", "⠱"], ["ed", "⠫"], ["er", "⠻"], ["ou", "⠳"],
     ["ow", "⠪"], ["st", "⠌"], ["ing", "⠬"], ["ar", "⠜"],
   ]),
+  // Preserve the existing following-mode restriction for the be wordsign too.
   ...rules("lower-wordsign", [
-    ["be", "⠆"], ["enough", "⠢"], ["were", "⠶"],
+    ["be", "⠆"],
+  ], [{ kind: "stable-following-modes" }]),
+  ...rules("lower-wordsign", [
+    ["enough", "⠢"], ["were", "⠶"],
     ["his", "⠦"], ["in", "⠔"], ["was", "⠴"],
   ]),
+  // ICEB 10.6.3: retain the following mode boundary.
   ...rules("lower-groupsign", [
-    ["ea", "⠂"], ["be", "⠆"], ["bb", "⠆"], ["con", "⠒"],
-    ["cc", "⠒"], ["dis", "⠲"], ["en", "⠢"], ["ff", "⠖"],
-    ["gg", "⠶"], ["in", "⠔"],
+    ["be", "⠆"], ["con", "⠒"], ["dis", "⠲"],
+  ], [{ kind: "stable-following-modes" }]),
+  // ICEB 10.6.6: retain both adjacent mode boundaries.
+  ...rules("lower-groupsign", [
+    ["ea", "⠂"], ["bb", "⠆"], ["cc", "⠒"], ["ff", "⠖"], ["gg", "⠶"],
+  ], [{ kind: "stable-adjacent-modes" }]),
+  ...rules("lower-groupsign", [
+    ["en", "⠢"], ["in", "⠔"],
   ]),
   ...rules("initial-letter-contraction", [
     ["upon", "⠘⠥"], ["these", "⠘⠮"], ["those", "⠘⠹"],
