@@ -9,7 +9,6 @@ import {
 import {
   compileContextualRules,
   type ContextualCompilationResult,
-  type ContextualPrecedence,
   type ContextualRuleGuard,
   type ContextualRuleSource,
 } from "./contextual-compiler.js";
@@ -78,27 +77,6 @@ function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
       kind: "not-word-ending",
     }),
   ];
-}
-
-function precedenceFor(rule: Grade2RuleSource): ContextualPrecedence {
-  switch (rule.kind) {
-    case "alphabetic-wordsign":
-    case "lower-wordsign":
-    case "strong-wordsign":
-      return 0;
-    case "strong-contraction":
-      return 0;
-    case "strong-groupsign":
-      return 2;
-    case "lower-groupsign":
-      return rule.print === "be" || rule.print === "con" || rule.print === "dis"
-        ? 1
-        : 3;
-    case "initial-letter-contraction":
-      return 4;
-    case "final-letter-groupsign":
-      return 5;
-  }
 }
 
 /** ICEB 10.9.6: derive conflicting spellings from our own shortform inventory. */
@@ -250,7 +228,7 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
     ],
     id: rule.id,
     input: rule.print,
-    precedence: precedenceFor(rule),
+    precedence: rule.precedence,
   };
 }
 
