@@ -156,9 +156,7 @@ export function compileGrade2RuleGuards(
         ...exceptionWordGuard(compoundExceptionWords(rule.print)),
       ];
     case "strong-groupsign":
-      return rule.print === "ing"
-        ? [NO_STRUCTURAL_CROSSING, { kind: "not-word-start" }]
-        : [NO_STRUCTURAL_CROSSING];
+      return [NO_STRUCTURAL_CROSSING];
     case "lower-groupsign":
       if (rule.print === "be" || rule.print === "con" || rule.print === "dis") {
         return [
@@ -196,13 +194,6 @@ export function compileGrade2RuleGuards(
       return [
         NO_STRUCTURAL_CROSSING,
         ...exceptionWordGuard(exceptionWords),
-        ...(rule.print === "ever"
-          ? [{ characters: "ei", kind: "previous-not" } as const]
-          : rule.print === "one"
-            ? [{ characters: "o", kind: "previous-not" } as const]
-            : rule.print === "under"
-              ? [{ characters: "ao", kind: "previous-not" } as const]
-              : []),
       ];
     }
     case "final-letter-groupsign":
