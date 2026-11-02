@@ -2,7 +2,7 @@ import {
   citeIceb,
   type IcebRuleCitation,
 } from "./source.js";
-import type { ContextualRuleGuard } from "./contextual-compiler.js";
+import type { ContextualPrecedence, ContextualRuleGuard } from "./contextual-compiler.js";
 
 export type Grade2RuleKind =
   | "alphabetic-wordsign"
@@ -48,6 +48,7 @@ interface Grade2RuleSourceFor<Kind extends Grade2RuleKind> {
   readonly kind: Kind;
   readonly print: string;
   readonly guards: readonly ContextualRuleGuard[];
+  readonly precedence: ContextualPrecedence;
 }
 
 export type Grade2RuleSource = {
@@ -56,6 +57,7 @@ export type Grade2RuleSource = {
 
 const rules = <const Kind extends Grade2RuleKind>(
   kind: Kind,
+  precedence: ContextualPrecedence,
   entries: readonly (readonly [print: string, braille: string])[],
   guards: readonly ContextualRuleGuard[] = [],
 ): readonly Grade2RuleSourceFor<Kind>[] => {
@@ -67,11 +69,12 @@ const rules = <const Kind extends Grade2RuleKind>(
     kind,
     print,
     guards,
+    precedence,
   }));
 };
 
 export const GRADE2_RULES: readonly Grade2RuleSource[] = [
-  ...rules("alphabetic-wordsign", [
+  ...rules("alphabetic-wordsign", 0, [
     ["but", "⠃"], ["can", "⠉"], ["do", "⠙"], ["every", "⠑"],
     ["from", "⠋"], ["go", "⠛"], ["have", "⠓"], ["just", "⠚"],
     ["knowledge", "⠅"], ["like", "⠇"], ["more", "⠍"],
@@ -80,39 +83,39 @@ export const GRADE2_RULES: readonly Grade2RuleSource[] = [
     ["very", "⠧"], ["it", "⠭"], ["you", "⠽"], ["as", "⠵"],
     ["will", "⠺"],
   ]),
-  ...rules("strong-wordsign", [
+  ...rules("strong-wordsign", 0, [
     ["child", "⠡"], ["shall", "⠩"], ["this", "⠹"],
     ["which", "⠱"], ["out", "⠳"], ["still", "⠌"],
   ]),
-  ...rules("strong-contraction", [
+  ...rules("strong-contraction", 0, [
     ["and", "⠯"], ["for", "⠿"], ["of", "⠷"], ["the", "⠮"],
     ["with", "⠾"],
   ]),
-  ...rules("strong-groupsign", [
+  ...rules("strong-groupsign", 2, [
     ["ch", "⠡"], ["gh", "⠣"], ["sh", "⠩"], ["th", "⠹"],
     ["wh", "⠱"], ["ed", "⠫"], ["er", "⠻"], ["ou", "⠳"],
     ["ow", "⠪"], ["st", "⠌"], ["ing", "⠬"], ["ar", "⠜"],
   ]),
   // Preserve the existing following-mode restriction for the be wordsign too.
-  ...rules("lower-wordsign", [
+  ...rules("lower-wordsign", 0, [
     ["be", "⠆"],
   ], [{ kind: "stable-following-modes" }]),
-  ...rules("lower-wordsign", [
+  ...rules("lower-wordsign", 0, [
     ["enough", "⠢"], ["were", "⠶"],
     ["his", "⠦"], ["in", "⠔"], ["was", "⠴"],
   ]),
   // ICEB 10.6.3: retain the following mode boundary.
-  ...rules("lower-groupsign", [
+  ...rules("lower-groupsign", 1, [
     ["be", "⠆"], ["con", "⠒"], ["dis", "⠲"],
   ], [{ kind: "stable-following-modes" }]),
   // ICEB 10.6.6: retain both adjacent mode boundaries.
-  ...rules("lower-groupsign", [
+  ...rules("lower-groupsign", 3, [
     ["ea", "⠂"], ["bb", "⠆"], ["cc", "⠒"], ["ff", "⠖"], ["gg", "⠶"],
   ], [{ kind: "stable-adjacent-modes" }]),
-  ...rules("lower-groupsign", [
+  ...rules("lower-groupsign", 3, [
     ["en", "⠢"], ["in", "⠔"],
   ]),
-  ...rules("initial-letter-contraction", [
+  ...rules("initial-letter-contraction", 4, [
     ["upon", "⠘⠥"], ["these", "⠘⠮"], ["those", "⠘⠹"],
     ["whose", "⠘⠱"], ["word", "⠘⠺"], ["cannot", "⠸⠉"],
     ["had", "⠸⠓"], ["many", "⠸⠍"], ["spirit", "⠸⠎"],
@@ -126,7 +129,7 @@ export const GRADE2_RULES: readonly Grade2RuleSource[] = [
     ["through", "⠐⠹"], ["where", "⠐⠱"], ["ought", "⠐⠳"],
     ["work", "⠐⠺"],
   ]),
-  ...rules("final-letter-groupsign", [
+  ...rules("final-letter-groupsign", 5, [
     ["ound", "⠨⠙"], ["ance", "⠨⠑"], ["sion", "⠨⠝"],
     ["less", "⠨⠎"], ["ount", "⠨⠞"], ["ence", "⠰⠑"],
     ["ong", "⠰⠛"], ["ful", "⠰⠇"], ["tion", "⠰⠝"],

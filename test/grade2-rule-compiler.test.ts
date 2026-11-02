@@ -232,6 +232,7 @@ describe("Grade 2 source compilation", () => {
       kind: "lower-groupsign",
       print: "en",
       guards: [],
+      precedence: 3,
     })).toContainEqual({ kind: "not-whole-word" });
     expect(compileGrade2RuleGuards({
       braille: "⠁",
@@ -240,6 +241,7 @@ describe("Grade 2 source compilation", () => {
       kind: "lower-groupsign",
       print: "test-fallback",
       guards: [],
+      precedence: 3,
     })).not.toContainEqual({ kind: "not-whole-word" });
   });
 

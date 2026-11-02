@@ -21,6 +21,11 @@ tuples. Compilation rejects missing citations, conflicting identifiers,
 duplicate guards, unreachable inputs, and unresolved precedence before any
 generated program reaches `src/generated/ueb-2024/`.
 
+The Grade 2 inventory declares each rule's precedence alongside its output and
+guards, using the same closed precedence type as the contextual compiler.
+Inventory rules carry their declared priority directly into the existing
+runtime tuple. Explicit contextual variants retain their own priorities.
+
 The Grade 1 symbol, mode, and composition-policy compilers use the same
 source-to-runtime boundary. Generated modules contain only opaque runtime data
 and stable provenance identifiers. There is no second development compiler and
