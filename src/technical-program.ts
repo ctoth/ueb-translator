@@ -53,8 +53,152 @@ export type TechnicalDelimiters = Readonly<Record<(typeof TECHNICAL_DELIMITER_SI
   readonly matrixEnclosures: Readonly<Record<(typeof TECHNICAL_MATRIX_ENCLOSURES)[number], TechnicalEnclosureCells>>;
 };
 
+export type SimpleArrowDirection =
+  | "down"
+  | "down-left"
+  | "down-right"
+  | "left"
+  | "right"
+  | "up"
+  | "up-left"
+  | "up-right";
+
+export interface TechnicalIdentifier {
+  readonly kind: "identifier";
+  readonly value: string;
+}
+
+export interface TechnicalNumber {
+  readonly kind: "number";
+  readonly value: string;
+}
+
+export interface TechnicalSequence {
+  readonly items: readonly TechnicalExpression[];
+  readonly kind: "sequence";
+}
+
+export interface TechnicalOperationExpression {
+  readonly kind: "operation";
+  readonly left: TechnicalExpression;
+  readonly operation: TechnicalOperation;
+  readonly right: TechnicalExpression;
+}
+
+export interface TechnicalComparisonExpression {
+  readonly comparison: TechnicalComparison;
+  readonly kind: "comparison";
+  readonly left: TechnicalExpression;
+  readonly right: TechnicalExpression;
+}
+
+export interface TechnicalNegation {
+  readonly kind: "negation";
+  readonly operand: TechnicalExpression;
+}
+
+export interface TechnicalSimpleFraction {
+  readonly denominator: string;
+  readonly kind: "simple-fraction";
+  readonly numerator: string;
+}
+
+export interface TechnicalGeneralFraction {
+  readonly denominator: TechnicalExpression;
+  readonly kind: "general-fraction";
+  readonly numerator: TechnicalExpression;
+}
+
+export interface TechnicalScript {
+  readonly base: TechnicalExpression;
+  readonly kind: "script";
+  readonly placement: TechnicalScriptPlacement;
+  readonly script: TechnicalExpression;
+}
+
+export interface TechnicalSquareRoot {
+  readonly kind: "radical";
+  readonly radicand: TechnicalExpression;
+  readonly root: "square";
+}
+
+export interface TechnicalIndexedRoot {
+  readonly index: TechnicalExpression;
+  readonly kind: "radical";
+  readonly radicand: TechnicalExpression;
+  readonly root: "indexed";
+}
+
+export type TechnicalRadical = TechnicalIndexedRoot | TechnicalSquareRoot;
+
+export interface TechnicalSimpleArrow {
+  readonly direction: SimpleArrowDirection;
+  readonly kind: "simple-arrow";
+}
+
+export interface TechnicalChemicalElement {
+  readonly kind: "chemical-element";
+  readonly symbol: string;
+}
+
+export interface TechnicalGroup {
+  readonly content: TechnicalExpression;
+  readonly enclosure: TechnicalEnclosure;
+  readonly kind: "group";
+}
+
+export interface TechnicalFunction {
+  readonly argument: TechnicalExpression;
+  readonly kind: "function";
+  readonly name: string;
+}
+
+export interface TechnicalModifiedItem {
+  readonly item: TechnicalExpression;
+  readonly kind: "modifier";
+  readonly modifier: TechnicalModifier;
+}
+
+export interface TechnicalShape {
+  readonly fill: TechnicalShapeFill;
+  readonly kind: "shape";
+  readonly shape: TechnicalShapeName;
+  readonly terminator: "omitted" | "present";
+}
+
+export type TechnicalExpression =
+  | TechnicalChemicalElement
+  | TechnicalComparisonExpression
+  | TechnicalGeneralFraction
+  | TechnicalGroup
+  | TechnicalIdentifier
+  | TechnicalFunction
+  | TechnicalModifiedItem
+  | TechnicalNegation
+  | TechnicalNumber
+  | TechnicalOperationExpression
+  | TechnicalRadical
+  | TechnicalScript
+  | TechnicalSequence
+  | TechnicalShape
+  | TechnicalSimpleArrow
+  | TechnicalSimpleFraction;
+
+export const TECHNICAL_ITEM_KINDS = [
+  "chemical-element", "comparison", "function", "general-fraction", "group",
+  "modifier", "negation", "number", "operation", "radical", "script", "sequence",
+  "shape", "simple-arrow", "simple-fraction",
+] as const;
+
+export interface TechnicalItemPolicy {
+  readonly kinds: Readonly<Record<Exclude<TechnicalExpression["kind"], "identifier">, boolean>>;
+  /** Unicode pattern for the identifier value, matched with Unicode semantics. */
+  readonly identifierPattern: string;
+}
+
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
+  readonly itemPolicy: TechnicalItemPolicy;
   readonly operations: Readonly<Record<TechnicalOperation, string>>;
   readonly comparisons: Readonly<Record<TechnicalComparison, string>>;
   readonly scripts: Readonly<Record<TechnicalScriptPlacement, TechnicalScriptRule>>;

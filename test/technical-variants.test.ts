@@ -338,6 +338,14 @@ describe("closed technical layouts and failures", () => {
         root: "indexed",
       }),
     ).toBe(fromBrf("%9#C#H+"));
+    for (const [value, expected] of [["ab", "%9<AB>#H+"], ["é", "%9^/E#H+"]] as const) {
+      expect(expressionBraille({
+        index: { kind: "identifier", value },
+        kind: "radical",
+        radicand: { kind: "number", value: "8" },
+        root: "indexed",
+      })).toBe(fromBrf(expected));
+    }
     const cases: readonly (readonly [string, TechnicalExpression, string])[] = [
       [
         "multi-symbol identifier",
@@ -419,35 +427,34 @@ describe("closed technical layouts and failures", () => {
   });
 
   it("classifies every closed expression variant as an item or group", () => {
-    const variants: readonly TechnicalExpression[] = [
-      { kind: "chemical-element", symbol: "H" },
-      { comparison: "equals", kind: "comparison", left: { kind: "number", value: "1" }, right: { kind: "number", value: "2" } },
-      { denominator: { kind: "number", value: "2" }, kind: "general-fraction", numerator: { kind: "identifier", value: "x" } },
-      { content: { kind: "identifier", value: "x" }, enclosure: "round", kind: "group" },
-      { kind: "identifier", value: "x" },
-      { argument: { kind: "number", value: "2" }, kind: "function", name: "sin" },
-      { item: { kind: "identifier", value: "x" }, kind: "modifier", modifier: "bar-above" },
-      { kind: "negation", operand: { kind: "number", value: "2" } },
-      { kind: "number", value: "2" },
-      { kind: "operation", left: { kind: "number", value: "1" }, operation: "plus", right: { kind: "number", value: "2" } },
-      { kind: "radical", radicand: { kind: "number", value: "2" }, root: "square" },
-      { base: { kind: "identifier", value: "x" }, kind: "script", placement: "right-subscript", script: { kind: "number", value: "2" } },
-      { items: [{ kind: "identifier", value: "x" }, { kind: "number", value: "2" }], kind: "sequence" },
-      { fill: "outline", kind: "shape", shape: "circle", terminator: "omitted" },
-      { direction: "right", kind: "simple-arrow" },
-      { denominator: "2", kind: "simple-fraction", numerator: "1" },
+    const variants: readonly (readonly [TechnicalExpression, string])[] = [
+      [{ kind: "chemical-element", symbol: "H" }, "X9,H"],
+      [{ comparison: "equals", kind: "comparison", left: { kind: "number", value: "1" }, right: { kind: "number", value: "2" } }, 'X9<#A "7 #B>'],
+      [{ denominator: { kind: "number", value: "2" }, kind: "general-fraction", numerator: { kind: "identifier", value: "x" } }, "X9(X./#B)"],
+      [{ content: { kind: "identifier", value: "x" }, enclosure: "round", kind: "group" }, 'X9"<X">'],
+      [{ kind: "identifier", value: "x" }, "X9X"],
+      [{ kind: "identifier", value: "é" }, "X9^/E"],
+      [{ kind: "identifier", value: "e\u0301" }, "X9^/E"],
+      [{ kind: "identifier", value: "éa" }, "X9<^/EA>"],
+      [{ argument: { kind: "number", value: "2" }, kind: "function", name: "sin" }, "X9<SIN#B>"],
+      [{ item: { kind: "identifier", value: "x" }, kind: "modifier", modifier: "bar-above" }, "X9<X:>"],
+      [{ kind: "negation", operand: { kind: "number", value: "2" } }, 'X9<"-#B>'],
+      [{ kind: "number", value: "2" }, "X9#B"],
+      [{ kind: "operation", left: { kind: "number", value: "1" }, operation: "plus", right: { kind: "number", value: "2" } }, 'X9<#A"6#B>'],
+      [{ kind: "radical", radicand: { kind: "number", value: "2" }, root: "square" }, "X9%#B+"],
+      [{ base: { kind: "identifier", value: "x" }, kind: "script", placement: "right-subscript", script: { kind: "number", value: "2" } }, "X9<X5#B>"],
+      [{ items: [{ kind: "identifier", value: "x" }, { kind: "number", value: "2" }], kind: "sequence" }, "X9<X#B>"],
+      [{ fill: "outline", kind: "shape", shape: "circle", terminator: "omitted" }, "X9$="],
+      [{ direction: "right", kind: "simple-arrow" }, "X9\\O"],
+      [{ denominator: "2", kind: "simple-fraction", numerator: "1" }, "X9#A/B"],
     ];
-    for (const script of variants) {
-      expect(
-        translateTechnical(
-          documentFor({
-            base: { kind: "identifier", value: "x" },
-            kind: "script",
-            placement: "right-superscript",
-            script,
-          }),
-        ).ok,
-      ).toBe(true);
+    for (const [script, expected] of variants) {
+      expect(expressionBraille({
+        base: { kind: "identifier", value: "x" },
+        kind: "script",
+        placement: "right-superscript",
+        script,
+      }), script.kind).toBe(fromBrf(expected));
     }
   });
 

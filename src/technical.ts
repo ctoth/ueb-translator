@@ -20,8 +20,18 @@ import {
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
-import type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeFill, TechnicalShapeName, TechnicalEnclosure } from "./technical-program.js";
-export type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeName, TechnicalEnclosure } from "./technical-program.js";
+import type {
+  SimpleArrowDirection, TechnicalComparison, TechnicalExpression, TechnicalOperation, TechnicalShape,
+} from "./technical-program.js";
+export type {
+  TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement,
+  TechnicalShapeName, TechnicalEnclosure,
+  SimpleArrowDirection, TechnicalIdentifier, TechnicalNumber, TechnicalSequence,
+  TechnicalOperationExpression, TechnicalComparisonExpression, TechnicalNegation,
+  TechnicalSimpleFraction, TechnicalGeneralFraction, TechnicalScript, TechnicalSquareRoot,
+  TechnicalIndexedRoot, TechnicalRadical, TechnicalSimpleArrow, TechnicalChemicalElement,
+  TechnicalGroup, TechnicalFunction, TechnicalModifiedItem, TechnicalShape, TechnicalExpression,
+} from "./technical-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -40,137 +50,6 @@ export interface BanaTechnicalProfile {
 export type TechnicalProfile =
   | BanaTechnicalProfile
   | InternationalTechnicalProfile;
-
-export type SimpleArrowDirection =
-  | "down"
-  | "down-left"
-  | "down-right"
-  | "left"
-  | "right"
-  | "up"
-  | "up-left"
-  | "up-right";
-
-export interface TechnicalIdentifier {
-  readonly kind: "identifier";
-  readonly value: string;
-}
-
-export interface TechnicalNumber {
-  readonly kind: "number";
-  readonly value: string;
-}
-
-export interface TechnicalSequence {
-  readonly items: readonly TechnicalExpression[];
-  readonly kind: "sequence";
-}
-
-export interface TechnicalOperationExpression {
-  readonly kind: "operation";
-  readonly left: TechnicalExpression;
-  readonly operation: TechnicalOperation;
-  readonly right: TechnicalExpression;
-}
-
-export interface TechnicalComparisonExpression {
-  readonly comparison: TechnicalComparison;
-  readonly kind: "comparison";
-  readonly left: TechnicalExpression;
-  readonly right: TechnicalExpression;
-}
-
-export interface TechnicalNegation {
-  readonly kind: "negation";
-  readonly operand: TechnicalExpression;
-}
-
-export interface TechnicalSimpleFraction {
-  readonly denominator: string;
-  readonly kind: "simple-fraction";
-  readonly numerator: string;
-}
-
-export interface TechnicalGeneralFraction {
-  readonly denominator: TechnicalExpression;
-  readonly kind: "general-fraction";
-  readonly numerator: TechnicalExpression;
-}
-
-export interface TechnicalScript {
-  readonly base: TechnicalExpression;
-  readonly kind: "script";
-  readonly placement: TechnicalScriptPlacement;
-  readonly script: TechnicalExpression;
-}
-
-export interface TechnicalSquareRoot {
-  readonly kind: "radical";
-  readonly radicand: TechnicalExpression;
-  readonly root: "square";
-}
-
-export interface TechnicalIndexedRoot {
-  readonly index: TechnicalExpression;
-  readonly kind: "radical";
-  readonly radicand: TechnicalExpression;
-  readonly root: "indexed";
-}
-
-export type TechnicalRadical = TechnicalIndexedRoot | TechnicalSquareRoot;
-
-export interface TechnicalSimpleArrow {
-  readonly direction: SimpleArrowDirection;
-  readonly kind: "simple-arrow";
-}
-
-export interface TechnicalChemicalElement {
-  readonly kind: "chemical-element";
-  readonly symbol: string;
-}
-
-export interface TechnicalGroup {
-  readonly content: TechnicalExpression;
-  readonly enclosure: TechnicalEnclosure;
-  readonly kind: "group";
-}
-
-export interface TechnicalFunction {
-  readonly argument: TechnicalExpression;
-  readonly kind: "function";
-  readonly name: string;
-}
-
-export interface TechnicalModifiedItem {
-  readonly item: TechnicalExpression;
-  readonly kind: "modifier";
-  readonly modifier: TechnicalModifier;
-}
-
-export interface TechnicalShape {
-  readonly fill: TechnicalShapeFill;
-  readonly kind: "shape";
-  readonly shape: TechnicalShapeName;
-  readonly terminator: "omitted" | "present";
-}
-
-export type TechnicalExpression =
-  | TechnicalChemicalElement
-  | TechnicalComparisonExpression
-  | TechnicalGeneralFraction
-  | TechnicalGroup
-  | TechnicalIdentifier
-  | TechnicalFunction
-  | TechnicalModifiedItem
-  | TechnicalNegation
-  | TechnicalNumber
-  | TechnicalOperationExpression
-  | TechnicalRadical
-  | TechnicalScript
-  | TechnicalSequence
-  | TechnicalShape
-  | TechnicalSimpleArrow
-  | TechnicalSimpleFraction;
 
 export interface TechnicalExpressionBlock {
   readonly expression: TechnicalExpression;
@@ -333,6 +212,7 @@ const SYMBOL_RUNTIME = loadSymbolProgram({
   symbols: [...GRADE1_SYMBOL_PROGRAM.symbols, ...TECHNICAL_SIGN_PROGRAM.symbols],
 });
 const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
+const ITEM_IDENTIFIER = new RegExp(TECHNICAL_SIGN_PROGRAM.itemPolicy.identifierPattern, "u");
 const VISIBLE_SPACE = "⠬";
 
 const ARROW_PRINT = {
@@ -422,30 +302,6 @@ function renderStandingValue(
   return rendered;
 }
 
-function isOneItem(expression: TechnicalExpression): boolean {
-  switch (expression.kind) {
-    case "chemical-element":
-    case "general-fraction":
-    case "group":
-    case "number":
-    case "radical":
-    case "simple-arrow":
-    case "simple-fraction":
-    case "shape":
-      return true;
-    case "identifier":
-      return /^\p{L}\p{M}*$/u.test(expression.value);
-    case "comparison":
-    case "modifier":
-    case "negation":
-    case "operation":
-    case "sequence":
-    case "function":
-    case "script":
-      return false;
-  }
-}
-
 function renderScriptValue(
   expression: TechnicalExpression,
   profile: TechnicalProfile,
@@ -454,7 +310,10 @@ function renderScriptValue(
   if (!rendered.ok) {
     return rendered;
   }
-  if (isOneItem(expression)) {
+  const singleItem = expression.kind === "identifier"
+    ? ITEM_IDENTIFIER.test(expression.value)
+    : TECHNICAL_SIGN_PROGRAM.itemPolicy.kinds[expression.kind];
+  if (singleItem) {
     return rendered;
   }
   return renderSuccess(

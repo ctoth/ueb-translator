@@ -149,6 +149,12 @@ Its twelve modifier cell strings are cited to the GTM Section 12 indicator list
 on page 57. The renderer appends the declared cells to the item and retains
 the existing grade-1 protection offsets.
 
+Script and root-index item grouping reads a cited per-kind boolean map and
+Unicode identifier pattern from the same generated program (GTM 7.1 and 12.1).
+The expression types live once in the shared technical contract and retain
+their public exports. Group delimiters and protection offsets remain renderer
+mechanics.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

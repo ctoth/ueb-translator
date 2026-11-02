@@ -170,5 +170,25 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
         "close": "⠠⠨⠜"
       }
     }
+  },
+  "itemPolicy": {
+    "kinds": {
+      "chemical-element": true,
+      "comparison": false,
+      "function": false,
+      "general-fraction": true,
+      "group": true,
+      "modifier": false,
+      "negation": false,
+      "number": true,
+      "operation": false,
+      "radical": true,
+      "script": false,
+      "sequence": false,
+      "shape": true,
+      "simple-arrow": true,
+      "simple-fraction": true
+    },
+    "identifierPattern": "^\\p{L}\\p{M}*$"
   }
 };
