@@ -1,5 +1,5 @@
 import { loadSymbolProgram } from "../../src/symbol-program.js";
-import { TECHNICAL_SCRIPT_PLACEMENTS, type TechnicalSignProgram } from "../../src/technical-program.js";
+import { TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram } from "../../src/technical-program.js";
 import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
@@ -59,11 +59,34 @@ export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = {
   },
 };
 
+export interface TechnicalShapeSource {
+  readonly citation: TechnicalScriptSource["citation"];
+  readonly definitions: TechnicalSignProgram["shapes"];
+}
+
+export const TECHNICAL_SHAPE_RULES: TechnicalShapeSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "14 shape indicator and specific shape lists, p.65; 14.1, p.66",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    fills: { filled: "⠸⠫", outline: "⠫", shaded: "⠨⠫" },
+    names: {
+      circle: "⠿", hexagon: "⠼⠋", heptagon: "⠼⠛", octagon: "⠼⠓",
+      parallelogram: "⠈⠼⠙", pentagon: "⠼⠑", square: "⠼⠙", triangle: "⠼⠉",
+    },
+    terminator: "⠱",
+  },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
   mappings: Pick<TechnicalSignProgram, "operations" | "comparisons">,
   scripts: TechnicalScriptSource,
+  shapes: TechnicalShapeSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -73,18 +96,34 @@ export function compileTechnicalSigns(
     }
   }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  if (scripts.citation.locator.trim().length === 0 ||
-    !scripts.citation.url.startsWith("https://iceb.org/")) {
-    throw new Error("Technical script definitions lack an official ICEB citation.");
+  for (const source of [scripts, shapes]) {
+    if (source.citation.locator.trim().length === 0 ||
+      !source.citation.url.startsWith("https://iceb.org/")) {
+      throw new Error("Technical definitions lack an official ICEB citation.");
+    }
   }
   for (const placement of TECHNICAL_SCRIPT_PLACEMENTS) {
     if (!/^[\u2800-\u28ff]+$/u.test(scripts.definitions[placement].indicator)) {
       throw new Error(`Technical script ${placement} has a malformed indicator.`);
     }
   }
+  for (const cells of [
+    ...TECHNICAL_SHAPE_FILLS.map((fill) => shapes.definitions.fills[fill]),
+    ...TECHNICAL_SHAPE_NAMES.map((name) => shapes.definitions.names[name]),
+    shapes.definitions.terminator,
+  ]) {
+    if (!/^[\u2800-\u28ff]+$/u.test(cells)) {
+      throw new Error("Technical shape has malformed cells.");
+    }
+  }
   return {
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
     scripts: { ...scripts.definitions },
+    shapes: {
+      fills: { ...shapes.definitions.fills },
+      names: { ...shapes.definitions.names },
+      terminator: shapes.definitions.terminator,
+    },
   };
 }

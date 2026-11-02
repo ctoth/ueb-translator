@@ -88,5 +88,23 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "indicator": "⠔",
       "position": "after"
     }
+  },
+  "shapes": {
+    "fills": {
+      "filled": "⠸⠫",
+      "outline": "⠫",
+      "shaded": "⠨⠫"
+    },
+    "names": {
+      "circle": "⠿",
+      "hexagon": "⠼⠋",
+      "heptagon": "⠼⠛",
+      "octagon": "⠼⠓",
+      "parallelogram": "⠈⠼⠙",
+      "pentagon": "⠼⠑",
+      "square": "⠼⠙",
+      "triangle": "⠼⠉"
+    },
+    "terminator": "⠱"
   }
 };
