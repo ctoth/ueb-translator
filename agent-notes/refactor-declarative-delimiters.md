@@ -8,7 +8,11 @@ independent PR against main. Preserve translation, profiles and protection offse
 Source extraction and generation complete. `npm run grade1:generate` and
 `npx vitest run --coverage.enabled=false test/grade1-rule-compiler.test.ts` pass.
 Only the technical generated artifact changes; general Grade 1 and Grade 2
-artifacts are unchanged. No push or PR publication by this worker.
+artifacts are unchanged. Parent published PR #156. After parent merged #154 and
+#155, this worker resolved the in-progress merge of main into this branch,
+preserving modifier, shape and delimiter data together. Regeneration and the
+edited compiler test file pass on the resolved source. No publication by this
+worker.
 
 # Decisions and why
 
@@ -24,11 +28,13 @@ artifacts are unchanged. No push or PR publication by this worker.
 
 # Surprises
 
-None so far. Independent sibling worktrees edit shared owners separately;
-this branch includes no sibling work.
+The independent extractions overlap in eight owners. Integration combines all
+three fields and validations, retains all three compiler test groups, and keeps
+main's deterministic punctuation regression change untouched.
 
 # Next step
 
-Parent inspects and publishes the independent branch and PR. Hosted CI must
-complete before delivery is reported complete. PR draft is in the ignored
-`.oracle-artifacts/pr-body.md`; full local CI was not run.
+Parent inspects and pushes the local merge for PR #156, then waits for its new
+hosted checks before merging. Earlier hosted CI and push/PR oracle runs passed
+before main integration; they do not cover the new merge yet. No full local CI
+was run. Item-grouping policy remains outside this PR.

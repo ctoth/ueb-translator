@@ -145,6 +145,10 @@ to those same cells (Section 15.1). The compiler resolves these references once,
 so the renderer reads compiled delimiter cells without its own sign tables.
 Indexed radicals reuse the declared right-superscript indicator.
 
+Its twelve modifier cell strings are cited to the GTM Section 12 indicator list
+on page 57. The renderer appends the declared cells to the item and retains
+the existing grade-1 protection offsets.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

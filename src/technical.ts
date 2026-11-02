@@ -20,8 +20,8 @@ import {
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
-import type { TechnicalComparison, TechnicalOperation, TechnicalScriptPlacement, TechnicalEnclosure } from "./technical-program.js";
-export type { TechnicalComparison, TechnicalOperation, TechnicalScriptPlacement, TechnicalEnclosure } from "./technical-program.js";
+import type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeFill, TechnicalShapeName, TechnicalEnclosure } from "./technical-program.js";
+export type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeName, TechnicalEnclosure } from "./technical-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -50,30 +50,6 @@ export type SimpleArrowDirection =
   | "up"
   | "up-left"
   | "up-right";
-
-export type TechnicalModifier =
-  | "arc-above"
-  | "bar-above"
-  | "bar-below"
-  | "dot-above"
-  | "dot-below"
-  | "hat-above"
-  | "hat-below"
-  | "line-through"
-  | "right-arrow-above"
-  | "right-arrow-below"
-  | "tilde-above"
-  | "tilde-below";
-
-export type TechnicalShapeName =
-  | "circle"
-  | "hexagon"
-  | "heptagon"
-  | "octagon"
-  | "parallelogram"
-  | "pentagon"
-  | "square"
-  | "triangle";
 
 export interface TechnicalIdentifier {
   readonly kind: "identifier";
@@ -172,7 +148,7 @@ export interface TechnicalModifiedItem {
 }
 
 export interface TechnicalShape {
-  readonly fill: "filled" | "outline" | "shaded";
+  readonly fill: TechnicalShapeFill;
   readonly kind: "shape";
   readonly shape: TechnicalShapeName;
   readonly terminator: "omitted" | "present";
@@ -357,7 +333,6 @@ const SYMBOL_RUNTIME = loadSymbolProgram({
   symbols: [...GRADE1_SYMBOL_PROGRAM.symbols, ...TECHNICAL_SIGN_PROGRAM.symbols],
 });
 const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
-const SHAPE_TERMINATOR = "⠱";
 const VISIBLE_SPACE = "⠬";
 
 const ARROW_PRINT = {
@@ -370,21 +345,6 @@ const ARROW_PRINT = {
   "up-left": "↖",
   "up-right": "↗",
 } satisfies Readonly<Record<SimpleArrowDirection, string>>;
-
-const MODIFIER_CELLS = {
-  "arc-above": "⠨⠸⠱",
-  "bar-above": "⠱",
-  "bar-below": "⠠⠱",
-  "dot-above": "⠘⠲",
-  "dot-below": "⠠⠘⠲",
-  "hat-above": "⠐⠱",
-  "hat-below": "⠠⠐⠱",
-  "line-through": "⠈⠱",
-  "right-arrow-above": "⠘⠱",
-  "right-arrow-below": "⠠⠘⠱",
-  "tilde-above": "⠸⠱",
-  "tilde-below": "⠠⠸⠱",
-} satisfies Readonly<Record<TechnicalModifier, string>>;
 
 function operationCell(operation: TechnicalOperation): string {
   return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
@@ -411,31 +371,11 @@ function arrowCell(direction: SimpleArrowDirection): string {
   return symbolCell(ARROW_PRINT[direction]);
 }
 
-function modifierCell(modifier: TechnicalModifier): string {
-  return MODIFIER_CELLS[modifier];
-}
-
-const SHAPE_FILL_CELLS = {
-  filled: "⠸⠫",
-  outline: "⠫",
-  shaded: "⠨⠫",
-} satisfies Readonly<Record<TechnicalShape["fill"], string>>;
-
-const SHAPE_NAME_CELLS = {
-  circle: "⠿",
-  hexagon: "⠼⠋",
-  heptagon: "⠼⠛",
-  octagon: "⠼⠓",
-  parallelogram: "⠈⠼⠙",
-  pentagon: "⠼⠑",
-  square: "⠼⠙",
-  triangle: "⠼⠉",
-} satisfies Readonly<Record<TechnicalShapeName, string>>;
-
 function shapeCell(shape: TechnicalShape): string {
-  const braille = `${SHAPE_FILL_CELLS[shape.fill]}${SHAPE_NAME_CELLS[shape.shape]}`;
+  const signs = TECHNICAL_SIGN_PROGRAM.shapes;
+  const braille = `${signs.fills[shape.fill]}${signs.names[shape.shape]}`;
   return shape.terminator === "present"
-    ? `${braille}${SHAPE_TERMINATOR}`
+    ? `${braille}${signs.terminator}`
     : braille;
 }
 
@@ -675,7 +615,7 @@ function renderExpression(
       if (!item.ok) {
         return item;
       }
-      const modifier = modifierCell(expression.modifier);
+      const modifier = TECHNICAL_SIGN_PROGRAM.modifiers[expression.modifier];
       return renderSuccess(`${item.braille}${modifier}`, [
         ...item.requirements,
         {

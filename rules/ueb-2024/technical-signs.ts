@@ -1,7 +1,5 @@
 import { loadSymbolProgram } from "../../src/symbol-program.js";
-import {
-  TECHNICAL_SCRIPT_PLACEMENTS, type TechnicalSignProgram, type TechnicalEnclosure,
-} from "../../src/technical-program.js";
+import { TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
 import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
@@ -73,6 +71,34 @@ export const TECHNICAL_DELIMITER_RULES: TechnicalDelimiterSource = {
   },
 };
 
+export interface TechnicalModifierSource {
+  readonly citation: TechnicalScriptSource["citation"];
+  readonly definitions: TechnicalSignProgram["modifiers"];
+}
+
+export const TECHNICAL_MODIFIER_RULES: TechnicalModifierSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "12 indicator list, p.57",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    "arc-above": "⠨⠸⠱",
+    "bar-above": "⠱",
+    "bar-below": "⠠⠱",
+    "dot-above": "⠘⠲",
+    "dot-below": "⠠⠘⠲",
+    "hat-above": "⠐⠱",
+    "hat-below": "⠠⠐⠱",
+    "line-through": "⠈⠱",
+    "right-arrow-above": "⠘⠱",
+    "right-arrow-below": "⠠⠘⠱",
+    "tilde-above": "⠸⠱",
+    "tilde-below": "⠠⠸⠱",
+  },
+};
+
 const subscript = "⠢", superscript = "⠔";
 export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = {
   citation: {
@@ -91,11 +117,35 @@ export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = {
   },
 };
 
+export interface TechnicalShapeSource {
+  readonly citation: TechnicalScriptSource["citation"];
+  readonly definitions: TechnicalSignProgram["shapes"];
+}
+
+export const TECHNICAL_SHAPE_RULES: TechnicalShapeSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "14 shape indicator and specific shape lists, p.65; 14.1, p.66",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    fills: { filled: "⠸⠫", outline: "⠫", shaded: "⠨⠫" },
+    names: {
+      circle: "⠿", hexagon: "⠼⠋", heptagon: "⠼⠛", octagon: "⠼⠓",
+      parallelogram: "⠈⠼⠙", pentagon: "⠼⠑", square: "⠼⠙", triangle: "⠼⠉",
+    },
+    terminator: "⠱",
+  },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
   mappings: Pick<TechnicalSignProgram, "operations" | "comparisons">,
   scripts: TechnicalScriptSource,
+  modifiers: TechnicalModifierSource,
+  shapes: TechnicalShapeSource,
   delimiters: TechnicalDelimiterSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
@@ -106,10 +156,15 @@ export function compileTechnicalSigns(
     }
   }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, delimiters]) {
+  for (const source of [scripts, modifiers, shapes, delimiters]) {
     if (source.citation.locator.trim().length === 0 ||
       !source.citation.url.startsWith("https://iceb.org/")) {
       throw new Error("Technical definitions lack an official ICEB citation.");
+    }
+  }
+  for (const modifier of TECHNICAL_MODIFIERS) {
+    if (!/^[\u2800-\u28ff]+$/u.test(modifiers.definitions[modifier])) {
+      throw new Error(`Technical modifier ${modifier} has malformed cells.`);
     }
   }
   for (const placement of TECHNICAL_SCRIPT_PLACEMENTS) {
@@ -146,10 +201,25 @@ export function compileTechnicalSigns(
     curly: matrixEnclosure("curly"), determinant: matrixEnclosure("determinant"),
     round: matrixEnclosure("round"), square: matrixEnclosure("square"),
   };
+  for (const cells of [
+    ...TECHNICAL_SHAPE_FILLS.map((fill) => shapes.definitions.fills[fill]),
+    ...TECHNICAL_SHAPE_NAMES.map((name) => shapes.definitions.names[name]),
+    shapes.definitions.terminator,
+  ]) {
+    if (!/^[\u2800-\u28ff]+$/u.test(cells)) {
+      throw new Error("Technical shape has malformed cells.");
+    }
+  }
   return {
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
     scripts: { ...scripts.definitions },
     delimiters: { ...signs, enclosures, matrixEnclosures },
+    modifiers: { ...modifiers.definitions },
+    shapes: {
+      fills: { ...shapes.definitions.fills },
+      names: { ...shapes.definitions.names },
+      terminator: shapes.definitions.terminator,
+    },
   };
 }
