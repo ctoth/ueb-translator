@@ -20,8 +20,8 @@ import {
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
-import type { TechnicalComparison, TechnicalOperation } from "./technical-program.js";
-export type { TechnicalComparison, TechnicalOperation } from "./technical-program.js";
+import type { TechnicalComparison, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
+export type { TechnicalComparison, TechnicalOperation, TechnicalScriptPlacement } from "./technical-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -40,14 +40,6 @@ export interface BanaTechnicalProfile {
 export type TechnicalProfile =
   | BanaTechnicalProfile
   | InternationalTechnicalProfile;
-
-export type TechnicalScriptPlacement =
-  | "directly-above"
-  | "directly-below"
-  | "left-subscript"
-  | "left-superscript"
-  | "right-subscript"
-  | "right-superscript";
 
 export type SimpleArrowDirection =
   | "down"
@@ -387,15 +379,6 @@ interface EnclosureCells {
   readonly open: string;
 }
 
-const SCRIPT_INDICATORS = {
-  "directly-above": "⠨⠔",
-  "directly-below": "⠨⠢",
-  "left-subscript": "⠢",
-  "left-superscript": "⠔",
-  "right-subscript": "⠢",
-  "right-superscript": "⠔",
-} satisfies Readonly<Record<TechnicalScriptPlacement, string>>;
-
 const ARROW_PRINT = {
   down: "↓",
   "down-left": "↙",
@@ -436,10 +419,6 @@ function operationCell(operation: TechnicalOperation): string {
 
 function comparisonCell(comparison: TechnicalComparison): string {
   return symbolCell(TECHNICAL_SIGN_PROGRAM.comparisons[comparison]);
-}
-
-function scriptIndicator(placement: TechnicalScriptPlacement): string {
-  return SCRIPT_INDICATORS[placement];
 }
 
 function symbolCell(print: string): string {
@@ -808,12 +787,9 @@ function renderExpression(
       if (!script.ok) {
         return script;
       }
-      const indicator = scriptIndicator(expression.placement);
+      const { indicator, position } = TECHNICAL_SIGN_PROGRAM.scripts[expression.placement];
       const rendered = `${indicator}${script.braille}`;
-      if (
-        expression.placement === "left-subscript" ||
-        expression.placement === "left-superscript"
-      ) {
+      if (position === "before") {
         return renderSuccess(`${rendered}${base.braille}`, [
           { end: indicator.length, kind: "symbol", offset: 0 },
           ...shiftRequirements(script.requirements, indicator.length),

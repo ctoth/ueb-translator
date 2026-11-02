@@ -133,6 +133,11 @@ technical program containing only additions and semantic maps. These additions
 are loaded only for structured technical sign lookup, preserving ordinary
 Grade 1 and raw technical-text support. Negation uses the same minus mapping.
 
+The same technical program declares each script's indicator and whether its
+expression appears before or after the base. These six descriptors are cited
+to GTM Section 7. The renderer uses the declared position for concatenation and
+protection offsets, without classifying left-script names in code.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

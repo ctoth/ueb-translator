@@ -1,6 +1,6 @@
 import { loadSymbolProgram } from "../../src/symbol-program.js";
-import type { TechnicalSignProgram } from "../../src/technical-program.js";
-import { citeTechnicalSign, type TechnicalSignLocator } from "./source.js";
+import { TECHNICAL_SCRIPT_PLACEMENTS, type TechnicalSignProgram } from "../../src/technical-program.js";
+import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
 /** ICEB October 2018 replacement Section 3, sign tables on pages 1-2. */
@@ -33,10 +33,37 @@ export const TECHNICAL_SYMBOL_RULES: readonly SymbolRuleSource[] = additionalSig
   }),
 );
 
+export interface TechnicalScriptSource {
+  readonly citation: RuleCitation<
+    "ICEB", "Unified English Braille: Guidelines for Technical Material (2014)",
+    string, "https://iceb.org/publications/ueb/"
+  >;
+  readonly definitions: TechnicalSignProgram["scripts"];
+}
+
+const subscript = "⠢", superscript = "⠔";
+export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "7 indicator list, p.34; 7.3, pp.35-36; 7.8, p.38; 7.9, p.39",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    "directly-above": { indicator: `⠨${superscript}`, position: "after" },
+    "directly-below": { indicator: `⠨${subscript}`, position: "after" },
+    "left-subscript": { indicator: subscript, position: "before" },
+    "left-superscript": { indicator: superscript, position: "before" },
+    "right-subscript": { indicator: subscript, position: "after" },
+    "right-superscript": { indicator: superscript, position: "after" },
+  },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
   mappings: Pick<TechnicalSignProgram, "operations" | "comparisons">,
+  scripts: TechnicalScriptSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -46,8 +73,18 @@ export function compileTechnicalSigns(
     }
   }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
+  if (scripts.citation.locator.trim().length === 0 ||
+    !scripts.citation.url.startsWith("https://iceb.org/")) {
+    throw new Error("Technical script definitions lack an official ICEB citation.");
+  }
+  for (const placement of TECHNICAL_SCRIPT_PLACEMENTS) {
+    if (!/^[\u2800-\u28ff]+$/u.test(scripts.definitions[placement].indicator)) {
+      throw new Error(`Technical script ${placement} has a malformed indicator.`);
+    }
+  }
   return {
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
+    scripts: { ...scripts.definitions },
   };
 }

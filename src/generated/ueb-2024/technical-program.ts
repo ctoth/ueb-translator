@@ -62,5 +62,31 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
     "less-than": "<",
     "less-than-or-equal": "≤",
     "not-equal": "≠"
+  },
+  "scripts": {
+    "directly-above": {
+      "indicator": "⠨⠔",
+      "position": "after"
+    },
+    "directly-below": {
+      "indicator": "⠨⠢",
+      "position": "after"
+    },
+    "left-subscript": {
+      "indicator": "⠢",
+      "position": "before"
+    },
+    "left-superscript": {
+      "indicator": "⠔",
+      "position": "before"
+    },
+    "right-subscript": {
+      "indicator": "⠢",
+      "position": "after"
+    },
+    "right-superscript": {
+      "indicator": "⠔",
+      "position": "after"
+    }
   }
 };
