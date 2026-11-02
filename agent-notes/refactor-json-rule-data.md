@@ -4,7 +4,7 @@ Mechanically move authored UEB rule data to JSON, preserving meaningful TypeScri
 
 # State
 
-Published PR #165 against main on refactor/json-rule-data. Generated output unchanged; focused JSON tests passed. Hosted typechecks now pass after the extractor argument narrowing repair. Lint identified two numeric template interpolations and the deprecated boolean import-clause overload/isTypeOnly property. Converted numbers explicitly and switched to the installed TypeScript 6 phaseModifier overload after reading typescript.d.ts. Pushing this scoped repair; oracle runs remain in progress. Merge after all gates pass.
+PR #165: generation, build, all typechecks, lint and unit tests passed on hosted CI. New JSON readers have full coverage. The existing coverage gate identified one obsolete unused constructor, citeTechnicalSign, left after its callers moved to JSON. Repository search confirms no executable callers; deleted the function while retaining its meaningful citation types. Earlier extractor narrowing/API lint repairs passed. Pushing deletion; final full CI/oracles must pass before normal merge.
 
 # Decisions and why
 
