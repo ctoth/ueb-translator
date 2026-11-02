@@ -1,6 +1,3 @@
-export const GRADE2_INVENTORY_COUNTS = {
-  appendix1LongerWords: 327,
-  contextualRules: 520,
-  rules: 107,
-  shortforms: 75,
-} as const;
+import inventoryData from "./inventory.json" with { type: "json" };
+import { readInventory } from "./rule-json.js";
+export const GRADE2_INVENTORY_COUNTS: ReturnType<typeof readInventory> = readInventory(inventoryData);

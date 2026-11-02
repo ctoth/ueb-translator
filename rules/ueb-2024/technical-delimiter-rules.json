@@ -1,0 +1,47 @@
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
+    "locator": "5, p.30; 6, pp.31-32; 7.1-7.3, pp.34-36; 8, pp.40-41; 15.1, p.69",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "definitions": {
+    "groupOpen": "⠣",
+    "groupClose": "⠜",
+    "simpleFractionLine": "⠌",
+    "fractionOpen": "⠷",
+    "fractionLine": "⠨⠌",
+    "fractionClose": "⠾",
+    "radicalOpen": "⠩",
+    "radicalClose": "⠬",
+    "enclosures": {
+      "absolute": {
+        "open": "|",
+        "close": "|"
+      },
+      "angle": {
+        "open": "⟨",
+        "close": "⟩"
+      },
+      "curly": {
+        "open": "{",
+        "close": "}"
+      },
+      "round": {
+        "open": "(",
+        "close": ")"
+      },
+      "square": {
+        "open": "[",
+        "close": "]"
+      }
+    },
+    "enlargedPrefix": "⠠",
+    "matrixEnclosures": {
+      "curly": "curly",
+      "determinant": "absolute",
+      "round": "round",
+      "square": "square"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
+    "locator": "7 indicator list, p.34; 7.3, pp.35-36; 7.8, p.38; 7.9, p.39",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "definitions": {
+    "directly-above": {
+      "indicator": "⠨⠔",
+      "position": "after"
+    },
+    "directly-below": {
+      "indicator": "⠨⠢",
+      "position": "after"
+    },
+    "left-subscript": {
+      "indicator": "⠢",
+      "position": "before"
+    },
+    "left-superscript": {
+      "indicator": "⠔",
+      "position": "before"
+    },
+    "right-subscript": {
+      "indicator": "⠢",
+      "position": "after"
+    },
+    "right-superscript": {
+      "indicator": "⠔",
+      "position": "after"
+    }
+  }
+}

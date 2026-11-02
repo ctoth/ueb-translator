@@ -1,18 +1,11 @@
-import {
-  citeIceb,
-  type IcebRuleCitation,
-} from "./source.js";
+import locatorData from "./grade2-locators.json" with { type: "json" };
+import grade2RulesData from "./grade2-rules.json" with { type: "json" };
+import { readGrade2Rules, readGrade2Locators } from "./rule-json.js";
+import type { IcebRuleCitation } from "./source.js";
 import type { ContextualPrecedence, ContextualRuleGuard } from "./contextual-compiler.js";
 
-export type Grade2RuleKind =
-  | "alphabetic-wordsign"
-  | "final-letter-groupsign"
-  | "initial-letter-contraction"
-  | "lower-groupsign"
-  | "lower-wordsign"
-  | "strong-contraction"
-  | "strong-groupsign"
-  | "strong-wordsign";
+export const GRADE2_RULE_KINDS = ["alphabetic-wordsign","final-letter-groupsign","initial-letter-contraction","lower-groupsign","lower-wordsign","strong-contraction","strong-groupsign","strong-wordsign"] as const;
+export type Grade2RuleKind = (typeof GRADE2_RULE_KINDS)[number];
 
 export interface Grade2RuleLocatorByKind {
   readonly "alphabetic-wordsign": "10.1";
@@ -25,23 +18,14 @@ export interface Grade2RuleLocatorByKind {
   readonly "strong-wordsign": "10.2";
 }
 
-export const GRADE2_RULE_LOCATOR_BY_KIND: Grade2RuleLocatorByKind = {
-  "alphabetic-wordsign": "10.1",
-  "final-letter-groupsign": "10.8",
-  "initial-letter-contraction": "10.7",
-  "lower-groupsign": "10.6",
-  "lower-wordsign": "10.5",
-  "strong-contraction": "10.3",
-  "strong-groupsign": "10.4",
-  "strong-wordsign": "10.2",
-};
+export const GRADE2_RULE_LOCATOR_BY_KIND: Grade2RuleLocatorByKind = readGrade2Locators(locatorData);
 
 type Grade2RuleLocatorFor<Kind extends Grade2RuleKind> =
   (typeof GRADE2_RULE_LOCATOR_BY_KIND)[Kind];
 export type Grade2RuleId<Kind extends Grade2RuleKind = Grade2RuleKind> =
   `UEB-${Grade2RuleLocatorFor<Kind>}-${string}`;
 
-interface Grade2RuleSourceFor<Kind extends Grade2RuleKind> {
+export interface Grade2RuleSourceFor<Kind extends Grade2RuleKind> {
   readonly braille: string;
   readonly citation: IcebRuleCitation<Grade2RuleLocatorFor<Kind>>;
   readonly id: Grade2RuleId<Kind>;
@@ -55,96 +39,12 @@ export type Grade2RuleSource = {
   readonly [Kind in Grade2RuleKind]: Grade2RuleSourceFor<Kind>;
 }[Grade2RuleKind];
 
-const rules = <const Kind extends Grade2RuleKind>(
-  kind: Kind,
-  precedence: ContextualPrecedence,
-  entries: readonly (readonly [print: string, braille: string])[],
-  guards: readonly ContextualRuleGuard[] = [],
-): readonly Grade2RuleSourceFor<Kind>[] => {
-  const locator = GRADE2_RULE_LOCATOR_BY_KIND[kind];
-  return entries.map(([print, braille]) => ({
-    braille,
-    citation: citeIceb(locator),
-    id: `UEB-${locator}-${print}`,
-    kind,
-    print,
-    guards,
-    precedence,
-  }));
-};
+/** Authored JSON groups; the compiler expands citations and stable rule IDs. */
+export interface Grade2RuleGroupSource {
+  readonly kind: Grade2RuleKind;
+  readonly precedence: ContextualPrecedence;
+  readonly entries: readonly (readonly [print: string, braille: string])[];
+  readonly guards: readonly ContextualRuleGuard[];
+}
 
-export const GRADE2_RULES: readonly Grade2RuleSource[] = [
-  ...rules("alphabetic-wordsign", 0, [
-    ["but", "⠃"], ["can", "⠉"], ["do", "⠙"], ["every", "⠑"],
-    ["from", "⠋"], ["go", "⠛"], ["have", "⠓"], ["just", "⠚"],
-    ["knowledge", "⠅"], ["like", "⠇"], ["more", "⠍"],
-    ["not", "⠝"], ["people", "⠏"], ["quite", "⠟"],
-    ["rather", "⠗"], ["so", "⠎"], ["that", "⠞"], ["us", "⠥"],
-    ["very", "⠧"], ["it", "⠭"], ["you", "⠽"], ["as", "⠵"],
-    ["will", "⠺"],
-  ]),
-  ...rules("strong-wordsign", 0, [
-    ["child", "⠡"], ["shall", "⠩"], ["this", "⠹"],
-    ["which", "⠱"], ["out", "⠳"], ["still", "⠌"],
-  ]),
-  ...rules("strong-contraction", 0, [
-    ["and", "⠯"], ["for", "⠿"], ["of", "⠷"], ["the", "⠮"],
-    ["with", "⠾"],
-  ]),
-  ...rules("strong-groupsign", 2, [
-    ["ch", "⠡"], ["gh", "⠣"], ["sh", "⠩"], ["th", "⠹"],
-    ["wh", "⠱"], ["ed", "⠫"], ["er", "⠻"], ["ou", "⠳"],
-    ["ow", "⠪"], ["st", "⠌"], ["ar", "⠜"],
-  ]),
-  ...rules("strong-groupsign", 2, [
-    ["ing", "⠬"],
-  ], [{ kind: "not-word-start" }]),
-  // Preserve the existing following-mode restriction for the be wordsign too.
-  ...rules("lower-wordsign", 0, [
-    ["be", "⠆"],
-  ], [{ kind: "stable-following-modes" }]),
-  ...rules("lower-wordsign", 0, [
-    ["enough", "⠢"], ["were", "⠶"],
-    ["his", "⠦"], ["in", "⠔"], ["was", "⠴"],
-  ]),
-  // ICEB 10.6.3: retain the following mode boundary.
-  ...rules("lower-groupsign", 1, [
-    ["be", "⠆"], ["con", "⠒"], ["dis", "⠲"],
-  ], [{ kind: "stable-following-modes" }]),
-  // ICEB 10.6.6: retain both adjacent mode boundaries.
-  ...rules("lower-groupsign", 3, [
-    ["ea", "⠂"], ["bb", "⠆"], ["cc", "⠒"], ["ff", "⠖"], ["gg", "⠶"],
-  ], [{ kind: "stable-adjacent-modes" }]),
-  ...rules("lower-groupsign", 3, [
-    ["en", "⠢"], ["in", "⠔"],
-  ]),
-  ...rules("initial-letter-contraction", 4, [
-    ["upon", "⠘⠥"], ["these", "⠘⠮"], ["those", "⠘⠹"],
-    ["whose", "⠘⠱"], ["word", "⠘⠺"], ["cannot", "⠸⠉"],
-    ["had", "⠸⠓"], ["many", "⠸⠍"], ["spirit", "⠸⠎"],
-    ["their", "⠸⠮"], ["world", "⠸⠺"], ["day", "⠐⠙"],
-    ["father", "⠐⠋"], ["here", "⠐⠓"],
-    ["know", "⠐⠅"], ["lord", "⠐⠇"], ["mother", "⠐⠍"],
-    ["name", "⠐⠝"], ["part", "⠐⠏"],
-    ["question", "⠐⠟"], ["right", "⠐⠗"], ["some", "⠐⠎"],
-    ["time", "⠐⠞"], ["young", "⠐⠽"],
-    ["there", "⠐⠮"], ["character", "⠐⠡"],
-    ["through", "⠐⠹"], ["where", "⠐⠱"], ["ought", "⠐⠳"],
-    ["work", "⠐⠺"],
-  ]),
-  ...rules("initial-letter-contraction", 4, [
-    ["ever", "⠐⠑"],
-  ], [{ characters: "ei", kind: "previous-not" }]),
-  ...rules("initial-letter-contraction", 4, [
-    ["one", "⠐⠕"],
-  ], [{ characters: "o", kind: "previous-not" }]),
-  ...rules("initial-letter-contraction", 4, [
-    ["under", "⠐⠥"],
-  ], [{ characters: "ao", kind: "previous-not" }]),
-  ...rules("final-letter-groupsign", 5, [
-    ["ound", "⠨⠙"], ["ance", "⠨⠑"], ["sion", "⠨⠝"],
-    ["less", "⠨⠎"], ["ount", "⠨⠞"], ["ence", "⠰⠑"],
-    ["ong", "⠰⠛"], ["ful", "⠰⠇"], ["tion", "⠰⠝"],
-    ["ness", "⠰⠎"], ["ment", "⠰⠞"], ["ity", "⠰⠽"],
-  ]),
-];
+export const GRADE2_RULES: readonly Grade2RuleSource[] = readGrade2Rules(grade2RulesData, GRADE2_RULE_KINDS, GRADE2_RULE_LOCATOR_BY_KIND);

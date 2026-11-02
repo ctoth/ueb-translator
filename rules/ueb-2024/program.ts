@@ -1,3 +1,6 @@
+import structuralCrossingData from "./structural-crossing.json" with { type: "json" };
+import longerShortformsData from "./longer-shortforms.json" with { type: "json" };
+import { readStructuralGuard, readStrings } from "./rule-json.js";
 import { APPENDIX1_LONGER_WORDS } from "./appendix1.js";
 import {
   COMPOUND_CONTRACTION_EXCEPTIONS,
@@ -16,10 +19,7 @@ import { GRADE2_RULES, type Grade2RuleSource } from "./grade2-rules.js";
 import { SHORTFORMS, type ShortformSource } from "./shortforms.js";
 import { SYMBOL_RULES } from "./symbols/source.js";
 
-const NO_STRUCTURAL_CROSSING: ContextualRuleGuard = {
-  boundaries: ["braille-line", "compound"],
-  kind: "not-crossing",
-};
+const NO_STRUCTURAL_CROSSING: ContextualRuleGuard = readStructuralGuard(structuralCrossingData);
 
 function initialExceptionWords(print: string): readonly string[] {
   return INITIAL_CONTRACTION_EXCEPTIONS
@@ -261,10 +261,7 @@ function wholeShortform(rule: ShortformSource): ContextualRuleSource {
   };
 }
 
-const GENERAL_LONGER_SHORTFORMS = new Set([
-  "blind", "braille", "children", "first", "friend", "good", "great",
-  "letter", "little", "quick",
-]);
+const GENERAL_LONGER_SHORTFORMS = new Set(readStrings(longerShortformsData));
 
 function longerShortform(rule: ShortformSource): ContextualRuleSource | undefined {
   if (!GENERAL_LONGER_SHORTFORMS.has(rule.print)) {

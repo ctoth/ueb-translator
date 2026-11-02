@@ -1,0 +1,12 @@
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
+    "locator": "9.3.2-9.3.3, pp.43-44",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "definitions": {
+    "letterPrintPattern": "^[a-z]$",
+    "namePattern": "^[a-z]"
+  }
+}

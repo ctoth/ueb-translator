@@ -1,6 +1,9 @@
 # Rule intermediate representation
 
-Normative UEB behavior is authored as ordinary, readable TypeScript data and compiled before publication. Each rule has four reviewable parts:
+Normative UEB behavior is authored as JSON data and compiled before publication.
+TypeScript retains the source interfaces, discriminated kinds, and compilers.
+The family files and their compact construction forms are described in
+[`ueb-2024/DATA.md`](ueb-2024/DATA.md). Each expanded rule has four reviewable parts:
 
 - a stable project-owned identifier;
 - an exact input string;
@@ -9,18 +12,18 @@ Normative UEB behavior is authored as ordinary, readable TypeScript data and com
 
 For example, the shape of an ICEB Rule 4.1 mapping is:
 
-```ts
-const example = {
-  citation: {
-    authority: "ICEB",
-    document: "Rules of Unified English Braille, Third Edition",
-    locator: "4.1",
-    url: "https://iceb.org/publications/ueb/",
+```json
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Rules of Unified English Braille, Third Edition",
+    "locator": "4.1",
+    "url": "https://iceb.org/publications/ueb/"
   },
-  id: "iceb-ueb-4.1-letter-a",
-  input: "a",
-  output: "⠁",
-};
+  "id": "iceb-ueb-4.1-letter-a",
+  "input": "a",
+  "output": "⠁"
+}
 ```
 
 The compilers reject empty or conflicting inputs, duplicate identifiers,
@@ -28,6 +31,11 @@ unresolved contextual precedence, and missing or unofficial citations. Their
 output separates tiny runtime arrays from development-only provenance. Rule
 files, citations, and compiler code are excluded from the npm artifact by the
 package allowlist.
+
+`rule-json.ts` decodes JSON into the existing typed compiler inputs without
+unchecked assertions. It rejects invalid shapes and discriminants; the existing
+compilers own semantic validation. JSON is the sole authored data copy. Generated
+runtime/provenance TypeScript files retain their existing format and ownership.
 
 `ueb-2024/symbols/` maps every supported print scalar to cells and a closed
 character class. `ueb-2024/modes/` declares capitals, numeric, grade-1, and

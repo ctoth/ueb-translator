@@ -1,0 +1,554 @@
+[
+  {
+    "base": "about",
+    "words": [
+      "aboutface",
+      "aboutfaced",
+      "aboutfacer",
+      "aboutfacing",
+      "aboutturn",
+      "aboutturned",
+      "eastabout",
+      "gadabout",
+      "hereabout",
+      "knockabout",
+      "layabout",
+      "northabout",
+      "rightabout",
+      "roundabout",
+      "roustabout",
+      "runabout",
+      "southabout",
+      "stirabout",
+      "thereabout",
+      "turnabout",
+      "walkabout",
+      "westabout",
+      "whereabout"
+    ]
+  },
+  {
+    "base": "above",
+    "words": [
+      "aboveboard",
+      "aboveground",
+      "abovementioned",
+      "hereinabove"
+    ]
+  },
+  {
+    "base": "according",
+    "words": [
+      "accordingly",
+      "unaccording",
+      "unaccordingly"
+    ]
+  },
+  {
+    "base": "across",
+    "words": [
+      "readacross"
+    ]
+  },
+  {
+    "base": "after",
+    "words": [
+      "afterbattle",
+      "afterbirth",
+      "afterbreakfast",
+      "afterburn",
+      "afterburned",
+      "afterburner",
+      "afterburning",
+      "aftercare",
+      "afterclap",
+      "aftercoffee",
+      "afterdamp",
+      "afterdark",
+      "afterdeck",
+      "afterdinner",
+      "afterflow",
+      "aftergame",
+      "afterglow",
+      "afterguard",
+      "afterhatch",
+      "afterhatches",
+      "afterhour",
+      "afterlife",
+      "afterlight",
+      "afterlives",
+      "afterlunch",
+      "afterlunches",
+      "aftermarket",
+      "aftermatch",
+      "aftermatches",
+      "aftermath",
+      "aftermeeting",
+      "aftermentioned",
+      "aftermidday",
+      "aftermidnight",
+      "aftermost",
+      "afterpain",
+      "afterparties",
+      "afterparty",
+      "afterpiece",
+      "afterplay",
+      "aftersale",
+      "afterschool",
+      "aftersensation",
+      "aftershave",
+      "aftershock",
+      "aftershow",
+      "aftershower",
+      "aftersupper",
+      "aftertaste",
+      "aftertax",
+      "aftertaxes",
+      "aftertea",
+      "aftertheater",
+      "aftertheatre",
+      "afterthought",
+      "aftertime",
+      "aftertreatment",
+      "afterword",
+      "afterwork",
+      "afterworld",
+      "hereafter",
+      "hereinafter",
+      "morningafter",
+      "thereafter",
+      "thereinafter",
+      "whereafter",
+      "whereinafter"
+    ]
+  },
+  {
+    "base": "afternoon",
+    "words": [
+      "afternoontea",
+      "goodafternoon",
+      "midafternoon"
+    ]
+  },
+  {
+    "base": "again",
+    "words": [
+      "hereagain",
+      "hereinagain",
+      "thereagain",
+      "thereinagain",
+      "whereagain",
+      "whereinagain"
+    ]
+  },
+  {
+    "base": "against",
+    "words": [
+      "hereagainst",
+      "thereagainst",
+      "whereagainst"
+    ]
+  },
+  {
+    "base": "before",
+    "words": [
+      "beforehand",
+      "beforementioned"
+    ]
+  },
+  {
+    "base": "behind",
+    "words": [
+      "behindhand"
+    ]
+  },
+  {
+    "base": "below",
+    "words": [
+      "belowdeck",
+      "belowground",
+      "belowmentioned"
+    ]
+  },
+  {
+    "base": "beneath",
+    "words": [
+      "beneathdeck",
+      "beneathground"
+    ]
+  },
+  {
+    "base": "between",
+    "words": [
+      "betweendeck",
+      "betweentime",
+      "betweenwhile"
+    ]
+  },
+  {
+    "base": "blind",
+    "words": [
+      "colorblind",
+      "colorblindness",
+      "colorblindnesses",
+      "colourblind",
+      "colourblindness",
+      "colourblindnesses",
+      "deafblind",
+      "deafblindness",
+      "deafblindnesses",
+      "purblind",
+      "purblindly",
+      "purblindness",
+      "purblindnesses",
+      "snowblind",
+      "snowblindness",
+      "snowblindnesses",
+      "unblindfold",
+      "unblindfolded",
+      "unblindfolding"
+    ]
+  },
+  {
+    "base": "children",
+    "words": [
+      "children'swear"
+    ]
+  },
+  {
+    "base": "conceive",
+    "words": [
+      "conceived",
+      "conceiver"
+    ]
+  },
+  {
+    "base": "could",
+    "words": [
+      "coulda",
+      "couldest",
+      "couldn't",
+      "couldn't've",
+      "couldst",
+      "could've"
+    ]
+  },
+  {
+    "base": "deceive",
+    "words": [
+      "archdeceiver",
+      "deceived",
+      "deceiver",
+      "undeceive",
+      "undeceived",
+      "undeceiver"
+    ]
+  },
+  {
+    "base": "deceiving",
+    "words": [
+      "undeceiving"
+    ]
+  },
+  {
+    "base": "declare",
+    "words": [
+      "declared",
+      "declarer",
+      "undeclare",
+      "undeclared"
+    ]
+  },
+  {
+    "base": "first",
+    "words": [
+      "feetfirst",
+      "firstaid",
+      "firstaider",
+      "headfirst",
+      "tailfirst"
+    ]
+  },
+  {
+    "base": "friend",
+    "words": [
+      "befriend",
+      "boyfriend",
+      "defriend",
+      "galfriend",
+      "gentlemanfriend",
+      "gentlemenfriends",
+      "girlfriend",
+      "guyfriend",
+      "ladyfriend",
+      "manfriend",
+      "menfriends",
+      "penfriend",
+      "schoolfriend",
+      "unfriend",
+      "unfriendlier",
+      "unfriendliest",
+      "unfriendliness",
+      "unfriendlinesses",
+      "unfriendly",
+      "womanfriend",
+      "womenfriends"
+    ]
+  },
+  {
+    "base": "good",
+    "words": [
+      "feelgood",
+      "goodafternoon",
+      "goodevening",
+      "gooder",
+      "goodest",
+      "goodie",
+      "goodish",
+      "goodun",
+      "goody",
+      "goodyear",
+      "scattergood",
+      "supergood"
+    ]
+  },
+  {
+    "base": "him",
+    "words": [
+      "himbo",
+      "himboes"
+    ]
+  },
+  {
+    "base": "immediate",
+    "words": [
+      "immediately",
+      "immediateness"
+    ]
+  },
+  {
+    "base": "letter",
+    "words": [
+      "bloodletter",
+      "chainletter",
+      "hateletter",
+      "lettered",
+      "letterer",
+      "lettering",
+      "letteropener",
+      "loveletter",
+      "newsletter",
+      "reletter",
+      "relettered",
+      "relettering",
+      "unlettered"
+    ]
+  },
+  {
+    "base": "little",
+    "words": [
+      "belittle",
+      "belittled",
+      "belittlement",
+      "belittler"
+    ]
+  },
+  {
+    "base": "much",
+    "words": [
+      "forasmuch",
+      "inasmuch",
+      "insomuch",
+      "muchly",
+      "muchness",
+      "overmuch"
+    ]
+  },
+  {
+    "base": "must",
+    "words": [
+      "musta",
+      "mustard",
+      "mustardy",
+      "mustier",
+      "mustiest",
+      "mustily",
+      "mustiness",
+      "mustn't",
+      "mustn't've",
+      "must've",
+      "musty"
+    ]
+  },
+  {
+    "base": "necessary",
+    "words": [
+      "unnecessary"
+    ]
+  },
+  {
+    "base": "paid",
+    "words": [
+      "highlypaid",
+      "illpaid",
+      "lowlypaid",
+      "overpaid",
+      "poorlypaid",
+      "postpaid",
+      "prepaid",
+      "repaid",
+      "underpaid",
+      "unpaid",
+      "unrepaid",
+      "wellpaid"
+    ]
+  },
+  {
+    "base": "perceive",
+    "words": [
+      "apperceive",
+      "apperceived",
+      "apperceiver",
+      "misperceive",
+      "misperceived",
+      "misperceiver",
+      "perceived",
+      "perceiver",
+      "unperceive",
+      "unperceived"
+    ]
+  },
+  {
+    "base": "perceiving",
+    "words": [
+      "apperceiving",
+      "misperceiving",
+      "unperceiving"
+    ]
+  },
+  {
+    "base": "perhaps",
+    "words": [
+      "perhapses"
+    ]
+  },
+  {
+    "base": "quick",
+    "words": [
+      "doublequick",
+      "quicken",
+      "quickened",
+      "quickener",
+      "quickening",
+      "quicker",
+      "quickest",
+      "quickie",
+      "quickish",
+      "quickishly",
+      "quicky",
+      "superquick",
+      "unquick"
+    ]
+  },
+  {
+    "base": "receive",
+    "words": [
+      "preceive",
+      "preceiver",
+      "received",
+      "receiver",
+      "receivership",
+      "unreceived"
+    ]
+  },
+  {
+    "base": "receiving",
+    "words": [
+      "preceiving"
+    ]
+  },
+  {
+    "base": "rejoice",
+    "words": [
+      "rejoiced",
+      "rejoiceful",
+      "rejoicefully",
+      "rejoicer",
+      "rejoicefulness",
+      "unrejoice",
+      "unrejoiced",
+      "unrejoiceful",
+      "unrejoicefully",
+      "unrejoicer",
+      "unrejoicefulness"
+    ]
+  },
+  {
+    "base": "rejoicing",
+    "words": [
+      "rejoicingly",
+      "unrejoicing",
+      "unrejoicingly"
+    ]
+  },
+  {
+    "base": "said",
+    "words": [
+      "aforesaid",
+      "foresaid",
+      "gainsaid",
+      "missaid",
+      "saidest",
+      "saidst",
+      "unsaid"
+    ]
+  },
+  {
+    "base": "should",
+    "words": [
+      "shoulda",
+      "shouldest",
+      "shouldn't",
+      "shouldn't've",
+      "shouldst",
+      "should've"
+    ]
+  },
+  {
+    "base": "such",
+    "words": [
+      "nonesuch",
+      "nonsuch",
+      "somesuch",
+      "suchlike"
+    ]
+  },
+  {
+    "base": "together",
+    "words": [
+      "togetherness"
+    ]
+  },
+  {
+    "base": "would",
+    "words": [
+      "'twould",
+      "'twoulda",
+      "'twouldn't",
+      "'twouldn't've",
+      "'twould've",
+      "woulda",
+      "wouldest",
+      "wouldn't",
+      "wouldn't've",
+      "wouldst",
+      "would've"
+    ]
+  },
+  {
+    "base": "yourself",
+    "words": [
+      "do-it-yourselfer"
+    ]
+  }
+]

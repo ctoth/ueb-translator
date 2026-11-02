@@ -1,0 +1,15 @@
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Guidelines for Technical Material: Grade 1 Indicators (July 2025)",
+    "locator": "1.7.2-1.7.3, pp.1-2 (numeric a-j exclusion)",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "definitions": {
+    "precedingKinds": [
+      "number",
+      "simple-fraction"
+    ],
+    "identifierPattern": "^[a-j]"
+  }
+}

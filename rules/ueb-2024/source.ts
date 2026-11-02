@@ -89,11 +89,3 @@ export type TechnicalSignCitation = RuleCitation<
   "https://iceb.org/publications/ueb/"
 >;
 
-export function citeTechnicalSign(locator: TechnicalSignLocator): TechnicalSignCitation {
-  return {
-    authority: "ICEB",
-    document: "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-    locator,
-    url: "https://iceb.org/publications/ueb/",
-  };
-}

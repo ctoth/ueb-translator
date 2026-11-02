@@ -189,13 +189,13 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
   }
 }
 
-const BOUNDARY_BITS = {
+export const BOUNDARY_BITS: Readonly<Record<ContextualBoundaryKind, ContextualBoundaryMask>> = {
   "braille-line": 1,
   compound: 2,
   prefix: 4,
   suffix: 8,
   syllable: 16,
-} satisfies Readonly<Record<ContextualBoundaryKind, ContextualBoundaryMask>>;
+};
 
 function boundaryBit(kind: ContextualBoundaryKind): ContextualBoundaryMask {
   return BOUNDARY_BITS[kind];

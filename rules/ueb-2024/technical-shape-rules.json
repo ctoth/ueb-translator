@@ -1,0 +1,26 @@
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
+    "locator": "14 shape indicator and specific shape lists, p.65; 14.1, p.66",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "definitions": {
+    "fills": {
+      "filled": "⠸⠫",
+      "outline": "⠫",
+      "shaded": "⠨⠫"
+    },
+    "names": {
+      "circle": "⠿",
+      "hexagon": "⠼⠋",
+      "heptagon": "⠼⠛",
+      "octagon": "⠼⠓",
+      "parallelogram": "⠈⠼⠙",
+      "pentagon": "⠼⠑",
+      "square": "⠼⠙",
+      "triangle": "⠼⠉"
+    },
+    "terminator": "⠱"
+  }
+}

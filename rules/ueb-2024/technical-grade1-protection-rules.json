@@ -1,0 +1,24 @@
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Guidelines for Technical Material: replacement Section 1.7 (2025)",
+    "locator": "1.7.3(a)-(b), p.2 (indicator counts and escalation)",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "definitions": {
+    "standingValues": [
+      {
+        "pattern": "^[b-hj-np-z]$",
+        "flags": "iu",
+        "kind": "standing-symbol"
+      },
+      {
+        "pattern": "^\\p{L}[\\p{L}\\p{M}\\d]+$",
+        "flags": "u",
+        "kind": "standing-word"
+      }
+    ],
+    "maxSymbolsPerSequence": 1,
+    "passageSequenceThreshold": 3
+  }
+}

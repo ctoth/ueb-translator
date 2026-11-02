@@ -1,0 +1,28 @@
+{
+  "citation": {
+    "authority": "ICEB",
+    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
+    "locator": "7.1, p.34; 12.1, p.57",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "definitions": {
+    "kinds": {
+      "chemical-element": true,
+      "comparison": false,
+      "function": false,
+      "general-fraction": true,
+      "group": true,
+      "modifier": false,
+      "negation": false,
+      "number": true,
+      "operation": false,
+      "radical": true,
+      "script": false,
+      "sequence": false,
+      "shape": true,
+      "simple-arrow": true,
+      "simple-fraction": true
+    },
+    "identifierPattern": "^\\p{L}\\p{M}*$"
+  }
+}
