@@ -2,9 +2,9 @@
 
 Move the existing function-boundary spacing predicates into cited technical rule data, preserving current translation output.
 
-# State
+## State
 
-Implemented in this independent branch. The source/compiler/program/generator now carries the function spacing patterns and selected shared-symbol cell identities. Runtime reads that generated data at both existing boundaries. No publication or merge authorized for this agent.
+Implemented and published as independent PR #162 against main. Parent inspected the source, runtime, generated data and tests. Full hosted CI and both oracle runs passed. Actual logs: 1,048 inventory, 658,033 dictionary and 441,223 corpus cases, zero stale/untriaged; accepted disagreements unchanged at 1/10,358/35,962. PR description links verified runs. Only technical generated data changed; general Grade 1/Grade 2 artifacts and ledgers unchanged. No merge authorized.
 
 # Decisions and why
 
@@ -20,6 +20,6 @@ Only the generated technical program changed; general Grade 1/Grade 2 artifacts 
 
 Full checks and oracle validation belong to the PR's hosted CI and have not run locally.
 
-# Next step
+## Next step
 
-Parent verifies this local branch and draft, publishes the independent PR, then reads hosted CI including oracle results before reporting completion.
+Q authorized merging all four. Merged integrated main after #161 and resolved the overlapping descriptor/compiler/generator/tests without changing either policy. Regeneration succeeded; hosted checks on the resolved head are next. JSON migration and compiler port remain outside this batch.

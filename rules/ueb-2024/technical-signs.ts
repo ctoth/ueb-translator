@@ -207,6 +207,33 @@ export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource 
   },
 };
 
+export interface TechnicalGrade1ProtectionSource {
+  readonly citation: RuleCitation<
+    "ICEB", "Guidelines for Technical Material: replacement Section 1.7 (2025)",
+    string, "https://iceb.org/publications/ueb/"
+  >;
+  readonly definitions: TechnicalSignProgram["grade1Protection"];
+}
+
+export const TECHNICAL_GRADE1_PROTECTION_RULES: TechnicalGrade1ProtectionSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Guidelines for Technical Material: replacement Section 1.7 (2025)",
+    locator: "1.7.3(a)-(b), p.2 (indicator counts and escalation)",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    // Preserve the implementation's ordered classifiers; these regexes are
+    // not asserted to be the wording of the cited indicator-count guidance.
+    standingValues: [
+      { pattern: "^[b-hj-np-z]$", flags: "iu", kind: "standing-symbol" },
+      { pattern: "^\\p{L}[\\p{L}\\p{M}\\d]+$", flags: "u", kind: "standing-word" },
+    ],
+    maxSymbolsPerSequence: 1,
+    passageSequenceThreshold: 3,
+  },
+};
+
 export type TechnicalFunctionSpacingSource = TechnicalRuleSource<{
   readonly letterPrintPattern: string;
   readonly namePattern: string;
@@ -233,6 +260,7 @@ export function compileTechnicalSigns(
   items: TechnicalItemSource,
   valuePatterns: TechnicalSignProgram["valuePatterns"],
   spacing: TechnicalOperationSpacingSource,
+  protection: TechnicalGrade1ProtectionSource,
   functionSpacing: TechnicalFunctionSpacingSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
@@ -256,8 +284,24 @@ export function compileTechnicalSigns(
     }
     compiledPatterns[kind] = new RegExp(compiledPatterns[kind], "u").source;
   }
+  const grade1Protection = protection.definitions;
+  for (const threshold of [grade1Protection.maxSymbolsPerSequence, grade1Protection.passageSequenceThreshold]) {
+    if (!Number.isSafeInteger(threshold) || threshold < 1) {
+      throw new Error("Technical Grade 1 protection thresholds must be positive integers.");
+    }
+  }
+  if (grade1Protection.standingValues.length === 0) {
+    throw new Error("Technical Grade 1 standing classifiers are empty.");
+  }
+  const standingValues = grade1Protection.standingValues.map((rule) => {
+    if (rule.pattern.length === 0 || !["iu", "u"].includes(rule.flags) ||
+      !["standing-symbol", "standing-word"].includes(rule.kind)) {
+      throw new Error("Technical Grade 1 standing classifier is malformed.");
+    }
+    return { ...rule, pattern: new RegExp(rule.pattern, rule.flags).source };
+  });
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], functionSpacing]) {
+  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], protection, functionSpacing]) {
     const authority = source.citation.authority;
     const officialHost = authority === "BANA" ? "https://brailleauthority.org/" : "https://iceb.org/";
     if (source.citation.locator.trim().length === 0 ||
@@ -319,6 +363,7 @@ export function compileTechnicalSigns(
         .map((symbol) => symbol.braille),
       namePattern: functionNamePattern.source,
     },
+    grade1Protection: { ...grade1Protection, standingValues },
     operationSpacing: {
       international: { ...spacing.international.definitions },
       "bana-2026": { ...spacing["bana-2026"].definitions },

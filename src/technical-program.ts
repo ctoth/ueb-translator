@@ -211,6 +211,17 @@ export interface TechnicalItemPolicy {
 
 export const TECHNICAL_VALUE_KINDS = ["chemical-element", "function-name", "identifier", "number"] as const;
 
+export interface TechnicalGrade1Protection {
+  /** Ordered, first-match classification of accepted standing values. */
+  readonly standingValues: readonly {
+    readonly pattern: string;
+    readonly flags: "u" | "iu";
+    readonly kind: "standing-symbol" | "standing-word";
+  }[];
+  readonly maxSymbolsPerSequence: number;
+  readonly passageSequenceThreshold: number;
+}
+
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
   readonly functionSpacing: {
@@ -218,6 +229,7 @@ export interface TechnicalSignProgram extends SymbolProgram {
     /** Function names matched with Unicode semantics. */
     readonly namePattern: string;
   };
+  readonly grade1Protection: TechnicalGrade1Protection;
   readonly operationSpacing: {
     readonly international: Readonly<Record<InternationalTechnicalProfile["operationSpacing"], boolean>>;
     readonly "bana-2026": Readonly<Record<BanaTechnicalProfile["production"], boolean>>;

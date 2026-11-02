@@ -84,8 +84,9 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const delimiters = isRecord(value) ? value["delimiters"] : undefined;
   const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
   const operationSpacing = isRecord(value) ? value["operationSpacing"] : undefined;
-  const functionSpacing = isRecord(value) ? value["functionSpacing"] : undefined;
   const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
+  const functionSpacing = isRecord(value) ? value["functionSpacing"] : undefined;
+  const grade1Protection = isRecord(value) ? value["grade1Protection"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
   if (!isPrintMap(arrows, TECHNICAL_ARROW_DIRECTIONS) ||
@@ -93,10 +94,23 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
     !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS) ||
-    !isOperationSpacing(operationSpacing) || !isFunctionSpacing(functionSpacing)) {
+    !isOperationSpacing(operationSpacing) || !isGrade1Protection(grade1Protection) || !isFunctionSpacing(functionSpacing)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, functionSpacing };
+  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, grade1Protection, functionSpacing };
+}
+
+function isGrade1Protection(value: unknown): value is TechnicalSignProgram["grade1Protection"] {
+  if (!isRecord(value)) return false;
+  const rules = value["standingValues"];
+  const maxSymbols = value["maxSymbolsPerSequence"];
+  const passageThreshold = value["passageSequenceThreshold"];
+  return typeof maxSymbols === "number" && Number.isSafeInteger(maxSymbols) && maxSymbols > 0 &&
+    typeof passageThreshold === "number" && Number.isSafeInteger(passageThreshold) && passageThreshold > 0 &&
+    Array.isArray(rules) && rules.length > 0 && rules.every((rule: unknown) =>
+      isRecord(rule) && typeof rule["pattern"] === "string" && rule["pattern"].length > 0 &&
+      (rule["flags"] === "iu" || rule["flags"] === "u") &&
+      (rule["kind"] === "standing-symbol" || rule["kind"] === "standing-word"));
 }
 
 function isFunctionSpacing(value: unknown): value is TechnicalSignProgram["functionSpacing"] {
