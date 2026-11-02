@@ -270,5 +270,10 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "simple-fraction"
     ],
     "identifierPattern": "^[a-j]"
+  },
+  "computerWhitespace": {
+    "visibleSpace": "⠬",
+    "minimumRunLength": 3,
+    "ordinaryEdgeLength": 1
   }
 };

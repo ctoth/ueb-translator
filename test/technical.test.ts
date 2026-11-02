@@ -265,13 +265,16 @@ describe("ICEB GTM 2014 sections 13, 16, and 17", () => {
     }
   });
 
-  it("marks only the internal cells of a significant computer-space run", () => {
+  it.each([
+    ["A B", ",A ,B"], ["A  B", ",A  ,B"], ["A   B", ",A + ,B"],
+    ["A    B", ",A ++ ,B"], ["   A   ", " + ,A + "], ["   ", " + "], ["", ""],
+  ])("marks only internal significant spaces in %j", (line, expected) => {
     const document: TechnicalDocument = {
       blocks: [
         {
           grade: "grade1",
           kind: "computer",
-          lines: ["A    B"],
+          lines: [line],
           spacing: "significant",
         },
       ],
@@ -280,7 +283,7 @@ describe("ICEB GTM 2014 sections 13, 16, and 17", () => {
     };
 
     expect(translateTechnical(document)).toEqual({
-      braille: fromBrf(",A ++ ,B"),
+      braille: fromBrf(expected),
       mode: "technical",
       ok: true,
     });

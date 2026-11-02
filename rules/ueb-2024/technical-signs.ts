@@ -270,6 +270,18 @@ export const TECHNICAL_NUMERIC_CONTINUATION_RULES: TechnicalNumericContinuationS
   },
 };
 
+export type TechnicalComputerWhitespaceSource = TechnicalRuleSource<TechnicalSignProgram["computerWhitespace"]>;
+
+export const TECHNICAL_COMPUTER_WHITESPACE_RULES: TechnicalComputerWhitespaceSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "17.2, pp.83-84 (significant runs of ordinary spaces)",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: { visibleSpace: "⠬", minimumRunLength: 3, ordinaryEdgeLength: 1 },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
@@ -284,6 +296,7 @@ export function compileTechnicalSigns(
   protection: TechnicalGrade1ProtectionSource,
   functionSpacing: TechnicalFunctionSpacingSource,
   numericContinuation: TechnicalNumericContinuationSource,
+  computerWhitespace: TechnicalComputerWhitespaceSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -327,13 +340,19 @@ export function compileTechnicalSigns(
     return { ...rule, pattern: new RegExp(rule.pattern, rule.flags).source };
   });
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], protection, functionSpacing, numericContinuation]) {
+  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], protection, functionSpacing, numericContinuation, computerWhitespace]) {
     const authority = source.citation.authority;
     const officialHost = authority === "BANA" ? "https://brailleauthority.org/" : "https://iceb.org/";
     if (source.citation.locator.trim().length === 0 ||
       !source.citation.url.startsWith(officialHost)) {
       throw new Error(`Technical definitions lack an official ${authority} citation.`);
     }
+  }
+  const whitespace = computerWhitespace.definitions;
+  if (!/^[\u2800-\u28ff]$/u.test(whitespace.visibleSpace) ||
+    !Number.isInteger(whitespace.minimumRunLength) || !Number.isInteger(whitespace.ordinaryEdgeLength) ||
+    whitespace.ordinaryEdgeLength < 0 || whitespace.minimumRunLength <= 2 * whitespace.ordinaryEdgeLength) {
+    throw new Error("Technical computer whitespace has malformed definitions.");
   }
   for (const modifier of TECHNICAL_MODIFIERS) {
     if (!/^[\u2800-\u28ff]+$/u.test(modifiers.definitions[modifier])) {
@@ -384,6 +403,7 @@ export function compileTechnicalSigns(
     }
   }
   return {
+    computerWhitespace: { ...whitespace },
     numericContinuation: {
       precedingKinds: [...numericContinuation.definitions.precedingKinds],
       identifierPattern: numericIdentifierPattern.source,

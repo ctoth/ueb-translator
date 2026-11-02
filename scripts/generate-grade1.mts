@@ -85,6 +85,7 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
   const operationSpacing = isRecord(value) ? value["operationSpacing"] : undefined;
   const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
+  const computerWhitespace = isRecord(value) ? value["computerWhitespace"] : undefined;
   const numericContinuation = isRecord(value) ? value["numericContinuation"] : undefined;
   const functionSpacing = isRecord(value) ? value["functionSpacing"] : undefined;
   const grade1Protection = isRecord(value) ? value["grade1Protection"] : undefined;
@@ -95,10 +96,10 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
     !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS) ||
-    !isOperationSpacing(operationSpacing) || !isGrade1Protection(grade1Protection) || !isFunctionSpacing(functionSpacing) || !isNumericContinuation(numericContinuation)) {
+    !isOperationSpacing(operationSpacing) || !isGrade1Protection(grade1Protection) || !isFunctionSpacing(functionSpacing) || !isNumericContinuation(numericContinuation) || !isComputerWhitespace(computerWhitespace)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, grade1Protection, functionSpacing, numericContinuation };
+  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, grade1Protection, functionSpacing, numericContinuation, computerWhitespace };
 }
 
 function isGrade1Protection(value: unknown): value is TechnicalSignProgram["grade1Protection"] {
@@ -127,6 +128,11 @@ function isNumericContinuation(value: unknown): value is TechnicalSignProgram["n
   return Array.isArray(kinds) && kinds.every((kind: unknown) =>
     typeof kind === "string" && expressionKinds.includes(kind)) &&
     typeof value["identifierPattern"] === "string";
+}
+
+function isComputerWhitespace(value: unknown): value is TechnicalSignProgram["computerWhitespace"] {
+  return isRecord(value) && typeof value["visibleSpace"] === "string" &&
+    typeof value["minimumRunLength"] === "number" && typeof value["ordinaryEdgeLength"] === "number";
 }
 
 function isOperationSpacing(value: unknown): value is TechnicalSignProgram["operationSpacing"] {

@@ -224,6 +224,11 @@ export interface TechnicalGrade1Protection {
 
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
+  readonly computerWhitespace: {
+    readonly visibleSpace: string;
+    readonly minimumRunLength: number;
+    readonly ordinaryEdgeLength: number;
+  };
   readonly numericContinuation: {
     readonly precedingKinds: readonly TechnicalExpression["kind"][];
     /** Case-sensitive Unicode pattern for the raw identifier prefix. */
