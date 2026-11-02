@@ -149,8 +149,12 @@ export interface ComposedContractionProgram extends ContextualTransducerProgram 
 }
 
 export interface ContextualTransducerInput {
-  /** Whether mode indicators permit a span to be read as one contraction. */
-  readonly isStableSpan?: (start: number, end: number) => boolean;
+  /** Check interior indicators, plus adjacent boundaries when requested by a guard. */
+  readonly isStableSpan?: (
+    start: number,
+    end: number,
+    adjacent?: "following" | "both",
+  ) => boolean;
   readonly boundaries: readonly ContextualBoundary[];
   readonly eligibilityOffset: number;
   readonly eligibilityWord: string;
@@ -320,6 +324,10 @@ function guardAllows(
     }
     case 19:
       return start !== 0 || context.precededByLetter === true;
+    case 23:
+      return context.isStableSpan?.(start, end, "following") !== false;
+    case 24:
+      return context.isStableSpan?.(start, end, "both") !== false;
     case 22: {
       // Permit a following vowel only within the listed words.
       const following = context.word.charAt(end);
@@ -399,7 +407,7 @@ function candidatesAt(
         print,
         start,
         context,
-      )) {
+      ) && context.isStableSpan?.(start, match.endCodeUnitIndex) !== false) {
         candidates.push({
           braille,
           end: match.endCodeUnitIndex,
@@ -439,7 +447,6 @@ export function runContextualTransducer(
   program: ContextualTransducerProgram,
   context: ContextualTransducerInput,
   literalCell: (character: string) => string,
-  canApply: (rule: ContextualAppliedRule) => boolean = () => true,
 ): ContextualTransduction {
   const best: (BestPath | undefined)[] = Array.from(
     { length: context.word.length + 1 },
@@ -456,12 +463,6 @@ export function runContextualTransducer(
   for (let start = context.word.length - 1; start >= 0; start -= 1) {
     let selected: BestPath | undefined;
     for (const candidate of candidatesAt(program, context, start, literalCell)) {
-      if (candidate.ruleIndex !== undefined && !canApply({
-        end: candidate.end,
-        print: candidate.print,
-        ruleIndex: candidate.ruleIndex,
-        start,
-      })) continue;
       const suffix = best[candidate.end];
       /* v8 ignore next -- the literal edge makes every suffix reachable. */
       if (suffix === undefined) {

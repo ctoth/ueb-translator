@@ -243,7 +243,11 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
   return {
     braille: rule.braille,
     citation: rule.citation,
-    guards: [...compileGrade2RuleGuards(rule), ...shortformCollisionGuards(rule)],
+    guards: [
+      ...compileGrade2RuleGuards(rule),
+      ...rule.guards,
+      ...shortformCollisionGuards(rule),
+    ],
     id: rule.id,
     input: rule.print,
     precedence: precedenceFor(rule),

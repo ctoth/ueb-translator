@@ -77,6 +77,8 @@ describe("compileContextualRules", () => {
         words: ["cat"],
       }]),
       rule("test-not-whole", "d", 4, [{ kind: "not-whole-word" }]),
+      rule("test-following-mode", "e", 4, [{ kind: "stable-following-modes" }]),
+      rule("test-adjacent-mode", "f", 4, [{ kind: "stable-adjacent-modes" }]),
     ]);
 
     expect(compilation.runtime.guards).toEqual([
@@ -84,6 +86,8 @@ describe("compileContextualRules", () => {
       [5, 31],
       [6, 1, 0],
       [10],
+      [23],
+      [24],
     ]);
     expect(compilation.runtime.stringOperands).toEqual(["-", "cat"]);
   });
@@ -184,6 +188,21 @@ describe("compileContextualRules", () => {
 });
 
 describe("Grade 2 source compilation", () => {
+  it.each([
+    ["UEB-10.5-be", "stable-following-modes"],
+    ["UEB-10.6-be", "stable-following-modes"],
+    ["UEB-10.6-con", "stable-following-modes"],
+    ["UEB-10.6-dis", "stable-following-modes"],
+    ["UEB-10.6-ea", "stable-adjacent-modes"],
+    ["UEB-10.6-bb", "stable-adjacent-modes"],
+    ["UEB-10.6-cc", "stable-adjacent-modes"],
+    ["UEB-10.6-ff", "stable-adjacent-modes"],
+    ["UEB-10.6-gg", "stable-adjacent-modes"],
+  ] as const)("retains the authored mode restriction for %s", (id, kind) => {
+    const source = GRADE2_CONTEXTUAL_COMPILATION.provenance.find((entry) => entry.id === id);
+    expect(source?.guards).toContainEqual({ kind });
+  });
+
   it("derives and emits Grade 1 ambiguity guards (issue #22)", () => {
     expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["b", "⠃"]);
     expect(GRADE2_AMBIGUOUS_LETTER_SEQUENCES).toContainEqual(["ab", "⠁⠃"]);
@@ -212,6 +231,7 @@ describe("Grade 2 source compilation", () => {
       id: "UEB-10.6-en",
       kind: "lower-groupsign",
       print: "en",
+      guards: [],
     })).toContainEqual({ kind: "not-whole-word" });
     expect(compileGrade2RuleGuards({
       braille: "⠁",
@@ -219,6 +239,7 @@ describe("Grade 2 source compilation", () => {
       id: "UEB-10.6-test-fallback",
       kind: "lower-groupsign",
       print: "test-fallback",
+      guards: [],
     })).not.toContainEqual({ kind: "not-whole-word" });
   });
 
@@ -237,6 +258,39 @@ describe("Grade 2 source compilation", () => {
 });
 
 describe("Grade 2 runtime architecture", () => {
+  it.each([
+    ["be", "BEa", "stable-following-modes"],
+    ["ab", "ABa", "stable-following-modes"],
+    ["ea", "aEaa", "stable-adjacent-modes"],
+    ["ab", "aAba", "stable-adjacent-modes"],
+  ] as const)("selects mode restrictions from rule data for %s", (input, text, kind) => {
+    const translate = (guards: ContextualRuleSource["guards"]): string | undefined => {
+      const compiled = compileContextualRules([rule("test-mode-policy", input, 0, guards)]).runtime;
+      const encode = (values: readonly number[]): string =>
+        String.fromCharCode(...values.map((value) => value + 0x100));
+      const translator = compose(GRADE1_SYMBOL_PROGRAM, GRADE1_MODE_PROGRAM,
+        UEB_COMPOSITION_POLICIES, {
+          ...compiled,
+          code: "ueb-2024",
+          grade1Ambiguities: [],
+          grade1LongerAmbiguities: [],
+          matcher: [
+            compiled.matcher.bucketAlphabet, compiled.matcher.inputs,
+            encode(compiled.matcher.initialInputOffsets),
+            encode(compiled.matcher.initialRuleOffsets),
+            encode(compiled.matcher.initialGuardOffsets),
+            encode(compiled.matcher.inputRuleCounts),
+            encode(compiled.matcher.inputGuardCounts),
+          ],
+          standingLiteralInputs: [],
+        });
+      const result = translator.translate(text);
+      expect(result.ok).toBe(true);
+      return result.ok ? result.braille : undefined;
+    };
+    expect(translate([{ kind }])).not.toEqual(translate([]));
+  });
+
   it.each([
     ["'tis", "test-leading-tis"],
     ["’twas", "test-leading-twas"],

@@ -323,7 +323,7 @@ function exclusionComponent(
 function canCollapseModeSpan(
   plan: CompositionModePlan,
   range: UnitRange,
-  requireStableAdjacentModes = false,
+  adjacent?: "following" | "both",
 ): boolean {
   for (let index = range.start + 1; index < range.end; index += 1) {
     if ((plan.prefixes.get(index) ?? "").length > 0) return false;
@@ -332,7 +332,12 @@ function canCollapseModeSpan(
     if ((plan.suffixes.get(index) ?? "").length > 0) return false;
   }
   if (
-    requireStableAdjacentModes && (
+    adjacent === "both" && (
+      plan.prefixes.has(range.start) || plan.suffixes.has(range.start - 1)
+    )
+  ) return false;
+  if (
+    adjacent !== undefined && (
       (plan.suffixes.get(range.end - 1) ?? "").length > 0 ||
       (plan.prefixes.get(range.end) ?? "").length > 0
     )
@@ -487,8 +492,10 @@ export function compose(
                   })),
                 eligibilityOffset,
                 eligibilityWord,
-                isStableSpan: (start, end) => contractionModePlan !== undefined &&
-                  canCollapseModeSpan(contractionModePlan, { start: range.start + start, end: range.start + end }),
+                isStableSpan: (start, end, adjacent) => contractionModePlan !== undefined &&
+                  canCollapseModeSpan(contractionModePlan, {
+                    start: range.start + start, end: range.start + end,
+                  }, adjacent),
                 exclusionWords: [
                   exclusionComponent(units, lexical, range, policies, bucketAlphabet),
                   exclusionComponent(units, component, range, policies, bucketAlphabet),
@@ -508,27 +515,6 @@ export function compose(
                 const unit = units[range.start + Math.max(index, 0)];
                 /* v8 ignore next -- the literal callback receives a character in word. */
                 return unit === undefined ? "" : emitCompositionUnit(unit);
-              },
-              (candidate) => {
-                const appliedRange = {
-                  end: range.start + candidate.end,
-                  start: range.start + candidate.start,
-                };
-                const initialLowerGroupsign = candidate.print === "be" ||
-                  candidate.print === "con" || candidate.print === "dis";
-                const internalLowerGroupsign = ["ea", "bb", "cc", "ff", "gg"]
-                  .includes(candidate.print);
-                return (!initialLowerGroupsign || !units.slice(component.start, appliedRange.start)
-                  .some((unit) => unit.kind === "letter")) &&
-                  contractionModePlan !== undefined &&
-                  (!internalLowerGroupsign || (
-                    !contractionModePlan.prefixes.has(appliedRange.start) &&
-                    !contractionModePlan.suffixes.has(appliedRange.start - 1)
-                  )) && canCollapseModeSpan(
-                    contractionModePlan,
-                    appliedRange,
-                    initialLowerGroupsign || internalLowerGroupsign,
-                  );
               },
             );
             for (const applied of translated.rules) {

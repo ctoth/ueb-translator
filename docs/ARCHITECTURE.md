@@ -65,6 +65,15 @@ explicit UEB context that cannot be recovered by the automaton itself, such as
 standing-alone status and caller-provided structural boundaries. It contains no
 contraction classes, named exceptions, guard opcodes, or rule-selection loop.
 
+Rules also declare whether their span must preserve following or both adjacent
+mode boundaries. These operand-free guards use the same span-stability context
+as the universal interior-indicator restriction. Composition computes indicator
+positions; it does not classify contraction spellings to select these policies.
+The existing word-start guard owns preceding-letter restrictions, including
+letters outside the matchable range. Ports must implement these generic guard
+semantics as well as matching and mode resolution; the declarations travel with
+the compiled rule program.
+
 The Grade 2 generator also derives two closed tables from the same rule
 inventory. The first maps every contraction output made solely from literary
 letter cells back to the literal letter sequence that would otherwise collide

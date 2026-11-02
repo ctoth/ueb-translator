@@ -15,6 +15,7 @@ import type {
 export type { ContextualPrecedence } from "../../src/contextual-transducer.js";
 
 export type ContextualRuleGuard =
+  | { readonly kind: "stable-following-modes" | "stable-adjacent-modes" }
   | { readonly kind: "eligibility-word"; readonly pluralSuffix: string; readonly word: string }
   | { readonly kind: "first-syllable" }
   | { readonly characters: string; readonly kind: "following" }
@@ -171,6 +172,8 @@ function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
     case "not-standing-match":
       return [guard.pattern];
     case "first-syllable":
+    case "stable-following-modes":
+    case "stable-adjacent-modes":
     case "lower-sign":
     case "preceded-by-letter":
     case "not-boundary":
@@ -215,6 +218,10 @@ function boundaryMask(boundaries: readonly ContextualBoundaryKind[]): Contextual
 
 function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
   switch (guard.kind) {
+    case "stable-following-modes":
+      return CONTEXTUAL_GUARD_SCHEMA.stableFollowingModes.opcode;
+    case "stable-adjacent-modes":
+      return CONTEXTUAL_GUARD_SCHEMA.stableAdjacentModes.opcode;
     case "preceded-by-letter":
       return CONTEXTUAL_GUARD_SCHEMA.precededByLetter.opcode;
     case "eligibility-word":
@@ -289,6 +296,10 @@ function compileGuard(
   operandIndexes: ReadonlyMap<string, number>,
 ): CompiledContextualGuard {
   switch (guard.kind) {
+    case "stable-following-modes":
+      return [CONTEXTUAL_GUARD_SCHEMA.stableFollowingModes.opcode];
+    case "stable-adjacent-modes":
+      return [CONTEXTUAL_GUARD_SCHEMA.stableAdjacentModes.opcode];
     case "not-standing-match":
       return [CONTEXTUAL_GUARD_SCHEMA.notStandingMatch.opcode,
         requireContextualOperandIndex(guard.pattern, operandIndexes)];
@@ -403,6 +414,8 @@ function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
     case "word-with-affixes":
       return { affixes: [...guard.affixes], kind: guard.kind };
     case "first-syllable":
+    case "stable-following-modes":
+    case "stable-adjacent-modes":
     case "not-word-end":
     case "preceded-by-letter":
     case "not-word-start":

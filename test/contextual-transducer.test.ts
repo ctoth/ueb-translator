@@ -56,6 +56,11 @@ it("protects standing collision spans when no mode override is supplied", () => 
   expect(translateGuard("ab", [21, 0], ["z"])).toBe("X");
 });
 
+it("permits mode guards when the input has no mode context", () => {
+  expect(translateGuard("ab", [23])).toBe("X");
+  expect(translateGuard("ab", [24])).toBe("X");
+});
+
 function translate(
   boundary: boolean,
   program: ContextualTransducerProgram = suffixGuardProgram,
