@@ -44,6 +44,8 @@ rows are nonempty tuples and are checked for a uniform column count. Computer
 blocks require the caller to choose Grade 1 or Grade 2 and ordinary or
 significant spacing. Significant spacing follows GTM Section 17: in a run of
 three or more spaces, only internal spaces become visible-space cells.
+The visible marker, run threshold, and ordinary edge length are cited rule data
+compiled into the technical program; scanning and source indexes stay in the runtime.
 The Grade 2 block variant also requires a typed translator function, normally
 `translateGrade2` from `ueb-translator/grade2`; this preserves support without
 pulling the contraction program into the default technical browser bundle.

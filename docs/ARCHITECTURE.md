@@ -188,7 +188,8 @@ new public atom cannot compile without a cell mapping.
 Matrix rows and displayed computer lines remain explicit blocks. The matrix
 walker preserves caller-provided rows, columns, enclosure, and gap policy;
 computer spacing converts only internal cells of an explicitly significant
-three-or-more-space run. Width-aware line breaking and tactile diagram drawing
+three-or-more-space run using generated marker, threshold, and edge-length data.
+Width-aware line breaking and tactile diagram drawing
 are later layout concerns, not hidden translation heuristics.
 
 ## Inverse relation and canonical validation

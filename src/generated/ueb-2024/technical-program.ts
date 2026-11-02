@@ -216,5 +216,10 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "standardized": false,
       "teaching": true
     }
+  },
+  "computerWhitespace": {
+    "visibleSpace": "⠬",
+    "minimumRunLength": 3,
+    "ordinaryEdgeLength": 1
   }
 };

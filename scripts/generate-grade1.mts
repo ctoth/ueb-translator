@@ -87,15 +87,21 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
+  const computerWhitespace = isRecord(value) ? value["computerWhitespace"] : undefined;
   if (!isPrintMap(arrows, TECHNICAL_ARROW_DIRECTIONS) ||
     !isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
     !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS) ||
-    !isOperationSpacing(operationSpacing)) {
+    !isOperationSpacing(operationSpacing) || !isComputerWhitespace(computerWhitespace)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing };
+  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, computerWhitespace };
+}
+
+function isComputerWhitespace(value: unknown): value is TechnicalSignProgram["computerWhitespace"] {
+  return isRecord(value) && typeof value["visibleSpace"] === "string" &&
+    typeof value["minimumRunLength"] === "number" && typeof value["ordinaryEdgeLength"] === "number";
 }
 
 function isOperationSpacing(value: unknown): value is TechnicalSignProgram["operationSpacing"] {

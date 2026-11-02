@@ -203,7 +203,7 @@ const VALUE_PATTERNS = {
   identifier: new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns.identifier, "u"),
   number: new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns.number, "u"),
 };
-const VISIBLE_SPACE = "⠬";
+const COMPUTER_WHITESPACE = TECHNICAL_SIGN_PROGRAM.computerWhitespace;
 
 function operationCell(operation: TechnicalOperation): string {
   return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
@@ -646,8 +646,11 @@ function renderSignificantComputerLine(
         end += 1;
       }
       const count = end - cursor;
-      if (count >= 3) {
-        braille += `${BRAILLE_SPACE}${VISIBLE_SPACE.repeat(count - 2)}${BRAILLE_SPACE}`;
+      if (count >= COMPUTER_WHITESPACE.minimumRunLength) {
+        const edge = BRAILLE_SPACE.repeat(COMPUTER_WHITESPACE.ordinaryEdgeLength);
+        braille += edge + COMPUTER_WHITESPACE.visibleSpace.repeat(
+          count - 2 * COMPUTER_WHITESPACE.ordinaryEdgeLength,
+        ) + edge;
       } else {
         braille += BRAILLE_SPACE.repeat(count);
       }
