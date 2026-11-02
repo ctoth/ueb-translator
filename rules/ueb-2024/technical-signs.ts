@@ -1,5 +1,5 @@
 import { loadSymbolProgram } from "../../src/symbol-program.js";
-import { TECHNICAL_SCRIPT_PLACEMENTS, type TechnicalSignProgram } from "../../src/technical-program.js";
+import { TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, type TechnicalSignProgram } from "../../src/technical-program.js";
 import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
@@ -41,6 +41,34 @@ export interface TechnicalScriptSource {
   readonly definitions: TechnicalSignProgram["scripts"];
 }
 
+export interface TechnicalModifierSource {
+  readonly citation: TechnicalScriptSource["citation"];
+  readonly definitions: TechnicalSignProgram["modifiers"];
+}
+
+export const TECHNICAL_MODIFIER_RULES: TechnicalModifierSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "12 indicator list, p.57",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: {
+    "arc-above": "⠨⠸⠱",
+    "bar-above": "⠱",
+    "bar-below": "⠠⠱",
+    "dot-above": "⠘⠲",
+    "dot-below": "⠠⠘⠲",
+    "hat-above": "⠐⠱",
+    "hat-below": "⠠⠐⠱",
+    "line-through": "⠈⠱",
+    "right-arrow-above": "⠘⠱",
+    "right-arrow-below": "⠠⠘⠱",
+    "tilde-above": "⠸⠱",
+    "tilde-below": "⠠⠸⠱",
+  },
+};
+
 const subscript = "⠢", superscript = "⠔";
 export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = {
   citation: {
@@ -64,6 +92,7 @@ export function compileTechnicalSigns(
   additional: readonly SymbolRuleSource[],
   mappings: Pick<TechnicalSignProgram, "operations" | "comparisons">,
   scripts: TechnicalScriptSource,
+  modifiers: TechnicalModifierSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -73,9 +102,16 @@ export function compileTechnicalSigns(
     }
   }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  if (scripts.citation.locator.trim().length === 0 ||
-    !scripts.citation.url.startsWith("https://iceb.org/")) {
-    throw new Error("Technical script definitions lack an official ICEB citation.");
+  for (const source of [scripts, modifiers]) {
+    if (source.citation.locator.trim().length === 0 ||
+      !source.citation.url.startsWith("https://iceb.org/")) {
+      throw new Error("Technical definitions lack an official ICEB citation.");
+    }
+  }
+  for (const modifier of TECHNICAL_MODIFIERS) {
+    if (!/^[\u2800-\u28ff]+$/u.test(modifiers.definitions[modifier])) {
+      throw new Error(`Technical modifier ${modifier} has malformed cells.`);
+    }
   }
   for (const placement of TECHNICAL_SCRIPT_PLACEMENTS) {
     if (!/^[\u2800-\u28ff]+$/u.test(scripts.definitions[placement].indicator)) {
@@ -86,5 +122,6 @@ export function compileTechnicalSigns(
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
     scripts: { ...scripts.definitions },
+    modifiers: { ...modifiers.definitions },
   };
 }
