@@ -217,6 +217,53 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "teaching": true
     }
   },
+  "grade1Protection": {
+    "standingValues": [
+      {
+        "pattern": "^[b-hj-np-z]$",
+        "flags": "iu",
+        "kind": "standing-symbol"
+      },
+      {
+        "pattern": "^\\p{L}[\\p{L}\\p{M}\\d]+$",
+        "flags": "u",
+        "kind": "standing-word"
+      }
+    ],
+    "maxSymbolsPerSequence": 1,
+    "passageSequenceThreshold": 3
+  },
+  "functionSpacing": {
+    "letterCells": [
+      "⠁",
+      "⠃",
+      "⠉",
+      "⠙",
+      "⠑",
+      "⠋",
+      "⠛",
+      "⠓",
+      "⠊",
+      "⠚",
+      "⠅",
+      "⠇",
+      "⠍",
+      "⠝",
+      "⠕",
+      "⠏",
+      "⠟",
+      "⠗",
+      "⠎",
+      "⠞",
+      "⠥",
+      "⠧",
+      "⠺",
+      "⠭",
+      "⠽",
+      "⠵"
+    ],
+    "namePattern": "^[a-z]"
+  },
   "numericContinuation": {
     "precedingKinds": [
       "number",

@@ -527,6 +527,24 @@ describe("preferred grade-1 scope edges", () => {
       }),
     ).toMatchObject({ braille: fromBrf(";;SPEED"), ok: true });
 
+    expect(translateTechnical({
+      blocks: [{ expression: {
+        comparison: "equals", kind: "comparison",
+        left: { kind: "identifier", value: "x" },
+        right: { kind: "identifier", value: "y" },
+      }, kind: "expression" }],
+      kind: "technical-document", profile: preferred,
+    })).toMatchObject({ braille: fromBrf(';X "7 ;Y'), ok: true });
+    expect(translateTechnical({
+      blocks: [{ expression: {
+        kind: "sequence", items: [
+          { kind: "identifier", value: "x" },
+          { kind: "identifier", value: "y" },
+        ],
+      }, kind: "expression" }],
+      kind: "technical-document", profile: preferred,
+    })).toMatchObject({ braille: fromBrf("XY"), ok: true });
+
     const chain: TechnicalExpression = {
       comparison: "equals",
       kind: "comparison",
@@ -734,6 +752,10 @@ describe("preferred grade-1 scope edges", () => {
 
   it.each([
     [{ kind: "identifier", value: "X" }, "⠰⠠⠭"],
+    [{ kind: "identifier", value: "A" }, "⠠⠁"],
+    [{ kind: "identifier", value: "i" }, "⠊"],
+    [{ kind: "identifier", value: "j" }, "⠰⠚"],
+    [{ kind: "identifier", value: "ab2" }, "⠰⠰⠁⠃⠼⠃"],
     [{ kind: "chemical-element", symbol: "H" }, "⠰⠠⠓"],
     [{
       content: { kind: "identifier", value: "ab" },
@@ -864,6 +886,30 @@ describe("preferred grade-1 scope edges", () => {
       profile: preferred,
     })).toMatchObject({ braille: fromBrf(";X SIN#FJ"), ok: true });
   });
+
+  it.each([
+    ["X", "sin", ",X SIN#FJ"],
+    ["x", "Sin", "X,SIN#FJ"],
+  ])("preserves capitalization boundaries for %s%s", (value, name, expected) => {
+    expect(expressionBraille({
+      kind: "sequence",
+      items: [
+        { kind: "identifier", value },
+        { kind: "function", name, argument: { kind: "number", value: "60" } },
+      ],
+    })).toBe(fromBrf(expected));
+  });
+
+  it.each([
+    [{ kind: "identifier", value: "x" }, "SIN X"],
+    [{ kind: "identifier", value: "A" }, "SIN,A"],
+    [{ kind: "identifier", value: "θ" }, "SIN.?"],
+    [{ kind: "group", enclosure: "round", content: { kind: "identifier", value: "x" } }, 'SIN"<X">'],
+  ] satisfies readonly (readonly [TechnicalExpression, string])[])(
+    "preserves function argument spacing for %j", (argument, expected) => {
+      expect(expressionBraille({ kind: "function", name: "sin", argument })).toBe(fromBrf(expected));
+    },
+  );
 
   it.each([
     [

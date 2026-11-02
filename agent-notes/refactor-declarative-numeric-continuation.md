@@ -1,12 +1,10 @@
 # Goal
 
-Extract the existing technical numeric-continuation selectors into typed rule data, independently from integrated main. No JSON migration, publication, merge, or behavior expansion.
+Extract the existing technical numeric-continuation selectors into typed rule data, independently from integrated main. Parent publishes the PR. No JSON migration, merge, or behavior expansion.
 
-# State
+## State
 
-Implemented the numericContinuation descriptor in existing technical source, compiler, contract, generator, and runtime. Regenerated only the technical program. Added fixed-output prefix and predecessor boundary cases and compiler descriptor validation cases. Visually read ICEB July 2025 Grade 1 indicator section pages 1-3 from the original local page images.
-
-Completed npm ci --ignore-scripts, npm run grade1:generate, and npx vitest run --coverage.enabled=false test/grade1-rule-compiler.test.ts test/technical-variants.test.ts. After fixing one accidental extra structuredClone argument in the compiler tests, reran that edited test file successfully. No local full CI, typecheck, coverage, or oracle sweeps were run; the general Grade 1/Grade 2 artifacts and ledgers are unchanged.
+Implemented and published as independent PR #163 against main. Parent inspected the source, runtime, generated data and tests. Full hosted CI and both oracle runs passed. Actual logs: 1,048 inventory, 658,033 dictionary and 441,223 corpus cases, zero stale/untriaged; accepted disagreements unchanged at 1/10,358/35,962. PR description links verified runs. Only technical generated data changed; general Grade 1/Grade 2 artifacts and ledgers unchanged. No merge authorized.
 
 # Decisions and why
 
@@ -16,6 +14,6 @@ The smallest change adds one technical rule descriptor containing preceding expr
 
 An initial mechanical argument update also touched structuredClone; inspecting the diff caught it, and it is corrected. No runtime behavior departure was found.
 
-# Next step
+## Next step
 
-Parent: inspect the local branch and ignored .oracle-artifacts/pr-body.md draft, publish the independent PR, and verify hosted CI and pushed-head oracle validation. No merge or release is authorized in this batch.
+Q authorized merging all four. PRs #161 and #162 are normally merged. Resolving #163 against integrated main, retaining all policy descriptors and tests; regenerate, push and verify hosted checks before merge. JSON migration and compiler port remain outside this batch.
