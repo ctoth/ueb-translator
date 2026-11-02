@@ -41,6 +41,27 @@ function isUnknownArray(value: unknown): value is readonly unknown[] {
 }
 
 describe("grouped empirical ledger", () => {
+  it.each(["(blpa)", "(blpa'"])("triages issue 97 input %s with current local evidence", (input) => {
+    const parsed = parseEmpiricalLedger(JSON.parse(readFileSync(
+      new URL("../empirical-disagreements.json", import.meta.url), "utf8",
+    )));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    const entries = parsed.ledger.disagreements;
+    const entry = entries.find((entry) =>
+      !isCompactEmpiricalEntry(entry) && entry.input === input
+    );
+    expect(entry).toBeDefined();
+    if (entry === undefined || isCompactEmpiricalEntry(entry)) return;
+    expect(entry.verdict.kind).toBe("liblouis-bug");
+    expect(entry.verdict.issues).toContain(97);
+    expect(translateGrade2(entry.input)).toMatchObject({ braille: entry.local.output, ok: true });
+    const triaged = createFuzzTriage(new Set(entries.flatMap((entry) =>
+      isCompactEmpiricalEntry(entry) ? [] : [divergenceFingerprint(entry)]
+    )));
+    expect(triaged(entry)).toBe(true);
+  });
+
   it("triages the reviewed cc overlap as an oracle defect with current local evidence", () => {
     const parsed = parseEmpiricalLedger(JSON.parse(readFileSync(
       new URL("../empirical-disagreements.json", import.meta.url), "utf8",
