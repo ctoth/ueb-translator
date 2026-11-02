@@ -216,5 +216,36 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "standardized": false,
       "teaching": true
     }
+  },
+  "functionSpacing": {
+    "letterCells": [
+      "⠁",
+      "⠃",
+      "⠉",
+      "⠙",
+      "⠑",
+      "⠋",
+      "⠛",
+      "⠓",
+      "⠊",
+      "⠚",
+      "⠅",
+      "⠇",
+      "⠍",
+      "⠝",
+      "⠕",
+      "⠏",
+      "⠟",
+      "⠗",
+      "⠎",
+      "⠞",
+      "⠥",
+      "⠧",
+      "⠺",
+      "⠭",
+      "⠽",
+      "⠵"
+    ],
+    "namePattern": "^[a-z]"
   }
 };

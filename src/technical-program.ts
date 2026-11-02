@@ -213,6 +213,11 @@ export const TECHNICAL_VALUE_KINDS = ["chemical-element", "function-name", "iden
 
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
+  readonly functionSpacing: {
+    readonly letterCells: readonly string[];
+    /** Function names matched with Unicode semantics. */
+    readonly namePattern: string;
+  };
   readonly operationSpacing: {
     readonly international: Readonly<Record<InternationalTechnicalProfile["operationSpacing"], boolean>>;
     readonly "bana-2026": Readonly<Record<BanaTechnicalProfile["production"], boolean>>;

@@ -207,6 +207,21 @@ export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource 
   },
 };
 
+export type TechnicalFunctionSpacingSource = TechnicalRuleSource<{
+  readonly letterPrintPattern: string;
+  readonly namePattern: string;
+}>;
+
+export const TECHNICAL_FUNCTION_SPACING_RULES: TechnicalFunctionSpacingSource = {
+  citation: {
+    authority: "ICEB",
+    document: "Unified English Braille: Guidelines for Technical Material (2014)",
+    locator: "9.3.2-9.3.3, pp.43-44",
+    url: "https://iceb.org/publications/ueb/",
+  },
+  definitions: { letterPrintPattern: "^[a-z]$", namePattern: "^[a-z]" },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
@@ -218,6 +233,7 @@ export function compileTechnicalSigns(
   items: TechnicalItemSource,
   valuePatterns: TechnicalSignProgram["valuePatterns"],
   spacing: TechnicalOperationSpacingSource,
+  functionSpacing: TechnicalFunctionSpacingSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -231,6 +247,8 @@ export function compileTechnicalSigns(
     throw new Error("Technical item identifier pattern is empty.");
   }
   const identifierPattern = new RegExp(items.definitions.identifierPattern, "u");
+  const letterPrintPattern = new RegExp(functionSpacing.definitions.letterPrintPattern, "u");
+  const functionNamePattern = new RegExp(functionSpacing.definitions.namePattern, "u");
   const compiledPatterns = { ...valuePatterns };
   for (const kind of TECHNICAL_VALUE_KINDS) {
     if (compiledPatterns[kind].length === 0) {
@@ -239,7 +257,7 @@ export function compileTechnicalSigns(
     compiledPatterns[kind] = new RegExp(compiledPatterns[kind], "u").source;
   }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"]]) {
+  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], functionSpacing]) {
     const authority = source.citation.authority;
     const officialHost = authority === "BANA" ? "https://brailleauthority.org/" : "https://iceb.org/";
     if (source.citation.locator.trim().length === 0 ||
@@ -296,6 +314,11 @@ export function compileTechnicalSigns(
     }
   }
   return {
+    functionSpacing: {
+      letterCells: compiled.symbols.filter((symbol) => letterPrintPattern.test(symbol.print))
+        .map((symbol) => symbol.braille),
+      namePattern: functionNamePattern.source,
+    },
     operationSpacing: {
       international: { ...spacing.international.definitions },
       "bana-2026": { ...spacing["bana-2026"].definitions },

@@ -84,6 +84,7 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const delimiters = isRecord(value) ? value["delimiters"] : undefined;
   const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
   const operationSpacing = isRecord(value) ? value["operationSpacing"] : undefined;
+  const functionSpacing = isRecord(value) ? value["functionSpacing"] : undefined;
   const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
@@ -92,10 +93,16 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
     !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS) ||
-    !isOperationSpacing(operationSpacing)) {
+    !isOperationSpacing(operationSpacing) || !isFunctionSpacing(functionSpacing)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing };
+  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, functionSpacing };
+}
+
+function isFunctionSpacing(value: unknown): value is TechnicalSignProgram["functionSpacing"] {
+  return isRecord(value) && Array.isArray(value["letterCells"]) &&
+    value["letterCells"].every((cell: unknown) => typeof cell === "string") &&
+    typeof value["namePattern"] === "string";
 }
 
 function isOperationSpacing(value: unknown): value is TechnicalSignProgram["operationSpacing"] {
