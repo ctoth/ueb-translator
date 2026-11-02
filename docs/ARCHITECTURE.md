@@ -133,6 +133,10 @@ technical program containing only additions and semantic maps. These additions
 are loaded only for structured technical sign lookup, preserving ordinary
 Grade 1 and raw technical-text support. Negation uses the same minus mapping.
 
+The eight simple arrow directions also reference the shared symbols through
+the generated technical program (GTM 13.1, p.60). The renderer has no separate
+arrow map or accessor.
+
 The same technical program declares each script's indicator and whether its
 expression appears before or after the base. These six descriptors are cited
 to GTM Section 7. The renderer uses the declared position for concatenation and

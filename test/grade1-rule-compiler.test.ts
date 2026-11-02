@@ -30,7 +30,7 @@ import { SYMBOL_RULES } from "../rules/ueb-2024/symbols/source.js";
 import {
   compileTechnicalSigns, TECHNICAL_ITEM_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SCRIPT_RULES, TECHNICAL_SHAPE_RULES, TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SYMBOL_RULES,
 } from "../rules/ueb-2024/technical-signs.js";
-import { TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS, TECHNICAL_DELIMITER_SIGNS,
+import { TECHNICAL_ARROW_DIRECTIONS, TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS, TECHNICAL_DELIMITER_SIGNS,
   TECHNICAL_ENCLOSURES } from "../src/technical-program.js";
 import {
   indicatorKind,
@@ -141,6 +141,14 @@ describe("compiled Grade 1 symbols", () => {
 });
 
 describe("compiled technical signs", () => {
+  it.each(TECHNICAL_ARROW_DIRECTIONS)("rejects a missing arrow reference for %s", (direction) => {
+    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, {
+      ...TECHNICAL_SIGN_MAPPINGS,
+      arrows: { ...TECHNICAL_SIGN_MAPPINGS.arrows, [direction]: "missing" },
+    }, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES,
+    TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES)).toThrow("references missing symbol");
+  });
+
   it.each(["", "("])("rejects an invalid item identifier pattern %j", (identifierPattern) => {
     expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
       TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES,
