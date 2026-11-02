@@ -527,6 +527,24 @@ describe("preferred grade-1 scope edges", () => {
       }),
     ).toMatchObject({ braille: fromBrf(";;SPEED"), ok: true });
 
+    expect(translateTechnical({
+      blocks: [{ expression: {
+        comparison: "equals", kind: "comparison",
+        left: { kind: "identifier", value: "x" },
+        right: { kind: "identifier", value: "y" },
+      }, kind: "expression" }],
+      kind: "technical-document", profile: preferred,
+    })).toMatchObject({ braille: fromBrf(';X "7 ;Y'), ok: true });
+    expect(translateTechnical({
+      blocks: [{ expression: {
+        kind: "sequence", items: [
+          { kind: "identifier", value: "x" },
+          { kind: "identifier", value: "y" },
+        ],
+      }, kind: "expression" }],
+      kind: "technical-document", profile: preferred,
+    })).toMatchObject({ braille: fromBrf("XY"), ok: true });
+
     const chain: TechnicalExpression = {
       comparison: "equals",
       kind: "comparison",
@@ -707,6 +725,10 @@ describe("preferred grade-1 scope edges", () => {
 
   it.each([
     [{ kind: "identifier", value: "X" }, "⠰⠠⠭"],
+    [{ kind: "identifier", value: "A" }, "⠠⠁"],
+    [{ kind: "identifier", value: "i" }, "⠊"],
+    [{ kind: "identifier", value: "j" }, "⠰⠚"],
+    [{ kind: "identifier", value: "ab2" }, "⠰⠰⠁⠃⠼⠃"],
     [{ kind: "chemical-element", symbol: "H" }, "⠰⠠⠓"],
     [{
       content: { kind: "identifier", value: "ab" },
