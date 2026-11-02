@@ -190,5 +190,15 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "simple-fraction": true
     },
     "identifierPattern": "^\\p{L}\\p{M}*$"
+  },
+  "operationSpacing": {
+    "international": {
+      "spaced": true,
+      "unspaced": false
+    },
+    "bana-2026": {
+      "standardized": false,
+      "teaching": true
+    }
   }
 };

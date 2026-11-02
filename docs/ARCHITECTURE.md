@@ -155,6 +155,11 @@ The expression types live once in the shared technical contract and retain
 their public exports. Group delimiters and protection offsets remain renderer
 mechanics.
 
+Operation spacing is declared per existing profile option in the same program:
+international spaced/unspaced choices follow the caller's presentation choice
+(GTM 1.1.2); BANA standardized/teaching choices retain the API's selected
+presentation (BANA 2026 Section 2). The runtime reads that declared boolean.
+
 The technical entry point is a closed recursive algebra over print identity and
 layout semantics. One post-order traversal validates leaf values, emits the
 official UEB cells, and carries grade-1 protection offsets with each successful

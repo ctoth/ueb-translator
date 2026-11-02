@@ -69,28 +69,41 @@ function isPrintMap<Key extends string>(
     keys.every((key) => typeof value[key] === "string");
 }
 
+function isBooleanMap<Key extends string>(
+  value: unknown, keys: readonly Key[],
+): value is Readonly<Record<Key, boolean>> {
+  return isRecord(value) && Object.keys(value).length === keys.length &&
+    keys.every((key) => typeof value[key] === "boolean");
+}
+
 function technicalProgram(value: unknown): TechnicalSignProgram {
   const operations = isRecord(value) ? value["operations"] : undefined;
   const comparisons = isRecord(value) ? value["comparisons"] : undefined;
   const scripts = isRecord(value) ? value["scripts"] : undefined;
   const delimiters = isRecord(value) ? value["delimiters"] : undefined;
   const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
+  const operationSpacing = isRecord(value) ? value["operationSpacing"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
   if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
-    !isItemPolicy(itemPolicy)) {
+    !isItemPolicy(itemPolicy) || !isOperationSpacing(operationSpacing)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy };
+  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, operationSpacing };
+}
+
+function isOperationSpacing(value: unknown): value is TechnicalSignProgram["operationSpacing"] {
+  return isRecord(value) &&
+    isBooleanMap(value["international"], ["spaced", "unspaced"]) &&
+    isBooleanMap(value["bana-2026"], ["standardized", "teaching"]);
 }
 
 function isItemPolicy(value: unknown): value is TechnicalSignProgram["itemPolicy"] {
   if (!isRecord(value)) return false;
   const kinds = value["kinds"];
-  return isRecord(kinds) && Object.keys(kinds).length === TECHNICAL_ITEM_KINDS.length &&
-    TECHNICAL_ITEM_KINDS.every((kind) => typeof kinds[kind] === "boolean") &&
+  return isBooleanMap(kinds, TECHNICAL_ITEM_KINDS) &&
     typeof value["identifierPattern"] === "string";
 }
 

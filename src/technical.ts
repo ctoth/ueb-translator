@@ -21,9 +21,11 @@ import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
 import type {
-  SimpleArrowDirection, TechnicalComparison, TechnicalExpression, TechnicalOperation, TechnicalShape,
+  SimpleArrowDirection, TechnicalComparison, TechnicalExpression, TechnicalGrade1Policy,
+  TechnicalOperation, TechnicalProfile, TechnicalShape,
 } from "./technical-program.js";
 export type {
+  BanaTechnicalProfile, InternationalTechnicalProfile, TechnicalGrade1Policy, TechnicalProfile,
   TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement,
   TechnicalShapeName, TechnicalEnclosure,
   SimpleArrowDirection, TechnicalIdentifier, TechnicalNumber, TechnicalSequence,
@@ -32,24 +34,6 @@ export type {
   TechnicalIndexedRoot, TechnicalRadical, TechnicalSimpleArrow, TechnicalChemicalElement,
   TechnicalGroup, TechnicalFunction, TechnicalModifiedItem, TechnicalShape, TechnicalExpression,
 } from "./technical-program.js";
-
-export type TechnicalGrade1Policy = "all-technical" | "preferred";
-
-export interface InternationalTechnicalProfile {
-  readonly grade1: TechnicalGrade1Policy;
-  readonly jurisdiction: "international";
-  readonly operationSpacing: "spaced" | "unspaced";
-}
-
-export interface BanaTechnicalProfile {
-  readonly grade1: TechnicalGrade1Policy;
-  readonly jurisdiction: "bana-2026";
-  readonly production: "standardized" | "teaching";
-}
-
-export type TechnicalProfile =
-  | BanaTechnicalProfile
-  | InternationalTechnicalProfile;
 
 export interface TechnicalExpressionBlock {
   readonly expression: TechnicalExpression;
@@ -322,15 +306,6 @@ function renderScriptValue(
   );
 }
 
-function operationIsSpaced(profile: TechnicalProfile): boolean {
-  switch (profile.jurisdiction) {
-    case "bana-2026":
-      return profile.production === "teaching";
-    case "international":
-      return profile.operationSpacing === "spaced";
-  }
-}
-
 function needsSpaceBeforeFunction(
   previous: RenderSuccess | undefined,
   expression: TechnicalExpression,
@@ -506,7 +481,11 @@ function renderExpression(
       if (!right.ok) {
         return right;
       }
-      const space = operationIsSpaced(profile) ? BRAILLE_SPACE : "";
+      const spacing = TECHNICAL_SIGN_PROGRAM.operationSpacing;
+      const spaced = profile.jurisdiction === "international"
+        ? spacing.international[profile.operationSpacing]
+        : spacing["bana-2026"][profile.production];
+      const space = spaced ? BRAILLE_SPACE : "";
       const rightOffset =
         left.braille.length +
         operationCell(expression.operation).length +

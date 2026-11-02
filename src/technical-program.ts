@@ -53,6 +53,24 @@ export type TechnicalDelimiters = Readonly<Record<(typeof TECHNICAL_DELIMITER_SI
   readonly matrixEnclosures: Readonly<Record<(typeof TECHNICAL_MATRIX_ENCLOSURES)[number], TechnicalEnclosureCells>>;
 };
 
+export type TechnicalGrade1Policy = "all-technical" | "preferred";
+
+export interface InternationalTechnicalProfile {
+  readonly grade1: TechnicalGrade1Policy;
+  readonly jurisdiction: "international";
+  readonly operationSpacing: "spaced" | "unspaced";
+}
+
+export interface BanaTechnicalProfile {
+  readonly grade1: TechnicalGrade1Policy;
+  readonly jurisdiction: "bana-2026";
+  readonly production: "standardized" | "teaching";
+}
+
+export type TechnicalProfile =
+  | BanaTechnicalProfile
+  | InternationalTechnicalProfile;
+
 export type SimpleArrowDirection =
   | "down"
   | "down-left"
@@ -198,6 +216,10 @@ export interface TechnicalItemPolicy {
 
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
+  readonly operationSpacing: {
+    readonly international: Readonly<Record<InternationalTechnicalProfile["operationSpacing"], boolean>>;
+    readonly "bana-2026": Readonly<Record<BanaTechnicalProfile["production"], boolean>>;
+  };
   readonly itemPolicy: TechnicalItemPolicy;
   readonly operations: Readonly<Record<TechnicalOperation, string>>;
   readonly comparisons: Readonly<Record<TechnicalComparison, string>>;

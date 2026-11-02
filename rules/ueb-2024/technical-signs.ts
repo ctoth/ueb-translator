@@ -159,6 +159,38 @@ export const TECHNICAL_ITEM_RULES: TechnicalItemSource = {
   },
 };
 
+export interface TechnicalOperationSpacingSource {
+  readonly international: TechnicalRuleSource<TechnicalSignProgram["operationSpacing"]["international"]>;
+  readonly "bana-2026": {
+    readonly citation: RuleCitation<
+      "BANA", "Guidance on Transcribing Mathematics and Science in UEB (2026)",
+      string, "https://brailleauthority.org/node/50"
+    >;
+    readonly definitions: TechnicalSignProgram["operationSpacing"]["bana-2026"];
+  };
+}
+
+export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource = {
+  international: {
+    citation: {
+      authority: "ICEB",
+      document: "Unified English Braille: Guidelines for Technical Material (2014)",
+      locator: "1.1.2, p.1 (caller-selected presentation)",
+      url: "https://iceb.org/publications/ueb/",
+    },
+    definitions: { spaced: true, unspaced: false },
+  },
+  "bana-2026": {
+    citation: {
+      authority: "BANA",
+      document: "Guidance on Transcribing Mathematics and Science in UEB (2026)",
+      locator: "Introduction and 2 Spacing of signs, p.2 (agency-selected teaching presentation)",
+      url: "https://brailleauthority.org/node/50",
+    },
+    definitions: { standardized: false, teaching: true },
+  },
+};
+
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
@@ -168,6 +200,7 @@ export function compileTechnicalSigns(
   shapes: TechnicalShapeSource,
   delimiters: TechnicalDelimiterSource,
   items: TechnicalItemSource,
+  spacing: TechnicalOperationSpacingSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -181,10 +214,12 @@ export function compileTechnicalSigns(
   }
   const identifierPattern = new RegExp(items.definitions.identifierPattern, "u");
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, modifiers, shapes, delimiters, items]) {
+  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"]]) {
+    const authority = source.citation.authority;
+    const officialHost = authority === "BANA" ? "https://brailleauthority.org/" : "https://iceb.org/";
     if (source.citation.locator.trim().length === 0 ||
-      !source.citation.url.startsWith("https://iceb.org/")) {
-      throw new Error("Technical definitions lack an official ICEB citation.");
+      !source.citation.url.startsWith(officialHost)) {
+      throw new Error(`Technical definitions lack an official ${authority} citation.`);
     }
   }
   for (const modifier of TECHNICAL_MODIFIERS) {
@@ -236,6 +271,10 @@ export function compileTechnicalSigns(
     }
   }
   return {
+    operationSpacing: {
+      international: { ...spacing.international.definitions },
+      "bana-2026": { ...spacing["bana-2026"].definitions },
+    },
     itemPolicy: { kinds: { ...items.definitions.kinds }, identifierPattern: identifierPattern.source },
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
