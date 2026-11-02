@@ -4,7 +4,8 @@
 Move the visible-space marker, minimum significant run length, and ordinary edge length into cited technical rule data. Preserve runtime scanning, callbacks, and failure indexes.
 
 ## State
-Implementation complete. `npm run grade1:generate` succeeded; edited compiler and technical test files passed with coverage disabled. Only generated technical program changed; general Grade 1, Grade 2, and oracle ledgers unchanged. No publication or merge performed by this worker. Hosted CI and oracle validation remain unverified.
+
+Implemented and published as independent PR #164 against main. Parent inspected the source, runtime, generated data and tests. Full hosted CI and both oracle runs passed. Actual logs: 1,048 inventory, 658,033 dictionary and 441,223 corpus cases, zero stale/untriaged; accepted disagreements unchanged at 1/10,358/35,962. PR description links verified runs. Only technical generated data changed; general Grade 1/Grade 2 artifacts and ledgers unchanged. No merge authorized.
 
 ## Decisions and why
 The existing technical source, compiler, shared contract, and generator own the new descriptor. Original ICEB GTM 2014 page images 088 and 089 (printed pages 83-84), personally viewed, specify dots 346, runs of three or more ordinary spaces, and retaining the first and last space. The runtime retains traversal and expansion mechanics. No unrelated normative corrections.
@@ -15,4 +16,5 @@ Smallest change is the descriptor and its existing compiler/generator plumbing, 
 Paper image files are available in the main checkout, not this isolated worktree.
 
 ## Next step
-Parent verifies the committed diff, publishes the independent PR, and waits for hosted full CI/oracle checks. Draft is `.oracle-artifacts/pr-body.md`.
+
+Q authorized merging all four. PRs #161-#163 are normally merged. Resolving #164 against integrated main while retaining all policy descriptors and tests; regenerate, push and verify hosted checks before merge. JSON migration and compiler port remain outside this batch.
