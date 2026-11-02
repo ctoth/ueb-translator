@@ -21,7 +21,7 @@ import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
 import type {
-  SimpleArrowDirection, TechnicalComparison, TechnicalExpression, TechnicalGrade1Policy,
+  TechnicalComparison, TechnicalExpression, TechnicalGrade1Policy,
   TechnicalOperation, TechnicalProfile, TechnicalShape,
 } from "./technical-program.js";
 export type {
@@ -197,18 +197,13 @@ const SYMBOL_RUNTIME = loadSymbolProgram({
 });
 const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
 const ITEM_IDENTIFIER = new RegExp(TECHNICAL_SIGN_PROGRAM.itemPolicy.identifierPattern, "u");
+const VALUE_PATTERNS = {
+  "chemical-element": new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns["chemical-element"], "u"),
+  "function-name": new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns["function-name"], "u"),
+  identifier: new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns.identifier, "u"),
+  number: new RegExp(TECHNICAL_SIGN_PROGRAM.valuePatterns.number, "u"),
+};
 const VISIBLE_SPACE = "⠬";
-
-const ARROW_PRINT = {
-  down: "↓",
-  "down-left": "↙",
-  "down-right": "↘",
-  left: "←",
-  right: "→",
-  up: "↑",
-  "up-left": "↖",
-  "up-right": "↗",
-} satisfies Readonly<Record<SimpleArrowDirection, string>>;
 
 function operationCell(operation: TechnicalOperation): string {
   return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
@@ -231,10 +226,6 @@ const UNPREFIXED_LATIN_LETTER_CELLS = new Set(
   Array.from("⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵"),
 );
 
-function arrowCell(direction: SimpleArrowDirection): string {
-  return symbolCell(ARROW_PRINT[direction]);
-}
-
 function shapeCell(shape: TechnicalShape): string {
   const signs = TECHNICAL_SIGN_PROGRAM.shapes;
   const braille = `${signs.fills[shape.fill]}${signs.names[shape.shape]}`;
@@ -256,10 +247,6 @@ function renderPrintValue(
     return { ...translated, mode: "technical" };
   }
   return renderSuccess(translated.braille);
-}
-
-function renderNumber(value: string): RenderResult {
-  return renderPrintValue(value, "number", /^\d+(?:[,.]\d+)*$/u);
 }
 
 function renderStandingValue(
@@ -338,7 +325,7 @@ function renderExpression(
       return renderStandingValue(
         expression.symbol,
         "chemical-element",
-        /^[A-Z][a-z]?$/u,
+        VALUE_PATTERNS["chemical-element"],
       );
     case "comparison": {
       const left = renderExpression(expression.left, profile);
@@ -415,14 +402,14 @@ function renderExpression(
       return renderStandingValue(
         expression.value,
         "identifier",
-        /^\p{L}[\p{L}\p{M}\d]*$/u,
+        VALUE_PATTERNS.identifier,
       );
     }
     case "function": {
       const name = renderPrintValue(
         expression.name,
         "function-name",
-        /^\p{L}[\p{L}\p{M}]*$/u,
+        VALUE_PATTERNS["function-name"],
       );
       const argument = renderExpression(expression.argument, profile);
       if (!name.ok) {
@@ -471,7 +458,7 @@ function renderExpression(
       );
     }
     case "number":
-      return renderNumber(expression.value);
+      return renderPrintValue(expression.value, "number", VALUE_PATTERNS.number);
     case "operation": {
       const left = renderExpression(expression.left, profile);
       const right = renderExpression(expression.right, profile);
@@ -601,19 +588,19 @@ function renderExpression(
         { end: 1, kind: "symbol", offset: 0 },
       ]);
     case "simple-arrow":
-      return renderSuccess(arrowCell(expression.direction), [
+      return renderSuccess(symbolCell(TECHNICAL_SIGN_PROGRAM.arrows[expression.direction]), [
         { end: 1, kind: "symbol", offset: 0 },
       ]);
     case "simple-fraction": {
       const numerator = renderPrintValue(
         expression.numerator,
         "simple-fraction-numerator",
-        /^\d+(?:[,.]\d+)*$/u,
+        VALUE_PATTERNS.number,
       );
       const denominator = renderPrintValue(
         expression.denominator,
         "simple-fraction-denominator",
-        /^\d+(?:[,.]\d+)*$/u,
+        VALUE_PATTERNS.number,
       );
       if (!numerator.ok) {
         return numerator;

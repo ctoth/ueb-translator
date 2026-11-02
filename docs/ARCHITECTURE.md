@@ -133,6 +133,10 @@ technical program containing only additions and semantic maps. These additions
 are loaded only for structured technical sign lookup, preserving ordinary
 Grade 1 and raw technical-text support. Negation uses the same minus mapping.
 
+The eight simple arrow directions also reference the shared symbols through
+the generated technical program (GTM 13.1, p.60). The renderer has no separate
+arrow map or accessor.
+
 The same technical program declares each script's indicator and whether its
 expression appears before or after the base. These six descriptors are cited
 to GTM Section 7. The renderer uses the declared position for concatenation and
@@ -154,6 +158,11 @@ Unicode identifier pattern from the same generated program (GTM 7.1 and 12.1).
 The expression types live once in the shared technical contract and retain
 their public exports. Group delimiters and protection offsets remain renderer
 mechanics.
+
+Accepted leaf values use generated Unicode-matched API grammar patterns for
+numbers, identifiers, function names and chemical-element spelling. One numeric
+pattern serves numbers and both simple-fraction fields. These describe the API's
+accepted input syntax; chemical spelling does not validate an actual element.
 
 Operation spacing is declared per existing profile option in the same program:
 international spaced/unspaced choices follow the caller's presentation choice

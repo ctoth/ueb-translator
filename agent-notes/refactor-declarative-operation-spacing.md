@@ -44,6 +44,20 @@ No general Grade1/Grade2 artifact or oracle-ledger changes; no full local CI.
 
 # Next step
 
-Implementation is complete. Commit locally with this note and draft PR body.
-Parent must inspect, push and publish the independent PR, then read its hosted
-full CI and oracle results. This worker does not publish or merge.
+Parent published independent PR #160. Its earlier standalone head passed full
+hosted CI and both oracle runs with zero stale/untriaged disagreements.
+Q then authorized normal merges. After #158 and #159 merged, parent began a
+merge from integrated main into this worktree and assigned its resolution.
+
+Resolved eight shared owners. All arrow, value-pattern and spacing fields,
+source citations, validators, public exports and compiler tests are retained.
+The value-pattern invalid cases in technical-variants.test.ts are unchanged
+against integrated main. Compiler arguments now pass valuePatterns followed
+by operation-spacing source. Generation succeeded and only the generated
+technical program differs from integrated main; general Grade1/Grade2 outputs
+are unchanged. The two edited compiler/technical test files passed after
+completed source edits; no full local CI ran.
+
+The integration is locally committed. Parent must inspect, push and wait for the
+new head's hosted CI/oracle checks before normally merging PR #160. This
+worker does not push, publish or merge. No release requested.

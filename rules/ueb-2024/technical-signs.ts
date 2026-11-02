@@ -1,10 +1,18 @@
 import { loadSymbolProgram } from "../../src/symbol-program.js";
-import { TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
+import { TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
 import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
-/** ICEB October 2018 replacement Section 3, sign tables on pages 1-2. */
-export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons"> = {
+/**
+ * Semantic print references: operations/comparisons follow ICEB October 2018
+ * replacement Section 3 (pp.1-2); arrows follow GTM 2014 13.1 (p.60).
+ * Cell definitions remain in the shared symbol inventory.
+ */
+export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows"> = {
+  arrows: {
+    down: "↓", "down-left": "↙", "down-right": "↘", left: "←",
+    right: "→", up: "↑", "up-left": "↖", "up-right": "↗",
+  },
   operations: {
     asterisk: "*", divide: "÷", dot: "⋅", minus: "−", multiply: "×",
     plus: "+", "plus-or-minus": "±",
@@ -159,6 +167,14 @@ export const TECHNICAL_ITEM_RULES: TechnicalItemSource = {
   },
 };
 
+/** Accepted structured API inputs, not a normative list of chemical elements. */
+export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = {
+  "chemical-element": "^[A-Z][a-z]?$",
+  "function-name": "^\\p{L}[\\p{L}\\p{M}]*$",
+  identifier: "^\\p{L}[\\p{L}\\p{M}\\d]*$",
+  number: "^\\d+(?:[,.]\\d+)*$",
+};
+
 export interface TechnicalOperationSpacingSource {
   readonly international: TechnicalRuleSource<TechnicalSignProgram["operationSpacing"]["international"]>;
   readonly "bana-2026": {
@@ -194,17 +210,19 @@ export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource 
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
   additional: readonly SymbolRuleSource[],
-  mappings: Pick<TechnicalSignProgram, "operations" | "comparisons">,
+  mappings: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows">,
   scripts: TechnicalScriptSource,
   modifiers: TechnicalModifierSource,
   shapes: TechnicalShapeSource,
   delimiters: TechnicalDelimiterSource,
   items: TechnicalItemSource,
+  valuePatterns: TechnicalSignProgram["valuePatterns"],
   spacing: TechnicalOperationSpacingSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
-  for (const print of [...Object.values(mappings.operations), ...Object.values(mappings.comparisons)]) {
+  for (const print of [...Object.values(mappings.operations), ...Object.values(mappings.comparisons),
+    ...Object.values(mappings.arrows)]) {
     if (!runtime.symbols.has(print)) {
       throw new Error(`Technical sign references missing symbol ${JSON.stringify(print)}.`);
     }
@@ -213,6 +231,13 @@ export function compileTechnicalSigns(
     throw new Error("Technical item identifier pattern is empty.");
   }
   const identifierPattern = new RegExp(items.definitions.identifierPattern, "u");
+  const compiledPatterns = { ...valuePatterns };
+  for (const kind of TECHNICAL_VALUE_KINDS) {
+    if (compiledPatterns[kind].length === 0) {
+      throw new Error(`Technical value pattern ${kind} is empty.`);
+    }
+    compiledPatterns[kind] = new RegExp(compiledPatterns[kind], "u").source;
+  }
   const additionalPrints = new Set(additional.map((rule) => rule.print));
   for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"]]) {
     const authority = source.citation.authority;
@@ -275,9 +300,11 @@ export function compileTechnicalSigns(
       international: { ...spacing.international.definitions },
       "bana-2026": { ...spacing["bana-2026"].definitions },
     },
+    valuePatterns: compiledPatterns,
     itemPolicy: { kinds: { ...items.definitions.kinds }, identifierPattern: identifierPattern.source },
     symbols: compiled.symbols.filter((symbol) => additionalPrints.has(symbol.print)),
     operations: { ...mappings.operations }, comparisons: { ...mappings.comparisons },
+    arrows: { ...mappings.arrows },
     scripts: { ...scripts.definitions },
     delimiters: { ...signs, enclosures, matrixEnclosures },
     modifiers: { ...modifiers.definitions },

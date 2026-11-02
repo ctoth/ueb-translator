@@ -71,15 +71,10 @@ export type TechnicalProfile =
   | BanaTechnicalProfile
   | InternationalTechnicalProfile;
 
-export type SimpleArrowDirection =
-  | "down"
-  | "down-left"
-  | "down-right"
-  | "left"
-  | "right"
-  | "up"
-  | "up-left"
-  | "up-right";
+export const TECHNICAL_ARROW_DIRECTIONS = [
+  "down", "down-left", "down-right", "left", "right", "up", "up-left", "up-right",
+] as const;
+export type SimpleArrowDirection = (typeof TECHNICAL_ARROW_DIRECTIONS)[number];
 
 export interface TechnicalIdentifier {
   readonly kind: "identifier";
@@ -214,6 +209,8 @@ export interface TechnicalItemPolicy {
   readonly identifierPattern: string;
 }
 
+export const TECHNICAL_VALUE_KINDS = ["chemical-element", "function-name", "identifier", "number"] as const;
+
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
   readonly operationSpacing: {
@@ -221,8 +218,11 @@ export interface TechnicalSignProgram extends SymbolProgram {
     readonly "bana-2026": Readonly<Record<BanaTechnicalProfile["production"], boolean>>;
   };
   readonly itemPolicy: TechnicalItemPolicy;
+  /** Accepted API input grammars, matched with Unicode semantics. */
+  readonly valuePatterns: Readonly<Record<(typeof TECHNICAL_VALUE_KINDS)[number], string>>;
   readonly operations: Readonly<Record<TechnicalOperation, string>>;
   readonly comparisons: Readonly<Record<TechnicalComparison, string>>;
+  readonly arrows: Readonly<Record<SimpleArrowDirection, string>>;
   readonly scripts: Readonly<Record<TechnicalScriptPlacement, TechnicalScriptRule>>;
   readonly delimiters: TechnicalDelimiters;
   readonly modifiers: Readonly<Record<TechnicalModifier, string>>;

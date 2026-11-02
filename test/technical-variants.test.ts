@@ -255,9 +255,13 @@ describe("closed technical layouts and failures", () => {
     [{ kind: "chemical-element", symbol: "h" }, "chemical-element"],
     [{ kind: "function", name: "sin2", argument: { kind: "number", value: "1" } }, "function-name"],
     [{ kind: "identifier", value: "" }, "identifier"],
+    [{ kind: "identifier", value: "2x" }, "identifier"],
     [{ kind: "number", value: "1x" }, "number"],
+    [{ kind: "number", value: "١" }, "number"],
     [{ kind: "simple-fraction", numerator: "x", denominator: "2" }, "simple-fraction-numerator"],
     [{ kind: "simple-fraction", numerator: "1", denominator: "y" }, "simple-fraction-denominator"],
+    [{ kind: "simple-fraction", numerator: "١", denominator: "2" }, "simple-fraction-numerator"],
+    [{ kind: "simple-fraction", numerator: "1", denominator: "٢" }, "simple-fraction-denominator"],
   ] satisfies readonly (readonly [TechnicalExpression, string])[])(
     "rejects invalid structured value %#",
     (expression, kind) => {
