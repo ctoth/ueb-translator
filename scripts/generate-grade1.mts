@@ -8,6 +8,7 @@ import type { CompositionPolicies } from "../src/composition.js";
 import {
   TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
   TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
+  TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
 } from "../src/technical-program.ts";
 
 interface LoadedCompilation {
@@ -72,14 +73,27 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const operations = isRecord(value) ? value["operations"] : undefined;
   const comparisons = isRecord(value) ? value["comparisons"] : undefined;
   const scripts = isRecord(value) ? value["scripts"] : undefined;
+  const delimiters = isRecord(value) ? value["delimiters"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
   if (!isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
-    !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes)) {
+    !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes };
+  return { ...symbolProgram(value), operations, comparisons, scripts, modifiers, shapes, delimiters };
+}
+
+function isDelimiterMap(value: unknown): value is TechnicalSignProgram["delimiters"] {
+  if (!isRecord(value)) return false;
+  const { enclosures, matrixEnclosures, ...signs } = value;
+  const pairs = (mapping: unknown, keys: readonly string[]): boolean =>
+    isRecord(mapping) && Object.keys(mapping).length === keys.length && keys.every((key) => {
+      const pair = mapping[key];
+      return isPrintMap(pair, ["open", "close"]);
+    });
+  return isPrintMap(signs, TECHNICAL_DELIMITER_SIGNS) &&
+    pairs(enclosures, TECHNICAL_ENCLOSURES) && pairs(matrixEnclosures, TECHNICAL_MATRIX_ENCLOSURES);
 }
 
 function isShapeMap(value: unknown): value is TechnicalSignProgram["shapes"] {

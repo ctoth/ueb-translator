@@ -20,8 +20,8 @@ import {
 import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
-import type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeFill, TechnicalShapeName } from "./technical-program.js";
-export type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeName } from "./technical-program.js";
+import type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeFill, TechnicalShapeName, TechnicalEnclosure } from "./technical-program.js";
+export type { TechnicalComparison, TechnicalModifier, TechnicalOperation, TechnicalScriptPlacement, TechnicalShapeName, TechnicalEnclosure } from "./technical-program.js";
 
 export type TechnicalGrade1Policy = "all-technical" | "preferred";
 
@@ -50,13 +50,6 @@ export type SimpleArrowDirection =
   | "up"
   | "up-left"
   | "up-right";
-
-export type TechnicalEnclosure =
-  | "absolute"
-  | "angle"
-  | "curly"
-  | "round"
-  | "square";
 
 export interface TechnicalIdentifier {
   readonly kind: "identifier";
@@ -339,20 +332,8 @@ const GRADE1_TERMINATOR = modeIndicator(
 const SYMBOL_RUNTIME = loadSymbolProgram({
   symbols: [...GRADE1_SYMBOL_PROGRAM.symbols, ...TECHNICAL_SIGN_PROGRAM.symbols],
 });
-const BRAILLE_GROUP_OPEN = "⠣";
-const BRAILLE_GROUP_CLOSE = "⠜";
-const GENERAL_FRACTION_OPEN = "⠷";
-const SIMPLE_NUMERIC_FRACTION_LINE = "⠌";
-const GENERAL_FRACTION_LINE = "⠨⠌";
-const GENERAL_FRACTION_CLOSE = "⠾";
-const RADICAL_OPEN = "⠩";
-const RADICAL_CLOSE = "⠬";
+const DELIMITERS = TECHNICAL_SIGN_PROGRAM.delimiters;
 const VISIBLE_SPACE = "⠬";
-
-interface EnclosureCells {
-  readonly close: string;
-  readonly open: string;
-}
 
 const ARROW_PRINT = {
   down: "↓",
@@ -364,14 +345,6 @@ const ARROW_PRINT = {
   "up-left": "↖",
   "up-right": "↗",
 } satisfies Readonly<Record<SimpleArrowDirection, string>>;
-
-const ENCLOSURE_PRINT = {
-  absolute: { close: "|", open: "|" },
-  angle: { close: "⟩", open: "⟨" },
-  curly: { close: "}", open: "{" },
-  round: { close: ")", open: "(" },
-  square: { close: "]", open: "[" },
-} satisfies Readonly<Record<TechnicalEnclosure, { readonly close: string; readonly open: string }>>;
 
 function operationCell(operation: TechnicalOperation): string {
   return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
@@ -396,11 +369,6 @@ const UNPREFIXED_LATIN_LETTER_CELLS = new Set(
 
 function arrowCell(direction: SimpleArrowDirection): string {
   return symbolCell(ARROW_PRINT[direction]);
-}
-
-function enclosureCells(enclosure: TechnicalEnclosure): EnclosureCells {
-  const print = ENCLOSURE_PRINT[enclosure];
-  return { close: symbolCell(print.close), open: symbolCell(print.open) };
 }
 
 function shapeCell(shape: TechnicalShape): string {
@@ -490,8 +458,8 @@ function renderScriptValue(
     return rendered;
   }
   return renderSuccess(
-    `${BRAILLE_GROUP_OPEN}${rendered.braille}${BRAILLE_GROUP_CLOSE}`,
-    shiftRequirements(rendered.requirements, BRAILLE_GROUP_OPEN.length),
+    `${DELIMITERS.groupOpen}${rendered.braille}${DELIMITERS.groupClose}`,
+    shiftRequirements(rendered.requirements, DELIMITERS.groupOpen.length),
   );
 }
 
@@ -567,16 +535,16 @@ function renderExpression(
         return denominator;
       }
       const denominatorOffset =
-        GENERAL_FRACTION_OPEN.length +
+        DELIMITERS.fractionOpen.length +
         numerator.braille.length +
-        GENERAL_FRACTION_LINE.length;
+        DELIMITERS.fractionLine.length;
       return renderSuccess(
-        `${GENERAL_FRACTION_OPEN}${numerator.braille}${GENERAL_FRACTION_LINE}${denominator.braille}${GENERAL_FRACTION_CLOSE}`,
+        `${DELIMITERS.fractionOpen}${numerator.braille}${DELIMITERS.fractionLine}${denominator.braille}${DELIMITERS.fractionClose}`,
         [
-          { end: GENERAL_FRACTION_OPEN.length, kind: "symbol", offset: 0 },
+          { end: DELIMITERS.fractionOpen.length, kind: "symbol", offset: 0 },
           ...shiftRequirements(
             numerator.requirements,
-            GENERAL_FRACTION_OPEN.length,
+            DELIMITERS.fractionOpen.length,
           ),
           ...shiftRequirements(denominator.requirements, denominatorOffset),
         ],
@@ -587,7 +555,7 @@ function renderExpression(
       if (!content.ok) {
         return content;
       }
-      const enclosure = enclosureCells(expression.enclosure);
+      const enclosure = DELIMITERS.enclosures[expression.enclosure];
       const openLength = enclosure.open.length;
       const totalLength = openLength + content.braille.length + enclosure.close.length;
       const requirements: Grade1Requirement[] = [];
@@ -698,22 +666,23 @@ function renderExpression(
         return radicand;
       }
       if (expression.root === "square") {
-        const braille = `${RADICAL_OPEN}${radicand.braille}${RADICAL_CLOSE}`;
+        const braille = `${DELIMITERS.radicalOpen}${radicand.braille}${DELIMITERS.radicalClose}`;
         return renderSuccess(braille, [
-          { end: RADICAL_OPEN.length, kind: "symbol", offset: 0 },
-          ...shiftRequirements(radicand.requirements, RADICAL_OPEN.length),
+          { end: DELIMITERS.radicalOpen.length, kind: "symbol", offset: 0 },
+          ...shiftRequirements(radicand.requirements, DELIMITERS.radicalOpen.length),
         ]);
       }
       const index = renderScriptValue(expression.index, profile);
       if (!index.ok) {
         return index;
       }
-      const indexOffset = RADICAL_OPEN.length + 1;
+      const indicator = TECHNICAL_SIGN_PROGRAM.scripts["right-superscript"].indicator;
+      const indexOffset = DELIMITERS.radicalOpen.length + indicator.length;
       const radicandOffset = indexOffset + index.braille.length;
-      const braille = `${RADICAL_OPEN}⠔${index.braille}${radicand.braille}${RADICAL_CLOSE}`;
+      const braille = `${DELIMITERS.radicalOpen}${indicator}${index.braille}${radicand.braille}${DELIMITERS.radicalClose}`;
       return renderSuccess(braille, [
-        { end: RADICAL_OPEN.length, kind: "symbol", offset: 0 },
-        { end: indexOffset, kind: "symbol", offset: RADICAL_OPEN.length },
+        { end: DELIMITERS.radicalOpen.length, kind: "symbol", offset: 0 },
+        { end: indexOffset, kind: "symbol", offset: DELIMITERS.radicalOpen.length },
         ...shiftRequirements(index.requirements, indexOffset),
         ...shiftRequirements(radicand.requirements, radicandOffset),
       ]);
@@ -815,7 +784,7 @@ function renderExpression(
         return denominator;
       }
       return renderSuccess(
-        `${numerator.braille}${SIMPLE_NUMERIC_FRACTION_LINE}${denominator.braille.slice(1)}`,
+        `${numerator.braille}${DELIMITERS.simpleFractionLine}${denominator.braille.slice(1)}`,
       );
     }
   }
@@ -900,27 +869,12 @@ function renderComputer(
   return renderSuccess(translatedLines.join("\n"));
 }
 
-const MATRIX_ENCLOSURE_CELLS = {
-  curly: { close: "⠠⠸⠜", open: "⠠⠸⠣" },
-  determinant: { close: "⠠⠸⠳", open: "⠠⠸⠳" },
-  round: { close: "⠠⠐⠜", open: "⠠⠐⠣" },
-  square: { close: "⠠⠨⠜", open: "⠠⠨⠣" },
-} satisfies Readonly<
-  Record<TechnicalMatrixBlock["enclosure"], EnclosureCells>
->;
-
-function matrixEnclosureCells(
-  enclosure: TechnicalMatrixBlock["enclosure"],
-): EnclosureCells {
-  return MATRIX_ENCLOSURE_CELLS[enclosure];
-}
-
 function renderMatrix(
   block: TechnicalMatrixBlock,
   profile: TechnicalProfile,
 ): RenderResult {
   const expectedColumns = block.rows[0].length;
-  const enclosure = matrixEnclosureCells(block.enclosure);
+  const enclosure = DELIMITERS.matrixEnclosures[block.enclosure];
   const gap = BRAILLE_SPACE.repeat(block.columnGap);
   let braille = "";
   const requirements: Grade1Requirement[] = [];
