@@ -1,0 +1,86 @@
+[
+  {
+    "braille": "⠐⠲",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+      "locator": "Operation signs table, p. 1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-GTM-2018-3-symbol-22c5",
+    "kind": "symbol",
+    "numericDigit": null,
+    "print": "⋅",
+    "uppercasePrint": null
+  },
+  {
+    "braille": "⠸⠖",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+      "locator": "Operation signs table, p. 1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-GTM-2018-3-symbol-b1",
+    "kind": "symbol",
+    "numericDigit": null,
+    "print": "±",
+    "uppercasePrint": null
+  },
+  {
+    "braille": "⠸⠔",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+      "locator": "Comparison signs table, p. 2",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-GTM-2018-3-symbol-2248",
+    "kind": "symbol",
+    "numericDigit": null,
+    "print": "≈",
+    "uppercasePrint": null
+  },
+  {
+    "braille": "⠸⠈⠜",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+      "locator": "Comparison signs table, p. 1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-GTM-2018-3-symbol-2265",
+    "kind": "symbol",
+    "numericDigit": null,
+    "print": "≥",
+    "uppercasePrint": null
+  },
+  {
+    "braille": "⠸⠈⠣",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+      "locator": "Comparison signs table, p. 1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-GTM-2018-3-symbol-2264",
+    "kind": "symbol",
+    "numericDigit": null,
+    "print": "≤",
+    "uppercasePrint": null
+  },
+  {
+    "braille": "⠐⠶⠈⠱",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+      "locator": "Comparison signs table, p. 1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-GTM-2018-3-symbol-2260",
+    "kind": "symbol",
+    "numericDigit": null,
+    "print": "≠",
+    "uppercasePrint": null
+  }
+]

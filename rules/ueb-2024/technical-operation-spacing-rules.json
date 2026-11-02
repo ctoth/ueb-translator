@@ -1,0 +1,26 @@
+{
+  "international": {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Unified English Braille: Guidelines for Technical Material (2014)",
+      "locator": "1.1.2, p.1 (caller-selected presentation)",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definitions": {
+      "spaced": true,
+      "unspaced": false
+    }
+  },
+  "bana-2026": {
+    "citation": {
+      "authority": "BANA",
+      "document": "Guidance on Transcribing Mathematics and Science in UEB (2026)",
+      "locator": "Introduction and 2 Spacing of signs, p.2 (agency-selected teaching presentation)",
+      "url": "https://brailleauthority.org/node/50"
+    },
+    "definitions": {
+      "standardized": false,
+      "teaching": true
+    }
+  }
+}

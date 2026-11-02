@@ -1,6 +1,20 @@
+import technicalSignMappingsData from "./technical-sign-mappings.json" with { type: "json" };
+import technicalSymbolRulesData from "./technical-symbol-rules.json" with { type: "json" };
+import technicalDelimiterRulesData from "./technical-delimiter-rules.json" with { type: "json" };
+import technicalModifierRulesData from "./technical-modifier-rules.json" with { type: "json" };
+import technicalScriptRulesData from "./technical-script-rules.json" with { type: "json" };
+import technicalShapeRulesData from "./technical-shape-rules.json" with { type: "json" };
+import technicalItemRulesData from "./technical-item-rules.json" with { type: "json" };
+import technicalValuePatternsData from "./technical-value-patterns.json" with { type: "json" };
+import technicalOperationSpacingRulesData from "./technical-operation-spacing-rules.json" with { type: "json" };
+import technicalGrade1ProtectionRulesData from "./technical-grade1-protection-rules.json" with { type: "json" };
+import technicalFunctionSpacingRulesData from "./technical-function-spacing-rules.json" with { type: "json" };
+import technicalNumericContinuationRulesData from "./technical-numeric-continuation-rules.json" with { type: "json" };
+import technicalComputerWhitespaceRulesData from "./technical-computer-whitespace-rules.json" with { type: "json" };
+import { readTechnicalSignMappings, readSymbolRules, readTechnicalDelimiterRules, readTechnicalModifierRules, readTechnicalScriptRules, readTechnicalShapeRules, readTechnicalItemRules, readTechnicalValuePatterns, readTechnicalOperationSpacingRules, readTechnicalGrade1ProtectionRules, readTechnicalFunctionSpacingRules, readTechnicalNumericContinuationRules, readTechnicalComputerWhitespaceRules } from "./rule-json.js";
 import { loadSymbolProgram } from "../../src/symbol-program.js";
 import { TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
-import { citeTechnicalSign, type RuleCitation, type TechnicalSignLocator } from "./source.js";
+import type { RuleCitation } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
 /**
@@ -8,38 +22,9 @@ import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
  * replacement Section 3 (pp.1-2); arrows follow GTM 2014 13.1 (p.60).
  * Cell definitions remain in the shared symbol inventory.
  */
-export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows"> = {
-  arrows: {
-    down: "↓", "down-left": "↙", "down-right": "↘", left: "←",
-    right: "→", up: "↑", "up-left": "↖", "up-right": "↗",
-  },
-  operations: {
-    asterisk: "*", divide: "÷", dot: "⋅", minus: "−", multiply: "×",
-    plus: "+", "plus-or-minus": "±",
-  },
-  comparisons: {
-    "approximately-equal": "≈", equals: "=", "greater-than": ">",
-    "greater-than-or-equal": "≥", "less-than": "<",
-    "less-than-or-equal": "≤", "not-equal": "≠",
-  },
-};
+export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows"> = readTechnicalSignMappings(technicalSignMappingsData);
 
-const additionalSigns = [
-  ["⋅", "⠐⠲", "Operation signs table, p. 1"],
-  ["±", "⠸⠖", "Operation signs table, p. 1"],
-  ["≈", "⠸⠔", "Comparison signs table, p. 2"],
-  ["≥", "⠸⠈⠜", "Comparison signs table, p. 1"],
-  ["≤", "⠸⠈⠣", "Comparison signs table, p. 1"],
-  ["≠", "⠐⠶⠈⠱", "Comparison signs table, p. 1"],
-] satisfies readonly (readonly [string, string, TechnicalSignLocator])[];
-
-export const TECHNICAL_SYMBOL_RULES: readonly SymbolRuleSource[] = additionalSigns.map(
-  ([print, braille, locator]): SymbolRuleSource => ({
-    braille, citation: citeTechnicalSign(locator),
-    id: `UEB-GTM-2018-3-symbol-${print.charCodeAt(0).toString(16)}`,
-    kind: "symbol", numericDigit: null, print, uppercasePrint: null,
-  }),
-);
+export const TECHNICAL_SYMBOL_RULES: readonly SymbolRuleSource[] = readSymbolRules(technicalSymbolRulesData);
 
 interface TechnicalRuleSource<Definitions> {
   readonly citation: RuleCitation<
@@ -58,122 +43,30 @@ export type TechnicalDelimiterSource = TechnicalRuleSource<
   }
 >;
 
-export const TECHNICAL_DELIMITER_RULES: TechnicalDelimiterSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Unified English Braille: Guidelines for Technical Material (2014)",
-    locator: "5, p.30; 6, pp.31-32; 7.1-7.3, pp.34-36; 8, pp.40-41; 15.1, p.69",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: {
-    groupOpen: "⠣", groupClose: "⠜", simpleFractionLine: "⠌",
-    fractionOpen: "⠷", fractionLine: "⠨⠌", fractionClose: "⠾",
-    radicalOpen: "⠩", radicalClose: "⠬",
-    enclosures: {
-      absolute: { open: "|", close: "|" }, angle: { open: "⟨", close: "⟩" },
-      curly: { open: "{", close: "}" }, round: { open: "(", close: ")" },
-      square: { open: "[", close: "]" },
-    },
-    enlargedPrefix: "⠠",
-    matrixEnclosures: { curly: "curly", determinant: "absolute", round: "round", square: "square" },
-  },
-};
+export const TECHNICAL_DELIMITER_RULES: TechnicalDelimiterSource = readTechnicalDelimiterRules(technicalDelimiterRulesData);
 
 export interface TechnicalModifierSource {
   readonly citation: TechnicalScriptSource["citation"];
   readonly definitions: TechnicalSignProgram["modifiers"];
 }
 
-export const TECHNICAL_MODIFIER_RULES: TechnicalModifierSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Unified English Braille: Guidelines for Technical Material (2014)",
-    locator: "12 indicator list, p.57",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: {
-    "arc-above": "⠨⠸⠱",
-    "bar-above": "⠱",
-    "bar-below": "⠠⠱",
-    "dot-above": "⠘⠲",
-    "dot-below": "⠠⠘⠲",
-    "hat-above": "⠐⠱",
-    "hat-below": "⠠⠐⠱",
-    "line-through": "⠈⠱",
-    "right-arrow-above": "⠘⠱",
-    "right-arrow-below": "⠠⠘⠱",
-    "tilde-above": "⠸⠱",
-    "tilde-below": "⠠⠸⠱",
-  },
-};
+export const TECHNICAL_MODIFIER_RULES: TechnicalModifierSource = readTechnicalModifierRules(technicalModifierRulesData);
 
-const subscript = "⠢", superscript = "⠔";
-export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Unified English Braille: Guidelines for Technical Material (2014)",
-    locator: "7 indicator list, p.34; 7.3, pp.35-36; 7.8, p.38; 7.9, p.39",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: {
-    "directly-above": { indicator: `⠨${superscript}`, position: "after" },
-    "directly-below": { indicator: `⠨${subscript}`, position: "after" },
-    "left-subscript": { indicator: subscript, position: "before" },
-    "left-superscript": { indicator: superscript, position: "before" },
-    "right-subscript": { indicator: subscript, position: "after" },
-    "right-superscript": { indicator: superscript, position: "after" },
-  },
-};
+export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = readTechnicalScriptRules(technicalScriptRulesData);
 
 export interface TechnicalShapeSource {
   readonly citation: TechnicalScriptSource["citation"];
   readonly definitions: TechnicalSignProgram["shapes"];
 }
 
-export const TECHNICAL_SHAPE_RULES: TechnicalShapeSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Unified English Braille: Guidelines for Technical Material (2014)",
-    locator: "14 shape indicator and specific shape lists, p.65; 14.1, p.66",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: {
-    fills: { filled: "⠸⠫", outline: "⠫", shaded: "⠨⠫" },
-    names: {
-      circle: "⠿", hexagon: "⠼⠋", heptagon: "⠼⠛", octagon: "⠼⠓",
-      parallelogram: "⠈⠼⠙", pentagon: "⠼⠑", square: "⠼⠙", triangle: "⠼⠉",
-    },
-    terminator: "⠱",
-  },
-};
+export const TECHNICAL_SHAPE_RULES: TechnicalShapeSource = readTechnicalShapeRules(technicalShapeRulesData);
 
 export type TechnicalItemSource = TechnicalRuleSource<TechnicalSignProgram["itemPolicy"]>;
 
-export const TECHNICAL_ITEM_RULES: TechnicalItemSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Unified English Braille: Guidelines for Technical Material (2014)",
-    locator: "7.1, p.34; 12.1, p.57",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: {
-    kinds: {
-      "chemical-element": true, comparison: false, function: false,
-      "general-fraction": true, group: true, modifier: false, negation: false,
-      number: true, operation: false, radical: true, script: false,
-      sequence: false, shape: true, "simple-arrow": true, "simple-fraction": true,
-    },
-    identifierPattern: "^\\p{L}\\p{M}*$",
-  },
-};
+export const TECHNICAL_ITEM_RULES: TechnicalItemSource = readTechnicalItemRules(technicalItemRulesData);
 
 /** Accepted structured API inputs, not a normative list of chemical elements. */
-export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = {
-  "chemical-element": "^[A-Z][a-z]?$",
-  "function-name": "^\\p{L}[\\p{L}\\p{M}]*$",
-  identifier: "^\\p{L}[\\p{L}\\p{M}\\d]*$",
-  number: "^\\d+(?:[,.]\\d+)*$",
-};
+export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = readTechnicalValuePatterns(technicalValuePatternsData);
 
 export interface TechnicalOperationSpacingSource {
   readonly international: TechnicalRuleSource<TechnicalSignProgram["operationSpacing"]["international"]>;
@@ -186,26 +79,7 @@ export interface TechnicalOperationSpacingSource {
   };
 }
 
-export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource = {
-  international: {
-    citation: {
-      authority: "ICEB",
-      document: "Unified English Braille: Guidelines for Technical Material (2014)",
-      locator: "1.1.2, p.1 (caller-selected presentation)",
-      url: "https://iceb.org/publications/ueb/",
-    },
-    definitions: { spaced: true, unspaced: false },
-  },
-  "bana-2026": {
-    citation: {
-      authority: "BANA",
-      document: "Guidance on Transcribing Mathematics and Science in UEB (2026)",
-      locator: "Introduction and 2 Spacing of signs, p.2 (agency-selected teaching presentation)",
-      url: "https://brailleauthority.org/node/50",
-    },
-    definitions: { standardized: false, teaching: true },
-  },
-};
+export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource = readTechnicalOperationSpacingRules(technicalOperationSpacingRulesData);
 
 export interface TechnicalGrade1ProtectionSource {
   readonly citation: RuleCitation<
@@ -215,39 +89,14 @@ export interface TechnicalGrade1ProtectionSource {
   readonly definitions: TechnicalSignProgram["grade1Protection"];
 }
 
-export const TECHNICAL_GRADE1_PROTECTION_RULES: TechnicalGrade1ProtectionSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Guidelines for Technical Material: replacement Section 1.7 (2025)",
-    locator: "1.7.3(a)-(b), p.2 (indicator counts and escalation)",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: {
-    // Preserve the implementation's ordered classifiers; these regexes are
-    // not asserted to be the wording of the cited indicator-count guidance.
-    standingValues: [
-      { pattern: "^[b-hj-np-z]$", flags: "iu", kind: "standing-symbol" },
-      { pattern: "^\\p{L}[\\p{L}\\p{M}\\d]+$", flags: "u", kind: "standing-word" },
-    ],
-    maxSymbolsPerSequence: 1,
-    passageSequenceThreshold: 3,
-  },
-};
+export const TECHNICAL_GRADE1_PROTECTION_RULES: TechnicalGrade1ProtectionSource = readTechnicalGrade1ProtectionRules(technicalGrade1ProtectionRulesData);
 
 export type TechnicalFunctionSpacingSource = TechnicalRuleSource<{
   readonly letterPrintPattern: string;
   readonly namePattern: string;
 }>;
 
-export const TECHNICAL_FUNCTION_SPACING_RULES: TechnicalFunctionSpacingSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Unified English Braille: Guidelines for Technical Material (2014)",
-    locator: "9.3.2-9.3.3, pp.43-44",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: { letterPrintPattern: "^[a-z]$", namePattern: "^[a-z]" },
-};
+export const TECHNICAL_FUNCTION_SPACING_RULES: TechnicalFunctionSpacingSource = readTechnicalFunctionSpacingRules(technicalFunctionSpacingRulesData);
 
 export interface TechnicalNumericContinuationSource {
   readonly citation: RuleCitation<
@@ -257,30 +106,11 @@ export interface TechnicalNumericContinuationSource {
   readonly definitions: TechnicalSignProgram["numericContinuation"];
 }
 
-export const TECHNICAL_NUMERIC_CONTINUATION_RULES: TechnicalNumericContinuationSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Guidelines for Technical Material: Grade 1 Indicators (July 2025)",
-    locator: "1.7.2-1.7.3, pp.1-2 (numeric a-j exclusion)",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: {
-    precedingKinds: ["number", "simple-fraction"],
-    identifierPattern: "^[a-j]",
-  },
-};
+export const TECHNICAL_NUMERIC_CONTINUATION_RULES: TechnicalNumericContinuationSource = readTechnicalNumericContinuationRules(technicalNumericContinuationRulesData);
 
 export type TechnicalComputerWhitespaceSource = TechnicalRuleSource<TechnicalSignProgram["computerWhitespace"]>;
 
-export const TECHNICAL_COMPUTER_WHITESPACE_RULES: TechnicalComputerWhitespaceSource = {
-  citation: {
-    authority: "ICEB",
-    document: "Unified English Braille: Guidelines for Technical Material (2014)",
-    locator: "17.2, pp.83-84 (significant runs of ordinary spaces)",
-    url: "https://iceb.org/publications/ueb/",
-  },
-  definitions: { visibleSpace: "⠬", minimumRunLength: 3, ordinaryEdgeLength: 1 },
-};
+export const TECHNICAL_COMPUTER_WHITESPACE_RULES: TechnicalComputerWhitespaceSource = readTechnicalComputerWhitespaceRules(technicalComputerWhitespaceRulesData);
 
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],

@@ -60,12 +60,12 @@ export interface ModeCompilationResult {
   readonly runtime: ModeProgram;
 }
 
-const MODE_NAMES: readonly ModeRuleName[] = [
+export const MODE_NAMES: readonly ModeRuleName[] = [
   "capitals", "grade1", "numeric", "typeform-bold", "typeform-italic",
   "typeform-script", "typeform-transcriber-defined", "typeform-underline",
 ];
 
-const MEMBER_CLASSES: readonly ModeMemberClass[] = [
+export const MEMBER_CLASSES: readonly ModeMemberClass[] = [
   "digit", "grade1-required", "lowercase-letter", "numeric-ambiguous-letter",
   "numeric-punctuation", "sequence-boundary", "typeformed", "uppercase-letter",
 ];

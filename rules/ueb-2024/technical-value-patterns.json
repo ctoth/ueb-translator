@@ -1,0 +1,6 @@
+{
+  "chemical-element": "^[A-Z][a-z]?$",
+  "function-name": "^\\p{L}[\\p{L}\\p{M}]*$",
+  "identifier": "^\\p{L}[\\p{L}\\p{M}\\d]*$",
+  "number": "^\\d+(?:[,.]\\d+)*$"
+}

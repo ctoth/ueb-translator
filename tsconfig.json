@@ -25,6 +25,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "rewriteRelativeImportExtensions": true,
+    "resolveJsonModule": true,
     "strict": true,
     "strictBindCallApply": true,
     "strictBuiltinIteratorReturn": true,

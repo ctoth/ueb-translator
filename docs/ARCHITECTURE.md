@@ -4,8 +4,9 @@
 
 The repository contains two deliberately separate layers:
 
-1. `rules/ueb-2024/` holds readable, cited source rules plus the live symbol,
-   mode, policy, and contextual compilers. It is development-only.
+1. `rules/ueb-2024/` holds readable, cited JSON source rules, their TypeScript
+   contracts and decoding, plus the live symbol, mode, policy, and contextual
+   compilers. It is development-only.
 2. `src/` holds generated compact programs, browser runtime contracts, and
    deterministic interpreters. Published entry points cannot import authored
    rules or compiler modules; ESLint enforces that boundary.
@@ -126,7 +127,7 @@ Braille-grouping semantics that cannot be recovered from plain text.
 
 Operations and comparisons resolve semantic print references through the symbol
 inventory. Eight signs reuse general symbol definitions; six additions are
-authored in `rules/ueb-2024/technical-signs.ts` with citations to the October 2018
+authored in `rules/ueb-2024/technical-symbol-rules.json` with citations to the October 2018
 replacement Section 3. The existing symbol compiler validates the combined
 inventory and references; the existing Grade 1 generator emits a separate
 technical program containing only additions and semantic maps. These additions

@@ -1,0 +1,63 @@
+[
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "10.8.3",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "endings": [],
+    "groupsign": "ity",
+    "id": "UEB-10.8.3-ity-exception",
+    "words": [
+      "biscuity",
+      "dacoity",
+      "fruity",
+      "hoitytoity",
+      "rabbity"
+    ]
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "10.8.4",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "endings": [],
+    "groupsign": "ness",
+    "id": "UEB-10.8.4-ness-exception",
+    "words": [
+      {
+        "base": "captainess",
+        "suffixes": [
+          "es"
+        ]
+      },
+      {
+        "base": "chieftainess",
+        "suffixes": [
+          "es"
+        ]
+      },
+      {
+        "base": "citizeness",
+        "suffixes": [
+          "es"
+        ]
+      },
+      {
+        "base": "heatheness",
+        "suffixes": [
+          "es"
+        ]
+      },
+      {
+        "base": "villainess",
+        "suffixes": [
+          "es"
+        ]
+      }
+    ]
+  }
+]

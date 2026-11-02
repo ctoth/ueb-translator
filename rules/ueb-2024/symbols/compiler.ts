@@ -1,4 +1,4 @@
-import type { IcebRuleCitation, TechnicalSignCitation } from "../source.js";
+import { citeIceb, type Grade1RuleLocator, type IcebRuleCitation, type TechnicalSignCitation } from "../source.js";
 import type {
   CompiledSymbol,
   SymbolClass,
@@ -112,4 +112,94 @@ export function compileSymbols(
     provenance,
     runtime: { symbols: provenance.map(compiled) },
   };
+}
+
+export function expandSymbolSources(
+  LATIN: readonly (readonly [string, string])[],
+  MODIFIERS: readonly (readonly [string, string])[],
+  GREEK: readonly (readonly [string, string])[],
+  GENERAL_SYMBOLS: readonly (readonly [string, string])[],
+  special: readonly SymbolRuleSource[],
+  trailing: readonly SymbolRuleSource[],
+): readonly SymbolRuleSource[] {
+  function source(
+    locator: Grade1RuleLocator,
+    id: string,
+    print: string,
+    braille: string,
+    kind: SymbolClass,
+    uppercasePrint: string | null = null,
+    numericDigit: string | null = null,
+  ): SymbolRuleSource {
+    return {
+      braille,
+      citation: citeIceb(locator),
+      id,
+      kind,
+      numericDigit,
+      print,
+      uppercasePrint,
+    };
+  }
+
+  function scalarHex(print: string): string {
+    return print.charCodeAt(0).toString(16);
+  }
+
+  const latin = LATIN.map(([print, braille]) => source(
+    "4.1.1",
+    `UEB-4.1-letter-${print}`,
+    print,
+    braille,
+    "letter",
+    print.toUpperCase(),
+  ));
+
+  const digits = LATIN.slice(0, 10).map(([, braille], index) => {
+    const print = index === 9 ? "0" : String(index + 1);
+    return source(
+      "6.1.1",
+      `UEB-6.1.1-digit-${print}`,
+      print,
+      braille,
+      "digit",
+      null,
+      print,
+    );
+  });
+
+  const modifiers = MODIFIERS.map(([print, braille]) => source(
+    "4.2.1",
+    `UEB-4.2.1-modifier-${scalarHex(print)}`,
+    print,
+    braille,
+    "modifier",
+  ));
+
+  const greek = GREEK.map(([print, braille]) => source(
+    "4.5.1",
+    `UEB-4.5.1-greek-${print}`,
+    print,
+    braille,
+    "letter",
+    print.toUpperCase(),
+  ));
+
+  const symbols = GENERAL_SYMBOLS.map(([print, braille]) => source(
+    `Symbols list: U+${scalarHex(print).toUpperCase().padStart(4, "0")}`,
+    `UEB-symbol-${scalarHex(print)}`,
+    print,
+    braille,
+    "symbol",
+  ));
+
+  return [
+    ...latin,
+    ...digits,
+    ...modifiers,
+    ...greek,
+    ...special,
+    ...symbols,
+    ...trailing,
+  ];
 }

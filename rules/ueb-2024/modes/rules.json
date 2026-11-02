@@ -1,0 +1,199 @@
+[
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "8.3-8.6",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [],
+      "indicators": {
+        "passage": "⠠⠠⠠",
+        "symbol": "⠠",
+        "terminator": "⠠⠄",
+        "word": "⠠⠠"
+      },
+      "memberClass": "uppercase-letter",
+      "passageThreshold": 3,
+      "terminatedBy": [
+        "lowercase-letter"
+      ]
+    },
+    "id": "UEB-mode-capitals",
+    "name": "capitals"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "5",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [],
+      "indicators": {
+        "passage": "⠰⠰⠰",
+        "symbol": "⠰",
+        "terminator": "⠰⠄",
+        "word": "⠰⠰"
+      },
+      "memberClass": "grade1-required",
+      "passageThreshold": 9007199254740991,
+      "terminatedBy": [
+        "sequence-boundary"
+      ]
+    },
+    "id": "UEB-mode-grade1",
+    "name": "grade1"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "6.1-6.5",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [
+        "numeric-punctuation"
+      ],
+      "indicators": {
+        "passage": "⠼",
+        "symbol": "⠼",
+        "terminator": "",
+        "word": "⠼"
+      },
+      "memberClass": "digit",
+      "passageThreshold": 9007199254740991,
+      "terminatedBy": [
+        "lowercase-letter",
+        "numeric-ambiguous-letter",
+        "sequence-boundary",
+        "uppercase-letter"
+      ]
+    },
+    "id": "UEB-mode-numeric",
+    "name": "numeric"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "9.2-9.4",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [],
+      "indicators": {
+        "passage": "⠘⠶",
+        "symbol": "⠘⠆",
+        "terminator": "⠘⠄",
+        "word": "⠘⠂"
+      },
+      "memberClass": "typeformed",
+      "passageThreshold": 3,
+      "terminatedBy": [
+        "sequence-boundary"
+      ]
+    },
+    "id": "UEB-mode-typeform-bold",
+    "name": "typeform-bold"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "9.2-9.4",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [],
+      "indicators": {
+        "passage": "⠨⠶",
+        "symbol": "⠨⠆",
+        "terminator": "⠨⠄",
+        "word": "⠨⠂"
+      },
+      "memberClass": "typeformed",
+      "passageThreshold": 3,
+      "terminatedBy": [
+        "sequence-boundary"
+      ]
+    },
+    "id": "UEB-mode-typeform-italic",
+    "name": "typeform-italic"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "9.2-9.4",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [],
+      "indicators": {
+        "passage": "⠈⠶",
+        "symbol": "⠈⠆",
+        "terminator": "⠈⠄",
+        "word": "⠈⠂"
+      },
+      "memberClass": "typeformed",
+      "passageThreshold": 3,
+      "terminatedBy": [
+        "sequence-boundary"
+      ]
+    },
+    "id": "UEB-mode-typeform-script",
+    "name": "typeform-script"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "9.2-9.4",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [],
+      "indicators": {
+        "passage": "⠈⠼⠶",
+        "symbol": "⠈⠼⠆",
+        "terminator": "⠈⠼⠄",
+        "word": "⠈⠼⠂"
+      },
+      "memberClass": "typeformed",
+      "passageThreshold": 3,
+      "terminatedBy": [
+        "sequence-boundary"
+      ]
+    },
+    "id": "UEB-mode-typeform-transcriber-defined",
+    "name": "typeform-transcriber-defined"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "9.2-9.4",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "definition": {
+      "continuesThrough": [],
+      "indicators": {
+        "passage": "⠸⠶",
+        "symbol": "⠸⠆",
+        "terminator": "⠸⠄",
+        "word": "⠸⠂"
+      },
+      "memberClass": "typeformed",
+      "passageThreshold": 3,
+      "terminatedBy": [
+        "sequence-boundary"
+      ]
+    },
+    "id": "UEB-mode-typeform-underline",
+    "name": "typeform-underline"
+  }
+]

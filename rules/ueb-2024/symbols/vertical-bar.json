@@ -1,0 +1,16 @@
+[
+  {
+    "braille": "⠸⠳",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "Symbols list: U+007C",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-symbol-007c-vertical-bar",
+    "kind": "symbol",
+    "numericDigit": null,
+    "print": "|",
+    "uppercasePrint": null
+  }
+]

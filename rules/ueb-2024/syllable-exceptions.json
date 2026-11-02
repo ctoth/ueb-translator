@@ -1,0 +1,99 @@
+[
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "10.6.1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "contraction": "be",
+    "id": "UEB-10.6.1-be-syllable-exception",
+    "words": [
+      {
+        "base": "bed",
+        "suffixes": [
+          "s",
+          "ded",
+          "ding"
+        ]
+      },
+      {
+        "base": "better",
+        "suffixes": [
+          "s",
+          "ed",
+          "ing"
+        ]
+      },
+      "belfast",
+      {
+        "base": "bend",
+        "suffixes": [
+          "s",
+          "er",
+          "ers",
+          "ing"
+        ]
+      },
+      "bent",
+      {
+        "base": "bedrock",
+        "suffixes": [
+          "s"
+        ]
+      },
+      {
+        "base": "bedroom",
+        "suffixes": [
+          "s"
+        ]
+      },
+      {
+        "base": "best",
+        "suffixes": [
+          "s",
+          "ed",
+          "ing"
+        ]
+      },
+      "benfica"
+    ]
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "10.6.1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "contraction": "dis",
+    "id": "UEB-10.6.1-dis-syllable-exception",
+    "words": [
+      {
+        "base": "dish",
+        "suffixes": [
+          "es"
+        ]
+      }
+    ]
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "10.6.1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "contraction": "con",
+    "id": "UEB-10.6.1-con-syllable-exception",
+    "words": [
+      {
+        "base": "cone",
+        "suffixes": [
+          "s"
+        ]
+      },
+      "conan"
+    ]
+  }
+]

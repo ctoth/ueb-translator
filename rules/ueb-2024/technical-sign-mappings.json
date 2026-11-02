@@ -1,0 +1,30 @@
+{
+  "arrows": {
+    "down": "↓",
+    "down-left": "↙",
+    "down-right": "↘",
+    "left": "←",
+    "right": "→",
+    "up": "↑",
+    "up-left": "↖",
+    "up-right": "↗"
+  },
+  "operations": {
+    "asterisk": "*",
+    "divide": "÷",
+    "dot": "⋅",
+    "minus": "−",
+    "multiply": "×",
+    "plus": "+",
+    "plus-or-minus": "±"
+  },
+  "comparisons": {
+    "approximately-equal": "≈",
+    "equals": "=",
+    "greater-than": ">",
+    "greater-than-or-equal": "≥",
+    "less-than": "<",
+    "less-than-or-equal": "≤",
+    "not-equal": "≠"
+  }
+}

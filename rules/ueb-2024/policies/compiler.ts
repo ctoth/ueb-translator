@@ -15,14 +15,14 @@ export interface CompositionPolicyCompilation {
   readonly runtime: CompositionPolicies;
 }
 
-const POLICY_NAMES = [
+export const POLICY_NAMES: readonly CompositionPolicyName[] = [
   "closingStandingPunctuation",
   "dashJoiners",
   "elisionPunctuation",
   "lowerPunctuation",
   "openingStandingPunctuation",
   "standingBoundaries",
-] as const satisfies readonly CompositionPolicyName[];
+];
 
 export function compileCompositionPolicies(
   rules: readonly CompositionPolicySource[],

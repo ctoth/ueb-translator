@@ -1,0 +1,125 @@
+[
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "2.6",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-policy-dash-joiners",
+    "members": [
+      "–",
+      "—",
+      "-"
+    ],
+    "name": "dashJoiners"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "2.6",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-policy-elision-punctuation",
+    "members": [
+      "'",
+      "’"
+    ],
+    "name": "elisionPunctuation"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "2.6",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-policy-closing-standing-punctuation",
+    "members": [
+      ",",
+      ";",
+      ":",
+      ".",
+      "…",
+      "!",
+      "?",
+      ")",
+      "]",
+      "}",
+      "”",
+      "’",
+      "\"",
+      "'",
+      "»"
+    ],
+    "name": "closingStandingPunctuation"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "10.5",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-policy-lower-punctuation",
+    "members": [
+      ",",
+      ";",
+      ":",
+      ".",
+      "…",
+      "!",
+      "?",
+      "\"",
+      "'",
+      "“",
+      "”",
+      "‘",
+      "’",
+      "–",
+      "—",
+      "-"
+    ],
+    "name": "lowerPunctuation"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "2.6",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-policy-opening-standing-punctuation",
+    "members": [
+      "(",
+      "[",
+      "{",
+      "“",
+      "‘",
+      "’",
+      "\"",
+      "'",
+      "«"
+    ],
+    "name": "openingStandingPunctuation"
+  },
+  {
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "2.6",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-policy-standing-boundaries",
+    "members": [
+      " ",
+      "\n",
+      "\r",
+      "–",
+      "—",
+      "-"
+    ],
+    "name": "standingBoundaries"
+  }
+]

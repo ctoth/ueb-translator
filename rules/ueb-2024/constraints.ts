@@ -1,14 +1,19 @@
-import {
-  citeIceb,
-  type Grade2ConstraintLocator,
-  type IcebRuleCitation,
-} from "./source.js";
+import compoundExceptionsData from "./compound-exceptions.json" with { type: "json" };
+import syllableExceptionsData from "./syllable-exceptions.json" with { type: "json" };
+import syllableVowelWordsData from "./syllable-vowel-words.json" with { type: "json" };
+import initialExceptionsData from "./initial-exceptions.json" with { type: "json" };
+import finalExceptionsData from "./final-exceptions.json" with { type: "json" };
+import { readCompoundExceptions, readSyllableExceptions, readVowelWords, readInitialExceptions, readFinalExceptions } from "./rule-json.js";
+import type { Grade2ConstraintLocator, IcebRuleCitation } from "./source.js";
 
 // Expand only reviewed, spelling-preserving suffixes. This is source data for
 // the cited restriction, not a general stemmer: arbitrary derivation can change
 // pronunciation or syllable boundaries (e.g. Monet versus monetary, 10.7.6).
-function family(base: string, suffixes: readonly string[]): readonly string[] {
-  return [base, ...suffixes.map((suffix) => base + suffix)];
+
+/** Reviewed suffix expansion in authored JSON, never a general stemmer. */
+export interface WordFamilySource {
+  readonly base: string;
+  readonly suffixes: readonly string[];
 }
 
 export interface CompoundContractionExceptionSource {
@@ -18,23 +23,7 @@ export interface CompoundContractionExceptionSource {
   readonly words: readonly string[];
 }
 
-export const COMPOUND_CONTRACTION_EXCEPTIONS: readonly CompoundContractionExceptionSource[] = [
-  {
-    citation: citeIceb("10.3.1"),
-    contraction: "of",
-    id: "UEB-10.3.1-of-compound-exception",
-    words: [
-      "biofeedback", ...family("microfilm", ["s", "ed", "ing"]),
-      "twofold", "twofolds",
-    ],
-  },
-  {
-    citation: citeIceb("10.3.1"),
-    contraction: "the",
-    id: "UEB-10.3.1-the-compound-exception",
-    words: ["apartheid", "northeast", "northeastern"],
-  },
-];
+export const COMPOUND_CONTRACTION_EXCEPTIONS: readonly CompoundContractionExceptionSource[] = readCompoundExceptions(compoundExceptionsData);
 
 export interface FirstSyllableContractionExceptionSource {
   readonly citation: IcebRuleCitation<"10.6.1">;
@@ -43,33 +32,7 @@ export interface FirstSyllableContractionExceptionSource {
   readonly words: readonly string[];
 }
 
-export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContractionExceptionSource[] = [
-  {
-    citation: citeIceb("10.6.1"),
-    contraction: "be",
-    id: "UEB-10.6.1-be-syllable-exception",
-    // Before a vowel be is spelled by default (FIRST_SYLLABLE_VOWEL_WORDS).
-    words: [
-      ...family("bed", ["s", "ded", "ding"]),
-      ...family("better", ["s", "ed", "ing"]), "belfast",
-      ...family("bend", ["s", "er", "ers", "ing"]), "bent",
-      ...family("bedrock", ["s"]), ...family("bedroom", ["s"]),
-      ...family("best", ["s", "ed", "ing"]), "benfica",
-    ],
-  },
-  {
-    citation: citeIceb("10.6.1"),
-    contraction: "dis",
-    id: "UEB-10.6.1-dis-syllable-exception",
-    words: family("dish", ["es"]),
-  },
-  {
-    citation: citeIceb("10.6.1"),
-    contraction: "con",
-    id: "UEB-10.6.1-con-syllable-exception",
-    words: [...family("cone", ["s"]), "conan"],
-  },
-];
+export const FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS: readonly FirstSyllableContractionExceptionSource[] = readSyllableExceptions(syllableExceptionsData);
 
 export interface FirstSyllableVowelWordsSource {
   readonly citation: IcebRuleCitation<"10.6.1">;
@@ -85,25 +48,7 @@ export interface FirstSyllableVowelWordsSource {
  * be·a·ti·tude, be- prefixes). Unlisted and unknown words are spelled, which
  * keeps contrived words unambiguous (#100).
  */
-export const FIRST_SYLLABLE_VOWEL_WORDS: FirstSyllableVowelWordsSource = {
-  citation: citeIceb("10.6.1"),
-  contraction: "be",
-  id: "UEB-10.6.1-be-vowel-syllable-words",
-  words: [
-    ...family("being", ["s", "less", "ness", "nesses"]),
-    ...family("beyond", ["s", "ness"]),
-    ...family("beatific", ["al", "ally"]), "beatificate",
-    ...family("beatification", ["s"]),
-    "beatified", "beatifies", "beatify", "beatifying",
-    ...family("beatitude", ["s"]),
-    "beata", "beatae", "beati", "beatus",
-    "beatrice", "beatrisa", "beatrix", "beatriz",
-    "beelzebub", "beelzebubian", "beelzebul",
-    "beode", "beograd", "beothuk", "beothukan", "beowawe", "beowulf",
-    "bealtared", "beaproned", "beearn", "beedged", "beelbow", "beinked",
-    "beuncled", "beuniformed",
-  ],
-};
+export const FIRST_SYLLABLE_VOWEL_WORDS: FirstSyllableVowelWordsSource = readVowelWords(syllableVowelWordsData);
 
 export type ContextualInitialContraction =
   | "ever"
@@ -127,62 +72,7 @@ export interface InitialContractionExceptionSource {
   readonly words: readonly string[];
 }
 
-const initialExceptions = (
-  locator: Grade2ConstraintLocator,
-  contraction: ContextualInitialContraction,
-  words: readonly string[],
-): InitialContractionExceptionSource => ({
-  citation: citeIceb(locator),
-  contraction,
-  id: `UEB-${locator}-${contraction}-exception`,
-  words,
-});
-
-export const INITIAL_CONTRACTION_EXCEPTIONS: readonly InitialContractionExceptionSource[] = [
-  initialExceptions("10.7.2", "upon", ["coupon", "dupont"]),
-  initialExceptions("10.7.2", "these", ["hypotheses", "theseus"]),
-  initialExceptions("10.7.2", "those", ["spathose", "thoseby"]),
-  initialExceptions("10.7.2", "whose", ["withered"]),
-  initialExceptions("10.7.2", "there", [
-    "bothered", "ethereal", "isothere", "smithereens", "theresa",
-  ]),
-  initialExceptions("10.7.3", "had", [
-    "chad", "hades", "hadrian", "menhaden", "shadow", "thaddeus",
-  ]),
-  initialExceptions("10.7.4", "ever", [
-    "believer", "eversion", "guinevere", "mckeever", "monteverdi",
-    "persevere", "reverberate", "revere", "reverify", "severity", "thievery",
-  ]),
-  initialExceptions("10.7.5", "here", [
-    "adhered", "bothered", "coherence", "elsewhere", "ethereal", "heredity",
-    "hereford", "hereditary",
-  ]),
-  initialExceptions("10.7.5", "name", [
-    ...family("enamel", ["s", "ed", "ing", "led", "ling"]),
-    ...family("ornament", ["s", "ed", "ing", "al"]), "unamended", "vietnamese",
-  ]),
-  initialExceptions("10.7.6", "one", [
-    ...family("anemone", ["s"]), "baroness", ...family("baronet", ["s"]),
-    "boone", "cantonese",
-    ...family("colonel", ["s"]),
-    "conestoga", "crooner", "donegal", "erroneous", "hermione", "indonesia",
-    "krone", "monet", "onerous", "phonetic", "pioneer", "poisoned", "rhône",
-    "rooney", "sooner", "stoned",
-  ]),
-  initialExceptions("10.7.7", "some", [
-    "blossomed", ...family("gasometer", ["s"]), "isometric", "ransomed",
-    ...family("somersault", ["s", "ed", "ing"]), "somerset",
-  ]),
-  initialExceptions("10.7.8", "time", [
-    ...family("altimeter", ["s"]), ...family("centime", ["s"]),
-    ...family("centimeter", ["s"]), "mortimer", "multimedia",
-    ...family("multimeter", ["s"]),
-    ...family("sentiment", ["s", "al", "ally", "ality"]),
-  ]),
-  initialExceptions("10.7.9", "under", [
-    "flounder", "laundering", "saunders", "underived", "underogatory",
-  ]),
-];
+export const INITIAL_CONTRACTION_EXCEPTIONS: readonly InitialContractionExceptionSource[] = readInitialExceptions(initialExceptionsData);
 
 export interface FinalGroupsignExceptionSource {
   readonly citation: IcebRuleCitation<"10.8.3" | "10.8.4">;
@@ -192,21 +82,4 @@ export interface FinalGroupsignExceptionSource {
   readonly words: readonly string[];
 }
 
-export const FINAL_GROUPSIGN_EXCEPTIONS: readonly FinalGroupsignExceptionSource[] = [
-  {
-    citation: citeIceb("10.8.3"),
-    endings: [],
-    groupsign: "ity",
-    id: "UEB-10.8.3-ity-exception",
-    words: ["biscuity", "dacoity", "fruity", "hoitytoity", "rabbity"],
-  },
-  {
-    citation: citeIceb("10.8.4"),
-    endings: [],
-    groupsign: "ness",
-    id: "UEB-10.8.4-ness-exception",
-    words: [
-      "captainess", "chieftainess", "citizeness", "heatheness", "villainess",
-    ].flatMap((word) => family(word, ["es"])),
-  },
-];
+export const FINAL_GROUPSIGN_EXCEPTIONS: readonly FinalGroupsignExceptionSource[] = readFinalExceptions(finalExceptionsData);

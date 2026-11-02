@@ -1,0 +1,44 @@
+[
+  {
+    "braille": "⠘⠝",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "4.4.1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-4.4.1-eng",
+    "kind": "letter",
+    "numericDigit": null,
+    "print": "ŋ",
+    "uppercasePrint": "Ŋ"
+  },
+  {
+    "braille": "⠸⠢",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "4.4.1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-4.4.1-schwa",
+    "kind": "letter",
+    "numericDigit": null,
+    "print": "ə",
+    "uppercasePrint": "Ə"
+  },
+  {
+    "braille": "⠨⠮",
+    "citation": {
+      "authority": "ICEB",
+      "document": "Rules of Unified English Braille, Third Edition (2024)",
+      "locator": "4.6.1",
+      "url": "https://iceb.org/publications/ueb/"
+    },
+    "id": "UEB-4.6.1-sharp-s",
+    "kind": "letter",
+    "numericDigit": null,
+    "print": "ß",
+    "uppercasePrint": "ẞ"
+  }
+]
