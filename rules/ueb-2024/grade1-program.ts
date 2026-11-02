@@ -7,9 +7,16 @@ import {
 import { COMPOSITION_POLICY_RULES } from "./policies/source.js";
 import { compileSymbols, type SymbolCompilationResult } from "./symbols/compiler.js";
 import { SYMBOL_RULES } from "./symbols/source.js";
+import type { TechnicalSignProgram } from "../../src/technical-program.js";
+import {
+  compileTechnicalSigns, TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SYMBOL_RULES,
+} from "./technical-signs.js";
 
 export const GRADE1_MODE_COMPILATION: ModeCompilationResult = compileModes(MODE_RULES);
 export const COMPOSITION_POLICY_COMPILATION: CompositionPolicyCompilation =
   compileCompositionPolicies(COMPOSITION_POLICY_RULES);
 export const GRADE1_SYMBOL_COMPILATION: SymbolCompilationResult = compileSymbols(SYMBOL_RULES);
+export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = compileTechnicalSigns(
+  SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, TECHNICAL_SIGN_MAPPINGS,
+);
 export { INITIAL_ELISION_WORDS } from "./apostrophes.js";

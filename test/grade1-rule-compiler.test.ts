@@ -26,6 +26,11 @@ import {
   type SymbolRuleSource,
 } from "../rules/ueb-2024/symbols/compiler.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
+import { SYMBOL_RULES } from "../rules/ueb-2024/symbols/source.js";
+import {
+  compileTechnicalSigns, TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SYMBOL_RULES,
+} from "../rules/ueb-2024/technical-signs.js";
+import { TECHNICAL_COMPARISONS, TECHNICAL_OPERATIONS } from "../src/technical-program.js";
 import {
   indicatorKind,
   modeIndicator,
@@ -131,6 +136,36 @@ describe("compiled Grade 1 symbols", () => {
       .toThrow(expect.objectContaining({ code: "malformed-rule" }));
     expect(() => compileSymbols([{ ...symbol("print-braille", "a"), braille: "x" }]))
       .toThrow(expect.objectContaining({ code: "malformed-rule" }));
+  });
+});
+
+describe("compiled technical signs", () => {
+  it("emits only additions without copying shared symbol definitions", () => {
+    const program = compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, TECHNICAL_SIGN_MAPPINGS);
+    expect(program.symbols).toHaveLength(6);
+    const generalPrints = new Set(SYMBOL_RULES.map((rule) => rule.print));
+    expect(program.symbols.some((entry) => generalPrints.has(entry.print))).toBe(false);
+  });
+
+  it.each(TECHNICAL_OPERATIONS)("rejects a missing operation reference for %s", (operation) => {
+    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, {
+      ...TECHNICAL_SIGN_MAPPINGS,
+      operations: { ...TECHNICAL_SIGN_MAPPINGS.operations, [operation]: "missing" },
+    })).toThrow("references missing symbol");
+  });
+
+  it.each(TECHNICAL_COMPARISONS)("rejects a missing comparison reference for %s", (comparison) => {
+    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, {
+      ...TECHNICAL_SIGN_MAPPINGS,
+      comparisons: { ...TECHNICAL_SIGN_MAPPINGS.comparisons, [comparison]: "missing" },
+    })).toThrow("references missing symbol");
+  });
+
+  it("rejects additions that overwrite general symbol definitions", () => {
+    expect(() => compileTechnicalSigns(SYMBOL_RULES,
+      [...TECHNICAL_SYMBOL_RULES, symbol("test-duplicate-plus", "+")],
+      TECHNICAL_SIGN_MAPPINGS,
+    )).toThrow(expect.objectContaining({ code: "conflicting-print" }));
   });
 });
 

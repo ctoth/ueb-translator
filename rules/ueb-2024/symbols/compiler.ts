@@ -1,4 +1,4 @@
-import type { IcebRuleCitation } from "../source.js";
+import type { IcebRuleCitation, TechnicalSignCitation } from "../source.js";
 import type {
   CompiledSymbol,
   SymbolClass,
@@ -7,7 +7,7 @@ import type {
 
 export interface SymbolRuleSource {
   readonly braille: string;
-  readonly citation: IcebRuleCitation;
+  readonly citation: IcebRuleCitation | TechnicalSignCitation;
   readonly id: string;
   readonly kind: SymbolClass;
   readonly numericDigit: string | null;
