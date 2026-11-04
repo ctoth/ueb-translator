@@ -1,302 +1,77 @@
 [
-  [
-    "about",
-    "⠁⠃"
-  ],
-  [
-    "above",
-    "⠁⠃⠧"
-  ],
-  [
-    "according",
-    "⠁⠉"
-  ],
-  [
-    "across",
-    "⠁⠉⠗"
-  ],
-  [
-    "after",
-    "⠁⠋"
-  ],
-  [
-    "afternoon",
-    "⠁⠋⠝"
-  ],
-  [
-    "afterward",
-    "⠁⠋⠺"
-  ],
-  [
-    "again",
-    "⠁⠛"
-  ],
-  [
-    "against",
-    "⠁⠛⠌"
-  ],
-  [
-    "also",
-    "⠁⠇"
-  ],
-  [
-    "almost",
-    "⠁⠇⠍"
-  ],
-  [
-    "already",
-    "⠁⠇⠗"
-  ],
-  [
-    "altogether",
-    "⠁⠇⠞"
-  ],
-  [
-    "although",
-    "⠁⠇⠹"
-  ],
-  [
-    "always",
-    "⠁⠇⠺"
-  ],
-  [
-    "blind",
-    "⠃⠇"
-  ],
-  [
-    "braille",
-    "⠃⠗⠇"
-  ],
-  [
-    "could",
-    "⠉⠙"
-  ],
-  [
-    "declare",
-    "⠙⠉⠇"
-  ],
-  [
-    "declaring",
-    "⠙⠉⠇⠛"
-  ],
-  [
-    "deceive",
-    "⠙⠉⠧"
-  ],
-  [
-    "deceiving",
-    "⠙⠉⠧⠛"
-  ],
-  [
-    "either",
-    "⠑⠊"
-  ],
-  [
-    "friend",
-    "⠋⠗"
-  ],
-  [
-    "first",
-    "⠋⠌"
-  ],
-  [
-    "good",
-    "⠛⠙"
-  ],
-  [
-    "great",
-    "⠛⠗⠞"
-  ],
-  [
-    "him",
-    "⠓⠍"
-  ],
-  [
-    "himself",
-    "⠓⠍⠋"
-  ],
-  [
-    "herself",
-    "⠓⠻⠋"
-  ],
-  [
-    "immediate",
-    "⠊⠍⠍"
-  ],
-  [
-    "little",
-    "⠇⠇"
-  ],
-  [
-    "letter",
-    "⠇⠗"
-  ],
-  [
-    "myself",
-    "⠍⠽⠋"
-  ],
-  [
-    "much",
-    "⠍⠡"
-  ],
-  [
-    "must",
-    "⠍⠌"
-  ],
-  [
-    "necessary",
-    "⠝⠑⠉"
-  ],
-  [
-    "neither",
-    "⠝⠑⠊"
-  ],
-  [
-    "paid",
-    "⠏⠙"
-  ],
-  [
-    "perceive",
-    "⠏⠻⠉⠧"
-  ],
-  [
-    "perceiving",
-    "⠏⠻⠉⠧⠛"
-  ],
-  [
-    "perhaps",
-    "⠏⠻⠓"
-  ],
-  [
-    "quick",
-    "⠟⠅"
-  ],
-  [
-    "receive",
-    "⠗⠉⠧"
-  ],
-  [
-    "receiving",
-    "⠗⠉⠧⠛"
-  ],
-  [
-    "rejoice",
-    "⠗⠚⠉"
-  ],
-  [
-    "rejoicing",
-    "⠗⠚⠉⠛"
-  ],
-  [
-    "said",
-    "⠎⠙"
-  ],
-  [
-    "such",
-    "⠎⠡"
-  ],
-  [
-    "today",
-    "⠞⠙"
-  ],
-  [
-    "together",
-    "⠞⠛⠗"
-  ],
-  [
-    "tomorrow",
-    "⠞⠍"
-  ],
-  [
-    "tonight",
-    "⠞⠝"
-  ],
-  [
-    "itself",
-    "⠭⠋"
-  ],
-  [
-    "its",
-    "⠭⠎"
-  ],
-  [
-    "your",
-    "⠽⠗"
-  ],
-  [
-    "yourself",
-    "⠽⠗⠋"
-  ],
-  [
-    "yourselves",
-    "⠽⠗⠧⠎"
-  ],
-  [
-    "themselves",
-    "⠮⠍⠧⠎"
-  ],
-  [
-    "children",
-    "⠡⠝"
-  ],
-  [
-    "should",
-    "⠩⠙"
-  ],
-  [
-    "thyself",
-    "⠹⠽⠋"
-  ],
-  [
-    "ourselves",
-    "⠳⠗⠧⠎"
-  ],
-  [
-    "would",
-    "⠺⠙"
-  ],
-  [
-    "because",
-    "⠆⠉"
-  ],
-  [
-    "before",
-    "⠆⠋"
-  ],
-  [
-    "behind",
-    "⠆⠓"
-  ],
-  [
-    "below",
-    "⠆⠇"
-  ],
-  [
-    "beneath",
-    "⠆⠝"
-  ],
-  [
-    "beside",
-    "⠆⠎"
-  ],
-  [
-    "between",
-    "⠆⠞"
-  ],
-  [
-    "beyond",
-    "⠆⠽"
-  ],
-  [
-    "conceive",
-    "⠒⠉⠧"
-  ],
-  [
-    "conceiving",
-    "⠒⠉⠧⠛"
-  ],
-  [
-    "oneself",
-    "⠐⠕⠋"
-  ]
+  ["about", "⠁⠃"],
+  ["above", "⠁⠃⠧"],
+  ["according", "⠁⠉"],
+  ["across", "⠁⠉⠗"],
+  ["after", "⠁⠋"],
+  ["afternoon", "⠁⠋⠝"],
+  ["afterward", "⠁⠋⠺"],
+  ["again", "⠁⠛"],
+  ["against", "⠁⠛⠌"],
+  ["also", "⠁⠇"],
+  ["almost", "⠁⠇⠍"],
+  ["already", "⠁⠇⠗"],
+  ["altogether", "⠁⠇⠞"],
+  ["although", "⠁⠇⠹"],
+  ["always", "⠁⠇⠺"],
+  ["blind", "⠃⠇"],
+  ["braille", "⠃⠗⠇"],
+  ["could", "⠉⠙"],
+  ["declare", "⠙⠉⠇"],
+  ["declaring", "⠙⠉⠇⠛"],
+  ["deceive", "⠙⠉⠧"],
+  ["deceiving", "⠙⠉⠧⠛"],
+  ["either", "⠑⠊"],
+  ["friend", "⠋⠗"],
+  ["first", "⠋⠌"],
+  ["good", "⠛⠙"],
+  ["great", "⠛⠗⠞"],
+  ["him", "⠓⠍"],
+  ["himself", "⠓⠍⠋"],
+  ["herself", "⠓⠻⠋"],
+  ["immediate", "⠊⠍⠍"],
+  ["little", "⠇⠇"],
+  ["letter", "⠇⠗"],
+  ["myself", "⠍⠽⠋"],
+  ["much", "⠍⠡"],
+  ["must", "⠍⠌"],
+  ["necessary", "⠝⠑⠉"],
+  ["neither", "⠝⠑⠊"],
+  ["paid", "⠏⠙"],
+  ["perceive", "⠏⠻⠉⠧"],
+  ["perceiving", "⠏⠻⠉⠧⠛"],
+  ["perhaps", "⠏⠻⠓"],
+  ["quick", "⠟⠅"],
+  ["receive", "⠗⠉⠧"],
+  ["receiving", "⠗⠉⠧⠛"],
+  ["rejoice", "⠗⠚⠉"],
+  ["rejoicing", "⠗⠚⠉⠛"],
+  ["said", "⠎⠙"],
+  ["such", "⠎⠡"],
+  ["today", "⠞⠙"],
+  ["together", "⠞⠛⠗"],
+  ["tomorrow", "⠞⠍"],
+  ["tonight", "⠞⠝"],
+  ["itself", "⠭⠋"],
+  ["its", "⠭⠎"],
+  ["your", "⠽⠗"],
+  ["yourself", "⠽⠗⠋"],
+  ["yourselves", "⠽⠗⠧⠎"],
+  ["themselves", "⠮⠍⠧⠎"],
+  ["children", "⠡⠝"],
+  ["should", "⠩⠙"],
+  ["thyself", "⠹⠽⠋"],
+  ["ourselves", "⠳⠗⠧⠎"],
+  ["would", "⠺⠙"],
+  ["because", "⠆⠉"],
+  ["before", "⠆⠋"],
+  ["behind", "⠆⠓"],
+  ["below", "⠆⠇"],
+  ["beneath", "⠆⠝"],
+  ["beside", "⠆⠎"],
+  ["between", "⠆⠞"],
+  ["beyond", "⠆⠽"],
+  ["conceive", "⠒⠉⠧"],
+  ["conceiving", "⠒⠉⠧⠛"],
+  ["oneself", "⠐⠕⠋"]
 ]

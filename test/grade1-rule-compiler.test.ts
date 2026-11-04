@@ -20,6 +20,7 @@ import {
   type ModeCompilationError,
 } from "../rules/ueb-2024/modes/compiler.js";
 import { MODE_RULES } from "../rules/ueb-2024/modes/source.js";
+import { GRADE1_VOCABULARY, orderedNames, readGrade1Vocabulary } from "../rules/ueb-2024/grade1-vocabulary.js";
 import {
   compileSymbols,
   type SymbolCompilationError,
@@ -50,6 +51,45 @@ function symbol(id: string, print: string): SymbolRuleSource {
     uppercasePrint: null,
   };
 }
+
+describe("declarative Grade 1 vocabulary", () => {
+  it("uses declared IDs for mode order, class masks and provenance", () => {
+    const vocabulary = structuredClone(GRADE1_VOCABULARY);
+    Object.assign(vocabulary.modes, { capitals: 2, numeric: 0 });
+    Object.assign(vocabulary.classes, { digit: 7, "uppercase-letter": 0 });
+    Object.assign(vocabulary.policies, { closingStandingPunctuation: 5, standingBoundaries: 0 });
+    const compiled = compileModes([...MODE_RULES].reverse(), vocabulary);
+    const numeric = MODE_RULES.find(rule => rule.name === "numeric");
+    if (numeric === undefined) throw new Error("Missing numeric mode.");
+    expect(compiled.provenance[0]).toBe(numeric);
+    expect(compiled.runtime.modes[0]?.[1]).toBe(7);
+    expect(compiled.classIds.get("digit")).toBe(7);
+    expect(compiled.modeIds.get("capitals")).toBe(2);
+    const numericContinues = compiled.runtime.modes[0]?.[4];
+    expect(numericContinues).toBe(numeric.definition.continuesThrough
+      .reduce((mask, name) => mask | 2 ** vocabulary.classes[name], 0));
+    const policies = compileCompositionPolicies(COMPOSITION_POLICY_RULES, vocabulary);
+    expect(policies.provenance[0]?.name).toBe("standingBoundaries");
+    expect(policies.runtime).toEqual(COMPOSITION_POLICY_COMPILATION.runtime);
+    expect(orderedNames({ second: 1, first: 0 })).toEqual(["first", "second"]);
+  });
+
+  it("rejects missing or unknown names and non-dense IDs", () => {
+    const { digit: _digit, ...missing } = GRADE1_VOCABULARY.classes;
+    for (const classes of [missing, { ...GRADE1_VOCABULARY.classes, extra: 8 },
+      { ...GRADE1_VOCABULARY.classes, digit: 1 },
+      { ...GRADE1_VOCABULARY.classes, digit: -1 },
+      { ...GRADE1_VOCABULARY.classes, digit: 8 },
+      { ...GRADE1_VOCABULARY.classes, digit: 0.5 },
+      { ...GRADE1_VOCABULARY.classes, digit: true },
+    ]) {
+      expect(() => readGrade1Vocabulary({ ...GRADE1_VOCABULARY, classes })).toThrow();
+    }
+    expect(() => compileModes(MODE_RULES, {
+      ...GRADE1_VOCABULARY, modes: { ...GRADE1_VOCABULARY.modes, capitals: 1 },
+    })).toThrow("unique and dense");
+  });
+});
 
 describe("compiled composition policies", () => {
   it("compiles every cited policy into generated closed data", () => {

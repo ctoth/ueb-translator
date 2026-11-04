@@ -1,16 +1,14 @@
 /** JSON source decoding. Rule semantics are validated by the existing compilers. */
-import { citeIceb, type IcebRuleCitation, type IcebRuleLocator, type RuleCitation } from "./source.js";
-import type { SymbolRuleSource } from "./symbols/compiler.js";
-import { MODE_NAMES, MEMBER_CLASSES, type ModeRuleSource } from "./modes/compiler.js";
-import { POLICY_NAMES, type CompositionPolicySource } from "./policies/compiler.js";
-import type { Grade2RuleKind, Grade2RuleLocatorByKind, Grade2RuleSource, Grade2RuleSourceFor, Grade2RuleGroupSource } from "./grade2-rules.js";
+import { CITATION_DOCUMENT_DATA } from "./source-manifest.js";
+import { citeIceb, type IcebRuleCitation, type IcebRuleLocator, type Grade2ConstraintLocator, type RuleCitation } from "./source.js";
+import type { SymbolFamily, SymbolRuleSource } from "./symbols/compiler.js";
+import type { ModeRuleSource } from "./modes/compiler.js";
+import { MODE_NAMES, MEMBER_CLASSES, POLICY_NAMES } from "./grade1-vocabulary.js";
+import type { CompositionPolicySource } from "./policies/compiler.js";
+import type { Grade2RuleKind, Grade2RuleFamilies, Grade2RuleSource, Grade2RuleSourceFor, Grade2RuleGroupSource, Grade2RuleVariant } from "./grade2-rules.js";
 import type { Appendix1Base, Appendix1WordSource, Appendix1GroupSource } from "./appendix1.js";
 import type { ShortformSource } from "./shortforms.js";
-import type {
-  CompoundContractionExceptionSource, FirstSyllableContractionExceptionSource,
-  FirstSyllableVowelWordsSource, InitialContractionExceptionSource, FinalGroupsignExceptionSource,
-  WordFamilySource,
-} from "./constraints.js";
+import type { ConstraintSource, WordFamilySource } from "./constraints.js";
 import { BOUNDARY_BITS, type ContextualRuleGuard } from "./contextual-compiler.js";
 import type { ContextualBoundaryKind } from "../../src/contextual-transducer.js";
 import type {
@@ -30,6 +28,7 @@ function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 function record(value: unknown): Readonly<Record<string, unknown>> { return checked(value, isRecord); }
+const documentData: Readonly<Record<string, unknown>> = record(CITATION_DOCUMENT_DATA);
 function array(value: unknown): readonly unknown[] {
   if (!Array.isArray(value)) throw new Error("Expected JSON array.");
   return value;
@@ -67,19 +66,15 @@ function isLocator(value: unknown): value is IcebRuleLocator {
       "10.3.1", "10.6.1", "10.10", "10.7.2", "10.7.3", "10.7.4", "10.7.5", "10.7.6", "10.7.7", "10.7.8", "10.7.9", "10.8.3", "10.8.4"].includes(value));
 }
 function iceb<L extends IcebRuleLocator>(value: unknown, locator: L): IcebRuleCitation<L> {
-  const source = record(value), expected = citeIceb(locator);
-  if (Object.entries(expected).some(([key, entry]) => source[key] !== entry)) throw new Error("Malformed JSON ICEB citation.");
-  return expected;
+  const source = record(value);
+  member(source["source"], ["ueb-2024"]);
+  if (source["locator"] !== locator) throw new Error("Malformed JSON ICEB citation.");
+  return { ...cited(value, "ICEB", "Rules of Unified English Braille, Third Edition (2024)", "https://iceb.org/publications/ueb/"), locator };
 }
 function generalCitation(value: unknown): IcebRuleCitation {
   return iceb(value, checked(record(value)["locator"], isLocator));
 }
 export function readStrings(value: unknown): readonly string[] { return checked(value, isStrings); }
-export function readStructuralGuard(value: unknown): Extract<ContextualRuleGuard, { readonly kind: "not-crossing" }> {
-  const source = record(value);
-  return { kind: member(source["kind"], ["not-crossing"]),
-    boundaries: array(source["boundaries"]).map(value => checked(value, isBoundary)) };
-}
 export function readPairs(value: unknown): readonly (readonly [string, string])[] {
   return array(value).map(entry => {
     const pair = array(entry);
@@ -91,18 +86,34 @@ export function readSymbolRules(value: unknown): readonly SymbolRuleSource[] {
   return array(value).map(entry => {
     const source = record(entry), citation = record(source["citation"]);
     const readCitation = (): SymbolRuleSource["citation"] => {
-      if (citation["document"] === "Rules of Unified English Braille, Third Edition (2024)") return generalCitation(citation);
-      return {
-        authority: member(citation["authority"], ["ICEB"]),
-        document: member(citation["document"], ["Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)"]),
-        locator: member(citation["locator"], ["Operation signs table, p. 1", "Comparison signs table, p. 1", "Comparison signs table, p. 2"]),
-        url: member(citation["url"], ["https://iceb.org/publications/ueb/"]),
-      };
+      if (citation["source"] === "ueb-2024") return generalCitation(citation);
+      member(citation["source"], ["technical-operations-2018"]);
+      return { ...cited(citation, "ICEB", "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+        "https://iceb.org/publications/ueb/"), locator: member(citation["locator"], ["Operation signs table, p. 1", "Comparison signs table, p. 1", "Comparison signs table, p. 2"]) };
     };
     return { braille: string(source["braille"]), citation: readCitation(), id: string(source["id"]),
       kind: member(source["kind"], ["digit", "letter", "modifier", "symbol"]),
       numericDigit: source["numericDigit"] === null ? null : string(source["numericDigit"]),
       print: string(source["print"]), uppercasePrint: source["uppercasePrint"] === null ? null : string(source["uppercasePrint"]) };
+  });
+}
+export function readSymbolFamilies(value: unknown): readonly SymbolFamily[] {
+  return array(value).map(entry => {
+    const source = record(entry);
+    const kind = member(source["kind"], ["pairs", "digits", "rules"]);
+    const file = string(source["file"]);
+    if (kind === "rules") return { kind, file };
+    const citation = record(source["citation"]);
+    const shared = {
+      file, idPrefix: string(source["idPrefix"]),
+      citation: { source: member(citation["source"], ["ueb-2024"]), locator: string(citation["locator"]) },
+    };
+    if (kind === "digits") return { ...shared, kind, prints: readStrings(source["prints"]) };
+    return { ...shared, kind,
+      symbolKind: member(source["symbolKind"], ["digit", "letter", "modifier", "symbol"]),
+      idKey: member(source["idKey"], ["print", "utf16-hex"]),
+      uppercase: checked(source["uppercase"], isBoolean),
+    };
   });
 }
 export function readModeRules(value: unknown): readonly ModeRuleSource[] {
@@ -142,30 +153,62 @@ function isGuard(value: unknown): value is ContextualRuleGuard {
     default: return false;
   }
 }
-export function readGrade2Locators(value: unknown): Grade2RuleLocatorByKind {
+function readGuards(value: unknown): readonly ContextualRuleGuard[] {
+  return array(value).map(guard => checked(guard, isGuard));
+}
+export function readLongerShortforms(value: unknown): readonly {
+  readonly words: readonly string[]; readonly guards: readonly ContextualRuleGuard[];
+}[] {
+  return array(value).map(value => { const source = record(value); return {
+    words: readStrings(source["words"]), guards: readGuards(source["guards"]),
+  }; });
+}
+export function readShortformSuffixes(value: unknown): {
+  readonly default: readonly string[];
+  readonly exceptions: readonly { readonly words: readonly string[]; readonly suffixes: readonly string[] }[];
+} {
   const source = record(value);
+  return { default: readStrings(source["default"]), exceptions: array(source["exceptions"]).map(value => {
+    const entry = record(value);
+    return { words: readStrings(entry["words"]), suffixes: readStrings(entry["suffixes"]) };
+  }) };
+}
+export function readGrade2Families(value: unknown): Grade2RuleFamilies {
+  const source = record(value);
+  function family<const L extends IcebRuleLocator>(name: string, locator: L): {
+    readonly locator: L; readonly guards: readonly ContextualRuleGuard[];
+  } {
+    const entry = record(source[name]);
+    return { locator: member(entry["locator"], [locator]), guards: readGuards(entry["guards"]) };
+  }
   return {
-    "alphabetic-wordsign": member(source["alphabetic-wordsign"], ["10.1"]),
-    "final-letter-groupsign": member(source["final-letter-groupsign"], ["10.8"]),
-    "initial-letter-contraction": member(source["initial-letter-contraction"], ["10.7"]),
-    "lower-groupsign": member(source["lower-groupsign"], ["10.6"]),
-    "lower-wordsign": member(source["lower-wordsign"], ["10.5"]),
-    "strong-contraction": member(source["strong-contraction"], ["10.3"]),
-    "strong-groupsign": member(source["strong-groupsign"], ["10.4"]),
-    "strong-wordsign": member(source["strong-wordsign"], ["10.2"]),
+    "alphabetic-wordsign": family("alphabetic-wordsign", "10.1"),
+    "final-letter-groupsign": family("final-letter-groupsign", "10.8"),
+    "initial-letter-contraction": family("initial-letter-contraction", "10.7"),
+    "lower-groupsign": family("lower-groupsign", "10.6"),
+    "lower-wordsign": family("lower-wordsign", "10.5"),
+    "strong-contraction": family("strong-contraction", "10.3"),
+    "strong-groupsign": family("strong-groupsign", "10.4"),
+    "strong-wordsign": family("strong-wordsign", "10.2"),
   };
 }
-export function readGrade2Rules(value: unknown, kinds: readonly Grade2RuleKind[], locators: Grade2RuleLocatorByKind): readonly Grade2RuleSource[] {
+export function readGrade2Rules(value: unknown, kinds: readonly Grade2RuleKind[], families: Grade2RuleFamilies): readonly Grade2RuleSource[] {
   return array(value).flatMap<Grade2RuleSource>(entry => {
     const source = record(entry);
     const group: Grade2RuleGroupSource = { kind: member(source["kind"], kinds),
-      guards: array(source["guards"]).map(guard => checked(guard, isGuard)),
+      guards: readGuards(source["guards"]),
+      variants: source["variants"] === undefined ? [] : array(source["variants"]).map(value => {
+        const variant = record(value);
+        const locator = constraintLocator(variant["locator"]);
+        return { idSuffix: string(variant["idSuffix"]), locator,
+          precedence: member(variant["precedence"], CONTEXTUAL_PRECEDENCES), guards: readGuards(variant["guards"]) } satisfies Grade2RuleVariant;
+      }),
       precedence: member(source["precedence"], CONTEXTUAL_PRECEDENCES), entries: readPairs(source["entries"]) };
-    const { kind, guards, precedence, entries: pairs } = group;
+    const { kind, guards, precedence, entries: pairs, variants } = group;
     function expand<K extends Grade2RuleKind>(selected: K): readonly Grade2RuleSourceFor<K>[] {
-      const selectedLocator = locators[selected];
+      const family = families[selected], selectedLocator = family.locator;
       return pairs.map(([print, braille]) => ({ braille, citation: citeIceb(selectedLocator),
-        id: `UEB-${selectedLocator}-${print}`, kind: selected, print, guards, precedence }));
+        id: `UEB-${selectedLocator}-${print}`, kind: selected, print, guards: [...family.guards, ...guards], precedence, variants }));
     }
     switch (kind) {
       case "alphabetic-wordsign": return expand(kind);
@@ -201,43 +244,35 @@ function readWords(value: unknown): readonly string[] {
     return [family.base, ...family.suffixes.map(suffix => family.base + suffix)];
   });
 }
-export function readCompoundExceptions(value: unknown): readonly CompoundContractionExceptionSource[] {
-  return array(value).map(entry => {
-    const source = record(entry), contraction = member(source["contraction"], ["of", "the"]);
-    const id: CompoundContractionExceptionSource["id"] = `UEB-10.3.1-${contraction}-compound-exception`;
-    if (source["id"] !== id) throw new Error("Malformed compound exception id.");
-    return { citation: iceb(source["citation"], "10.3.1"), contraction, id, words: readWords(source["words"]) };
-  });
+function constraintLocator(value: unknown): Grade2ConstraintLocator {
+  return member(value, ["10.3.1", "10.6.1", "10.10", "10.7.2", "10.7.3", "10.7.4", "10.7.5",
+    "10.7.6", "10.7.7", "10.7.8", "10.7.9", "10.8.3", "10.8.4"]);
 }
-export function readSyllableExceptions(value: unknown): readonly FirstSyllableContractionExceptionSource[] {
-  return array(value).map(entry => {
-    const source = record(entry), contraction = member(source["contraction"], ["be", "con", "dis"]);
-    const id: FirstSyllableContractionExceptionSource["id"] = `UEB-10.6.1-${contraction}-syllable-exception`;
-    if (source["id"] !== id) throw new Error("Malformed syllable exception id.");
-    return { citation: iceb(source["citation"], "10.6.1"), contraction, id, words: readWords(source["words"]) };
-  });
-}
-export function readVowelWords(value: unknown): FirstSyllableVowelWordsSource {
-  const source = record(value);
-  return { citation: iceb(source["citation"], "10.6.1"), contraction: member(source["contraction"], ["be"]),
-    id: member(source["id"], ["UEB-10.6.1-be-vowel-syllable-words"]), words: readWords(source["words"]) };
-}
-export function readInitialExceptions(value: unknown): readonly InitialContractionExceptionSource[] {
-  return array(value).map(entry => {
-    const source = record(entry), contraction = member(source["contraction"], ["ever", "had", "here", "name", "one", "some", "there", "these", "those", "time", "under", "upon", "whose"]);
-    const locator = member(record(source["citation"])["locator"], ["10.7.2", "10.7.3", "10.7.4", "10.7.5", "10.7.6", "10.7.7", "10.7.8", "10.7.9"]);
-    const id: InitialContractionExceptionSource["id"] = `UEB-${locator}-${contraction}-exception`;
-    if (source["id"] !== id) throw new Error("Malformed initial exception id.");
-    return { citation: iceb(source["citation"], locator), contraction, id, words: readWords(source["words"]) };
-  });
-}
-export function readFinalExceptions(value: unknown): readonly FinalGroupsignExceptionSource[] {
-  return array(value).map(entry => {
-    const source = record(entry), groupsign = member(source["groupsign"], ["ity", "ness"]);
-    const locator = groupsign === "ity" ? "10.8.3" : "10.8.4";
-    const id = groupsign === "ity" ? "UEB-10.8.3-ity-exception" : "UEB-10.8.4-ness-exception";
-    if (source["id"] !== id) throw new Error("Malformed final exception id.");
-    return { citation: iceb(source["citation"], locator), endings: readStrings(source["endings"]), groupsign, id, words: readWords(source["words"]) };
+
+export function readConstraints(value: unknown, rules: readonly Grade2RuleSource[]): readonly ConstraintSource[] {
+  return array(value).map(value => {
+    const source = record(value), selected = record(source["target"]);
+    const target = rules.find(rule => rule.kind === selected["kind"] && rule.print === selected["print"]);
+    if (target === undefined) throw new Error("Unknown constraint target.");
+    const locator = constraintLocator(record(source["citation"])["locator"]);
+    const guards = array(source["guards"]).flatMap((value): readonly ContextualRuleGuard[] => {
+      const guard = record(value), kind = member(guard["kind"],
+        ["not-word", "not-word-ending", "following-not-vowel-y-except-words"]);
+      if (kind === "not-word-ending") {
+        const endings = readStrings(guard["endings"]);
+        return endings.length === 0 ? [] : [{ kind, endings }];
+      }
+      const possessives = checked(guard["possessives"], isBoolean);
+      const words = readWords(guard["words"]).flatMap(word =>
+        possessives ? [word, word + "'s", ...(word.endsWith("s") ? [word + "'"] : [])] : [word]);
+      if (kind === "not-word") {
+        const ignoredCharacters = string(guard["ignoredCharacters"]);
+        return words.length === 0 ? [] : [{ kind, words, ignoredCharacters }];
+      }
+      return [{ kind, words, characters: string(guard["characters"]) }];
+    });
+    return { citation: iceb(source["citation"], locator),
+      target: { kind: target.kind, print: target.print }, guards };
   });
 }
 export function readInventory(value: unknown): { readonly appendix1LongerWords: number; readonly contextualRules: number; readonly rules: number; readonly shortforms: number } {
@@ -246,9 +281,9 @@ export function readInventory(value: unknown): { readonly appendix1LongerWords: 
 }
 
 function cited<A extends string, D extends string, U extends string>(value: unknown, authority: A, document: D, url: U): RuleCitation<A, D, string, U> {
-  const source = record(value);
+  const reference = record(value), source = record(record(documentData)[string(reference["source"])]);
   return { authority: member(source["authority"], [authority]), document: member(source["document"], [document]),
-    locator: string(source["locator"]), url: member(source["url"], [url]) };
+    locator: string(reference["locator"]), url: member(source["url"], [url]) };
 }
 function technical<T>(value: unknown, decode: (value: unknown) => T): { readonly citation: TechnicalScriptSource["citation"]; readonly definitions: T } {
   const source = record(value);

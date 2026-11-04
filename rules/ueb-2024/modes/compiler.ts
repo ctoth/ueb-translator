@@ -5,16 +5,9 @@ import type {
   ModeProgram,
 } from "../../../src/mode-engine.js";
 import type { IcebRuleCitation } from "../source.js";
-
-export type ModeRuleName =
-  | "capitals" | "grade1" | "numeric"
-  | "typeform-bold" | "typeform-italic" | "typeform-script"
-  | "typeform-transcriber-defined" | "typeform-underline";
-
-export type ModeMemberClass =
-  | "digit" | "grade1-required" | "lowercase-letter"
-  | "numeric-ambiguous-letter" | "numeric-punctuation"
-  | "sequence-boundary" | "typeformed" | "uppercase-letter";
+import { GRADE1_VOCABULARY, orderedNames, readGrade1Vocabulary,
+  type Grade1Vocabulary, type ModeRuleName, type ModeMemberClass } from "../grade1-vocabulary.js";
+export type { ModeRuleName, ModeMemberClass } from "../grade1-vocabulary.js";
 
 export interface ModeIndicatorsSource {
   readonly passage: string;
@@ -60,27 +53,6 @@ export interface ModeCompilationResult {
   readonly runtime: ModeProgram;
 }
 
-export const MODE_NAMES: readonly ModeRuleName[] = [
-  "capitals", "grade1", "numeric", "typeform-bold", "typeform-italic",
-  "typeform-script", "typeform-transcriber-defined", "typeform-underline",
-];
-
-export const MEMBER_CLASSES: readonly ModeMemberClass[] = [
-  "digit", "grade1-required", "lowercase-letter", "numeric-ambiguous-letter",
-  "numeric-punctuation", "sequence-boundary", "typeformed", "uppercase-letter",
-];
-
-const MEMBER_CLASS_IDS = {
-  digit: 0,
-  "grade1-required": 1,
-  "lowercase-letter": 2,
-  "numeric-ambiguous-letter": 3,
-  "numeric-punctuation": 4,
-  "sequence-boundary": 5,
-  typeformed: 6,
-  "uppercase-letter": 7,
-} satisfies Readonly<Record<ModeMemberClass, number>>;
-
 function cited(rule: ModeRuleSource): boolean {
   return rule.citation.locator.trim().length > 0 &&
     rule.citation.url.startsWith("https://iceb.org/");
@@ -96,23 +68,23 @@ function malformed(definition: ModeDefinitionSource): boolean {
     definition.continuesThrough.some((modeClass) => definition.terminatedBy.includes(modeClass));
 }
 
-function classId(modeClass: ModeMemberClass): number {
-  return MEMBER_CLASS_IDS[modeClass];
+function classId(modeClass: ModeMemberClass, vocabulary: Grade1Vocabulary): number {
+  return vocabulary.classes[modeClass];
 }
 
-function classMask(classes: readonly ModeMemberClass[]): ModeClassMask {
+function classMask(classes: readonly ModeMemberClass[], vocabulary: Grade1Vocabulary): ModeClassMask {
   let mask = 0;
-  for (const modeClass of classes) mask |= 2 ** classId(modeClass);
+  for (const modeClass of classes) mask |= 2 ** classId(modeClass, vocabulary);
   return mask;
 }
 
-function compiledMode(rule: ModeRuleSource): CompiledMode {
+function compiledMode(rule: ModeRuleSource, vocabulary: Grade1Vocabulary): CompiledMode {
   const indicators: CompiledModeIndicators = [
     rule.definition.indicators.symbol, rule.definition.indicators.word,
     rule.definition.indicators.passage, rule.definition.indicators.terminator,
   ];
-  return [indicators, classId(rule.definition.memberClass), rule.definition.passageThreshold,
-    classMask(rule.definition.terminatedBy), classMask(rule.definition.continuesThrough)];
+  return [indicators, classId(rule.definition.memberClass, vocabulary), rule.definition.passageThreshold,
+    classMask(rule.definition.terminatedBy, vocabulary), classMask(rule.definition.continuesThrough, vocabulary)];
 }
 
 function idMap<Value extends string>(values: readonly Value[]): ReadonlyMap<Value, number> {
@@ -120,7 +92,11 @@ function idMap<Value extends string>(values: readonly Value[]): ReadonlyMap<Valu
 }
 
 /** Compile fixed vocabulary into opaque IDs, masks, and tuples for the engine. */
-export function compileModes(sourceRules: readonly ModeRuleSource[]): ModeCompilationResult {
+export function compileModes(
+  sourceRules: readonly ModeRuleSource[], vocabulary: Grade1Vocabulary = GRADE1_VOCABULARY,
+): ModeCompilationResult {
+  readGrade1Vocabulary(vocabulary);
+  const modeNames = orderedNames(vocabulary.modes);
   const ids = new Set<string>();
   const byName = new Map<ModeRuleName, ModeRuleSource>();
   for (const rule of sourceRules) {
@@ -134,11 +110,11 @@ export function compileModes(sourceRules: readonly ModeRuleSource[]): ModeCompil
   }
   const provenance: ModeRuleSource[] = [];
   const modes: CompiledMode[] = [];
-  for (const name of MODE_NAMES) {
+  for (const name of modeNames) {
     const rule = byName.get(name);
     if (rule === undefined) throw new ModeCompilationError("malformed-mode", [], `Closed mode program is missing ${name}.`);
     provenance.push(rule);
-    modes.push(compiledMode(rule));
+    modes.push(compiledMode(rule, vocabulary));
   }
-  return { classIds: idMap(MEMBER_CLASSES), modeIds: idMap(MODE_NAMES), provenance, runtime: { modes } };
+  return { classIds: idMap(orderedNames(vocabulary.classes)), modeIds: idMap(modeNames), provenance, runtime: { modes } };
 }

@@ -1,0 +1,9 @@
+{
+  "default": ["s", "'s"],
+  "exceptions": [
+    {
+      "words": ["about", "almost", "him"],
+      "suffixes": ["'s"]
+    }
+  ]
+}

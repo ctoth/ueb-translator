@@ -1,0 +1,729 @@
+[
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.3.1"
+    },
+    "target": {
+      "kind": "strong-contraction",
+      "print": "of"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "biofeedback",
+          {
+            "base": "microfilm",
+            "suffixes": [
+              "s",
+              "ed",
+              "ing"
+            ]
+          },
+          "twofold",
+          "twofolds"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.3.1"
+    },
+    "target": {
+      "kind": "strong-contraction",
+      "print": "the"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "apartheid",
+          "northeast",
+          "northeastern"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.6.1"
+    },
+    "target": {
+      "kind": "lower-groupsign",
+      "print": "be"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          {
+            "base": "bed",
+            "suffixes": [
+              "s",
+              "ded",
+              "ding"
+            ]
+          },
+          {
+            "base": "better",
+            "suffixes": [
+              "s",
+              "ed",
+              "ing"
+            ]
+          },
+          "belfast",
+          {
+            "base": "bend",
+            "suffixes": [
+              "s",
+              "er",
+              "ers",
+              "ing"
+            ]
+          },
+          "bent",
+          {
+            "base": "bedrock",
+            "suffixes": [
+              "s"
+            ]
+          },
+          {
+            "base": "bedroom",
+            "suffixes": [
+              "s"
+            ]
+          },
+          {
+            "base": "best",
+            "suffixes": [
+              "s",
+              "ed",
+              "ing"
+            ]
+          },
+          "benfica"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.6.1"
+    },
+    "target": {
+      "kind": "lower-groupsign",
+      "print": "dis"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          {
+            "base": "dish",
+            "suffixes": [
+              "es"
+            ]
+          }
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.6.1"
+    },
+    "target": {
+      "kind": "lower-groupsign",
+      "print": "con"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          {
+            "base": "cone",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "conan"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.6.1"
+    },
+    "target": {
+      "kind": "lower-groupsign",
+      "print": "be"
+    },
+    "guards": [
+      {
+        "kind": "following-not-vowel-y-except-words",
+        "characters": "aeiouy",
+        "words": [
+          {
+            "base": "being",
+            "suffixes": [
+              "s",
+              "less",
+              "ness",
+              "nesses"
+            ]
+          },
+          {
+            "base": "beyond",
+            "suffixes": [
+              "s",
+              "ness"
+            ]
+          },
+          {
+            "base": "beatific",
+            "suffixes": [
+              "al",
+              "ally"
+            ]
+          },
+          "beatificate",
+          {
+            "base": "beatification",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "beatified",
+          "beatifies",
+          "beatify",
+          "beatifying",
+          {
+            "base": "beatitude",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "beata",
+          "beatae",
+          "beati",
+          "beatus",
+          "beatrice",
+          "beatrisa",
+          "beatrix",
+          "beatriz",
+          "beelzebub",
+          "beelzebubian",
+          "beelzebul",
+          "beode",
+          "beograd",
+          "beothuk",
+          "beothukan",
+          "beowawe",
+          "beowulf",
+          "bealtared",
+          "beaproned",
+          "beearn",
+          "beedged",
+          "beelbow",
+          "beinked",
+          "beuncled",
+          "beuniformed"
+        ],
+        "possessives": true
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.2"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "upon"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "coupon",
+          "dupont"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.2"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "these"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "hypotheses",
+          "theseus"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.2"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "those"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "spathose",
+          "thoseby"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.2"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "whose"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "withered"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.2"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "there"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "bothered",
+          "ethereal",
+          "isothere",
+          "smithereens",
+          "theresa"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.3"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "had"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "chad",
+          "hades",
+          "hadrian",
+          "menhaden",
+          "shadow",
+          "thaddeus"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.4"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "ever"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "believer",
+          "eversion",
+          "guinevere",
+          "mckeever",
+          "monteverdi",
+          "persevere",
+          "reverberate",
+          "revere",
+          "reverify",
+          "severity",
+          "thievery"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.5"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "here"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "adhered",
+          "bothered",
+          "coherence",
+          "elsewhere",
+          "ethereal",
+          "heredity",
+          "hereford",
+          "hereditary"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.5"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "name"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          {
+            "base": "enamel",
+            "suffixes": [
+              "s",
+              "ed",
+              "ing",
+              "led",
+              "ling"
+            ]
+          },
+          {
+            "base": "ornament",
+            "suffixes": [
+              "s",
+              "ed",
+              "ing",
+              "al"
+            ]
+          },
+          "unamended",
+          "vietnamese"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.6"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "one"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          {
+            "base": "anemone",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "baroness",
+          {
+            "base": "baronet",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "boone",
+          "cantonese",
+          {
+            "base": "colonel",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "conestoga",
+          "crooner",
+          "donegal",
+          "erroneous",
+          "hermione",
+          "indonesia",
+          "krone",
+          "monet",
+          "onerous",
+          "phonetic",
+          "pioneer",
+          "poisoned",
+          "rhône",
+          "rooney",
+          "sooner",
+          "stoned"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.7"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "some"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "blossomed",
+          {
+            "base": "gasometer",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "isometric",
+          "ransomed",
+          {
+            "base": "somersault",
+            "suffixes": [
+              "s",
+              "ed",
+              "ing"
+            ]
+          },
+          "somerset"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.8"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "time"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          {
+            "base": "altimeter",
+            "suffixes": [
+              "s"
+            ]
+          },
+          {
+            "base": "centime",
+            "suffixes": [
+              "s"
+            ]
+          },
+          {
+            "base": "centimeter",
+            "suffixes": [
+              "s"
+            ]
+          },
+          "mortimer",
+          "multimedia",
+          {
+            "base": "multimeter",
+            "suffixes": [
+              "s"
+            ]
+          },
+          {
+            "base": "sentiment",
+            "suffixes": [
+              "s",
+              "al",
+              "ally",
+              "ality"
+            ]
+          }
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.7.9"
+    },
+    "target": {
+      "kind": "initial-letter-contraction",
+      "print": "under"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "flounder",
+          "laundering",
+          "saunders",
+          "underived",
+          "underogatory"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.8.3"
+    },
+    "target": {
+      "kind": "final-letter-groupsign",
+      "print": "ity"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          "biscuity",
+          "dacoity",
+          "fruity",
+          "hoitytoity",
+          "rabbity"
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "10.8.4"
+    },
+    "target": {
+      "kind": "final-letter-groupsign",
+      "print": "ness"
+    },
+    "guards": [
+      {
+        "kind": "not-word",
+        "words": [
+          {
+            "base": "captainess",
+            "suffixes": [
+              "es"
+            ]
+          },
+          {
+            "base": "chieftainess",
+            "suffixes": [
+              "es"
+            ]
+          },
+          {
+            "base": "citizeness",
+            "suffixes": [
+              "es"
+            ]
+          },
+          {
+            "base": "heatheness",
+            "suffixes": [
+              "es"
+            ]
+          },
+          {
+            "base": "villainess",
+            "suffixes": [
+              "es"
+            ]
+          }
+        ],
+        "possessives": true,
+        "ignoredCharacters": "-"
+      }
+    ]
+  }
+]

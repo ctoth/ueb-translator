@@ -15,6 +15,7 @@ import {
   requireAppendixShortformBase,
 } from "../rules/ueb-2024/program.js";
 import { GRADE2_INVENTORY_COUNTS } from "../rules/ueb-2024/inventory.js";
+import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
 import { compose } from "../src/composition.js";
 import {
@@ -225,24 +226,9 @@ describe("Grade 2 source compilation", () => {
   });
 
   it("keeps the lower groupsign whole-word guard limited to en and in", () => {
-    expect(compileGrade2RuleGuards({
-      braille: "⠢",
-      citation: citeIceb("10.6"),
-      id: "UEB-10.6-en",
-      kind: "lower-groupsign",
-      print: "en",
-      guards: [],
-      precedence: 3,
-    })).toContainEqual({ kind: "not-whole-word" });
-    expect(compileGrade2RuleGuards({
-      braille: "⠁",
-      citation: citeIceb("10.6"),
-      id: "UEB-10.6-test-fallback",
-      kind: "lower-groupsign",
-      print: "test-fallback",
-      guards: [],
-      precedence: 3,
-    })).not.toContainEqual({ kind: "not-whole-word" });
+    const restricted = GRADE2_RULES.filter(rule => rule.kind === "lower-groupsign" &&
+      compileGrade2RuleGuards(rule).some(guard => guard.kind === "not-whole-word"));
+    expect(restricted.map(rule => rule.print)).toEqual(["en", "in"]);
   });
 
   it("requires every Appendix 1 base to have a shortform", () => {

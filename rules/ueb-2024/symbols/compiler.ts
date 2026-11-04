@@ -1,4 +1,5 @@
-import { citeIceb, type Grade1RuleLocator, type IcebRuleCitation, type TechnicalSignCitation } from "../source.js";
+import type { IcebRuleCitation, TechnicalSignCitation } from "../source.js";
+import { readPairs, readSymbolRules } from "../rule-json.js";
 import type {
   CompiledSymbol,
   SymbolClass,
@@ -114,92 +115,50 @@ export function compileSymbols(
   };
 }
 
+interface SymbolFamilyBase {
+  readonly file: string;
+  readonly citation: { readonly source: "ueb-2024"; readonly locator: string };
+  readonly idPrefix: string;
+}
+
+export type SymbolFamily =
+  | { readonly kind: "rules"; readonly file: string }
+  | (SymbolFamilyBase & {
+    readonly kind: "pairs";
+    readonly symbolKind: SymbolClass;
+    readonly idKey: "print" | "utf16-hex";
+    readonly uppercase: boolean;
+  })
+  | (SymbolFamilyBase & { readonly kind: "digits"; readonly prints: readonly string[] });
+
+/** Expand only the finite table operations declared in sources.json. */
 export function expandSymbolSources(
-  LATIN: readonly (readonly [string, string])[],
-  MODIFIERS: readonly (readonly [string, string])[],
-  GREEK: readonly (readonly [string, string])[],
-  GENERAL_SYMBOLS: readonly (readonly [string, string])[],
-  special: readonly SymbolRuleSource[],
-  trailing: readonly SymbolRuleSource[],
+  families: readonly SymbolFamily[],
+  read: (file: string) => unknown,
 ): readonly SymbolRuleSource[] {
-  function source(
-    locator: Grade1RuleLocator,
-    id: string,
-    print: string,
-    braille: string,
-    kind: SymbolClass,
-    uppercasePrint: string | null = null,
-    numericDigit: string | null = null,
-  ): SymbolRuleSource {
-    return {
-      braille,
-      citation: citeIceb(locator),
-      id,
-      kind,
-      numericDigit,
-      print,
-      uppercasePrint,
-    };
-  }
-
-  function scalarHex(print: string): string {
-    return print.charCodeAt(0).toString(16);
-  }
-
-  const latin = LATIN.map(([print, braille]) => source(
-    "4.1.1",
-    `UEB-4.1-letter-${print}`,
-    print,
-    braille,
-    "letter",
-    print.toUpperCase(),
-  ));
-
-  const digits = LATIN.slice(0, 10).map(([, braille], index) => {
-    const print = index === 9 ? "0" : String(index + 1);
-    return source(
-      "6.1.1",
-      `UEB-6.1.1-digit-${print}`,
-      print,
-      braille,
-      "digit",
-      null,
-      print,
-    );
+  return families.flatMap(family => {
+    if (family.kind === "rules") return readSymbolRules(read(family.file));
+    const pairs = readPairs(read(family.file));
+    if (family.kind === "digits" && family.prints.length > pairs.length) {
+      throw new Error("Digit family exceeds its source table.");
+    }
+    return readSymbolRules((family.kind === "digits" ? family.prints : pairs.map(([print]) => print))
+      .map((print, index) => {
+        const pair = pairs[index];
+        if (pair === undefined) throw new Error("Missing symbol pair.");
+        const hex = print.charCodeAt(0).toString(16);
+        const idKey = family.kind === "pairs" && family.idKey === "utf16-hex" ? hex : print;
+        return {
+          braille: pair[1],
+          citation: { ...family.citation,
+            locator: family.citation.locator.replaceAll("{utf16Hex4}", hex.toUpperCase().padStart(4, "0")),
+          },
+          id: family.idPrefix + idKey,
+          kind: family.kind === "digits" ? "digit" : family.symbolKind,
+          numericDigit: family.kind === "digits" ? print : null,
+          print,
+          uppercasePrint: family.kind === "pairs" && family.uppercase ? print.toUpperCase() : null,
+        };
+      }));
   });
-
-  const modifiers = MODIFIERS.map(([print, braille]) => source(
-    "4.2.1",
-    `UEB-4.2.1-modifier-${scalarHex(print)}`,
-    print,
-    braille,
-    "modifier",
-  ));
-
-  const greek = GREEK.map(([print, braille]) => source(
-    "4.5.1",
-    `UEB-4.5.1-greek-${print}`,
-    print,
-    braille,
-    "letter",
-    print.toUpperCase(),
-  ));
-
-  const symbols = GENERAL_SYMBOLS.map(([print, braille]) => source(
-    `Symbols list: U+${scalarHex(print).toUpperCase().padStart(4, "0")}`,
-    `UEB-symbol-${scalarHex(print)}`,
-    print,
-    braille,
-    "symbol",
-  ));
-
-  return [
-    ...latin,
-    ...digits,
-    ...modifiers,
-    ...greek,
-    ...special,
-    ...symbols,
-    ...trailing,
-  ];
 }

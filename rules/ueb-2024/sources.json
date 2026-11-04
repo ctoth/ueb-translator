@@ -1,0 +1,111 @@
+{
+  "documents": "citation-documents.json",
+  "sources": {
+    "vocabulary": "grade1-vocabulary.json",
+    "modes": "modes/rules.json",
+    "policies": "policies/rules.json",
+    "groups": "grade2-rules.json",
+    "families": "grade2-families.json",
+    "shortforms": "shortforms.json",
+    "appendix": "appendix1.json",
+    "constraints": "constraints.json",
+    "elisions": "apostrophes.json",
+    "longerShortforms": "longer-shortforms.json",
+    "shortformSuffixes": "shortform-suffixes.json",
+    "inventory": "inventory.json",
+    "technical": {
+      "mappings": "technical-sign-mappings.json",
+      "symbols": "technical-symbol-rules.json",
+      "scripts": "technical-script-rules.json",
+      "modifiers": "technical-modifier-rules.json",
+      "shapes": "technical-shape-rules.json",
+      "delimiters": "technical-delimiter-rules.json",
+      "items": "technical-item-rules.json",
+      "valuePatterns": "technical-value-patterns.json",
+      "spacing": "technical-operation-spacing-rules.json",
+      "protection": "technical-grade1-protection-rules.json",
+      "functionSpacing": "technical-function-spacing-rules.json",
+      "numericContinuation": "technical-numeric-continuation-rules.json",
+      "computerWhitespace": "technical-computer-whitespace-rules.json"
+    }
+  },
+  "symbols": [
+    {
+      "kind": "pairs",
+      "file": "symbols/latin.json",
+      "symbolKind": "letter",
+      "citation": {
+        "source": "ueb-2024",
+        "locator": "4.1.1"
+      },
+      "idPrefix": "UEB-4.1-letter-",
+      "idKey": "print",
+      "uppercase": true
+    },
+    {
+      "kind": "digits",
+      "file": "symbols/latin.json",
+      "citation": {
+        "source": "ueb-2024",
+        "locator": "6.1.1"
+      },
+      "idPrefix": "UEB-6.1.1-digit-",
+      "prints": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "0"
+      ]
+    },
+    {
+      "kind": "pairs",
+      "file": "symbols/modifiers.json",
+      "symbolKind": "modifier",
+      "citation": {
+        "source": "ueb-2024",
+        "locator": "4.2.1"
+      },
+      "idPrefix": "UEB-4.2.1-modifier-",
+      "idKey": "utf16-hex",
+      "uppercase": false
+    },
+    {
+      "kind": "pairs",
+      "file": "symbols/greek.json",
+      "symbolKind": "letter",
+      "citation": {
+        "source": "ueb-2024",
+        "locator": "4.5.1"
+      },
+      "idPrefix": "UEB-4.5.1-greek-",
+      "idKey": "print",
+      "uppercase": true
+    },
+    {
+      "kind": "rules",
+      "file": "symbols/special.json"
+    },
+    {
+      "kind": "pairs",
+      "file": "symbols/general-symbols.json",
+      "symbolKind": "symbol",
+      "citation": {
+        "source": "ueb-2024",
+        "locator": "Symbols list: U+{utf16Hex4}"
+      },
+      "idPrefix": "UEB-symbol-",
+      "idKey": "utf16-hex",
+      "uppercase": false
+    },
+    {
+      "kind": "rules",
+      "file": "symbols/vertical-bar.json"
+    }
+  ]
+}

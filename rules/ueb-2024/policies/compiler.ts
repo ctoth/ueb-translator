@@ -1,7 +1,9 @@
 import type { CompositionPolicies } from "../../../src/composition.js";
 import type { IcebRuleCitation } from "../source.js";
+import { GRADE1_VOCABULARY, orderedNames, readGrade1Vocabulary,
+  type Grade1Vocabulary, type CompositionPolicyName } from "../grade1-vocabulary.js";
+export type { CompositionPolicyName } from "../grade1-vocabulary.js";
 
-export type CompositionPolicyName = keyof CompositionPolicies;
 
 export interface CompositionPolicySource {
   readonly citation: IcebRuleCitation;
@@ -15,18 +17,10 @@ export interface CompositionPolicyCompilation {
   readonly runtime: CompositionPolicies;
 }
 
-export const POLICY_NAMES: readonly CompositionPolicyName[] = [
-  "closingStandingPunctuation",
-  "dashJoiners",
-  "elisionPunctuation",
-  "lowerPunctuation",
-  "openingStandingPunctuation",
-  "standingBoundaries",
-];
-
 export function compileCompositionPolicies(
-  rules: readonly CompositionPolicySource[],
+  rules: readonly CompositionPolicySource[], vocabulary: Grade1Vocabulary = GRADE1_VOCABULARY,
 ): CompositionPolicyCompilation {
+  readGrade1Vocabulary(vocabulary);
   const ids = new Set<string>();
   const byName = new Map<CompositionPolicyName, CompositionPolicySource>();
   for (const rule of rules) {
@@ -41,7 +35,7 @@ export function compileCompositionPolicies(
     ids.add(rule.id);
     byName.set(rule.name, rule);
   }
-  const provenance = POLICY_NAMES.map((name) => {
+  const provenance = orderedNames(vocabulary.policies).map((name) => {
     const rule = byName.get(name);
     if (rule === undefined) throw new Error(`Composition policy ${name} is missing.`);
     return rule;

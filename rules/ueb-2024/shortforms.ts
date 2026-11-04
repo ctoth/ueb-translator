@@ -1,4 +1,4 @@
-import shortformsData from "./shortforms.json" with { type: "json" };
+import { sourceData } from "./source-manifest.js";
 import { readShortforms } from "./rule-json.js";
 import {
   type IcebRuleCitation,
@@ -14,4 +14,4 @@ export interface ShortformSource {
   readonly print: string;
 }
 
-export const SHORTFORMS: readonly ShortformSource[] = readShortforms(shortformsData);
+export const SHORTFORMS: readonly ShortformSource[] = readShortforms(sourceData("shortforms"));

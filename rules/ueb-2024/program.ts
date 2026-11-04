@@ -1,14 +1,7 @@
-import structuralCrossingData from "./structural-crossing.json" with { type: "json" };
-import longerShortformsData from "./longer-shortforms.json" with { type: "json" };
-import { readStructuralGuard, readStrings } from "./rule-json.js";
+import { sourceData } from "./source-manifest.js";
+import { readLongerShortforms, readShortformSuffixes } from "./rule-json.js";
 import { APPENDIX1_LONGER_WORDS } from "./appendix1.js";
-import {
-  COMPOUND_CONTRACTION_EXCEPTIONS,
-  FINAL_GROUPSIGN_EXCEPTIONS,
-  FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS,
-  FIRST_SYLLABLE_VOWEL_WORDS,
-  INITIAL_CONTRACTION_EXCEPTIONS,
-} from "./constraints.js";
+import { CONSTRAINTS } from "./constraints.js";
 import {
   compileContextualRules,
   type ContextualCompilationResult,
@@ -18,66 +11,6 @@ import {
 import { GRADE2_RULES, type Grade2RuleSource } from "./grade2-rules.js";
 import { SHORTFORMS, type ShortformSource } from "./shortforms.js";
 import { SYMBOL_RULES } from "./symbols/source.js";
-
-const NO_STRUCTURAL_CROSSING: ContextualRuleGuard = readStructuralGuard(structuralCrossingData);
-
-function initialExceptionWords(print: string): readonly string[] {
-  return INITIAL_CONTRACTION_EXCEPTIONS
-    .filter((constraint) => constraint.contraction === print)
-    .flatMap((constraint) => constraint.words);
-}
-
-function optionalExceptionGuard(
-  values: readonly string[],
-  guard: ContextualRuleGuard,
-): readonly ContextualRuleGuard[] {
-  return values.length === 0 ? [] : [guard];
-}
-
-function compoundExceptionWords(print: string): readonly string[] {
-  return COMPOUND_CONTRACTION_EXCEPTIONS
-    .filter((constraint) => constraint.contraction === print)
-    .flatMap((constraint) => constraint.words);
-}
-
-function firstSyllableExceptionWords(print: string): readonly string[] {
-  return FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS
-    .filter((constraint) => constraint.contraction === print)
-    .flatMap((constraint) => constraint.words);
-}
-
-function withPossessives(words: readonly string[]): readonly string[] {
-  // A possessive does not change the restricted letters inside its base word.
-  // Expand at compilation, keeping English morphology out of the interpreter.
-  // ICEB 2024 10.12.12 retains contraction rules around medial punctuation.
-  // Composition canonicalizes apostrophe spellings to ASCII for eligibility.
-  return words.flatMap((word) => [
-    word, `${word}'s`, ...(word.endsWith("s") ? [`${word}'`] : []),
-  ]);
-}
-
-function exceptionWordGuard(words: readonly string[]): readonly ContextualRuleGuard[] {
-  const possessiveWords = withPossessives(words);
-  return optionalExceptionGuard(possessiveWords, {
-    ignoredCharacters: "-", kind: "not-word", words: possessiveWords,
-  });
-}
-
-function finalExceptionGuards(print: string): readonly ContextualRuleGuard[] {
-  const constraint = FINAL_GROUPSIGN_EXCEPTIONS.find(
-    (candidate) => candidate.groupsign === print,
-  );
-  if (constraint === undefined) {
-    return [];
-  }
-  return [
-    ...exceptionWordGuard(constraint.words),
-    ...optionalExceptionGuard(constraint.endings, {
-      endings: constraint.endings,
-      kind: "not-word-ending",
-    }),
-  ];
-}
 
 /** ICEB 10.9.6: derive conflicting spellings from our own shortform inventory. */
 function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRuleGuard[] {
@@ -128,84 +61,9 @@ function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRu
 export function compileGrade2RuleGuards(
   rule: Grade2RuleSource,
 ): readonly ContextualRuleGuard[] {
-  switch (rule.kind) {
-    case "alphabetic-wordsign":
-    case "strong-wordsign":
-      return [
-        // ICEB 10.1.2 and 10.2.2: only these apostrophe endings retain wordsigns.
-        { kind: "word-with-affixes", affixes: ["'d", "'ll", "'re", "'s", "'t", "'ve"] },
-        { kind: "standing-alone" },
-        { kind: "word-start" },
-        { kind: "word-end" },
-      ];
-    case "lower-wordsign":
-      return [
-        {
-          kind: "lower-sign",
-          policy: rule.print === "enough" || rule.print === "in"
-            ? "enough-or-in"
-            : "other",
-        },
-        { kind: "standing-alone" },
-        { kind: "word-start" },
-        { kind: "word-end" },
-      ];
-    case "strong-contraction":
-      return [
-        NO_STRUCTURAL_CROSSING,
-        ...exceptionWordGuard(compoundExceptionWords(rule.print)),
-      ];
-    case "strong-groupsign":
-      return [NO_STRUCTURAL_CROSSING];
-    case "lower-groupsign":
-      if (rule.print === "be" || rule.print === "con" || rule.print === "dis") {
-        return [
-          { kind: "first-syllable" },
-          NO_STRUCTURAL_CROSSING,
-          ...exceptionWordGuard(firstSyllableExceptionWords(rule.print)),
-          ...(rule.print === FIRST_SYLLABLE_VOWEL_WORDS.contraction
-            ? [{
-              characters: "aeiouy",
-              kind: "following-not-vowel-y-except-words" as const,
-              words: withPossessives(FIRST_SYLLABLE_VOWEL_WORDS.words),
-            }]
-            : []),
-          { kind: "not-word-end" },
-          { kind: "word-start" },
-        ];
-      }
-      if (["bb", "cc", "ea", "ff", "gg"].includes(rule.print)) {
-        return [
-          ...(rule.print === "ea"
-            ? [{ boundary: "prefix", kind: "not-boundary" } as const]
-            : []),
-          NO_STRUCTURAL_CROSSING,
-          { kind: "word-internal" },
-        ];
-      }
-      return [
-        NO_STRUCTURAL_CROSSING,
-        ...(rule.print === "en" || rule.print === "in"
-          ? [{ kind: "not-whole-word" } as const]
-          : []),
-      ];
-    case "initial-letter-contraction": {
-      const exceptionWords = initialExceptionWords(rule.print);
-      return [
-        NO_STRUCTURAL_CROSSING,
-        ...exceptionWordGuard(exceptionWords),
-      ];
-    }
-    case "final-letter-groupsign":
-      return [
-        ...finalExceptionGuards(rule.print),
-        {
-          boundaries: ["braille-line", "compound", "syllable"],
-          kind: "not-crossing",
-        },
-        { kind: "preceded-by-letter" },
-      ];
-  }
+  return [...rule.guards, ...CONSTRAINTS
+    .filter(constraint => constraint.target.kind === rule.kind && constraint.target.print === rule.print)
+    .flatMap(constraint => constraint.guards)];
 }
 
 function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
@@ -214,7 +72,6 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
     citation: rule.citation,
     guards: [
       ...compileGrade2RuleGuards(rule),
-      ...rule.guards,
       ...shortformCollisionGuards(rule),
     ],
     id: rule.id,
@@ -225,23 +82,20 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
 
 function contextualRules(rule: Grade2RuleSource): readonly ContextualRuleSource[] {
   const general = contextualRule(rule);
-  if (rule.kind !== "final-letter-groupsign" || rule.print !== "ence") {
-    return [general];
-  }
-  return [
-    general,
-    {
-      ...general,
-      citation: { ...general.citation, locator: "10.10" },
-      guards: [...general.guards, { characters: "adr", kind: "following" }],
-      id: `${general.id}-preference-exception`,
-      precedence: 4,
-    },
-  ];
+  return [general, ...rule.variants.map((variant): ContextualRuleSource => ({
+    ...general,
+    citation: { ...general.citation, locator: variant.locator },
+    guards: [...general.guards, ...variant.guards],
+    id: general.id + "-" + variant.idSuffix,
+    precedence: variant.precedence,
+  }))];
 }
 
+const SHORTFORM_SUFFIXES = readShortformSuffixes(sourceData("shortformSuffixes"));
+
 function shortformSuffixes(print: string): readonly string[] {
-  return ["about", "almost", "him"].includes(print) ? ["'s"] : ["s", "'s"];
+  return SHORTFORM_SUFFIXES.exceptions.find(group => group.words.includes(print))?.suffixes
+    ?? SHORTFORM_SUFFIXES.default;
 }
 
 function wholeShortform(rule: ShortformSource): ContextualRuleSource {
@@ -261,26 +115,15 @@ function wholeShortform(rule: ShortformSource): ContextualRuleSource {
   };
 }
 
-const GENERAL_LONGER_SHORTFORMS = new Set(readStrings(longerShortformsData));
+const LONGER_SHORTFORM_GROUPS = readLongerShortforms(sourceData("longerShortforms"));
 
 function longerShortform(rule: ShortformSource): ContextualRuleSource | undefined {
-  if (!GENERAL_LONGER_SHORTFORMS.has(rule.print)) {
-    return undefined;
-  }
-  const guards: ContextualRuleGuard[] = [{ kind: "standing-alone" }];
-  if (rule.print === "children") {
-    guards.push({ characters: "aeiouy", kind: "following-not-vowel-y" });
-  } else if (rule.print !== "braille" && rule.print !== "great") {
-    guards.push(
-      { characters: "aeiouy", kind: "following-not-vowel-y" },
-      { kind: "word-start" },
-    );
-  }
-  return {
+  const group = LONGER_SHORTFORM_GROUPS.find(group => group.words.includes(rule.print));
+  return group === undefined ? undefined : {
     braille: rule.braille,
     citation: rule.citation,
-    guards,
-    id: `${rule.id}-longer-word`,
+    guards: group.guards,
+    id: rule.id + "-longer-word",
     input: rule.print,
     precedence: 4,
   };

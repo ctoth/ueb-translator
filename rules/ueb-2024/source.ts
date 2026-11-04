@@ -1,3 +1,5 @@
+import { CITATION_DOCUMENT_DATA } from "./source-manifest.js";
+
 export type Grade2RuleLocator =
   | "10.1"
   | "10.2"
@@ -70,12 +72,19 @@ export type IcebRuleCitation<
 export function citeIceb<const Locator extends IcebRuleLocator>(
   locator: Locator,
 ): IcebRuleCitation<Locator> {
-  return {
-    authority: "ICEB",
-    document: "Rules of Unified English Braille, Third Edition (2024)",
-    locator,
-    url: "https://iceb.org/publications/ueb/",
-  };
+  if (typeof CITATION_DOCUMENT_DATA !== "object" || CITATION_DOCUMENT_DATA === null ||
+    !("ueb-2024" in CITATION_DOCUMENT_DATA)) throw new Error("Missing UEB book document.");
+  const book = CITATION_DOCUMENT_DATA["ueb-2024"];
+  if (typeof book !== "object" || book === null ||
+    !("authority" in book) || !("document" in book) || !("url" in book)) {
+    throw new Error("Malformed UEB book document.");
+  }
+  const { authority, document, url } = book;
+  if (authority !== "ICEB" || document !== "Rules of Unified English Braille, Third Edition (2024)" ||
+    url !== "https://iceb.org/publications/ueb/") {
+    throw new Error("Malformed UEB book document.");
+  }
+  return { authority, document, locator, url };
 }
 
 export type TechnicalSignLocator =

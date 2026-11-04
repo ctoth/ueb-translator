@@ -1,10 +1,8 @@
 [
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "2.6",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "2.6"
     },
     "id": "UEB-policy-dash-joiners",
     "members": [
@@ -16,24 +14,17 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "2.6",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "2.6"
     },
     "id": "UEB-policy-elision-punctuation",
-    "members": [
-      "'",
-      "’"
-    ],
+    "members": ["'", "’"],
     "name": "elisionPunctuation"
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "2.6",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "2.6"
     },
     "id": "UEB-policy-closing-standing-punctuation",
     "members": [
@@ -57,10 +48,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "10.5",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "10.5"
     },
     "id": "UEB-policy-lower-punctuation",
     "members": [
@@ -85,10 +74,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "2.6",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "2.6"
     },
     "id": "UEB-policy-opening-standing-punctuation",
     "members": [
@@ -106,10 +93,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "2.6",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "2.6"
     },
     "id": "UEB-policy-standing-boundaries",
     "members": [

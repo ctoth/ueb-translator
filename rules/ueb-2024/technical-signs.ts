@@ -1,16 +1,4 @@
-import technicalSignMappingsData from "./technical-sign-mappings.json" with { type: "json" };
-import technicalSymbolRulesData from "./technical-symbol-rules.json" with { type: "json" };
-import technicalDelimiterRulesData from "./technical-delimiter-rules.json" with { type: "json" };
-import technicalModifierRulesData from "./technical-modifier-rules.json" with { type: "json" };
-import technicalScriptRulesData from "./technical-script-rules.json" with { type: "json" };
-import technicalShapeRulesData from "./technical-shape-rules.json" with { type: "json" };
-import technicalItemRulesData from "./technical-item-rules.json" with { type: "json" };
-import technicalValuePatternsData from "./technical-value-patterns.json" with { type: "json" };
-import technicalOperationSpacingRulesData from "./technical-operation-spacing-rules.json" with { type: "json" };
-import technicalGrade1ProtectionRulesData from "./technical-grade1-protection-rules.json" with { type: "json" };
-import technicalFunctionSpacingRulesData from "./technical-function-spacing-rules.json" with { type: "json" };
-import technicalNumericContinuationRulesData from "./technical-numeric-continuation-rules.json" with { type: "json" };
-import technicalComputerWhitespaceRulesData from "./technical-computer-whitespace-rules.json" with { type: "json" };
+import { sourceData } from "./source-manifest.js";
 import { readTechnicalSignMappings, readSymbolRules, readTechnicalDelimiterRules, readTechnicalModifierRules, readTechnicalScriptRules, readTechnicalShapeRules, readTechnicalItemRules, readTechnicalValuePatterns, readTechnicalOperationSpacingRules, readTechnicalGrade1ProtectionRules, readTechnicalFunctionSpacingRules, readTechnicalNumericContinuationRules, readTechnicalComputerWhitespaceRules } from "./rule-json.js";
 import { loadSymbolProgram } from "../../src/symbol-program.js";
 import { TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
@@ -22,9 +10,9 @@ import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
  * replacement Section 3 (pp.1-2); arrows follow GTM 2014 13.1 (p.60).
  * Cell definitions remain in the shared symbol inventory.
  */
-export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows"> = readTechnicalSignMappings(technicalSignMappingsData);
+export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows"> = readTechnicalSignMappings(sourceData("technical", "mappings"));
 
-export const TECHNICAL_SYMBOL_RULES: readonly SymbolRuleSource[] = readSymbolRules(technicalSymbolRulesData);
+export const TECHNICAL_SYMBOL_RULES: readonly SymbolRuleSource[] = readSymbolRules(sourceData("technical", "symbols"));
 
 interface TechnicalRuleSource<Definitions> {
   readonly citation: RuleCitation<
@@ -43,30 +31,30 @@ export type TechnicalDelimiterSource = TechnicalRuleSource<
   }
 >;
 
-export const TECHNICAL_DELIMITER_RULES: TechnicalDelimiterSource = readTechnicalDelimiterRules(technicalDelimiterRulesData);
+export const TECHNICAL_DELIMITER_RULES: TechnicalDelimiterSource = readTechnicalDelimiterRules(sourceData("technical", "delimiters"));
 
 export interface TechnicalModifierSource {
   readonly citation: TechnicalScriptSource["citation"];
   readonly definitions: TechnicalSignProgram["modifiers"];
 }
 
-export const TECHNICAL_MODIFIER_RULES: TechnicalModifierSource = readTechnicalModifierRules(technicalModifierRulesData);
+export const TECHNICAL_MODIFIER_RULES: TechnicalModifierSource = readTechnicalModifierRules(sourceData("technical", "modifiers"));
 
-export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = readTechnicalScriptRules(technicalScriptRulesData);
+export const TECHNICAL_SCRIPT_RULES: TechnicalScriptSource = readTechnicalScriptRules(sourceData("technical", "scripts"));
 
 export interface TechnicalShapeSource {
   readonly citation: TechnicalScriptSource["citation"];
   readonly definitions: TechnicalSignProgram["shapes"];
 }
 
-export const TECHNICAL_SHAPE_RULES: TechnicalShapeSource = readTechnicalShapeRules(technicalShapeRulesData);
+export const TECHNICAL_SHAPE_RULES: TechnicalShapeSource = readTechnicalShapeRules(sourceData("technical", "shapes"));
 
 export type TechnicalItemSource = TechnicalRuleSource<TechnicalSignProgram["itemPolicy"]>;
 
-export const TECHNICAL_ITEM_RULES: TechnicalItemSource = readTechnicalItemRules(technicalItemRulesData);
+export const TECHNICAL_ITEM_RULES: TechnicalItemSource = readTechnicalItemRules(sourceData("technical", "items"));
 
 /** Accepted structured API inputs, not a normative list of chemical elements. */
-export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = readTechnicalValuePatterns(technicalValuePatternsData);
+export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = readTechnicalValuePatterns(sourceData("technical", "valuePatterns"));
 
 export interface TechnicalOperationSpacingSource {
   readonly international: TechnicalRuleSource<TechnicalSignProgram["operationSpacing"]["international"]>;
@@ -79,7 +67,7 @@ export interface TechnicalOperationSpacingSource {
   };
 }
 
-export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource = readTechnicalOperationSpacingRules(technicalOperationSpacingRulesData);
+export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource = readTechnicalOperationSpacingRules(sourceData("technical", "spacing"));
 
 export interface TechnicalGrade1ProtectionSource {
   readonly citation: RuleCitation<
@@ -89,14 +77,14 @@ export interface TechnicalGrade1ProtectionSource {
   readonly definitions: TechnicalSignProgram["grade1Protection"];
 }
 
-export const TECHNICAL_GRADE1_PROTECTION_RULES: TechnicalGrade1ProtectionSource = readTechnicalGrade1ProtectionRules(technicalGrade1ProtectionRulesData);
+export const TECHNICAL_GRADE1_PROTECTION_RULES: TechnicalGrade1ProtectionSource = readTechnicalGrade1ProtectionRules(sourceData("technical", "protection"));
 
 export type TechnicalFunctionSpacingSource = TechnicalRuleSource<{
   readonly letterPrintPattern: string;
   readonly namePattern: string;
 }>;
 
-export const TECHNICAL_FUNCTION_SPACING_RULES: TechnicalFunctionSpacingSource = readTechnicalFunctionSpacingRules(technicalFunctionSpacingRulesData);
+export const TECHNICAL_FUNCTION_SPACING_RULES: TechnicalFunctionSpacingSource = readTechnicalFunctionSpacingRules(sourceData("technical", "functionSpacing"));
 
 export interface TechnicalNumericContinuationSource {
   readonly citation: RuleCitation<
@@ -106,11 +94,11 @@ export interface TechnicalNumericContinuationSource {
   readonly definitions: TechnicalSignProgram["numericContinuation"];
 }
 
-export const TECHNICAL_NUMERIC_CONTINUATION_RULES: TechnicalNumericContinuationSource = readTechnicalNumericContinuationRules(technicalNumericContinuationRulesData);
+export const TECHNICAL_NUMERIC_CONTINUATION_RULES: TechnicalNumericContinuationSource = readTechnicalNumericContinuationRules(sourceData("technical", "numericContinuation"));
 
 export type TechnicalComputerWhitespaceSource = TechnicalRuleSource<TechnicalSignProgram["computerWhitespace"]>;
 
-export const TECHNICAL_COMPUTER_WHITESPACE_RULES: TechnicalComputerWhitespaceSource = readTechnicalComputerWhitespaceRules(technicalComputerWhitespaceRulesData);
+export const TECHNICAL_COMPUTER_WHITESPACE_RULES: TechnicalComputerWhitespaceSource = readTechnicalComputerWhitespaceRules(sourceData("technical", "computerWhitespace"));
 
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],

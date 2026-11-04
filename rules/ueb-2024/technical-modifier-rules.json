@@ -1,9 +1,7 @@
 {
   "citation": {
-    "authority": "ICEB",
-    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
-    "locator": "12 indicator list, p.57",
-    "url": "https://iceb.org/publications/ueb/"
+    "source": "technical-2014",
+    "locator": "12 indicator list, p.57"
   },
   "definitions": {
     "arc-above": "⠨⠸⠱",

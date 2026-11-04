@@ -1,0 +1,43 @@
+{
+  "alphabetic-wordsign": {
+    "locator": "10.1",
+    "guards": [
+      {"kind": "word-with-affixes", "affixes": ["'d", "'ll", "'re", "'s", "'t", "'ve"]},
+      {"kind": "standing-alone"}, {"kind": "word-start"}, {"kind": "word-end"}
+    ]
+  },
+  "final-letter-groupsign": {
+    "locator": "10.8",
+    "guards": [
+      {"kind": "not-crossing", "boundaries": ["braille-line", "compound", "syllable"]},
+      {"kind": "preceded-by-letter"}
+    ]
+  },
+  "initial-letter-contraction": {
+    "locator": "10.7",
+    "guards": [{"kind": "not-crossing", "boundaries": ["braille-line", "compound"]}]
+  },
+  "lower-groupsign": {
+    "locator": "10.6",
+    "guards": [{"kind": "not-crossing", "boundaries": ["braille-line", "compound"]}]
+  },
+  "lower-wordsign": {
+    "locator": "10.5",
+    "guards": [{"kind": "standing-alone"}, {"kind": "word-start"}, {"kind": "word-end"}]
+  },
+  "strong-contraction": {
+    "locator": "10.3",
+    "guards": [{"kind": "not-crossing", "boundaries": ["braille-line", "compound"]}]
+  },
+  "strong-groupsign": {
+    "locator": "10.4",
+    "guards": [{"kind": "not-crossing", "boundaries": ["braille-line", "compound"]}]
+  },
+  "strong-wordsign": {
+    "locator": "10.2",
+    "guards": [
+      {"kind": "word-with-affixes", "affixes": ["'d", "'ll", "'re", "'s", "'t", "'ve"]},
+      {"kind": "standing-alone"}, {"kind": "word-start"}, {"kind": "word-end"}
+    ]
+  }
+}

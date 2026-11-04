@@ -1,9 +1,7 @@
 {
   "citation": {
-    "authority": "ICEB",
-    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
-    "locator": "17.2, pp.83-84 (significant runs of ordinary spaces)",
-    "url": "https://iceb.org/publications/ueb/"
+    "source": "technical-2014",
+    "locator": "17.2, pp.83-84 (significant runs of ordinary spaces)"
   },
   "definitions": {
     "visibleSpace": "⠬",

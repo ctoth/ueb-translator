@@ -2,13 +2,7 @@ import fc from "fast-check";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { APPENDIX1_LONGER_WORDS } from "../rules/ueb-2024/appendix1.js";
-import {
-  COMPOUND_CONTRACTION_EXCEPTIONS,
-  FINAL_GROUPSIGN_EXCEPTIONS,
-  FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS,
-  FIRST_SYLLABLE_VOWEL_WORDS,
-  INITIAL_CONTRACTION_EXCEPTIONS,
-} from "../rules/ueb-2024/constraints.js";
+import { CONSTRAINTS } from "../rules/ueb-2024/constraints.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import { GRADE2_INVENTORY_COUNTS } from "../rules/ueb-2024/inventory.js";
 import { SHORTFORMS } from "../rules/ueb-2024/shortforms.js";
@@ -122,49 +116,24 @@ describe("official Grade 2 source inventory", () => {
     }
   });
 
-  it("cites every enumerated initial and final contraction exception", () => {
-    expect(INITIAL_CONTRACTION_EXCEPTIONS).toHaveLength(13);
-    expect(FINAL_GROUPSIGN_EXCEPTIONS).toHaveLength(2);
-    for (const constraint of [
-      ...INITIAL_CONTRACTION_EXCEPTIONS,
-      ...FINAL_GROUPSIGN_EXCEPTIONS,
-    ]) {
+  it("cites every targeted constraint", () => {
+    expect(CONSTRAINTS.filter(c => c.target.kind === "initial-letter-contraction")).toHaveLength(13);
+    expect(CONSTRAINTS.filter(c => c.target.kind === "final-letter-groupsign")).toHaveLength(2);
+    for (const constraint of CONSTRAINTS) {
       expect(constraint.citation.authority).toBe("ICEB");
-      expect(constraint.citation.locator).toMatch(/^10\.(?:7|8)\./u);
-    }
-  });
-
-  it("cites the conservative implicit-boundary exception data", () => {
-    expect(COMPOUND_CONTRACTION_EXCEPTIONS).toHaveLength(2);
-    expect(FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS).toHaveLength(3);
-    for (const constraint of COMPOUND_CONTRACTION_EXCEPTIONS) {
-      expect(constraint.citation).toEqual(expect.objectContaining({
-        authority: "ICEB",
-        locator: "10.3.1",
-      }));
-    }
-    for (const constraint of FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS) {
-      expect(constraint.citation).toEqual(expect.objectContaining({
-        authority: "ICEB",
-        locator: "10.6.1",
-      }));
+      expect(constraint.citation.locator).toMatch(/^10\.(?:3|6|7|8)\./u);
     }
   });
 
   it("cites the words whose be forms a syllable before a vowel", () => {
-    expect(FIRST_SYLLABLE_VOWEL_WORDS.citation).toEqual(expect.objectContaining({
-      authority: "ICEB",
-      locator: "10.6.1",
-    }));
-    expect(FIRST_SYLLABLE_VOWEL_WORDS.contraction).toBe("be");
-    for (const word of FIRST_SYLLABLE_VOWEL_WORDS.words) {
-      expect(word).toMatch(/^be[aeiouy][a-z']*$/u);
-    }
-  });
-
-  it("keeps be-before-vowel words out of the denylist once the default spells them", () => {
-    const be = FIRST_SYLLABLE_CONTRACTION_EXCEPTIONS.find((entry) => entry.contraction === "be");
-    expect(be?.words.filter((word) => /^be[aeiouy]/u.test(word))).toEqual([]);
+    const records = CONSTRAINTS.filter(c => c.target.kind === "lower-groupsign" && c.target.print === "be");
+    const words = records.flatMap(c => c.guards.flatMap(g =>
+      g.kind === "following-not-vowel-y-except-words" ? g.words : []));
+    expect(words).toContain("being");
+    for (const record of records) expect(record.citation.locator).toBe("10.6.1");
+    for (const word of words) expect(word).toMatch(/^be[aeiouy][a-z']*$/u);
+    const denied = records.flatMap(c => c.guards.flatMap(g => g.kind === "not-word" ? g.words : []));
+    expect(denied.filter(word => /^be[aeiouy]/u.test(word))).toEqual([]);
   });
 });
 
@@ -302,14 +271,10 @@ describe("translateGrade2", () => {
   });
 
   it.each(
-    INITIAL_CONTRACTION_EXCEPTIONS.flatMap((constraint) =>
-      constraint.words.map((word) => ({
-        contraction: constraint.contraction,
-        id: constraint.id,
-        word,
-      }))
-    ),
-  )("applies $id to $word", ({ contraction, word }) => {
+    CONSTRAINTS.filter(c => c.target.kind === "initial-letter-contraction").flatMap(constraint =>
+      constraint.guards.flatMap(guard => guard.kind === "not-word"
+        ? guard.words.map(word => ({ contraction: constraint.target.print, word })) : [])),
+  )("excludes $contraction in $word", ({ contraction, word }) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -320,14 +285,10 @@ describe("translateGrade2", () => {
   });
 
   it.each(
-    FINAL_GROUPSIGN_EXCEPTIONS.flatMap((constraint) =>
-      constraint.words.map((word) => ({
-        groupsign: constraint.groupsign,
-        id: constraint.id,
-        word,
-      }))
-    ),
-  )("applies $id to $word", ({ groupsign, word }) => {
+    CONSTRAINTS.filter(c => c.target.kind === "final-letter-groupsign").flatMap(constraint =>
+      constraint.guards.flatMap(guard => guard.kind === "not-word"
+        ? guard.words.map(word => ({ groupsign: constraint.target.print, word })) : [])),
+  )("excludes $groupsign in $word", ({ groupsign, word }) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -336,15 +297,10 @@ describe("translateGrade2", () => {
   });
 
   it.each(
-    FINAL_GROUPSIGN_EXCEPTIONS.flatMap((constraint) =>
-      constraint.endings.map((ending) => ({
-        ending,
-        groupsign: constraint.groupsign,
-        id: constraint.id,
-        word: `a${ending}`,
-      }))
-    ),
-  )("applies $id to words ending in $ending", ({ groupsign, word }) => {
+    CONSTRAINTS.filter(c => c.target.kind === "final-letter-groupsign").flatMap(constraint =>
+      constraint.guards.flatMap(guard => guard.kind === "not-word-ending"
+        ? guard.endings.map(ending => ({ ending, groupsign: constraint.target.print, word: `a${ending}` })) : [])),
+  )("excludes $groupsign in words ending in $ending", ({ groupsign, word }) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -372,11 +328,10 @@ describe("translateGrade2", () => {
     "heatheness",
     "villainess",
   ] as const)("applies the cited UEB 10.8.4 feminine-ending exception to %s", (word) => {
-    const exception = FINAL_GROUPSIGN_EXCEPTIONS.find(
-      (constraint) => constraint.id === "UEB-10.8.4-ness-exception",
-    );
+    const exception = CONSTRAINTS.find(c =>
+      c.target.kind === "final-letter-groupsign" && c.target.print === "ness");
     expect(exception?.citation.locator).toBe("10.8.4");
-    expect(exception?.words).toContain(word);
+    expect(exception?.guards.flatMap(g => g.kind === "not-word" ? g.words : [])).toContain(word);
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
     if (result.ok) {

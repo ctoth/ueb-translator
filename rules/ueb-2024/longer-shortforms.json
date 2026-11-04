@@ -1,12 +1,21 @@
 [
-  "blind",
-  "braille",
-  "children",
-  "first",
-  "friend",
-  "good",
-  "great",
-  "letter",
-  "little",
-  "quick"
+  {
+    "words": ["braille", "great"],
+    "guards": [{"kind": "standing-alone"}]
+  },
+  {
+    "words": ["children"],
+    "guards": [
+      {"kind": "standing-alone"},
+      {"kind": "following-not-vowel-y", "characters": "aeiouy"}
+    ]
+  },
+  {
+    "words": ["blind", "first", "friend", "good", "letter", "little", "quick"],
+    "guards": [
+      {"kind": "standing-alone"},
+      {"kind": "following-not-vowel-y", "characters": "aeiouy"},
+      {"kind": "word-start"}
+    ]
+  }
 ]

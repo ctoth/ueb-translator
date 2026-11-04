@@ -1,10 +1,8 @@
 [
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "8.3-8.6",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "8.3-8.6"
     },
     "definition": {
       "continuesThrough": [],
@@ -25,10 +23,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "5",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "5"
     },
     "definition": {
       "continuesThrough": [],
@@ -49,10 +45,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "6.1-6.5",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "6.1-6.5"
     },
     "definition": {
       "continuesThrough": [
@@ -78,10 +72,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "9.2-9.4",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "9.2-9.4"
     },
     "definition": {
       "continuesThrough": [],
@@ -102,10 +94,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "9.2-9.4",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "9.2-9.4"
     },
     "definition": {
       "continuesThrough": [],
@@ -126,10 +116,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "9.2-9.4",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "9.2-9.4"
     },
     "definition": {
       "continuesThrough": [],
@@ -150,10 +138,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "9.2-9.4",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "9.2-9.4"
     },
     "definition": {
       "continuesThrough": [],
@@ -174,10 +160,8 @@
   },
   {
     "citation": {
-      "authority": "ICEB",
-      "document": "Rules of Unified English Braille, Third Edition (2024)",
-      "locator": "9.2-9.4",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "ueb-2024",
+      "locator": "9.2-9.4"
     },
     "definition": {
       "continuesThrough": [],

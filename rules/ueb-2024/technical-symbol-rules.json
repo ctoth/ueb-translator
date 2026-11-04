@@ -2,10 +2,8 @@
   {
     "braille": "⠐⠲",
     "citation": {
-      "authority": "ICEB",
-      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-      "locator": "Operation signs table, p. 1",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "technical-operations-2018",
+      "locator": "Operation signs table, p. 1"
     },
     "id": "UEB-GTM-2018-3-symbol-22c5",
     "kind": "symbol",
@@ -16,10 +14,8 @@
   {
     "braille": "⠸⠖",
     "citation": {
-      "authority": "ICEB",
-      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-      "locator": "Operation signs table, p. 1",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "technical-operations-2018",
+      "locator": "Operation signs table, p. 1"
     },
     "id": "UEB-GTM-2018-3-symbol-b1",
     "kind": "symbol",
@@ -30,10 +26,8 @@
   {
     "braille": "⠸⠔",
     "citation": {
-      "authority": "ICEB",
-      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-      "locator": "Comparison signs table, p. 2",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "technical-operations-2018",
+      "locator": "Comparison signs table, p. 2"
     },
     "id": "UEB-GTM-2018-3-symbol-2248",
     "kind": "symbol",
@@ -44,10 +38,8 @@
   {
     "braille": "⠸⠈⠜",
     "citation": {
-      "authority": "ICEB",
-      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-      "locator": "Comparison signs table, p. 1",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "technical-operations-2018",
+      "locator": "Comparison signs table, p. 1"
     },
     "id": "UEB-GTM-2018-3-symbol-2265",
     "kind": "symbol",
@@ -58,10 +50,8 @@
   {
     "braille": "⠸⠈⠣",
     "citation": {
-      "authority": "ICEB",
-      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-      "locator": "Comparison signs table, p. 1",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "technical-operations-2018",
+      "locator": "Comparison signs table, p. 1"
     },
     "id": "UEB-GTM-2018-3-symbol-2264",
     "kind": "symbol",
@@ -72,10 +62,8 @@
   {
     "braille": "⠐⠶⠈⠱",
     "citation": {
-      "authority": "ICEB",
-      "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-      "locator": "Comparison signs table, p. 1",
-      "url": "https://iceb.org/publications/ueb/"
+      "source": "technical-operations-2018",
+      "locator": "Comparison signs table, p. 1"
     },
     "id": "UEB-GTM-2018-3-symbol-2260",
     "kind": "symbol",

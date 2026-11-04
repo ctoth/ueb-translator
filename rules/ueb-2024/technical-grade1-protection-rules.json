@@ -1,9 +1,7 @@
 {
   "citation": {
-    "authority": "ICEB",
-    "document": "Guidelines for Technical Material: replacement Section 1.7 (2025)",
-    "locator": "1.7.3(a)-(b), p.2 (indicator counts and escalation)",
-    "url": "https://iceb.org/publications/ueb/"
+    "source": "technical-protection-2025",
+    "locator": "1.7.3(a)-(b), p.2 (indicator counts and escalation)"
   },
   "definitions": {
     "standingValues": [

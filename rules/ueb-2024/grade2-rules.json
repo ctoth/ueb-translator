@@ -3,98 +3,29 @@
     "kind": "alphabetic-wordsign",
     "precedence": 0,
     "entries": [
-      [
-        "but",
-        "⠃"
-      ],
-      [
-        "can",
-        "⠉"
-      ],
-      [
-        "do",
-        "⠙"
-      ],
-      [
-        "every",
-        "⠑"
-      ],
-      [
-        "from",
-        "⠋"
-      ],
-      [
-        "go",
-        "⠛"
-      ],
-      [
-        "have",
-        "⠓"
-      ],
-      [
-        "just",
-        "⠚"
-      ],
-      [
-        "knowledge",
-        "⠅"
-      ],
-      [
-        "like",
-        "⠇"
-      ],
-      [
-        "more",
-        "⠍"
-      ],
-      [
-        "not",
-        "⠝"
-      ],
-      [
-        "people",
-        "⠏"
-      ],
-      [
-        "quite",
-        "⠟"
-      ],
-      [
-        "rather",
-        "⠗"
-      ],
-      [
-        "so",
-        "⠎"
-      ],
-      [
-        "that",
-        "⠞"
-      ],
-      [
-        "us",
-        "⠥"
-      ],
-      [
-        "very",
-        "⠧"
-      ],
-      [
-        "it",
-        "⠭"
-      ],
-      [
-        "you",
-        "⠽"
-      ],
-      [
-        "as",
-        "⠵"
-      ],
-      [
-        "will",
-        "⠺"
-      ]
+      ["but", "⠃"],
+      ["can", "⠉"],
+      ["do", "⠙"],
+      ["every", "⠑"],
+      ["from", "⠋"],
+      ["go", "⠛"],
+      ["have", "⠓"],
+      ["just", "⠚"],
+      ["knowledge", "⠅"],
+      ["like", "⠇"],
+      ["more", "⠍"],
+      ["not", "⠝"],
+      ["people", "⠏"],
+      ["quite", "⠟"],
+      ["rather", "⠗"],
+      ["so", "⠎"],
+      ["that", "⠞"],
+      ["us", "⠥"],
+      ["very", "⠧"],
+      ["it", "⠭"],
+      ["you", "⠽"],
+      ["as", "⠵"],
+      ["will", "⠺"]
     ],
     "guards": []
   },
@@ -102,30 +33,12 @@
     "kind": "strong-wordsign",
     "precedence": 0,
     "entries": [
-      [
-        "child",
-        "⠡"
-      ],
-      [
-        "shall",
-        "⠩"
-      ],
-      [
-        "this",
-        "⠹"
-      ],
-      [
-        "which",
-        "⠱"
-      ],
-      [
-        "out",
-        "⠳"
-      ],
-      [
-        "still",
-        "⠌"
-      ]
+      ["child", "⠡"],
+      ["shall", "⠩"],
+      ["this", "⠹"],
+      ["which", "⠱"],
+      ["out", "⠳"],
+      ["still", "⠌"]
     ],
     "guards": []
   },
@@ -133,26 +46,11 @@
     "kind": "strong-contraction",
     "precedence": 0,
     "entries": [
-      [
-        "and",
-        "⠯"
-      ],
-      [
-        "for",
-        "⠿"
-      ],
-      [
-        "of",
-        "⠷"
-      ],
-      [
-        "the",
-        "⠮"
-      ],
-      [
-        "with",
-        "⠾"
-      ]
+      ["and", "⠯"],
+      ["for", "⠿"],
+      ["of", "⠷"],
+      ["the", "⠮"],
+      ["with", "⠾"]
     ],
     "guards": []
   },
@@ -160,50 +58,17 @@
     "kind": "strong-groupsign",
     "precedence": 2,
     "entries": [
-      [
-        "ch",
-        "⠡"
-      ],
-      [
-        "gh",
-        "⠣"
-      ],
-      [
-        "sh",
-        "⠩"
-      ],
-      [
-        "th",
-        "⠹"
-      ],
-      [
-        "wh",
-        "⠱"
-      ],
-      [
-        "ed",
-        "⠫"
-      ],
-      [
-        "er",
-        "⠻"
-      ],
-      [
-        "ou",
-        "⠳"
-      ],
-      [
-        "ow",
-        "⠪"
-      ],
-      [
-        "st",
-        "⠌"
-      ],
-      [
-        "ar",
-        "⠜"
-      ]
+      ["ch", "⠡"],
+      ["gh", "⠣"],
+      ["sh", "⠩"],
+      ["th", "⠹"],
+      ["wh", "⠱"],
+      ["ed", "⠫"],
+      ["er", "⠻"],
+      ["ou", "⠳"],
+      ["ow", "⠪"],
+      ["st", "⠌"],
+      ["ar", "⠜"]
     ],
     "guards": []
   },
@@ -211,10 +76,7 @@
     "kind": "strong-groupsign",
     "precedence": 2,
     "entries": [
-      [
-        "ing",
-        "⠬"
-      ]
+      ["ing", "⠬"]
     ],
     "guards": [
       {
@@ -226,12 +88,13 @@
     "kind": "lower-wordsign",
     "precedence": 0,
     "entries": [
-      [
-        "be",
-        "⠆"
-      ]
+      ["be", "⠆"]
     ],
     "guards": [
+      {
+        "kind": "lower-sign",
+        "policy": "other"
+      },
       {
         "kind": "stable-following-modes"
       }
@@ -241,47 +104,73 @@
     "kind": "lower-wordsign",
     "precedence": 0,
     "entries": [
-      [
-        "enough",
-        "⠢"
-      ],
-      [
-        "were",
-        "⠶"
-      ],
-      [
-        "his",
-        "⠦"
-      ],
-      [
-        "in",
-        "⠔"
-      ],
-      [
-        "was",
-        "⠴"
-      ]
+      ["enough", "⠢"]
     ],
-    "guards": []
+    "guards": [
+      {
+        "kind": "lower-sign",
+        "policy": "enough-or-in"
+      }
+    ]
+  },
+  {
+    "kind": "lower-wordsign",
+    "precedence": 0,
+    "entries": [
+      ["were", "⠶"],
+      ["his", "⠦"]
+    ],
+    "guards": [
+      {
+        "kind": "lower-sign",
+        "policy": "other"
+      }
+    ]
+  },
+  {
+    "kind": "lower-wordsign",
+    "precedence": 0,
+    "entries": [
+      ["in", "⠔"]
+    ],
+    "guards": [
+      {
+        "kind": "lower-sign",
+        "policy": "enough-or-in"
+      }
+    ]
+  },
+  {
+    "kind": "lower-wordsign",
+    "precedence": 0,
+    "entries": [
+      ["was", "⠴"]
+    ],
+    "guards": [
+      {
+        "kind": "lower-sign",
+        "policy": "other"
+      }
+    ]
   },
   {
     "kind": "lower-groupsign",
     "precedence": 1,
     "entries": [
-      [
-        "be",
-        "⠆"
-      ],
-      [
-        "con",
-        "⠒"
-      ],
-      [
-        "dis",
-        "⠲"
-      ]
+      ["be", "⠆"],
+      ["con", "⠒"],
+      ["dis", "⠲"]
     ],
     "guards": [
+      {
+        "kind": "first-syllable"
+      },
+      {
+        "kind": "not-word-end"
+      },
+      {
+        "kind": "word-start"
+      },
       {
         "kind": "stable-following-modes"
       }
@@ -291,28 +180,16 @@
     "kind": "lower-groupsign",
     "precedence": 3,
     "entries": [
-      [
-        "ea",
-        "⠂"
-      ],
-      [
-        "bb",
-        "⠆"
-      ],
-      [
-        "cc",
-        "⠒"
-      ],
-      [
-        "ff",
-        "⠖"
-      ],
-      [
-        "gg",
-        "⠶"
-      ]
+      ["ea", "⠂"]
     ],
     "guards": [
+      {
+        "kind": "not-boundary",
+        "boundary": "prefix"
+      },
+      {
+        "kind": "word-internal"
+      },
       {
         "kind": "stable-adjacent-modes"
       }
@@ -322,14 +199,67 @@
     "kind": "lower-groupsign",
     "precedence": 3,
     "entries": [
-      [
-        "en",
-        "⠢"
-      ],
-      [
-        "in",
-        "⠔"
-      ]
+      ["bb", "⠆"],
+      ["cc", "⠒"],
+      ["ff", "⠖"],
+      ["gg", "⠶"]
+    ],
+    "guards": [
+      {
+        "kind": "word-internal"
+      },
+      {
+        "kind": "stable-adjacent-modes"
+      }
+    ]
+  },
+  {
+    "kind": "lower-groupsign",
+    "precedence": 3,
+    "entries": [
+      ["en", "⠢"],
+      ["in", "⠔"]
+    ],
+    "guards": [
+      {
+        "kind": "not-whole-word"
+      }
+    ]
+  },
+  {
+    "kind": "initial-letter-contraction",
+    "precedence": 4,
+    "entries": [
+      ["upon", "⠘⠥"],
+      ["these", "⠘⠮"],
+      ["those", "⠘⠹"],
+      ["whose", "⠘⠱"],
+      ["word", "⠘⠺"],
+      ["cannot", "⠸⠉"],
+      ["had", "⠸⠓"],
+      ["many", "⠸⠍"],
+      ["spirit", "⠸⠎"],
+      ["their", "⠸⠮"],
+      ["world", "⠸⠺"],
+      ["day", "⠐⠙"],
+      ["father", "⠐⠋"],
+      ["here", "⠐⠓"],
+      ["know", "⠐⠅"],
+      ["lord", "⠐⠇"],
+      ["mother", "⠐⠍"],
+      ["name", "⠐⠝"],
+      ["part", "⠐⠏"],
+      ["question", "⠐⠟"],
+      ["right", "⠐⠗"],
+      ["some", "⠐⠎"],
+      ["time", "⠐⠞"],
+      ["young", "⠐⠽"],
+      ["there", "⠐⠮"],
+      ["character", "⠐⠡"],
+      ["through", "⠐⠹"],
+      ["where", "⠐⠱"],
+      ["ought", "⠐⠳"],
+      ["work", "⠐⠺"]
     ],
     "guards": []
   },
@@ -337,137 +267,7 @@
     "kind": "initial-letter-contraction",
     "precedence": 4,
     "entries": [
-      [
-        "upon",
-        "⠘⠥"
-      ],
-      [
-        "these",
-        "⠘⠮"
-      ],
-      [
-        "those",
-        "⠘⠹"
-      ],
-      [
-        "whose",
-        "⠘⠱"
-      ],
-      [
-        "word",
-        "⠘⠺"
-      ],
-      [
-        "cannot",
-        "⠸⠉"
-      ],
-      [
-        "had",
-        "⠸⠓"
-      ],
-      [
-        "many",
-        "⠸⠍"
-      ],
-      [
-        "spirit",
-        "⠸⠎"
-      ],
-      [
-        "their",
-        "⠸⠮"
-      ],
-      [
-        "world",
-        "⠸⠺"
-      ],
-      [
-        "day",
-        "⠐⠙"
-      ],
-      [
-        "father",
-        "⠐⠋"
-      ],
-      [
-        "here",
-        "⠐⠓"
-      ],
-      [
-        "know",
-        "⠐⠅"
-      ],
-      [
-        "lord",
-        "⠐⠇"
-      ],
-      [
-        "mother",
-        "⠐⠍"
-      ],
-      [
-        "name",
-        "⠐⠝"
-      ],
-      [
-        "part",
-        "⠐⠏"
-      ],
-      [
-        "question",
-        "⠐⠟"
-      ],
-      [
-        "right",
-        "⠐⠗"
-      ],
-      [
-        "some",
-        "⠐⠎"
-      ],
-      [
-        "time",
-        "⠐⠞"
-      ],
-      [
-        "young",
-        "⠐⠽"
-      ],
-      [
-        "there",
-        "⠐⠮"
-      ],
-      [
-        "character",
-        "⠐⠡"
-      ],
-      [
-        "through",
-        "⠐⠹"
-      ],
-      [
-        "where",
-        "⠐⠱"
-      ],
-      [
-        "ought",
-        "⠐⠳"
-      ],
-      [
-        "work",
-        "⠐⠺"
-      ]
-    ],
-    "guards": []
-  },
-  {
-    "kind": "initial-letter-contraction",
-    "precedence": 4,
-    "entries": [
-      [
-        "ever",
-        "⠐⠑"
-      ]
+      ["ever", "⠐⠑"]
     ],
     "guards": [
       {
@@ -480,10 +280,7 @@
     "kind": "initial-letter-contraction",
     "precedence": 4,
     "entries": [
-      [
-        "one",
-        "⠐⠕"
-      ]
+      ["one", "⠐⠕"]
     ],
     "guards": [
       {
@@ -496,10 +293,7 @@
     "kind": "initial-letter-contraction",
     "precedence": 4,
     "entries": [
-      [
-        "under",
-        "⠐⠥"
-      ]
+      ["under", "⠐⠥"]
     ],
     "guards": [
       {
@@ -512,54 +306,45 @@
     "kind": "final-letter-groupsign",
     "precedence": 5,
     "entries": [
-      [
-        "ound",
-        "⠨⠙"
-      ],
-      [
-        "ance",
-        "⠨⠑"
-      ],
-      [
-        "sion",
-        "⠨⠝"
-      ],
-      [
-        "less",
-        "⠨⠎"
-      ],
-      [
-        "ount",
-        "⠨⠞"
-      ],
-      [
-        "ence",
-        "⠰⠑"
-      ],
-      [
-        "ong",
-        "⠰⠛"
-      ],
-      [
-        "ful",
-        "⠰⠇"
-      ],
-      [
-        "tion",
-        "⠰⠝"
-      ],
-      [
-        "ness",
-        "⠰⠎"
-      ],
-      [
-        "ment",
-        "⠰⠞"
-      ],
-      [
-        "ity",
-        "⠰⠽"
-      ]
+      ["ound", "⠨⠙"],
+      ["ance", "⠨⠑"],
+      ["sion", "⠨⠝"],
+      ["less", "⠨⠎"],
+      ["ount", "⠨⠞"]
+    ],
+    "guards": []
+  },
+  {
+    "kind": "final-letter-groupsign",
+    "precedence": 5,
+    "entries": [
+      ["ence", "⠰⠑"]
+    ],
+    "guards": [],
+    "variants": [
+      {
+        "idSuffix": "preference-exception",
+        "locator": "10.10",
+        "precedence": 4,
+        "guards": [
+          {
+            "kind": "following",
+            "characters": "adr"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "final-letter-groupsign",
+    "precedence": 5,
+    "entries": [
+      ["ong", "⠰⠛"],
+      ["ful", "⠰⠇"],
+      ["tion", "⠰⠝"],
+      ["ness", "⠰⠎"],
+      ["ment", "⠰⠞"],
+      ["ity", "⠰⠽"]
     ],
     "guards": []
   }

@@ -1,7 +1,6 @@
-import locatorData from "./grade2-locators.json" with { type: "json" };
-import grade2RulesData from "./grade2-rules.json" with { type: "json" };
-import { readGrade2Rules, readGrade2Locators } from "./rule-json.js";
-import type { IcebRuleCitation } from "./source.js";
+import { sourceData } from "./source-manifest.js";
+import { readGrade2Rules, readGrade2Families } from "./rule-json.js";
+import type { IcebRuleCitation, Grade2ConstraintLocator } from "./source.js";
 import type { ContextualPrecedence, ContextualRuleGuard } from "./contextual-compiler.js";
 
 export const GRADE2_RULE_KINDS = ["alphabetic-wordsign","final-letter-groupsign","initial-letter-contraction","lower-groupsign","lower-wordsign","strong-contraction","strong-groupsign","strong-wordsign"] as const;
@@ -18,10 +17,17 @@ export interface Grade2RuleLocatorByKind {
   readonly "strong-wordsign": "10.2";
 }
 
-export const GRADE2_RULE_LOCATOR_BY_KIND: Grade2RuleLocatorByKind = readGrade2Locators(locatorData);
+export type Grade2RuleFamilies = {
+  readonly [Kind in Grade2RuleKind]: {
+    readonly locator: Grade2RuleLocatorByKind[Kind];
+    readonly guards: readonly ContextualRuleGuard[];
+  };
+};
+
+export const GRADE2_RULE_FAMILIES: Grade2RuleFamilies = readGrade2Families(sourceData("families"));
 
 type Grade2RuleLocatorFor<Kind extends Grade2RuleKind> =
-  (typeof GRADE2_RULE_LOCATOR_BY_KIND)[Kind];
+  Grade2RuleLocatorByKind[Kind];
 export type Grade2RuleId<Kind extends Grade2RuleKind = Grade2RuleKind> =
   `UEB-${Grade2RuleLocatorFor<Kind>}-${string}`;
 
@@ -33,6 +39,14 @@ export interface Grade2RuleSourceFor<Kind extends Grade2RuleKind> {
   readonly print: string;
   readonly guards: readonly ContextualRuleGuard[];
   readonly precedence: ContextualPrecedence;
+  readonly variants: readonly Grade2RuleVariant[];
+}
+
+export interface Grade2RuleVariant {
+  readonly idSuffix: string;
+  readonly locator: Grade2ConstraintLocator;
+  readonly precedence: ContextualPrecedence;
+  readonly guards: readonly ContextualRuleGuard[];
 }
 
 export type Grade2RuleSource = {
@@ -45,6 +59,7 @@ export interface Grade2RuleGroupSource {
   readonly precedence: ContextualPrecedence;
   readonly entries: readonly (readonly [print: string, braille: string])[];
   readonly guards: readonly ContextualRuleGuard[];
+  readonly variants: readonly Grade2RuleVariant[];
 }
 
-export const GRADE2_RULES: readonly Grade2RuleSource[] = readGrade2Rules(grade2RulesData, GRADE2_RULE_KINDS, GRADE2_RULE_LOCATOR_BY_KIND);
+export const GRADE2_RULES: readonly Grade2RuleSource[] = readGrade2Rules(sourceData("groups"), GRADE2_RULE_KINDS, GRADE2_RULE_FAMILIES);

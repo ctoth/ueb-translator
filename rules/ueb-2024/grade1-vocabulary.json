@@ -1,0 +1,30 @@
+{
+  "modes": {
+    "capitals": 0,
+    "grade1": 1,
+    "numeric": 2,
+    "typeform-bold": 3,
+    "typeform-italic": 4,
+    "typeform-script": 5,
+    "typeform-transcriber-defined": 6,
+    "typeform-underline": 7
+  },
+  "classes": {
+    "digit": 0,
+    "grade1-required": 1,
+    "lowercase-letter": 2,
+    "numeric-ambiguous-letter": 3,
+    "numeric-punctuation": 4,
+    "sequence-boundary": 5,
+    "typeformed": 6,
+    "uppercase-letter": 7
+  },
+  "policies": {
+    "closingStandingPunctuation": 0,
+    "dashJoiners": 1,
+    "elisionPunctuation": 2,
+    "lowerPunctuation": 3,
+    "openingStandingPunctuation": 4,
+    "standingBoundaries": 5
+  }
+}

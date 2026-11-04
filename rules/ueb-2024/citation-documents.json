@@ -1,0 +1,32 @@
+{
+  "ueb-2024": {
+    "authority": "ICEB",
+    "document": "Rules of Unified English Braille, Third Edition (2024)",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "technical-2014": {
+    "authority": "ICEB",
+    "document": "Unified English Braille: Guidelines for Technical Material (2014)",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "technical-operations-2018": {
+    "authority": "ICEB",
+    "document": "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "technical-protection-2025": {
+    "authority": "ICEB",
+    "document": "Guidelines for Technical Material: replacement Section 1.7 (2025)",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "technical-grade1-2025": {
+    "authority": "ICEB",
+    "document": "Guidelines for Technical Material: Grade 1 Indicators (July 2025)",
+    "url": "https://iceb.org/publications/ueb/"
+  },
+  "bana-math-2026": {
+    "authority": "BANA",
+    "document": "Guidance on Transcribing Mathematics and Science in UEB (2026)",
+    "url": "https://brailleauthority.org/node/50"
+  }
+}

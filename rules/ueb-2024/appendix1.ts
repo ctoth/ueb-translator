@@ -1,4 +1,4 @@
-import appendix1Data from "./appendix1.json" with { type: "json" };
+import { sourceData } from "./source-manifest.js";
 import { readAppendixRules } from "./rule-json.js";
 import {
   type IcebRuleCitation,
@@ -24,4 +24,4 @@ export interface Appendix1GroupSource {
 }
 
 /** The explicitly listed longer words in the official 2024 Appendix 1. */
-export const APPENDIX1_LONGER_WORDS: readonly Appendix1WordSource[] = readAppendixRules(appendix1Data, APPENDIX1_BASES);
+export const APPENDIX1_LONGER_WORDS: readonly Appendix1WordSource[] = readAppendixRules(sourceData("appendix"), APPENDIX1_BASES);

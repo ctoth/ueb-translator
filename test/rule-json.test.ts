@@ -1,32 +1,70 @@
 import { describe, expect, it } from "vitest";
 import * as readers from "../rules/ueb-2024/rule-json.js";
 import { SYMBOL_RULES } from "../rules/ueb-2024/symbols/source.js";
-import { GRADE2_RULE_KINDS, GRADE2_RULE_LOCATOR_BY_KIND } from "../rules/ueb-2024/grade2-rules.js";
+import { GRADE2_RULE_KINDS, GRADE2_RULE_FAMILIES } from "../rules/ueb-2024/grade2-rules.js";
 import { GRADE2_CONTEXTUAL_RULES } from "../rules/ueb-2024/program.js";
 import type { ContextualRuleGuard } from "../rules/ueb-2024/contextual-compiler.js";
 import modeData from "../rules/ueb-2024/modes/rules.json" with { type: "json" };
+import specialData from "../rules/ueb-2024/symbols/special.json" with { type: "json" };
 import groupData from "../rules/ueb-2024/grade2-rules.json" with { type: "json" };
-import compoundData from "../rules/ueb-2024/compound-exceptions.json" with { type: "json" };
-import syllableData from "../rules/ueb-2024/syllable-exceptions.json" with { type: "json" };
-import initialData from "../rules/ueb-2024/initial-exceptions.json" with { type: "json" };
-import finalData from "../rules/ueb-2024/final-exceptions.json" with { type: "json" };
 import scriptData from "../rules/ueb-2024/technical-script-rules.json" with { type: "json" };
 import delimiterData from "../rules/ueb-2024/technical-delimiter-rules.json" with { type: "json" };
 import valuePatterns from "../rules/ueb-2024/technical-value-patterns.json" with { type: "json" };
 import spacingData from "../rules/ueb-2024/technical-operation-spacing-rules.json" with { type: "json" };
+import constraintData from "../rules/ueb-2024/constraints.json" with { type: "json" };
+import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import inventoryData from "../rules/ueb-2024/inventory.json" with { type: "json" };
+import { assembleSources, sourceData, sourceFile, SYMBOL_FAMILY_DATA } from "../rules/ueb-2024/source-manifest.js";
+import { expandSymbolSources } from "../rules/ueb-2024/symbols/compiler.js";
 
 const mode = modeData[0];
 if (mode === undefined) throw new Error("Mode fixture missing.");
-const symbol = SYMBOL_RULES[0];
+const symbol = specialData[0];
 if (symbol === undefined) throw new Error("Symbol fixture missing.");
 const group = groupData[0];
 if (group === undefined) throw new Error("Contraction fixture missing.");
 
 describe("JSON rule source decoding", () => {
+  it("routes nested sources by the shared manifest", () => {
+    expect(sourceData("modes")).toBe(modeData);
+    expect(sourceData("technical", "scripts")).toBe(scriptData);
+    expect(assembleSources({ renamed: { letters: "symbols/special.json" } }, sourceFile))
+      .toEqual({ renamed: { letters: specialData } });
+    expect(() => sourceData("missing")).toThrow("Unknown rule source");
+    expect(() => sourceFile("missing.json")).toThrow("Unknown rule source file");
+    expect(() => assembleSources({ invalid: 4 }, sourceFile)).toThrow("Expected a source group");
+  });
+
+  it("takes family order and derived symbol metadata from descriptors", () => {
+    const families = readers.readSymbolFamilies(SYMBOL_FAMILY_DATA);
+    const blocks = families.map(family => expandSymbolSources([family], sourceFile));
+    expect(expandSymbolSources([...families].reverse(), sourceFile))
+      .toEqual(blocks.reverse().flat());
+    const family = families.find(entry => entry.kind === "pairs");
+    if (family?.kind !== "pairs") throw new Error("Missing pair family.");
+    const changed = expandSymbolSources([{ ...family, idPrefix: "selected-", uppercase: false,
+      idKey: "utf16-hex", citation: { source: "ueb-2024", locator: "Symbols list: U+{utf16Hex4}" },
+    }], () => [["😀", "⠁"]]);
+    expect(changed[0]).toMatchObject({ id: "selected-d83d", uppercasePrint: null,
+      citation: { locator: "Symbols list: U+D83D" } });
+    const digits = families.find(entry => entry.kind === "digits");
+    if (digits?.kind !== "digits") throw new Error("Missing digit family.");
+    expect(expandSymbolSources([{ ...digits, prints: ["0", "7"] }], () => [["a", "⠁"], ["b", "⠃"]])
+      .map(entry => [entry.print, entry.numericDigit, entry.braille]))
+      .toEqual([["0", "0", "⠁"], ["7", "7", "⠃"]]);
+    expect(() => expandSymbolSources([digits], () => [])).toThrow("exceeds");
+  });
+
+  it.each([{}, { kind: "missing", file: "x" }, { kind: "pairs", file: 1 }])(
+    "rejects malformed symbol family %j", family => {
+      expect(() => readers.readSymbolFamilies([family])).toThrow();
+    },
+  );
+
   it("reads derived digit metadata and null/uppercase symbol fields", () => {
-    expect(readers.readSymbolRules(SYMBOL_RULES).filter(rule => rule.kind === "digit")
+    expect(SYMBOL_RULES.filter(rule => rule.kind === "digit")
       .map(rule => rule.numericDigit)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]);
+    expect(readers.readSymbolRules(specialData)[0]).toMatchObject({ numericDigit: null, uppercasePrint: "Ŋ" });
   });
 
   it.each([null, 1, [], { words: [] }])("rejects non-record rule %j", value => {
@@ -47,8 +85,8 @@ describe("JSON rule source decoding", () => {
   it.each(["missing", 1])("rejects malformed citation locator %j", locator => {
     expect(() => readers.readModeRules([{ ...mode, citation: { ...mode.citation, locator } }])).toThrow();
   });
-  it.each(["authority", "document", "url"])("rejects changed ICEB citation %s", field => {
-    expect(() => readers.readModeRules([{ ...mode, citation: { ...mode.citation, [field]: "invalid" } }])).toThrow("ICEB citation");
+  it.each(["technical-2014", "missing"])("rejects incorrect citation document reference %s", source => {
+    expect(() => readers.readModeRules([{ ...mode, citation: { ...mode.citation, source } }])).toThrow();
   });
   it("rejects malformed nullable symbol fields", () => {
     expect(() => readers.readSymbolRules([{ ...symbol, numericDigit: 2 }])).toThrow("JSON string");
@@ -61,9 +99,11 @@ describe("JSON rule source decoding", () => {
     ];
     for (const guard of guards) {
       expect(readers.readGrade2Rules([{ ...group, guards: [guard] }], GRADE2_RULE_KINDS,
-        GRADE2_RULE_LOCATOR_BY_KIND)[0]?.guards).toEqual([guard]);
+        GRADE2_RULE_FAMILIES)[0]?.guards).toContainEqual(guard);
     }
-    expect(readers.readStructuralGuard({ kind: "not-crossing", boundaries: ["braille-line", "compound", "prefix", "suffix", "syllable"] }).boundaries).toHaveLength(5);
+    const boundaryGuard: ContextualRuleGuard = { kind: "not-crossing", boundaries: ["braille-line", "compound", "prefix", "suffix", "syllable"] };
+    expect(readers.readGrade2Rules([{ ...group, guards: [boundaryGuard] }], GRADE2_RULE_KINDS,
+      GRADE2_RULE_FAMILIES)[0]?.guards).toContainEqual(boundaryGuard);
   });
   it.each([
     { kind: "unknown" }, { kind: "previous-not", characters: 2 },
@@ -78,7 +118,7 @@ describe("JSON rule source decoding", () => {
     { kind: "not-standing-match", pattern: 2 }, { kind: "not-word-ending", endings: [2] },
     { kind: "word-with-affixes", affixes: [2] },
   ])("rejects malformed authored contraction guard %j", guard => {
-    expect(() => readers.readGrade2Rules([{ ...group, guards: [guard] }], GRADE2_RULE_KINDS, GRADE2_RULE_LOCATOR_BY_KIND)).toThrow();
+    expect(() => readers.readGrade2Rules([{ ...group, guards: [guard] }], GRADE2_RULE_KINDS, GRADE2_RULE_FAMILIES)).toThrow();
   });
   it("rejects non-string values and missing keys in closed maps", () => {
     expect(() => readers.readTechnicalValuePatterns({})).toThrow();
@@ -102,17 +142,32 @@ describe("JSON rule source decoding", () => {
       definitions: { ...delimiterData.definitions, matrixEnclosures: { ...delimiterData.definitions.matrixEnclosures, round: "missing" } },
     })).toThrow();
   });
-  it("rejects inconsistent exception identifiers in each family", () => {
-    const sources: readonly (readonly [(value: unknown) => unknown, unknown])[] = [
-      [readers.readCompoundExceptions, compoundData[0]], [readers.readSyllableExceptions, syllableData[0]],
-      [readers.readInitialExceptions, initialData[0]], [readers.readFinalExceptions, finalData[0]],
-    ];
-    for (const [read, value] of sources) {
-      if (typeof value !== "object" || value === null) throw new Error("Exception fixture missing.");
-      expect(() => read([{ ...value, id: "wrong-id" }])).toThrow("exception id");
-    }
+  it("resolves targeted guards and their citation", () => {
+    expect(readers.readConstraints(constraintData, GRADE2_RULES)[0]).toMatchObject({
+      target: { kind: "strong-contraction", print: "of" },
+      citation: { authority: "ICEB", locator: "10.3.1" },
+      guards: [{ kind: "not-word", ignoredCharacters: "-", words: expect.arrayContaining(["microfilms", "microfilm's"]) }],
+    });
   });
-  it("rejects malformed compact exception families", () => {
-    expect(() => readers.readCompoundExceptions([{ ...compoundData[0], words: [{ base: "microfilm", suffixes: [2] }] }])).toThrow();
+  it.each([
+    { kind: "missing", print: "of" }, { kind: "strong-contraction", print: "missing" },
+  ])("rejects unknown constraint target %j", target => {
+    expect(() => readers.readConstraints([{ ...constraintData[0], target }], GRADE2_RULES)).toThrow("target");
+  });
+  it.each([
+    { idSuffix: "extra", locator: "missing", precedence: 4, guards: [] },
+    { idSuffix: "extra", locator: "10.10", precedence: 10, guards: [] },
+    { idSuffix: "extra", locator: "10.10", precedence: 4, guards: [{ kind: "unknown" }] },
+  ])("rejects malformed explicit variant %j", variant => {
+    expect(() => readers.readGrade2Rules([{ ...group, variants: [variant] }], GRADE2_RULE_KINDS,
+      GRADE2_RULE_FAMILIES)).toThrow();
+  });
+  it.each([
+    { kind: "not-word", words: [{ base: "microfilm", suffixes: [2] }], possessives: true, ignoredCharacters: "-" },
+    { kind: "not-word", words: ["of"], possessives: "yes", ignoredCharacters: "-" },
+    { kind: "not-word-ending", endings: [2] },
+    { kind: "unknown" },
+  ])("rejects malformed targeted guard %j", guard => {
+    expect(() => readers.readConstraints([{ ...constraintData[0], guards: [guard] }], GRADE2_RULES)).toThrow();
   });
 });
