@@ -16,6 +16,7 @@ import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import inventoryData from "../rules/ueb-2024/inventory.json" with { type: "json" };
 import { assembleSources, sourceData, sourceFile, SYMBOL_FAMILY_DATA } from "../rules/ueb-2024/source-manifest.js";
 import { expandSymbolSources } from "../rules/ueb-2024/symbols/compiler.js";
+import expansionData from "../rules/ueb-2024/expansion-policy.json" with { type: "json" };
 
 const mode = modeData[0];
 if (mode === undefined) throw new Error("Mode fixture missing.");
@@ -25,6 +26,15 @@ const group = groupData[0];
 if (group === undefined) throw new Error("Contraction fixture missing.");
 
 describe("JSON rule source decoding", () => {
+  it("takes expansion precedence, citations and provenance IDs from policy data", () => {
+    const policy = readers.readExpansionPolicy(expansionData);
+    const changed = { ...policy, shortformPrecedence: 8 as const,
+      ids: { ...policy.ids, shortformPrefix: "selected-", contractionPrefix: "selected-" } };
+    expect(readers.readShortforms([["about", "⠁⠃"]], changed)[0]?.id).toBe("selected-about");
+    expect(readers.readGrade2Rules([group], GRADE2_RULE_KINDS, GRADE2_RULE_FAMILIES, changed)[0]?.id)
+      .toMatch(/^selected-/u);
+    expect(() => readers.readExpansionPolicy({ ...expansionData, shortformPrecedence: true })).toThrow();
+  });
   it("routes nested sources by the shared manifest", () => {
     expect(sourceData("modes")).toBe(modeData);
     expect(sourceData("technical", "scripts")).toBe(scriptData);

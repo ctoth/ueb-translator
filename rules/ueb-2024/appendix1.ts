@@ -1,20 +1,16 @@
 import { sourceData } from "./source-manifest.js";
 import { readAppendixRules } from "./rule-json.js";
-import {
-  type IcebRuleCitation,
-  type ShortformLocator,
-} from "./source.js";
+import type { IcebRuleCitation } from "./source.js";
 
 export const APPENDIX1_BASES = ["about","above","according","across","after","afternoon","again","against","before","behind","below","beneath","between","blind","children","conceive","could","deceive","deceiving","declare","first","friend","good","him","immediate","letter","little","much","must","necessary","paid","perceive","perceiving","perhaps","quick","receive","receiving","rejoice","rejoicing","said","should","such","together","would","yourself"] as const;
 export type Appendix1Base = (typeof APPENDIX1_BASES)[number];
 
-export type Appendix1WordId<Base extends Appendix1Base = Appendix1Base> =
-  `UEB-Appendix-1-${Base}-${string}`;
+export type Appendix1WordId = string;
 
 export interface Appendix1WordSource<Base extends Appendix1Base = Appendix1Base> {
   readonly base: Base;
-  readonly citation: IcebRuleCitation<ShortformLocator>;
-  readonly id: Appendix1WordId<Base>;
+  readonly citation: IcebRuleCitation;
+  readonly id: Appendix1WordId;
   readonly print: string;
 }
 

@@ -1,0 +1,63 @@
+{
+  "citation": {
+    "source": "ueb-2024",
+    "locator": "10.9 and Appendix 1"
+  },
+  "ids": {
+    "contractionPrefix": "UEB-",
+    "separator": "-",
+    "shortformPrefix": "UEB-10.9-",
+    "longerSuffix": "-longer-word",
+    "appendixPrefix": "UEB-Appendix-1-"
+  },
+  "shortformPrecedence": 1,
+  "longerPrecedence": 4,
+  "appendixPrecedence": 0,
+  "pluralSuffix": "s",
+  "shortformGuards": [
+    {
+      "kind": "standing-alone"
+    },
+    {
+      "kind": "word-start"
+    }
+  ],
+  "appendixGuards": [
+    {
+      "kind": "standing-alone"
+    }
+  ],
+  "collisionKinds": [
+    "strong-groupsign",
+    "lower-groupsign",
+    "strong-contraction",
+    "initial-letter-contraction"
+  ],
+  "standingWordKinds": [
+    "alphabetic-wordsign",
+    "strong-wordsign"
+  ],
+  "standingLiteralKinds": [
+    "strong-groupsign"
+  ],
+  "latinKind": "letter",
+  "latinPattern": "^[a-z]$",
+  "suffixExtensions": {
+    "s": [
+      "'"
+    ]
+  },
+  "possessives": {
+    "suffixes": [
+      "'s"
+    ],
+    "endings": [
+      {
+        "ending": "s",
+        "suffixes": [
+          "'"
+        ]
+      }
+    ]
+  }
+}

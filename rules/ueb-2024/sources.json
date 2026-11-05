@@ -1,6 +1,7 @@
 {
   "documents": "citation-documents.json",
   "sources": {
+    "expansion": "expansion-policy.json",
     "vocabulary": "grade1-vocabulary.json",
     "modes": "modes/rules.json",
     "policies": "policies/rules.json",

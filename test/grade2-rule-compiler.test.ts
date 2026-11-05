@@ -13,8 +13,11 @@ import {
   GRADE2_CONTEXTUAL_COMPILATION,
   GRADE2_STANDING_LITERAL_INPUTS,
   requireAppendixShortformBase,
+  decodeShortforms,
+  substituteAppendixBase,
+  checkedAmbiguities,
 } from "../rules/ueb-2024/program.js";
-import { GRADE2_INVENTORY_COUNTS } from "../rules/ueb-2024/inventory.js";
+import { GRADE2_INVENTORY_COUNTS, validateInventory } from "../rules/ueb-2024/inventory.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
 import { compose } from "../src/composition.js";
@@ -40,6 +43,22 @@ const rule = (
 });
 
 describe("compileContextualRules", () => {
+  it("indexes every real shortform reading independently of source order", () => {
+    const spellings = GRADE2_RULES.filter(rule => rule.kind === "lower-groupsign" && ["be", "bb"].includes(rule.print));
+    const shortforms = [{ print: "before", braille: "⠆" }];
+    const decoded = decodeShortforms(shortforms, spellings);
+    expect(decoded.get("before")?.map(reading => reading.literal)).toEqual(["bb", "be"]);
+    expect(decodeShortforms(shortforms, [...spellings].reverse())).toEqual(decoded);
+    expect(() => substituteAppendixBase("foreign", "before", "bef")).toThrow("lacks base");
+    expect(substituteAppendixBase("beforehand", "before", "bef")).toBe("befhand");
+  });
+
+  it("rejects conflicting ambiguity outputs and stale inventory", () => {
+    expect([...checkedAmbiguities([["x", "⠭"], ["x", "⠭"]]).values()]).toEqual([["x", "⠭"]]);
+    expect(() => checkedAmbiguities([["x", "⠭"], ["x", "⠁"]])).toThrow("Conflicting ambiguity");
+    expect(() => validateInventory(GRADE2_INVENTORY_COUNTS,
+      { ...GRADE2_INVENTORY_COUNTS, rules: 0 })).toThrow("Inventory rules");
+  });
   it("rejects an unresolved precedence overlap", () => {
     expect(() =>
       compileContextualRules([

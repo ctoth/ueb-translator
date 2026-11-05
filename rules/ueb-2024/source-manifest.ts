@@ -19,6 +19,9 @@ export function assembleSources(
   ]));
 }
 
+if (Object.hasOwn(manifest.sources, "documents") || Object.hasOwn(manifest.sources, "symbols")) {
+  throw new Error("Routed sources cannot replace documents or expanded symbols.");
+}
 const SOURCE_DATA: Readonly<Record<string, unknown>> = assembleSources(manifest.sources, sourceFile);
 
 export function sourceData(...path: readonly string[]): unknown {

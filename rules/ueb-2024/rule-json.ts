@@ -1,5 +1,6 @@
 /** JSON source decoding. Rule semantics are validated by the existing compilers. */
-import { CITATION_DOCUMENT_DATA } from "./source-manifest.js";
+import { CITATION_DOCUMENT_DATA, sourceData } from "./source-manifest.js";
+import type { ExpansionPolicy } from "./expansion-policy.js";
 import { citeIceb, type IcebRuleCitation, type IcebRuleLocator, type Grade2ConstraintLocator, type RuleCitation } from "./source.js";
 import type { SymbolFamily, SymbolRuleSource } from "./symbols/compiler.js";
 import type { ModeRuleSource } from "./modes/compiler.js";
@@ -192,7 +193,8 @@ export function readGrade2Families(value: unknown): Grade2RuleFamilies {
     "strong-wordsign": family("strong-wordsign", "10.2"),
   };
 }
-export function readGrade2Rules(value: unknown, kinds: readonly Grade2RuleKind[], families: Grade2RuleFamilies): readonly Grade2RuleSource[] {
+export function readGrade2Rules(value: unknown, kinds: readonly Grade2RuleKind[], families: Grade2RuleFamilies,
+  policy: ExpansionPolicy = readExpansionPolicy(sourceData("expansion"))): readonly Grade2RuleSource[] {
   return array(value).flatMap<Grade2RuleSource>(entry => {
     const source = record(entry);
     const group: Grade2RuleGroupSource = { kind: member(source["kind"], kinds),
@@ -208,7 +210,8 @@ export function readGrade2Rules(value: unknown, kinds: readonly Grade2RuleKind[]
     function expand<K extends Grade2RuleKind>(selected: K): readonly Grade2RuleSourceFor<K>[] {
       const family = families[selected], selectedLocator = family.locator;
       return pairs.map(([print, braille]) => ({ braille, citation: citeIceb(selectedLocator),
-        id: `UEB-${selectedLocator}-${print}`, kind: selected, print, guards: [...family.guards, ...guards], precedence, variants }));
+        id: policy.ids.contractionPrefix + selectedLocator + policy.ids.separator + print,
+        kind: selected, print, guards: [...family.guards, ...guards], precedence, variants }));
     }
     switch (kind) {
       case "alphabetic-wordsign": return expand(kind);
@@ -222,19 +225,49 @@ export function readGrade2Rules(value: unknown, kinds: readonly Grade2RuleKind[]
     }
   });
 }
-export function readShortforms(value: unknown): readonly ShortformSource[] {
+export function readShortforms(value: unknown,
+  policy: ExpansionPolicy = readExpansionPolicy(sourceData("expansion"))): readonly ShortformSource[] {
   return readPairs(value).map(([print, braille]) => ({
-    braille, citation: citeIceb("10.9 and Appendix 1"), id: `UEB-10.9-${print}`, print,
+    braille, citation: policy.citation, id: policy.ids.shortformPrefix + print, print,
   }));
 }
-export function readAppendixRules(value: unknown, bases: readonly Appendix1Base[]): readonly Appendix1WordSource[] {
+export function readAppendixRules(value: unknown, bases: readonly Appendix1Base[],
+  policy: ExpansionPolicy = readExpansionPolicy(sourceData("expansion"))): readonly Appendix1WordSource[] {
   return array(value).flatMap(entry => {
     const source = record(entry);
     const group: Appendix1GroupSource = { base: member(source["base"], bases), words: readStrings(source["words"]) };
     return group.words.map(print => ({
-      base: group.base, citation: citeIceb("10.9 and Appendix 1"), id: `UEB-Appendix-1-${group.base}-${print}`, print,
+      base: group.base, citation: policy.citation,
+      id: policy.ids.appendixPrefix + group.base + policy.ids.separator + print, print,
     }));
   });
+}
+export function readExpansionPolicy(value: unknown): ExpansionPolicy {
+  const source = record(value), ids = record(source["ids"]), possessives = record(source["possessives"]);
+  const kinds = (value: unknown): readonly Grade2RuleKind[] => array(value).map(entry =>
+    member(entry, ["alphabetic-wordsign", "final-letter-groupsign", "initial-letter-contraction",
+      "lower-groupsign", "lower-wordsign", "strong-contraction", "strong-groupsign", "strong-wordsign"]));
+  const extensions = record(source["suffixExtensions"]);
+  return {
+    citation: generalCitation(source["citation"]),
+    ids: { contractionPrefix: string(ids["contractionPrefix"]), separator: string(ids["separator"]),
+      shortformPrefix: string(ids["shortformPrefix"]), longerSuffix: string(ids["longerSuffix"]),
+      appendixPrefix: string(ids["appendixPrefix"]) },
+    shortformPrecedence: member(source["shortformPrecedence"], CONTEXTUAL_PRECEDENCES),
+    longerPrecedence: member(source["longerPrecedence"], CONTEXTUAL_PRECEDENCES),
+    appendixPrecedence: member(source["appendixPrecedence"], CONTEXTUAL_PRECEDENCES),
+    pluralSuffix: string(source["pluralSuffix"]),
+    shortformGuards: readGuards(source["shortformGuards"]), appendixGuards: readGuards(source["appendixGuards"]),
+    collisionKinds: kinds(source["collisionKinds"]), standingWordKinds: kinds(source["standingWordKinds"]),
+    standingLiteralKinds: kinds(source["standingLiteralKinds"]),
+    latinKind: member(source["latinKind"], ["digit", "letter", "modifier", "symbol"]),
+    latinPattern: string(source["latinPattern"]),
+    suffixExtensions: Object.fromEntries(Object.entries(extensions).map(([key, value]) => [key, readStrings(value)])),
+    possessives: { suffixes: readStrings(possessives["suffixes"]), endings: array(possessives["endings"]).map(value => {
+      const entry = record(value);
+      return { ending: string(entry["ending"]), suffixes: readStrings(entry["suffixes"]) };
+    }) },
+  };
 }
 function readWords(value: unknown): readonly string[] {
   return array(value).flatMap(entry => {
@@ -249,7 +282,8 @@ function constraintLocator(value: unknown): Grade2ConstraintLocator {
     "10.7.6", "10.7.7", "10.7.8", "10.7.9", "10.8.3", "10.8.4"]);
 }
 
-export function readConstraints(value: unknown, rules: readonly Grade2RuleSource[]): readonly ConstraintSource[] {
+export function readConstraints(value: unknown, rules: readonly Grade2RuleSource[],
+  policy: ExpansionPolicy = readExpansionPolicy(sourceData("expansion"))): readonly ConstraintSource[] {
   return array(value).map(value => {
     const source = record(value), selected = record(source["target"]);
     const target = rules.find(rule => rule.kind === selected["kind"] && rule.print === selected["print"]);
@@ -264,7 +298,9 @@ export function readConstraints(value: unknown, rules: readonly Grade2RuleSource
       }
       const possessives = checked(guard["possessives"], isBoolean);
       const words = readWords(guard["words"]).flatMap(word =>
-        possessives ? [word, word + "'s", ...(word.endsWith("s") ? [word + "'"] : [])] : [word]);
+        possessives ? [word, ...policy.possessives.suffixes.map(suffix => word + suffix),
+          ...policy.possessives.endings.filter(entry => word.endsWith(entry.ending))
+            .flatMap(entry => entry.suffixes.map(suffix => word + suffix))] : [word]);
       if (kind === "not-word") {
         const ignoredCharacters = string(guard["ignoredCharacters"]);
         return words.length === 0 ? [] : [{ kind, words, ignoredCharacters }];

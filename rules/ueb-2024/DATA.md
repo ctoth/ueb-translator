@@ -41,6 +41,7 @@ records, full citations and provenance as before.
 | Longer-shortform guards and retained suffixes | `longer-shortforms.json`, `shortform-suffixes.json` | `ContextualRuleGuard`, checked word/suffix groups |
 | Citation documents | `citation-documents.json` | `RuleCitation`, retained family-specific citation types |
 | Expected inventory counts | `inventory.json` | named numeric fields in `readInventory` |
+| Contextual expansion policy | `expansion-policy.json` | `ExpansionPolicy`, precedence and guard unions |
 | Grade 1 vocabulary and wire IDs | `grade1-vocabulary.json` | `Grade1Vocabulary`, mode/class name types, `CompositionPolicies` |
 
 `grade1-vocabulary.json` declares `modes`, `classes` and `policies` as name-to-ID
@@ -51,6 +52,17 @@ maps through the shared source manifest; no compiler owns a second order list.
 TypeScript derives mode/class name types from the authored keys, while Python
 retains its closed Literal types and checks complete key coverage. Named policy
 output fields and the mode tuple layout remain the existing runtime contracts.
+
+`expansion-policy.json` owns shortform and Appendix precedence/citations,
+provenance ID components, collision and standing-literal kind membership, source
+letter selection, and explicit plural/possessive suffix policy. IDs are opaque
+provenance strings assembled from those declarations. Collision expansion caches
+every spelling path for each shortform and indexes exclusions by the rules used;
+source order does not choose one reading. Appendix substitution requires the base
+to occur literally, and suffix exceptions look up the authored Appendix word.
+Repeated literal ambiguities may coalesce only when their Braille output agrees.
+`inventory.json` counts are enforced against actual contraction, contextual,
+shortform and Appendix output rather than retained as unchecked metadata.
 
 Symbol and shortform tables contain print/cell pairs, one pair per line. Contraction
 families contain their citation locator and static guards. Groups contain `kind`,

@@ -1,5 +1,5 @@
 import { sourceData } from "./source-manifest.js";
-import { readLongerShortforms, readShortformSuffixes } from "./rule-json.js";
+import { readLongerShortforms, readShortformSuffixes, readExpansionPolicy } from "./rule-json.js";
 import { APPENDIX1_LONGER_WORDS } from "./appendix1.js";
 import { CONSTRAINTS } from "./constraints.js";
 import {
@@ -11,51 +11,51 @@ import {
 import { GRADE2_RULES, type Grade2RuleSource } from "./grade2-rules.js";
 import { SHORTFORMS, type ShortformSource } from "./shortforms.js";
 import { SYMBOL_RULES } from "./symbols/source.js";
+import { GRADE2_INVENTORY_COUNTS, validateInventory } from "./inventory.js";
 
-/** ICEB 10.9.6: derive conflicting spellings from our own shortform inventory. */
-function shortformCollisionGuards(rule: Grade2RuleSource): readonly ContextualRuleGuard[] {
-  const groupsigns = GRADE2_RULES.filter((entry) =>
-    entry.kind === "strong-groupsign" || entry.kind === "lower-groupsign" ||
-    entry.kind === "strong-contraction" || entry.kind === "initial-letter-contraction");
-  if (!groupsigns.some((entry) => entry === rule)) return [];
-  const spellings = [
-    ...groupsigns,
-    ...SYMBOL_RULES.filter((entry) => entry.kind === "letter" && /^[a-z]$/u.test(entry.print)),
-  ].sort((a, b) => b.braille.length - a.braille.length);
-  const words = new Set<string>();
-  const patterns: string[] = [];
-  for (const shortform of SHORTFORMS) {
-    let remaining = shortform.braille, literal = "", usesGroupsign = false;
-    while (remaining.length > 0) {
-      const symbol = spellings.find((entry) => remaining.startsWith(entry.braille));
-      /* v8 ignore next -- the authored shortform inventory is exhaustively decoded during compilation. */
-      if (symbol === undefined) throw new Error(`Cannot decode shortform ${shortform.print}`);
-      literal += symbol.print;
-      usesGroupsign ||= symbol === rule;
-      remaining = remaining.slice(symbol.braille.length);
-    }
-    if (!usesGroupsign || literal === shortform.print) continue;
-    const longer = longerShortform(shortform);
-    if (longer !== undefined) {
-      patterns.push(longerShortformPattern(longer, literal));
-    }
-    const forms = [literal, ...APPENDIX1_LONGER_WORDS
-      .filter((entry) => entry.base === shortform.print)
-      .map((entry) => entry.print.replace(shortform.print, literal))];
-    for (const form of forms) {
-      words.add(form);
-      for (const suffix of shortformSuffixes(form === literal ? shortform.print : form)) {
-        words.add(form + suffix);
-        if (suffix === "s") words.add(`${form}s'`);
+const EXPANSION_POLICY = readExpansionPolicy(sourceData("expansion"));
+
+export interface CollisionReading {
+  readonly literal: string;
+  readonly ruleIds: readonly string[];
+}
+
+/** Enumerate every finite spelling path once, shared across shortforms. */
+export function decodeShortforms(
+  shortforms: readonly { readonly print: string; readonly braille: string }[],
+  spellings: readonly { readonly id: string; readonly print: string; readonly braille: string }[],
+): ReadonlyMap<string, readonly CollisionReading[]> {
+  const cache = new Map<string, readonly CollisionReading[]>();
+  function decode(cells: string): readonly CollisionReading[] {
+    const found = cache.get(cells);
+    if (found !== undefined) return found;
+    if (cells.length === 0) return [{ literal: "", ruleIds: [] }];
+    const readings = new Map<string, CollisionReading>();
+    for (const symbol of spellings) {
+      if (symbol.braille.length === 0) throw new Error("A collision spelling is empty.");
+      if (!cells.startsWith(symbol.braille)) continue;
+      for (const tail of decode(cells.slice(symbol.braille.length))) {
+        const reading = { literal: symbol.print + tail.literal,
+          ruleIds: [...new Set([symbol.id, ...tail.ruleIds])].sort() };
+        readings.set(JSON.stringify(reading), reading);
       }
     }
+    const result = [...readings.values()].sort((a, b) =>
+      a.literal < b.literal ? -1 : a.literal > b.literal ? 1 :
+        JSON.stringify(a.ruleIds).localeCompare(JSON.stringify(b.ruleIds), "en"));
+    cache.set(cells, result);
+    return result;
   }
-  return [
-    ...(words.size === 0 ? [] : [{
-      ignoredCharacters: "", kind: "not-standing-word" as const, words: [...words].sort(),
-    }]),
-    ...patterns.map((pattern): ContextualRuleGuard => ({ kind: "not-standing-match", pattern })),
-  ];
+  return new Map(shortforms.map(shortform => {
+    const readings = decode(shortform.braille);
+    if (readings.length === 0) throw new Error(`Cannot decode shortform ${shortform.print}`);
+    return [shortform.print, readings];
+  }));
+}
+
+export function substituteAppendixBase(word: string, base: string, literal: string): string {
+  if (!word.includes(base)) throw new Error(`Appendix word ${word} lacks base ${base}`);
+  return word.replace(base, literal);
 }
 
 export function compileGrade2RuleGuards(
@@ -72,7 +72,7 @@ function contextualRule(rule: Grade2RuleSource): ContextualRuleSource {
     citation: rule.citation,
     guards: [
       ...compileGrade2RuleGuards(rule),
-      ...shortformCollisionGuards(rule),
+      ...(COLLISION_GUARDS.get(rule.id) ?? []),
     ],
     id: rule.id,
     input: rule.print,
@@ -86,7 +86,7 @@ function contextualRules(rule: Grade2RuleSource): readonly ContextualRuleSource[
     ...general,
     citation: { ...general.citation, locator: variant.locator },
     guards: [...general.guards, ...variant.guards],
-    id: general.id + "-" + variant.idSuffix,
+    id: general.id + EXPANSION_POLICY.ids.separator + variant.idSuffix,
     precedence: variant.precedence,
   }))];
 }
@@ -103,15 +103,14 @@ function wholeShortform(rule: ShortformSource): ContextualRuleSource {
     braille: rule.braille,
     citation: rule.citation,
     guards: [
-      { kind: "standing-alone" },
-      { kind: "word-start" },
+      ...EXPANSION_POLICY.shortformGuards,
       // ICEB 10.9.5: s and apostrophe-s retain a standing shortform.
       // The three exceptions apply only to s, not to apostrophe-s.
       { kind: "word-with-affixes", affixes: shortformSuffixes(rule.print) },
     ],
     id: rule.id,
     input: rule.print,
-    precedence: 1,
+    precedence: EXPANSION_POLICY.shortformPrecedence,
   };
 }
 
@@ -123,9 +122,9 @@ function longerShortform(rule: ShortformSource): ContextualRuleSource | undefine
     braille: rule.braille,
     citation: rule.citation,
     guards: group.guards,
-    id: rule.id + "-longer-word",
+    id: rule.id + EXPANSION_POLICY.ids.longerSuffix,
     input: rule.print,
-    precedence: 4,
+    precedence: EXPANSION_POLICY.longerPrecedence,
   };
 }
 
@@ -151,6 +150,52 @@ export function requireAppendixShortformBase(
   return source;
 }
 
+function collisionGuards(): ReadonlyMap<string, readonly ContextualRuleGuard[]> {
+  const groupsigns = GRADE2_RULES.filter(rule => EXPANSION_POLICY.collisionKinds.includes(rule.kind));
+  const targets = new Set(groupsigns.map(rule => rule.id));
+  const letter = new RegExp(EXPANSION_POLICY.latinPattern, "u");
+  const spellings = [...groupsigns, ...SYMBOL_RULES.filter(rule =>
+    rule.kind === EXPANSION_POLICY.latinKind && letter.test(rule.print))];
+  const readings = decodeShortforms(SHORTFORMS, spellings);
+  const words = new Map<string, Set<string>>(), patterns = new Map<string, Set<string>>();
+  for (const shortform of SHORTFORMS) {
+    const appendix = APPENDIX1_LONGER_WORDS.filter(entry => entry.base === shortform.print);
+    for (const word of appendix) substituteAppendixBase(word.print, shortform.print, "");
+    for (const reading of readings.get(shortform.print) ?? []) {
+      if (reading.literal === shortform.print) continue;
+      const forms = [[shortform.print, reading.literal], ...appendix.map(entry =>
+        [entry.print, substituteAppendixBase(entry.print, shortform.print, reading.literal)])];
+      for (const target of reading.ruleIds.filter(id => targets.has(id))) {
+        const excluded = words.get(target) ?? new Set<string>();
+        for (const [authored, form] of forms) {
+          if (authored === undefined || form === undefined) throw new Error("Malformed collision form.");
+          excluded.add(form);
+          for (const suffix of shortformSuffixes(authored)) {
+            excluded.add(form + suffix);
+            for (const ending of EXPANSION_POLICY.suffixExtensions[suffix] ?? []) {
+              excluded.add(form + suffix + ending);
+            }
+          }
+        }
+        words.set(target, excluded);
+        const longer = longerShortform(shortform);
+        if (longer !== undefined) {
+          const selected = patterns.get(target) ?? new Set<string>();
+          selected.add(longerShortformPattern(longer, reading.literal));
+          patterns.set(target, selected);
+        }
+      }
+    }
+  }
+  return new Map([...words].map(([id, excluded]): readonly [string, readonly ContextualRuleGuard[]] => [
+    id, [{ kind: "not-standing-word", ignoredCharacters: "", words: [...excluded].sort() },
+      ...[...(patterns.get(id) ?? [])].sort().map((pattern): ContextualRuleGuard =>
+        ({ kind: "not-standing-match", pattern }))],
+  ]));
+}
+
+const COLLISION_GUARDS: ReadonlyMap<string, readonly ContextualRuleGuard[]> = collisionGuards();
+
 const appendixRules: readonly ContextualRuleSource[] = APPENDIX1_LONGER_WORDS.map(
   (word): ContextualRuleSource => {
     const base = requireAppendixShortformBase(word.base, SHORTFORM_BY_PRINT);
@@ -158,12 +203,12 @@ const appendixRules: readonly ContextualRuleSource[] = APPENDIX1_LONGER_WORDS.ma
       braille: base.braille,
       citation: word.citation,
       guards: [
-        { kind: "standing-alone" },
-        { kind: "eligibility-word", pluralSuffix: "s", word: word.print },
+        ...EXPANSION_POLICY.appendixGuards,
+        { kind: "eligibility-word", pluralSuffix: EXPANSION_POLICY.pluralSuffix, word: word.print },
       ],
       id: word.id,
       input: word.base,
-      precedence: 0,
+      precedence: EXPANSION_POLICY.appendixPrecedence,
     };
   },
 );
@@ -181,7 +226,7 @@ export const GRADE2_CONTEXTUAL_RULES: readonly ContextualRuleSource[] = [
 
 const LATIN_LETTER_BY_CELL: ReadonlyMap<string, string> = new Map(
   SYMBOL_RULES
-    .filter((rule) => rule.kind === "letter" && /^[a-z]$/u.test(rule.print))
+    .filter((rule) => rule.kind === EXPANSION_POLICY.latinKind && new RegExp(EXPANSION_POLICY.latinPattern, "u").test(rule.print))
     .map((rule): readonly [string, string] => [rule.braille, rule.print]),
 );
 
@@ -214,6 +259,16 @@ export const GRADE2_AMBIGUOUS_LONGER_PATTERNS: readonly string[] = longerShortfo
   },
 );
 
+export function checkedAmbiguities(entries: readonly (readonly [string, string])[]): ReadonlyMap<string, readonly [string, string]> {
+  const result = new Map<string, readonly [string, string]>();
+  for (const entry of entries) {
+    const prior = result.get(entry[0]);
+    if (prior !== undefined && prior[1] !== entry[1]) throw new Error(`Conflicting ambiguity for ${entry[0]}`);
+    result.set(entry[0], entry);
+  }
+  return result;
+}
+
 /**
  * Literal letter sequences whose cells are also a compiled contraction output.
  * The source is the compiled inventory itself, so additions cannot bypass the
@@ -222,7 +277,7 @@ export const GRADE2_AMBIGUOUS_LONGER_PATTERNS: readonly string[] = longerShortfo
  */
 export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
   readonly [print: string, braille: string]
-)[] = [...new Map(
+)[] = [...checkedAmbiguities(
   GRADE2_CONTEXTUAL_RULES.flatMap((rule) => {
     const print = literalLetters(rule.braille);
     if (print === undefined) return [];
@@ -240,14 +295,13 @@ export const GRADE2_AMBIGUOUS_LETTER_SEQUENCES: readonly (
       }
     }
     return entries;
-  }).map((entry) => [entry[0], entry] as const),
+  }),
 ).values()].sort((left, right) => left[0].localeCompare(right[0], "en"));
 
 const STANDING_WORD_OUTPUTS = new Set(
   GRADE2_RULES
     .filter((rule) =>
-      rule.kind === "alphabetic-wordsign" ||
-      rule.kind === "strong-wordsign"
+      EXPANSION_POLICY.standingWordKinds.includes(rule.kind)
     )
     .map((rule) => rule.braille),
 );
@@ -255,7 +309,7 @@ const STANDING_WORD_OUTPUTS = new Set(
 /** Groupsigns that must be written literally when standing alone (UEB 10.4.2). */
 export const GRADE2_STANDING_LITERAL_INPUTS: readonly string[] = GRADE2_RULES
   .filter((rule) =>
-    rule.kind === "strong-groupsign" && STANDING_WORD_OUTPUTS.has(rule.braille)
+    EXPANSION_POLICY.standingLiteralKinds.includes(rule.kind) && STANDING_WORD_OUTPUTS.has(rule.braille)
   )
   .map((rule) => rule.print)
   .sort((left, right) => left.localeCompare(right, "en"));
@@ -265,3 +319,8 @@ export const GRADE2_CONTEXTUAL_COMPILATION: ContextualCompilationResult =
     GRADE2_CONTEXTUAL_RULES,
     [...LATIN_LETTER_BY_CELL.values()],
   );
+
+validateInventory(GRADE2_INVENTORY_COUNTS, {
+  rules: GRADE2_RULES.length, contextualRules: GRADE2_CONTEXTUAL_COMPILATION.runtime.rules.length,
+  shortforms: SHORTFORMS.length, appendix1LongerWords: APPENDIX1_LONGER_WORDS.length,
+});

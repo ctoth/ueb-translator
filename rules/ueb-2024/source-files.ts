@@ -1,5 +1,6 @@
 import source0 from "./citation-documents.json" with { type: "json" };
 import vocabulary from "./grade1-vocabulary.json" with { type: "json" };
+import expansion from "./expansion-policy.json" with { type: "json" };
 import source1 from "./modes/rules.json" with { type: "json" };
 import source2 from "./policies/rules.json" with { type: "json" };
 import source3 from "./grade2-rules.json" with { type: "json" };
@@ -33,6 +34,7 @@ import source30 from "./symbols/vertical-bar.json" with { type: "json" };
 
 /** Static imports are transport only; sources.json owns assembly and ordering. */
 export const SOURCE_FILES: Readonly<Record<string, unknown>> = {
+  "expansion-policy.json": expansion,
   "grade1-vocabulary.json": vocabulary,
   "citation-documents.json": source0,
   "modes/rules.json": source1,

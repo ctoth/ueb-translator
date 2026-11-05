@@ -1,15 +1,12 @@
 import { sourceData } from "./source-manifest.js";
 import { readShortforms } from "./rule-json.js";
-import {
-  type IcebRuleCitation,
-  type ShortformLocator,
-} from "./source.js";
+import type { IcebRuleCitation } from "./source.js";
 
-export type ShortformRuleId = `UEB-10.9-${string}`;
+export type ShortformRuleId = string;
 
 export interface ShortformSource {
   readonly braille: string;
-  readonly citation: IcebRuleCitation<ShortformLocator>;
+  readonly citation: IcebRuleCitation;
   readonly id: ShortformRuleId;
   readonly print: string;
 }

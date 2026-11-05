@@ -28,13 +28,12 @@ export const GRADE2_RULE_FAMILIES: Grade2RuleFamilies = readGrade2Families(sourc
 
 type Grade2RuleLocatorFor<Kind extends Grade2RuleKind> =
   Grade2RuleLocatorByKind[Kind];
-export type Grade2RuleId<Kind extends Grade2RuleKind = Grade2RuleKind> =
-  `UEB-${Grade2RuleLocatorFor<Kind>}-${string}`;
+export type Grade2RuleId = string;
 
 export interface Grade2RuleSourceFor<Kind extends Grade2RuleKind> {
   readonly braille: string;
   readonly citation: IcebRuleCitation<Grade2RuleLocatorFor<Kind>>;
-  readonly id: Grade2RuleId<Kind>;
+  readonly id: Grade2RuleId;
   readonly kind: Kind;
   readonly print: string;
   readonly guards: readonly ContextualRuleGuard[];
