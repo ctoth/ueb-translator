@@ -201931,6 +201931,557 @@
         "version": "3.38.0"
       },
       "groupId": "reviewed-fuzz-b232cb5e67414bae"
+    },
+    {
+      "caseId": "fuzz:c04594d9bf74a5b6f39d0cecde108379b54d7b0293a33b6160ccd7080845a242",
+      "input": "'llxa}",
+      "local": {
+        "kind": "test",
+        "output": "⠄⠰⠇⠇⠭⠁⠸⠜",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠄⠇⠇⠭⠁⠸⠜",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-5bee843ef10041e3"
+    },
+    {
+      "caseId": "fuzz:eb21a970f43cf6e20084f290d7c8b317fa9b5e05597d2ee071bb0e7e5e1ae5b2",
+      "input": "aenbrl",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠁⠑⠝⠃⠗⠇",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠁⠢⠃⠗⠇",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-a0f053f436de5ddd"
+    },
+    {
+      "caseId": "fuzz:b8c4a660c693598549e775f911d825a5c4b9e90cdb32498206101c828ca55f93",
+      "input": "tsenvxsfkwenvbrl",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠞⠎⠑⠝⠧⠭⠎⠋⠅⠺⠑⠝⠧⠃⠗⠇",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠞⠎⠢⠧⠭⠎⠋⠅⠺⠢⠧⠃⠗⠇",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:198e376234e0a4c85810d38b2876fd2e3170e7c6a2702b6b75fe924140fbac33",
+      "input": "ohyaknpchafcsqbrlcgc",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠕⠓⠽⠁⠅⠝⠏⠉⠓⠁⠋⠉⠎⠟⠃⠗⠇⠉⠛⠉",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠕⠓⠽⠁⠅⠝⠏⠡⠁⠋⠉⠎⠟⠃⠗⠇⠉⠛⠉",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:15ba45e8392af27c7f91be3c0641b49152f32033b7c8d250ac1a82b1adc4f939",
+      "input": "kjaznabqjuoubrlf",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠅⠚⠁⠵⠝⠁⠃⠟⠚⠥⠕⠥⠃⠗⠇⠋",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠅⠚⠁⠵⠝⠁⠃⠟⠚⠥⠳⠃⠗⠇⠋",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:8ed214a2d5765c74f6ba1fc4e06d69b733783199b7d81421eafbd194a13ffc0d",
+      "input": "ijtphmnbbrlteness",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠊⠚⠞⠏⠓⠍⠝⠃⠃⠗⠇⠞⠑⠝⠑⠎⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠊⠚⠞⠏⠓⠍⠝⠆⠗⠇⠞⠑⠰⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:434c5311b9dcf7b3753c43d02a17a399fd6938346003bac5620a7db5a2717db6",
+      "input": "korqqpxsvrshwbrlpfe",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠅⠕⠗⠟⠟⠏⠭⠎⠧⠗⠎⠓⠺⠃⠗⠇⠏⠋⠑",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠅⠕⠗⠟⠟⠏⠭⠎⠧⠗⠩⠺⠃⠗⠇⠏⠋⠑",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:88ae83b8ed89e6ac66249ceb0042677446ca1ca2e70f5ec447e220935b7e6e19",
+      "input": "cyysgw-mbbrlwufbcj",
+      "local": {
+        "kind": "test",
+        "output": "⠉⠽⠽⠎⠛⠺⠤⠰⠰⠍⠃⠃⠗⠇⠺⠥⠋⠃⠉⠚",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠉⠽⠽⠎⠛⠺⠤⠍⠆⠗⠇⠺⠥⠋⠃⠉⠚",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:773487f80201250341a99e98a4bbde91777cd01b5106b04842926f2927ecee1b",
+      "input": "xchgrt",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠭⠉⠓⠛⠗⠞",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠭⠡⠛⠗⠞",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:95ae2f384cd78f0920b39c4bed1d076bd2a40cdb2e2f82c48bfbee2c5c7cacfe",
+      "input": "mvtbrlonbyathjdkbqn",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠍⠧⠞⠃⠗⠇⠕⠝⠃⠽⠁⠞⠓⠚⠙⠅⠃⠟⠝",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠍⠧⠞⠃⠗⠇⠕⠝⠃⠽⠁⠹⠚⠙⠅⠃⠟⠝",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:b0a8222a5770babd76f1ad3f99343fd0d41e8d43ed6f210c8d15bd83c3f56ced",
+      "input": "iujvtvatbthibrlxplt",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠊⠥⠚⠧⠞⠧⠁⠞⠃⠞⠓⠊⠃⠗⠇⠭⠏⠇⠞",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠊⠥⠚⠧⠞⠧⠁⠞⠃⠹⠊⠃⠗⠇⠭⠏⠇⠞",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:82f344b2095d44702559c6e688ce4a99867650aafd4b874fae6cdb042c356519",
+      "input": "dishhgrtcwi",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠙⠊⠎⠓⠓⠛⠗⠞⠉⠺⠊",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠙⠊⠩⠓⠛⠗⠞⠉⠺⠊",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:1f009c60abc4f2893b342ea2186ba215808e11ff52dcdc867bbfb529dc78dc74",
+      "input": "wbrljeness",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠺⠃⠗⠇⠚⠑⠝⠑⠎⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠺⠃⠗⠇⠚⠑⠰⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:76e31bf2286fff73fda6a379f7710f0f693dce4b44bd49af562b1ac30989e17c",
+      "input": "mgepbrlaxjainess",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠍⠛⠑⠏⠃⠗⠇⠁⠭⠚⠁⠊⠝⠑⠎⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠍⠛⠑⠏⠃⠗⠇⠁⠭⠚⠁⠊⠰⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:d80db4f1093987456bb1244163cb3d0cb979fd35ac6847790345fa743f98aca6",
+      "input": "disqjqogndggrtv",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠙⠊⠎⠟⠚⠟⠕⠛⠝⠙⠛⠛⠗⠞⠧",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠲⠟⠚⠟⠕⠛⠝⠙⠶⠗⠞⠧",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:92d767a15070e6c237f53563209f5b2043309bc0ed9133b91b3e99d826573bef",
+      "input": "{fnwbrlt)",
+      "local": {
+        "kind": "test",
+        "output": "⠸⠣⠰⠰⠋⠝⠺⠃⠗⠇⠞⠐⠜",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠸⠣⠋⠝⠺⠃⠗⠇⠞⠐⠜",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:4262010d2f41b84bc563af6e874a4188ed47f3243b2cfe1107dd2112c2509b8c",
+      "input": "ubrldeness",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠥⠃⠗⠇⠙⠑⠝⠑⠎⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠥⠃⠗⠇⠙⠑⠰⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:ad14b26ba9eadfe3a2af87ea77e3eac447db14ab5fccfddaf4b2af9b4e89768b",
+      "input": "gbrljcpiness",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠛⠃⠗⠇⠚⠉⠏⠊⠝⠑⠎⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠛⠃⠗⠇⠚⠉⠏⠊⠰⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:4f3c7d7d593a4cd41e9247a8b371a9e4a5a4d84b891b1508c90ea7640c3f4240",
+      "input": "disqbwgrthjrx",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠙⠊⠎⠟⠃⠺⠛⠗⠞⠓⠚⠗⠭",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠲⠟⠃⠺⠛⠗⠹⠚⠗⠭",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:2b2713636836c3855ff02de7ba93e364833d499b1d20f62d5f7b26f7a08a0c23",
+      "input": "ymxciikhahek-hggrtbi",
+      "local": {
+        "kind": "test",
+        "output": "⠽⠍⠭⠉⠊⠊⠅⠓⠁⠓⠑⠅⠤⠰⠰⠓⠛⠛⠗⠞⠃⠊",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠽⠍⠭⠉⠊⠊⠅⠓⠁⠓⠑⠅⠤⠓⠶⠗⠞⠃⠊",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:cdd7fcc733ababb1067cf1cd427ccb04254131f3780d6966c5236b6eead835a0",
+      "input": "{mwrnqbnbrl,",
+      "local": {
+        "kind": "test",
+        "output": "⠸⠣⠰⠰⠍⠺⠗⠝⠟⠃⠝⠃⠗⠇⠂",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠸⠣⠍⠺⠗⠝⠟⠃⠝⠃⠗⠇⠂",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:0dc972bd8f7d81a6d3721382ad01a87cd2d67521820c829c69250ad0604d196f",
+      "input": "ngybdgrtjunwougzjth",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠝⠛⠽⠃⠙⠛⠗⠞⠚⠥⠝⠺⠕⠥⠛⠵⠚⠞⠓",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠝⠛⠽⠃⠙⠛⠗⠞⠚⠥⠝⠺⠳⠛⠵⠚⠹",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
+    },
+    {
+      "caseId": "fuzz:ac14625124ee9d3c43b7e6968fb443265c0f78440f4441aabb2df0d4df414f4c",
+      "input": "(lrzqzn!",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠰⠇⠗⠵⠟⠵⠝⠖",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠐⠣⠇⠗⠵⠟⠵⠝⠖",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-2e0c967fe3221352"
+    },
+    {
+      "caseId": "fuzz:6aca87221aa167528b4aeeddb3ff864a2deb90aec6d8540053e9edb7ba8413bf",
+      "input": "(blwjxtassyhd]",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠰⠃⠇⠺⠚⠭⠞⠁⠎⠎⠽⠓⠙⠨⠜",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠐⠣⠃⠇⠺⠚⠭⠞⠁⠎⠎⠽⠓⠙⠨⠜",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-2e0c967fe3221352"
+    },
+    {
+      "caseId": "fuzz:be9a9c53a5928f9b18d39958f017b06a7d9a78885e3dbc13334ce6083a51d647",
+      "input": "(lrrtxvsrkc!",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠰⠇⠗⠗⠞⠭⠧⠎⠗⠅⠉⠖",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠐⠣⠇⠗⠗⠞⠭⠧⠎⠗⠅⠉⠖",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-2e0c967fe3221352"
+    },
+    {
+      "caseId": "fuzz:f77f63b7e8c82dc040f27751900593110a1394ed50c8cbe3f23604f7e573154d",
+      "input": "(lltkl!",
+      "local": {
+        "kind": "test",
+        "output": "⠐⠣⠰⠇⠇⠞⠅⠇⠖",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠐⠣⠇⠇⠞⠅⠇⠖",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-2e0c967fe3221352"
+    },
+    {
+      "caseId": "fuzz:3acf9d0bcb27660bfdbda2c09854cf92ec16e5dbfe6a149903fe87b0c759a360",
+      "input": "onenced",
+      "local": {
+        "kind": "test",
+        "output": "⠕⠝⠰⠑⠙",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠐⠕⠝⠉⠫",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-23b0e7fe190aa9a3"
+    },
+    {
+      "caseId": "fuzz:ba84f20f66d71e27474d212811045904eb83daf2ca667385aad466b22f44dcda",
+      "input": "gchqsfqznty'wqrwns",
+      "local": {
+        "kind": "test",
+        "output": "⠛⠡⠟⠎⠋⠟⠵⠝⠞⠽⠄⠺⠟⠗⠺⠝⠎",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠛⠉⠓⠟⠎⠋⠟⠵⠝⠞⠽⠄⠺⠟⠗⠺⠝⠎",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-c1dc5a89f6bb5172"
+    },
+    {
+      "caseId": "fuzz:954e2d253a8873ff449d2ce19f98c3d3384f471389f335769526ef0adbe65717",
+      "input": "wenbrl",
+      "local": {
+        "kind": "test",
+        "output": "⠰⠰⠺⠑⠝⠃⠗⠇",
+        "testId": "fast-check:grade2-hard-shapes"
+      },
+      "oracle": {
+        "engine": "liblouis",
+        "output": "⠺⠢⠃⠗⠇",
+        "status": "non-normative development oracle; ICEB sources decide disagreements",
+        "tables": [
+          "en-ueb-g2.ctb"
+        ],
+        "version": "3.38.0"
+      },
+      "groupId": "reviewed-fuzz-1dd3eb02b031be76"
     }
   ],
   "groups": [
@@ -202602,6 +203153,66 @@
       "verdict": {
         "kind": "liblouis-bug",
         "rationale": "ICEB 2024 Rule 10.9.5 keeps a shortform when s is added to any shortform word except abouts, almosts and hims, and both translators write the suffixed word with exactly the cells of this standing letters-sequence (for example friends and frs, goods and gds, littles and lls). Rule 10.9.7 therefore requires a grade 1 symbol indicator before the literal sequence. The local output supplies it; Liblouis omits it here although it supplies it for other suffixed shortform spellings such as ags and yrs.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-5bee843ef10041e3",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 10.9.3(c) permits the little shortform at the beginning of a longer standing word when followed by a consonant; x satisfies that condition. The literal letters llxa would otherwise be read as little followed by xa. Rules 5.7.2 and 10.9.8 require a Grade 1 symbol indicator before that initial letter sequence. The leading apostrophe and trailing closing curly bracket preserve standing-alone context under 2.6.2 and 2.6.3. The local indicator is required; Liblouis 3.38.0 omits it in this exact case.",
+        "sources": [
+          "https://iceb.org/publications/ueb/"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-a0f053f436de5ddd",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "ICEB 2024 10.9.3(a) permits the braille shortform wherever it occurs in a longer standing word. In literal aenbrl, brl is not at the beginning and could be read as braille. Rule 10.9.9 requires Grade 1 word mode for the longer literal sequence and explicitly forbids other contractions within it. The local output supplies the word indicator and spells en; Liblouis 3.38.0 omits the required word indicator and contracts en. Rule 5.7.2 also requires protection against shortform confusion.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-1dd3eb02b031be76",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "Each retained exact case has literal brl or grt at a noninitial position inside a standing word or hyphen-separated component. ICEB 2024 10.9.3(a) permits braille and great wherever they occur in longer standing words. Rule 10.9.9 therefore requires Grade 1 word mode for these literal letter sequences and explicitly prohibits every other contraction within the protected component. The local output supplies that protection and spells that component completely; the oracle omits the required indicator and in several cases also contracts other letters or an overlapping groupsign. Rules 2.6.1-2.6.3 preserve the relevant hyphen and outer-punctuation boundaries. Each exact captured output was reviewed separately against these requirements.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-2e0c967fe3221352",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "The exact retained initial sequences are lr before z, lr before r, bl before w, and ll before t, all inside outer standing-alone punctuation. ICEB 2024 10.9.3(c) permits the letter, blind and little shortforms initially before a consonant other than y. Rules 5.7.2 and 10.9.8 require a Grade 1 symbol indicator before each literal abbreviation to prevent the resulting longer-shortform reading. Rules 2.6.2-2.6.3 preserve standing status through these opening and closing punctuation marks. Local output supplies the required indicator; Liblouis omits it in each reviewed exact case.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-23b0e7fe190aa9a3",
+      "verdict": {
+        "kind": "liblouis-bug",
+        "rationale": "The exact invented input onenced contains enced. ICEB 2024 10.10.6 explicitly requires the final-letter ence groupsign in enced, and 10.10.7 preserves this exception to the usual preference rules. The local on+ence+d and oracle one+n+c+ed encodings both occupy five cells, so the latter has no space-saving precedence under 10.10.2. The local output retains the prescribed ence; the oracle's overlapping one and ed choices prevent that mandatory encoding.",
+        "sources": [
+          "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "reviewed-fuzz-c1dc5a89f6bb5172",
+      "verdict": {
+        "kind": "permitted-alternative",
+        "rationale": "In the exact contrived input gchqsfqznty'wqrwns, the sole difference is local contraction of ch versus the oracle spelling c and h; all remaining letters and the apostrophe agree. No pronunciation or syllabification is supplied for the unfamiliar consonant sequence gchq. ICEB 2024 10.10.8-10.10.9 make contraction choices sensitive to pronunciation and recognition, while 10.12.7-10.12.8 explicitly permit best-judgment/software contraction usage for unfamiliar and contrived words whose pronunciation or syllabification cannot be established. The retained exact contracted and spelled alternatives are permitted in that unsupplied context; this verdict does not generalize to words of known pronunciation or mandatory shortform-disambiguation indicators.",
         "sources": [
           "https://iceb.org/wp-content/uploads/2025/10/Rules-of-Unified-English-Braille-2024.pdf"
         ]

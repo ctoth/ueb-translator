@@ -35,11 +35,14 @@ describe("latest conformance reports", () => {
     ["a'fstda", "⠁⠄⠋⠌⠙⠁"],
     ["(llp:", "⠐⠣⠰⠇⠇⠏⠒"],
     ["llb", "⠰⠇⠇⠃"],
+    ["'llxa}", "⠄⠰⠇⠇⠭⠁⠸⠜"],
     ["lland", "⠇⠇⠯"],
     ["lly", "⠇⠇⠽"],
     ["gdna", "⠰⠛⠙⠝⠁"],
     ["xgrtand", "⠰⠰⠭⠛⠗⠞⠁⠝⠙"],
+    ["aenbrl", "⠰⠰⠁⠑⠝⠃⠗⠇"],
     ["aencenced", "⠁⠢⠉⠰⠑⠙"],
+    ["onenced", "⠕⠝⠰⠑⠙"],
   ])("translates %s under the applicable ICEB rule", (input, braille) => {
     expect(translateGrade2(input)).toMatchObject({ ok: true, braille });
   });

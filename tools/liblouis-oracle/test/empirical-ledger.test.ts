@@ -62,7 +62,7 @@ describe("grouped empirical ledger", () => {
     expect(triaged(entry)).toBe(true);
   });
 
-  it("triages the reviewed cc overlap as an oracle defect with current local evidence", () => {
+  it.each(["acchns-a", "'llxa}", "aenbrl", "wenbrl", "onenced"])("triages reviewed oracle defect %s with current local evidence", (input) => {
     const parsed = parseEmpiricalLedger(JSON.parse(readFileSync(
       new URL("../empirical-disagreements.json", import.meta.url), "utf8",
     )));
@@ -70,7 +70,7 @@ describe("grouped empirical ledger", () => {
     if (!parsed.ok) return;
     const entries = parsed.ledger.disagreements;
     const entry = entries.find((entry) =>
-      !isCompactEmpiricalEntry(entry) && entry.input === "acchns-a"
+      !isCompactEmpiricalEntry(entry) && entry.input === input
     );
     expect(entry).toBeDefined();
     if (entry === undefined || isCompactEmpiricalEntry(entry)) return;

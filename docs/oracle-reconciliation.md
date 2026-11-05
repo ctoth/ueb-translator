@@ -116,6 +116,25 @@ allow the complete seed replay to finish without hiding either verdict.
 
 ## Expanded nightly run
 
+The retained `"'llxa}"` replay is an oracle defect. ICEB 10.9.3(c) allows the
+`little` shortform before initial `x`, so 5.7.2 and 10.9.8 require protecting
+literal `llxa` with a Grade 1 symbol indicator. The outer apostrophe and closing
+curly bracket preserve standing-alone context under 2.6.2–2.6.3. Both compilers
+already emit the applicable ambiguity pattern, and the JavaScript runtime inserts
+the required indicator. Retain the exact disagreement and its source-backed
+verdict; no translation change or broader triage predicate is warranted.
+
+The complete seed-628265697 scan retained 26 further exact records. Twenty
+contain interior `brl` or `grt`, requiring Grade 1 word mode under 10.9.9; four
+contain an initial `bl`, `lr`, or `ll` before a consonant, requiring the symbol
+indicator under 10.9.8. In `onenced`, 10.10.6 requires the `ence` groupsign in
+`enced`; the oracle's overlapping `one` and `ed` encoding saves no cells.
+The sole `ch` difference in `gchqsfqznty'wqrwns` remains a permitted alternative
+under 10.10.8–10.10.9 and 10.12.7–10.12.8 because its pronunciation is unknown.
+The minimized `aenbrl` and `wenbrl` records retain the same interior-shortform
+verdict. Every exact evidence digest is preserved, including distinct records
+that share a fingerprint; no fuzzy triage family was added or widened.
+
 After reconciling the full sweeps, increase the nightly sample count from
 10,000 to 100,000. Replay seed `-679952479` at that size. Its diagnostic pass
 identified 38 additional exact inputs; also retain the minimized `(aggh)` case.
