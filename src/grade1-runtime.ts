@@ -13,6 +13,7 @@ import {
   GRADE1_MODE_CLASS_IDS,
   GRADE1_MODE_IDS,
   GRADE1_MODE_PROGRAM,
+  GRADE1_RUNTIME_FACTS,
   GRADE1_SYMBOL_PROGRAM,
   INITIAL_ELISION_WORDS,
 } from "./generated/ueb-2024/grade1-program.js";
@@ -158,23 +159,51 @@ export interface ParsedCompositionText {
 export type CompositionParseResult = Grade1UnsupportedCharacter | ParsedCompositionText;
 type ParseResult = CompositionParseResult;
 
-const BRAILLE_BLANK = "⠀";
-const LIGATURE_INDICATOR = "⠘⠖";
+const FACTS = GRADE1_RUNTIME_FACTS;
+const BRAILLE_BLANK = FACTS.whitespace.blank;
 const SYMBOL_RUNTIME = loadSymbolProgram(GRADE1_SYMBOL_PROGRAM);
 const NUMERIC_LETTER_CELLS = new Set(
   [...SYMBOL_RUNTIME.digits.values()].map((entry) => entry.braille),
 );
 const CAPITALS_MODE = GRADE1_MODE_IDS.capitals;
-const GRADE1_MODE = GRADE1_MODE_IDS.grade1;
-const NUMERIC_MODE = GRADE1_MODE_IDS.numeric;
 const SEQUENCE_BOUNDARY_CLASS = GRADE1_MODE_CLASS_IDS["sequence-boundary"];
-const TYPEFORM_MODES = {
-  bold: GRADE1_MODE_IDS["typeform-bold"],
-  italic: GRADE1_MODE_IDS["typeform-italic"],
-  script: GRADE1_MODE_IDS["typeform-script"],
-  "transcriber-defined": GRADE1_MODE_IDS["typeform-transcriber-defined"],
-  underline: GRADE1_MODE_IDS["typeform-underline"],
-} satisfies Readonly<Record<Grade1Typeform, number>>;
+const NUMERIC_PUNCTUATION: readonly string[] = FACTS.numeric.punctuation;
+const QUOTES = FACTS.quotes;
+type ModeClassName = keyof typeof GRADE1_MODE_CLASS_IDS;
+interface Grade1RequiredRule {
+  readonly activeMode?: keyof typeof GRADE1_MODE_IDS;
+  readonly classes?: readonly ModeClassName[];
+  readonly previous?: {
+    readonly classes: readonly ModeClassName[];
+    readonly sources: readonly string[];
+    readonly start: boolean;
+  };
+  readonly sources?: readonly string[];
+}
+interface CompiledGrade1RequiredRule {
+  readonly classes: number;
+  readonly mode: number | undefined;
+  readonly previous: { readonly classes: number; readonly sources: readonly string[]; readonly start: boolean } | undefined;
+  readonly sources: readonly string[] | undefined;
+}
+const classesMask = (names: readonly ModeClassName[] | undefined): number =>
+  classMask(...(names ?? []).map((name) => GRADE1_MODE_CLASS_IDS[name]));
+const GRADE1_REQUIRED_RULES: readonly CompiledGrade1RequiredRule[] =
+  (FACTS.grade1Required.rules satisfies readonly Grade1RequiredRule[]).map((rule: Grade1RequiredRule) => ({
+    classes: classesMask(rule.classes),
+    mode: rule.activeMode === undefined ? undefined : GRADE1_MODE_IDS[rule.activeMode],
+    previous: rule.previous === undefined ? undefined
+      : { classes: classesMask(rule.previous.classes), sources: rule.previous.sources, start: rule.previous.start },
+    sources: rule.sources,
+  }));
+const modeIds = (names: readonly (keyof typeof GRADE1_MODE_IDS)[]): readonly number[] =>
+  names.map((name) => GRADE1_MODE_IDS[name]);
+const UNCONTRACTED_MODE_ORDER = modeIds(FACTS.modeOrder.uncontracted);
+const CONTRACTED_MODE_ORDER = modeIds(FACTS.modeOrder.contracted);
+const CONTRACTED_INLINE_TERMINATORS = modeIds(FACTS.modeOrder.contractedInlineTerminators);
+function typeformMode(typeform: Grade1Typeform): number {
+  return GRADE1_MODE_IDS[FACTS.typeforms.modes[typeform]];
+}
 
 function classMask(...classIds: readonly number[]): number {
   let mask = 0;
@@ -279,7 +308,7 @@ function unitModeClasses(unit: TranslatableUnit): ModeUnit {
       return classMask(SEQUENCE_BOUNDARY_CLASS);
     case "symbol":
       return classMask(
-        ...(unit.source === "," || unit.source === "."
+        ...(NUMERIC_PUNCTUATION.includes(unit.source)
           ? [GRADE1_MODE_CLASS_IDS["numeric-punctuation"]]
           : []),
       );
@@ -408,20 +437,6 @@ function parseText(
   return { ok: true, units };
 }
 
-function questionMarkNeedsGrade1(
-  previous: TranslatableUnit | undefined,
-): boolean {
-  return (
-    previous === undefined ||
-    previous.kind === "space" ||
-    previous.kind === "line-boundary" ||
-    (previous.kind === "symbol" &&
-      (previous.source === "-" ||
-        previous.source === "–" ||
-        previous.source === "—"))
-  );
-}
-
 function emittedUnit(unit: TranslatableUnit): string {
   switch (unit.kind) {
     case "letter": return unit.modifiers + unit.cell;
@@ -437,24 +452,32 @@ function addContextClasses(
   baseModeUnits: readonly ModeUnit[],
   additionalGrade1Required: ReadonlySet<number> = new Set(),
 ): readonly ModeUnit[] {
-  const numericBefore = activeModeBefore(
-    GRADE1_MODE_PROGRAM,
-    NUMERIC_MODE,
-    baseModeUnits,
-  );
-  return baseModeUnits.map((modeUnit, index) => {
+  const activeBefore = new Map<number, readonly boolean[]>();
+  const active = (mode: number, index: number): boolean => {
+    let flags = activeBefore.get(mode);
+    if (flags === undefined) {
+      flags = activeModeBefore(GRADE1_MODE_PROGRAM, mode, baseModeUnits);
+      activeBefore.set(mode, flags);
+    }
+    return flags[index] === true;
+  };
+  /** One rule from runtime-facts.json grade1Required: every stated condition must hold. */
+  const matches = (rule: CompiledGrade1RequiredRule, index: number): boolean => {
     const unit = units[index];
-    /* v8 ignore next -- map preserves the units array length. */
-    if (unit === undefined) return modeUnit;
-    const previous = index === 0 ? undefined : units[index - 1];
+    const before = rule.previous;
+    if (((baseModeUnits[index] ?? 0) & rule.classes) !== rule.classes) return false;
+    if (rule.sources !== undefined && (unit === undefined || !rule.sources.includes(unit.source))) return false;
+    if (before !== undefined) {
+      const previous = units[index - 1];
+      if (index === 0 ? !before.start
+        : ((baseModeUnits[index - 1] ?? 0) & before.classes) === 0 &&
+          (previous === undefined || !before.sources.includes(previous.source))) return false;
+    }
+    return rule.mode === undefined || active(rule.mode, index);
+  };
+  return baseModeUnits.map((modeUnit, index) => {
     const grade1Required = additionalGrade1Required.has(index) ||
-      (unit.kind === "letter" &&
-        unit.numericAmbiguous &&
-        !unit.uppercase &&
-        numericBefore[index] === true) ||
-      (unit.kind === "symbol" &&
-        unit.source === "?" &&
-        questionMarkNeedsGrade1(previous));
+      GRADE1_REQUIRED_RULES.some((rule) => matches(rule, index));
     return modeUnit |
       (grade1Required ? classMask(GRADE1_MODE_CLASS_IDS["grade1-required"]) : 0);
   });
@@ -487,12 +510,10 @@ export function resolveCompositionModes(
   const baseModeUnits = units.map(unitModeClasses);
   return resolveModes(
     GRADE1_MODE_PROGRAM,
-    contracted
-      ? [GRADE1_MODE, CAPITALS_MODE, NUMERIC_MODE]
-      : [CAPITALS_MODE, NUMERIC_MODE, GRADE1_MODE],
+    contracted ? CONTRACTED_MODE_ORDER : UNCONTRACTED_MODE_ORDER,
     addContextClasses(units, baseModeUnits, additionalGrade1Required),
     SEQUENCE_BOUNDARY_CLASS,
-    contracted ? [CAPITALS_MODE] : [],
+    contracted ? CONTRACTED_INLINE_TERMINATORS : [],
   );
 }
 
@@ -506,7 +527,7 @@ function isAsciiQuoteOpeningContext(
   return unit === undefined ||
     unit.kind === "space" ||
     unit.kind === "line-boundary" ||
-    (unit.kind === "symbol" && "([{‘“«".includes(unit.source));
+    (unit.kind === "symbol" && QUOTES.openingContext.includes(unit.source));
 }
 
 function hasAsciiQuoteMaterial(unit: CompositionUnit | undefined): boolean {
@@ -521,7 +542,7 @@ function isAsciiQuoteClosingContext(
 ): boolean {
   let end = index + 1;
   let next = units[end];
-  while (next?.kind === "symbol" && ",;:.!?)]}'’”".includes(next.source)) {
+  while (next?.kind === "symbol" && QUOTES.closingContext.includes(next.source)) {
     end += 1;
     next = units[end];
   }
@@ -532,62 +553,62 @@ function isAsciiQuoteClosingContext(
 export const CURLY_APOSTROPHE: {
   readonly braille: string;
   readonly print: string;
-} = { braille: "⠄", print: "’" };
+} = { braille: GRADE1_RUNTIME_FACTS.quotes.apostrophe, print: GRADE1_RUNTIME_FACTS.quotes.apostrophePrint };
 
-/** Resolve contextual punctuation (ICEB 2024 7.6.6 and 7.6.13-15). */
+interface QuoteRule {
+  readonly close?: string;
+  readonly continue?: boolean;
+  readonly emit?: string;
+  readonly markElision?: boolean;
+  readonly open?: string;
+  readonly source: string;
+  readonly when?: readonly string[];
+}
+const QUOTE_RULES: readonly QuoteRule[] = QUOTES.rules;
+
+/**
+ * Resolve contextual punctuation (ICEB 2024 7.6.6 and 7.6.13-15) by the
+ * ordered rules in runtime-facts.json quotes.rules: the first rule whose source
+ * and conditions match decides the cell; `continue` rules only change state.
+ */
 export function resolveContextualPunctuation(
   units: readonly CompositionUnit[],
 ): readonly (string | undefined)[] {
-  let quotationOpen = false;
-  let singleQuotationDepth = 0;
+  const depth = new Map<string, number>();
   let elisionEnd = -1;
   return units.map((unit, index) => {
     const previous = units[index - 1];
     const next = units[index + 1];
-    if (unit.source === "‘") singleQuotationDepth += 1;
-    if (unit.source === CURLY_APOSTROPHE.print) {
-      if (index === elisionEnd ||
-        (next?.kind === "letter" && previous?.kind === "letter")) {
-        return CURLY_APOSTROPHE.braille;
+    const letterRunEnd = (): number => {
+      let end = index + 1;
+      while (units[end]?.kind === "letter") end += 1;
+      return end;
+    };
+    const holds = (condition: string): boolean => {
+      switch (condition) {
+        case "elision-end": return index === elisionEnd;
+        case "next-letter": return next?.kind === "letter";
+        case "previous-letter": return previous?.kind === "letter";
+        case "previous-opening": return isAsciiQuoteOpeningContext(previous);
+        case "previous-material": return hasAsciiQuoteMaterial(previous);
+        case "previous-not-digit": return previous?.kind !== "digit";
+        case "previous-possessive": return previous?.source.toLowerCase() === QUOTES.possessiveLetter;
+        case "next-material": return hasAsciiQuoteMaterial(next);
+        case "closing": return isAsciiQuoteClosingContext(units, index);
+        case "elision-word": return INITIAL_ELISION_WORDS.includes(
+          units.slice(index + 1, letterRunEnd()).map((part) => part.source).join("").toLowerCase());
+        default:
+          if (condition.startsWith("open:")) return (depth.get(condition.slice(5)) ?? 0) > 0;
+          throw new Error(`Unknown quote condition ${condition}.`);
       }
-      if (next?.kind === "letter" && isAsciiQuoteOpeningContext(previous)) {
-        let end = index + 1;
-        while (units[end]?.kind === "letter") end += 1;
-        const word = units.slice(index + 1, end).map((part) => part.source).join("")
-          .toLowerCase();
-        if (INITIAL_ELISION_WORDS.includes(word)) {
-          elisionEnd = end;
-          return CURLY_APOSTROPHE.braille;
-        }
-        // UEB 7.6.15: absent a dictionary elision, a leading mark is a quote.
-        singleQuotationDepth += 1;
-        return "⠠⠦";
-      }
-      if (singleQuotationDepth > 0) {
-        singleQuotationDepth -= 1;
-      } else if (previous?.source.toLowerCase() === "s") {
-        return CURLY_APOSTROPHE.braille;
-      }
-      return undefined;
+    };
+    for (const rule of QUOTE_RULES) {
+      if (rule.source !== unit.source || !(rule.when ?? []).every(holds)) continue;
+      if (rule.open !== undefined) depth.set(rule.open, (depth.get(rule.open) ?? 0) + 1);
+      if (rule.close !== undefined) depth.set(rule.close, (depth.get(rule.close) ?? 0) - 1);
+      if (rule.markElision === true) elisionEnd = letterRunEnd();
+      if (rule.continue !== true) return rule.emit;
     }
-    if (unit.source !== "\"") return undefined;
-
-    if (quotationOpen) {
-      quotationOpen = false;
-      return "⠴";
-    }
-    if (
-      isAsciiQuoteOpeningContext(previous) &&
-      hasAsciiQuoteMaterial(next)
-    ) {
-      quotationOpen = true;
-      return "⠦";
-    }
-    if (
-      previous?.kind !== "digit" &&
-      hasAsciiQuoteMaterial(previous) &&
-      isAsciiQuoteClosingContext(units, index)
-    ) return "⠴";
     return undefined;
   });
 }
@@ -599,7 +620,7 @@ function translateUnits(units: readonly TranslatableUnit[]): string {
   const modeUnits = addContextClasses(units, baseModeUnits);
   const resolution = resolveModes(
     GRADE1_MODE_PROGRAM,
-    [CAPITALS_MODE, NUMERIC_MODE, GRADE1_MODE],
+    UNCONTRACTED_MODE_ORDER,
     modeUnits,
     SEQUENCE_BOUNDARY_CLASS,
   );
@@ -652,7 +673,7 @@ function indicatorsFor(
   const ordered = reverse ? [...typeforms].reverse() : typeforms;
   let result = "";
   for (const typeform of ordered) {
-    result += modeIndicator(GRADE1_MODE_PROGRAM, TYPEFORM_MODES[typeform], kind);
+    result += modeIndicator(GRADE1_MODE_PROGRAM, typeformMode(typeform), kind);
   }
   return result;
 }
@@ -674,7 +695,7 @@ export function translateTypeformedText(
   }
   const selection = indicatorKind(
     GRADE1_MODE_PROGRAM,
-    TYPEFORM_MODES[firstTypeform],
+    typeformMode(firstTypeform),
     countNonWhitespaceScalars(run.text),
     sequenceCount,
   );
@@ -717,7 +738,7 @@ export function translateTypeformedText(
         }
         const kind = indicatorKind(
           GRADE1_MODE_PROGRAM,
-          TYPEFORM_MODES[firstTypeform],
+          typeformMode(firstTypeform),
           countNonWhitespaceScalars(sequence),
           1,
         );
@@ -738,7 +759,7 @@ export function translateTypeformedText(
     }
     const kind = indicatorKind(
       GRADE1_MODE_PROGRAM,
-      TYPEFORM_MODES[firstTypeform],
+      typeformMode(firstTypeform),
       countNonWhitespaceScalars(sequence),
       1,
     );
@@ -781,7 +802,7 @@ function translateLigature(run: Grade1Ligature): Grade1Result {
       if (!capitalsWord && letter.uppercase) {
         braille += modeIndicator(GRADE1_MODE_PROGRAM, CAPITALS_MODE, "symbol");
       }
-      braille += LIGATURE_INDICATOR;
+      braille += FACTS.ligature.indicator;
     } else if (!capitalsWord && letter.uppercase) {
       braille += modeIndicator(GRADE1_MODE_PROGRAM, CAPITALS_MODE, "symbol");
     }
@@ -853,7 +874,7 @@ function translateRuns(runs: readonly Grade1Run[]): Grade1Result {
     }
     braille +=
       run.kind === "braille-group"
-        ? `⠣${translated.braille}⠜`
+        ? FACTS.grouping.open + translated.braille + FACTS.grouping.close
         : translated.braille;
   }
   return { braille, mode: "grade1", ok: true };

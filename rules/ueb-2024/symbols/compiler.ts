@@ -1,4 +1,4 @@
-import type { IcebRuleCitation, TechnicalSignCitation } from "../source.js";
+import type { RuleCitation } from "../source.js";
 import { readPairs, readSymbolRules } from "../rule-json.js";
 import type {
   CompiledSymbol,
@@ -8,7 +8,7 @@ import type {
 
 export interface SymbolRuleSource {
   readonly braille: string;
-  readonly citation: IcebRuleCitation | TechnicalSignCitation;
+  readonly citation: RuleCitation;
   readonly id: string;
   readonly kind: SymbolClass;
   readonly numericDigit: string | null;
@@ -139,13 +139,10 @@ export function expandSymbolSources(
   return families.flatMap(family => {
     if (family.kind === "rules") return readSymbolRules(read(family.file));
     const pairs = readPairs(read(family.file));
-    if (family.kind === "digits" && family.prints.length > pairs.length) {
-      throw new Error("Digit family exceeds its source table.");
-    }
     return readSymbolRules((family.kind === "digits" ? family.prints : pairs.map(([print]) => print))
       .map((print, index) => {
         const pair = pairs[index];
-        if (pair === undefined) throw new Error("Missing symbol pair.");
+        if (pair === undefined) throw new Error("Digit family exceeds its source table.");
         const hex = print.charCodeAt(0).toString(16);
         const idKey = family.kind === "pairs" && family.idKey === "utf16-hex" ? hex : print;
         return {

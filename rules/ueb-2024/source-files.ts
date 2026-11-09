@@ -1,4 +1,7 @@
 import source0 from "./citation-documents.json" with { type: "json" };
+import engine from "./contextual-engine.json" with { type: "json" };
+import facts from "./runtime-facts.json" with { type: "json" };
+import pipeline from "./expansion-pipeline.json" with { type: "json" };
 import vocabulary from "./grade1-vocabulary.json" with { type: "json" };
 import expansion from "./expansion-policy.json" with { type: "json" };
 import source1 from "./modes/rules.json" with { type: "json" };
@@ -25,6 +28,7 @@ import source21 from "./technical-grade1-protection-rules.json" with { type: "js
 import source22 from "./technical-function-spacing-rules.json" with { type: "json" };
 import source23 from "./technical-numeric-continuation-rules.json" with { type: "json" };
 import source24 from "./technical-computer-whitespace-rules.json" with { type: "json" };
+import layouts from "./technical-layout-rules.json" with { type: "json" };
 import source25 from "./symbols/latin.json" with { type: "json" };
 import source26 from "./symbols/modifiers.json" with { type: "json" };
 import source27 from "./symbols/greek.json" with { type: "json" };
@@ -34,6 +38,9 @@ import source30 from "./symbols/vertical-bar.json" with { type: "json" };
 
 /** Static imports are transport only; sources.json owns assembly and ordering. */
 export const SOURCE_FILES: Readonly<Record<string, unknown>> = {
+  "contextual-engine.json": engine,
+  "runtime-facts.json": facts,
+  "expansion-pipeline.json": pipeline,
   "expansion-policy.json": expansion,
   "grade1-vocabulary.json": vocabulary,
   "citation-documents.json": source0,
@@ -61,6 +68,7 @@ export const SOURCE_FILES: Readonly<Record<string, unknown>> = {
   "technical-function-spacing-rules.json": source22,
   "technical-numeric-continuation-rules.json": source23,
   "technical-computer-whitespace-rules.json": source24,
+  "technical-layout-rules.json": layouts,
   "symbols/latin.json": source25,
   "symbols/modifiers.json": source26,
   "symbols/greek.json": source27,

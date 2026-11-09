@@ -1,7 +1,10 @@
-import type {
-  ContextualBoundaryMask,
-  ContextualGuardOpcodeWith,
-  ContextualPrecedence,
+import {
+  CONTEXTUAL_BOUNDARY_BITS,
+  CONTEXTUAL_COMPACT_INTEGER_OFFSET,
+  type ContextualBoundaryKind,
+  type ContextualBoundaryMask,
+  type ContextualGuardOpcodeWith,
+  type ContextualPrecedence,
 } from "./contextual-schema.js";
 
 export type {
@@ -43,7 +46,7 @@ function isScalarBoundary(input: string, codeUnitIndex: number): boolean {
 
 function compactInteger(values: string, index: number): number | undefined {
   const encoded = values.charCodeAt(index);
-  return Number.isNaN(encoded) ? undefined : encoded - 0x100;
+  return Number.isNaN(encoded) ? undefined : encoded - CONTEXTUAL_COMPACT_INTEGER_OFFSET;
 }
 
 /** Match every compiled contextual prefix in the lowercase input bucket. */
@@ -102,12 +105,7 @@ export function matchPrefixTable(
   return matches;
 }
 
-export type ContextualBoundaryKind =
-  | "braille-line"
-  | "compound"
-  | "prefix"
-  | "suffix"
-  | "syllable";
+export type { ContextualBoundaryKind } from "./contextual-schema.js";
 
 export interface ContextualBoundary {
   readonly at: number;
@@ -210,19 +208,8 @@ function operandAt(program: ContextualTransducerProgram, index: number): string 
   return operand;
 }
 
-function boundaryBit(kind: ContextualBoundaryKind): ContextualBoundaryMask {
-  switch (kind) {
-    case "braille-line":
-      return 1;
-    case "compound":
-      return 2;
-    case "prefix":
-      return 4;
-    case "suffix":
-      return 8;
-    case "syllable":
-      return 16;
-  }
+function boundaryBit(kind: ContextualBoundaryKind): number {
+  return CONTEXTUAL_BOUNDARY_BITS[kind];
 }
 
 function crossesBoundaryMask(

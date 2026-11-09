@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import {
   CONTEXTUAL_COMPACT_INTEGER_MAX,
+  CONTEXTUAL_COMPACT_INTEGER_OFFSET,
 } from "../src/contextual-schema.ts";
 
 function isIntegerInRange(value: unknown, minimum: number, maximum: number): value is number {
@@ -21,7 +22,7 @@ export function encodeCompactIntegers(
     if (!isIntegerInRange(value, 0, CONTEXTUAL_COMPACT_INTEGER_MAX)) {
       throw new Error(`Compiled Grade 2 ${name} exceeds fixed-width encoding.`);
     }
-    encoded += String.fromCharCode(value + 0x100);
+    encoded += String.fromCharCode(value + CONTEXTUAL_COMPACT_INTEGER_OFFSET);
   }
   return encoded;
 }

@@ -1,49 +1,21 @@
 import type { IcebRuleCitation } from "./source.js";
 import {
-  CONTEXTUAL_BOUNDARY_MASKS,
-  CONTEXTUAL_GUARD_SCHEMA,
+  guardOpcode,
+  guardOperands,
+  guardStringOperands,
+  readGuard,
+  type ContextualRuleGuard,
+} from "./contextual-engine.js";
+
+import {
+  contextualGuardTuple,
+  isContextualPrecedence,
+  type ContextualPrecedence,
 } from "../../src/contextual-schema.js";
-import type {
-  ContextualBoundaryKind,
-  ContextualBoundaryMask,
-  ContextualGuardOpcode,
-  ContextualGuardTuple,
-  ContextualPrecedence,
-  ContextualRuleTuple,
-} from "../../src/contextual-transducer.js";
+import type { ContextualGuardTuple, ContextualRuleTuple } from "../../src/contextual-transducer.js";
 
-export type { ContextualPrecedence } from "../../src/contextual-transducer.js";
-
-export type ContextualRuleGuard =
-  | { readonly kind: "stable-following-modes" | "stable-adjacent-modes" }
-  | { readonly kind: "eligibility-word"; readonly pluralSuffix: string; readonly word: string }
-  | { readonly kind: "first-syllable" }
-  | { readonly characters: string; readonly kind: "following" }
-  | { readonly characters: string; readonly kind: "following-not-vowel-y" }
-  | {
-      readonly characters: string;
-      readonly kind: "following-not-vowel-y-except-words";
-      readonly words: readonly string[];
-    }
-  | { readonly kind: "lower-sign"; readonly policy: "enough-or-in" | "other" }
-  | { readonly kind: "not-boundary"; readonly boundary: ContextualBoundaryKind }
-  | {
-      readonly kind: "not-crossing";
-      readonly boundaries: readonly ContextualBoundaryKind[];
-    }
-  | { readonly ignoredCharacters: string; readonly kind: "not-word" | "not-standing-word"; readonly words: readonly string[] }
-  | { readonly kind: "not-standing-match"; readonly pattern: string }
-  | { readonly kind: "not-word-ending"; readonly endings: readonly string[] }
-  | { readonly kind: "not-word-end" }
-  | { readonly kind: "not-word-start" }
-  | { readonly kind: "not-whole-word" }
-  | { readonly kind: "previous-not"; readonly characters: string }
-  | { readonly kind: "preceded-by-letter" }
-  | { readonly kind: "standing-alone" }
-  | { readonly kind: "word-end" }
-  | { readonly kind: "word-internal" }
-  | { readonly kind: "word-start" }
-  | { readonly kind: "word-with-affixes"; readonly affixes: readonly string[] };
+export type { ContextualRuleGuard } from "./contextual-engine.js";
+export type { ContextualPrecedence } from "../../src/contextual-schema.js";
 
 export interface ContextualRuleSource {
   readonly braille: string;
@@ -151,133 +123,8 @@ function compareText(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function guardStringOperands(guard: ContextualRuleGuard): readonly string[] {
-  switch (guard.kind) {
-    case "eligibility-word":
-      return [guard.word, guard.pluralSuffix];
-    case "following":
-    case "following-not-vowel-y":
-      return [guard.characters];
-    case "following-not-vowel-y-except-words":
-      return [guard.characters, [...guard.words].sort(compareText).join("\u0000")];
-    case "previous-not":
-      return [guard.characters];
-    case "not-word":
-    case "not-standing-word":
-      return [[...guard.words].sort(compareText).join("\u0000"), guard.ignoredCharacters];
-    case "not-word-ending":
-      return [[...guard.endings].sort(compareText).join("\u0000")];
-    case "word-with-affixes":
-      return [[...guard.affixes].sort(compareText).join("\u0000")];
-    case "not-standing-match":
-      return [guard.pattern];
-    case "first-syllable":
-    case "stable-following-modes":
-    case "stable-adjacent-modes":
-    case "lower-sign":
-    case "preceded-by-letter":
-    case "not-boundary":
-    case "not-crossing":
-    case "not-word-end":
-    case "not-word-start":
-    case "not-whole-word":
-    case "standing-alone":
-    case "word-end":
-    case "word-internal":
-    case "word-start":
-      return [];
-  }
-}
-
-export const BOUNDARY_BITS: Readonly<Record<ContextualBoundaryKind, ContextualBoundaryMask>> = {
-  "braille-line": 1,
-  compound: 2,
-  prefix: 4,
-  suffix: 8,
-  syllable: 16,
-};
-
-function boundaryBit(kind: ContextualBoundaryKind): ContextualBoundaryMask {
-  return BOUNDARY_BITS[kind];
-}
-
-function isBoundaryMask(value: number): value is ContextualBoundaryMask {
-  return CONTEXTUAL_BOUNDARY_MASKS.some((candidate) => candidate === value);
-}
-
-function boundaryMask(boundaries: readonly ContextualBoundaryKind[]): ContextualBoundaryMask {
-  let mask = 0;
-  for (const boundary of boundaries) {
-    mask |= boundaryBit(boundary);
-  }
-  if (!isBoundaryMask(mask)) {
-    throw new Error("A contextual boundary guard must name at least one boundary.");
-  }
-  return mask;
-}
-
-function guardOpcode(guard: ContextualRuleGuard): ContextualGuardOpcode {
-  switch (guard.kind) {
-    case "stable-following-modes":
-      return CONTEXTUAL_GUARD_SCHEMA.stableFollowingModes.opcode;
-    case "stable-adjacent-modes":
-      return CONTEXTUAL_GUARD_SCHEMA.stableAdjacentModes.opcode;
-    case "preceded-by-letter":
-      return CONTEXTUAL_GUARD_SCHEMA.precededByLetter.opcode;
-    case "eligibility-word":
-      return CONTEXTUAL_GUARD_SCHEMA.eligibilityWord.opcode;
-    case "first-syllable":
-      return CONTEXTUAL_GUARD_SCHEMA.firstSyllable.opcode;
-    case "following":
-      return CONTEXTUAL_GUARD_SCHEMA.following.opcode;
-    case "following-not-vowel-y":
-      return CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode;
-    case "following-not-vowel-y-except-words":
-      return CONTEXTUAL_GUARD_SCHEMA.followingNotVowelYExceptWords.opcode;
-    case "lower-sign":
-      return guard.policy === "enough-or-in"
-        ? CONTEXTUAL_GUARD_SCHEMA.lowerSignEnoughOrIn.opcode
-        : CONTEXTUAL_GUARD_SCHEMA.lowerSignOther.opcode;
-    case "not-boundary":
-      return CONTEXTUAL_GUARD_SCHEMA.notBoundary.opcode;
-    case "not-crossing":
-      return CONTEXTUAL_GUARD_SCHEMA.notCrossing.opcode;
-    case "not-word":
-      return CONTEXTUAL_GUARD_SCHEMA.notWord.opcode;
-    case "not-standing-word":
-      return CONTEXTUAL_GUARD_SCHEMA.notStandingWord.opcode;
-    case "not-standing-match":
-      return CONTEXTUAL_GUARD_SCHEMA.notStandingMatch.opcode;
-    case "not-word-ending":
-      return CONTEXTUAL_GUARD_SCHEMA.notWordEnding.opcode;
-    case "not-word-end":
-      return CONTEXTUAL_GUARD_SCHEMA.notWordEnd.opcode;
-    case "not-word-start":
-      return CONTEXTUAL_GUARD_SCHEMA.notWordStart.opcode;
-    case "not-whole-word":
-      return CONTEXTUAL_GUARD_SCHEMA.notWholeWord.opcode;
-    case "previous-not":
-      return CONTEXTUAL_GUARD_SCHEMA.previousNot.opcode;
-    case "standing-alone":
-      return CONTEXTUAL_GUARD_SCHEMA.standingAlone.opcode;
-    case "word-end":
-      return CONTEXTUAL_GUARD_SCHEMA.wordEnd.opcode;
-    case "word-internal":
-      return CONTEXTUAL_GUARD_SCHEMA.wordInternal.opcode;
-    case "word-start":
-      return CONTEXTUAL_GUARD_SCHEMA.wordStart.opcode;
-    case "word-with-affixes":
-      return CONTEXTUAL_GUARD_SCHEMA.wordWithAffixes.opcode;
-  }
-}
-
 function guardKey(guard: ContextualRuleGuard): string {
-  const operand = guard.kind === "not-boundary"
-    ? boundaryMask([guard.boundary])
-    : guard.kind === "not-crossing"
-      ? boundaryMask(guard.boundaries)
-      : guardStringOperands(guard).join("\u0001");
-  return `${String(guardOpcode(guard)).padStart(2, "0")}:${String(operand)}`;
+  return `${String(guardOpcode(guard)).padStart(2, "0")}:${guardOperands(guard).join("\u0001")}`;
 }
 
 export function requireContextualOperandIndex(
@@ -295,144 +142,23 @@ function compileGuard(
   guard: ContextualRuleGuard,
   operandIndexes: ReadonlyMap<string, number>,
 ): CompiledContextualGuard {
-  switch (guard.kind) {
-    case "stable-following-modes":
-      return [CONTEXTUAL_GUARD_SCHEMA.stableFollowingModes.opcode];
-    case "stable-adjacent-modes":
-      return [CONTEXTUAL_GUARD_SCHEMA.stableAdjacentModes.opcode];
-    case "not-standing-match":
-      return [CONTEXTUAL_GUARD_SCHEMA.notStandingMatch.opcode,
-        requireContextualOperandIndex(guard.pattern, operandIndexes)];
-    case "preceded-by-letter":
-      return [CONTEXTUAL_GUARD_SCHEMA.precededByLetter.opcode];
-    case "eligibility-word":
-      return [
-        CONTEXTUAL_GUARD_SCHEMA.eligibilityWord.opcode,
-        requireContextualOperandIndex(guard.word, operandIndexes),
-        requireContextualOperandIndex(guard.pluralSuffix, operandIndexes),
-      ];
-    case "first-syllable":
-      return [CONTEXTUAL_GUARD_SCHEMA.firstSyllable.opcode];
-    case "following":
-      return [
-        CONTEXTUAL_GUARD_SCHEMA.following.opcode,
-        requireContextualOperandIndex(guard.characters, operandIndexes),
-      ];
-    case "following-not-vowel-y":
-      return [
-        CONTEXTUAL_GUARD_SCHEMA.followingNotVowelY.opcode,
-        requireContextualOperandIndex(guard.characters, operandIndexes),
-      ];
-    case "following-not-vowel-y-except-words":
-      return [
-        CONTEXTUAL_GUARD_SCHEMA.followingNotVowelYExceptWords.opcode,
-        requireContextualOperandIndex(guard.characters, operandIndexes),
-        requireContextualOperandIndex(
-          [...guard.words].sort(compareText).join("\u0000"),
-          operandIndexes,
-        ),
-      ];
-    case "lower-sign":
-      return guard.policy === "enough-or-in"
-        ? [CONTEXTUAL_GUARD_SCHEMA.lowerSignEnoughOrIn.opcode]
-        : [CONTEXTUAL_GUARD_SCHEMA.lowerSignOther.opcode];
-    case "not-boundary":
-      return [CONTEXTUAL_GUARD_SCHEMA.notBoundary.opcode, boundaryMask([guard.boundary])];
-    case "not-crossing":
-      return [CONTEXTUAL_GUARD_SCHEMA.notCrossing.opcode, boundaryMask(guard.boundaries)];
-    case "not-word":
-    case "not-standing-word":
-      return [
-        guard.kind === "not-word" ? CONTEXTUAL_GUARD_SCHEMA.notWord.opcode
-          : CONTEXTUAL_GUARD_SCHEMA.notStandingWord.opcode,
-        requireContextualOperandIndex(
-          [...guard.words].sort(compareText).join("\u0000"),
-          operandIndexes,
-        ),
-        requireContextualOperandIndex(guard.ignoredCharacters, operandIndexes),
-      ];
-    case "not-word-ending":
-      return [CONTEXTUAL_GUARD_SCHEMA.notWordEnding.opcode, requireContextualOperandIndex(
-        [...guard.endings].sort(compareText).join("\u0000"),
-        operandIndexes,
-      )];
-    case "not-word-end":
-      return [CONTEXTUAL_GUARD_SCHEMA.notWordEnd.opcode];
-    case "not-word-start":
-      return [CONTEXTUAL_GUARD_SCHEMA.notWordStart.opcode];
-    case "not-whole-word":
-      return [CONTEXTUAL_GUARD_SCHEMA.notWholeWord.opcode];
-    case "previous-not":
-      return [
-        CONTEXTUAL_GUARD_SCHEMA.previousNot.opcode,
-        requireContextualOperandIndex(guard.characters, operandIndexes),
-      ];
-    case "standing-alone":
-      return [CONTEXTUAL_GUARD_SCHEMA.standingAlone.opcode];
-    case "word-end":
-      return [CONTEXTUAL_GUARD_SCHEMA.wordEnd.opcode];
-    case "word-internal":
-      return [CONTEXTUAL_GUARD_SCHEMA.wordInternal.opcode];
-    case "word-start":
-      return [CONTEXTUAL_GUARD_SCHEMA.wordStart.opcode];
-    case "word-with-affixes":
-      return [CONTEXTUAL_GUARD_SCHEMA.wordWithAffixes.opcode, requireContextualOperandIndex(
-        [...guard.affixes].sort(compareText).join("\u0000"),
-        operandIndexes,
-      )];
-  }
-}
-
-function cloneGuard(guard: ContextualRuleGuard): ContextualRuleGuard {
-  switch (guard.kind) {
-    case "not-standing-match":
-      return { kind: guard.kind, pattern: guard.pattern };
-    case "eligibility-word":
-      return { kind: guard.kind, pluralSuffix: guard.pluralSuffix, word: guard.word };
-    case "following":
-    case "following-not-vowel-y":
-      return { characters: guard.characters, kind: guard.kind };
-    case "following-not-vowel-y-except-words":
-      return { characters: guard.characters, kind: guard.kind, words: [...guard.words] };
-    case "previous-not":
-      return { characters: guard.characters, kind: guard.kind };
-    case "lower-sign":
-      return { kind: guard.kind, policy: guard.policy };
-    case "not-boundary":
-      return { boundary: guard.boundary, kind: guard.kind };
-    case "not-crossing":
-      return { boundaries: [...guard.boundaries], kind: guard.kind };
-    case "not-word":
-    case "not-standing-word":
-      return {
-        ignoredCharacters: guard.ignoredCharacters,
-        kind: guard.kind,
-        words: [...guard.words],
-      };
-    case "not-word-ending":
-      return { endings: [...guard.endings], kind: guard.kind };
-    case "word-with-affixes":
-      return { affixes: [...guard.affixes], kind: guard.kind };
-    case "first-syllable":
-    case "stable-following-modes":
-    case "stable-adjacent-modes":
-    case "not-word-end":
-    case "preceded-by-letter":
-    case "not-word-start":
-    case "not-whole-word":
-    case "standing-alone":
-    case "word-end":
-    case "word-internal":
-    case "word-start":
-      return { kind: guard.kind };
-  }
+  return contextualGuardTuple([guardOpcode(guard), ...guardOperands(guard).map((operand) =>
+    typeof operand === "string" ? requireContextualOperandIndex(operand, operandIndexes) : operand
+  )], operandIndexes.size);
 }
 
 function cloneRule(rule: ContextualRuleSource): ContextualRuleSource {
+  if (!isContextualPrecedence(rule.precedence)) {
+    throw new ContextualRuleCompilationError(
+      "unreachable-rule",
+      [rule.id],
+      `Rule ${rule.id} has precedence ${String(rule.precedence)} outside the engine range.`,
+    );
+  }
   return {
     braille: rule.braille,
     citation: { ...rule.citation },
-    guards: rule.guards.map(cloneGuard).sort((left, right) =>
+    guards: rule.guards.map(readGuard).sort((left, right) =>
       compareText(guardKey(left), guardKey(right))
     ),
     id: rule.id,
@@ -489,11 +215,8 @@ function validateAndSort(
         `Rule ${rule.id} repeats a context guard.`,
       );
     }
-    const eligibility = rule.guards.find(
-      (guard): guard is Extract<ContextualRuleGuard, { kind: "eligibility-word" }> =>
-        guard.kind === "eligibility-word",
-    )?.word ?? "";
-    const overlapKey = `${rule.input}\u0000${String(rule.precedence)}\u0000${eligibility}`;
+    const eligibility = rule.guards.find((guard) => guard.kind === "eligibility-word")?.["word"] ?? "";
+    const overlapKey = `${rule.input}\u0000${String(rule.precedence)}\u0000${String(eligibility)}`;
     const previous = overlapKeys.get(overlapKey);
     if (previous !== undefined) {
       const ruleIds = [previous, rule.id].sort(compareText);
@@ -537,11 +260,7 @@ export function compileContextualRules(
     );
   }
   const operands = [...new Set(
-    provenance.flatMap((rule) =>
-      rule.guards.flatMap((guard) => {
-        return guardStringOperands(guard);
-      })
-    ),
+    provenance.flatMap((rule) => rule.guards.flatMap(guardStringOperands)),
   )].sort(compareText);
   const operandIndexes: ReadonlyMap<string, number> = new Map(
     operands.map((operand, index): readonly [string, number] => [operand, index]),

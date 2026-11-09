@@ -25,6 +25,7 @@
     "elisionPunctuation": 2,
     "lowerPunctuation": 3,
     "openingStandingPunctuation": 4,
-    "standingBoundaries": 5
+    "standingBoundaries": 5,
+    "standingSuffixes": 6
   }
 }

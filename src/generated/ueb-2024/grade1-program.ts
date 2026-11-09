@@ -4,6 +4,211 @@ import type { CompositionPolicies } from "../../composition.js";
 import type { SymbolProgram } from "../../symbol-program.js";
 type UebProgram<Program> = Program & { readonly code: "ueb-2024" };
 export const INITIAL_ELISION_WORDS: readonly string[] = ["cause","em","n","s","tis","twas","twere","twill","twould"];
+export const GRADE1_RUNTIME_FACTS = {
+  "whitespace": {
+    "blank": "⠀"
+  },
+  "grouping": {
+    "open": "⠣",
+    "close": "⠜"
+  },
+  "ligature": {
+    "indicator": "⠘⠖"
+  },
+  "numeric": {
+    "punctuation": [
+      ",",
+      "."
+    ]
+  },
+  "grade1Required": {
+    "rules": [
+      {
+        "classes": [
+          "lowercase-letter",
+          "numeric-ambiguous-letter"
+        ],
+        "activeMode": "numeric"
+      },
+      {
+        "sources": [
+          "?"
+        ],
+        "previous": {
+          "start": true,
+          "classes": [
+            "sequence-boundary"
+          ],
+          "sources": [
+            "-",
+            "–",
+            "—"
+          ]
+        }
+      }
+    ]
+  },
+  "quotes": {
+    "rules": [
+      {
+        "source": "‘",
+        "open": "single",
+        "continue": true
+      },
+      {
+        "source": "’",
+        "when": [
+          "elision-end"
+        ],
+        "emit": "⠄"
+      },
+      {
+        "source": "’",
+        "when": [
+          "next-letter",
+          "previous-letter"
+        ],
+        "emit": "⠄"
+      },
+      {
+        "source": "’",
+        "when": [
+          "next-letter",
+          "previous-opening",
+          "elision-word"
+        ],
+        "markElision": true,
+        "emit": "⠄"
+      },
+      {
+        "source": "’",
+        "when": [
+          "next-letter",
+          "previous-opening"
+        ],
+        "open": "single",
+        "emit": "⠠⠦"
+      },
+      {
+        "source": "’",
+        "when": [
+          "open:single"
+        ],
+        "close": "single"
+      },
+      {
+        "source": "’",
+        "when": [
+          "previous-possessive"
+        ],
+        "emit": "⠄"
+      },
+      {
+        "source": "\"",
+        "when": [
+          "open:double"
+        ],
+        "close": "double",
+        "emit": "⠴"
+      },
+      {
+        "source": "\"",
+        "when": [
+          "previous-opening",
+          "next-material"
+        ],
+        "open": "double",
+        "emit": "⠦"
+      },
+      {
+        "source": "\"",
+        "when": [
+          "previous-not-digit",
+          "previous-material",
+          "closing"
+        ],
+        "emit": "⠴"
+      }
+    ],
+    "apostrophePrint": "’",
+    "apostrophe": "⠄",
+    "possessiveLetter": "s",
+    "openingContext": "([{‘“«",
+    "closingContext": ",;:.!?)]}'’”"
+  },
+  "typeforms": {
+    "modes": {
+      "bold": "typeform-bold",
+      "italic": "typeform-italic",
+      "script": "typeform-script",
+      "transcriber-defined": "typeform-transcriber-defined",
+      "underline": "typeform-underline"
+    }
+  },
+  "foreignCode": {
+    "nonUebIndicators": {
+      "word": "⠘⠷",
+      "wordTerminator": "⠘⠾",
+      "passage": "⠐⠷⠄",
+      "passageTerminator": "⠠⠐⠾"
+    },
+    "baseLetters": "^[a-z]$",
+    "languages": {
+      "de": {
+        "capital": "⠠",
+        "letters": {
+          "ä": "⠜",
+          "ö": "⠪",
+          "ü": "⠳",
+          "ß": "⠮"
+        },
+        "uppercase": {
+          "ß": "ẞ"
+        }
+      },
+      "fr": {
+        "capital": "⠨",
+        "letters": {
+          "à": "⠷",
+          "â": "⠡",
+          "ç": "⠯",
+          "é": "⠿",
+          "è": "⠮",
+          "ê": "⠣",
+          "ë": "⠫",
+          "î": "⠩",
+          "ï": "⠻",
+          "ô": "⠹",
+          "œ": "⠪",
+          "ù": "⠾",
+          "û": "⠱",
+          "ü": "⠳"
+        },
+        "uppercase": {}
+      }
+    }
+  },
+  "modeOrder": {
+    "uncontracted": [
+      "capitals",
+      "numeric",
+      "grade1"
+    ],
+    "contracted": [
+      "grade1",
+      "capitals",
+      "numeric"
+    ],
+    "contractedInlineTerminators": [
+      "capitals"
+    ]
+  },
+  "literalIndicatorScope": {
+    "mode": "grade1",
+    "written": "word",
+    "forward": "symbol"
+  }
+} as const;
 export const GRADE1_MODE_PROGRAM: UebProgram<ModeProgram> = {
   "code": "ueb-2024",
   "modes": [
@@ -112,7 +317,8 @@ export const UEB_COMPOSITION_POLICIES: UebProgram<CompositionPolicies> = {
   "elisionPunctuation": "'’",
   "lowerPunctuation": ",;:.…!?\"'“”‘’–—-",
   "openingStandingPunctuation": "([{“‘’\"'«",
-  "standingBoundaries": " \n\r–—-"
+  "standingBoundaries": " \n\r–—-",
+  "standingSuffixes": "s"
 };
 export const GRADE1_SYMBOL_PROGRAM: UebProgram<SymbolProgram> = {
   "code": "ueb-2024",

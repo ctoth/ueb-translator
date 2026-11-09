@@ -1,6 +1,9 @@
 {
   "documents": "citation-documents.json",
   "sources": {
+    "engine": "contextual-engine.json",
+    "facts": "runtime-facts.json",
+    "pipeline": "expansion-pipeline.json",
     "expansion": "expansion-policy.json",
     "vocabulary": "grade1-vocabulary.json",
     "modes": "modes/rules.json",
@@ -27,7 +30,8 @@
       "protection": "technical-grade1-protection-rules.json",
       "functionSpacing": "technical-function-spacing-rules.json",
       "numericContinuation": "technical-numeric-continuation-rules.json",
-      "computerWhitespace": "technical-computer-whitespace-rules.json"
+      "computerWhitespace": "technical-computer-whitespace-rules.json",
+      "layouts": "technical-layout-rules.json"
     }
   },
   "symbols": [

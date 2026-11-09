@@ -55,6 +55,7 @@ export function compileCompositionPolicies(
       lowerPunctuation: compiled("lowerPunctuation"),
       openingStandingPunctuation: compiled("openingStandingPunctuation"),
       standingBoundaries: compiled("standingBoundaries"),
+      standingSuffixes: compiled("standingSuffixes"),
     },
   };
 }

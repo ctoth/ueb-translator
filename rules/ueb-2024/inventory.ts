@@ -6,6 +6,6 @@ export function validateInventory(
   expected: ReturnType<typeof readInventory>, actual: ReturnType<typeof readInventory>,
 ): void {
   for (const key of ["rules", "contextualRules", "shortforms", "appendix1LongerWords"] as const) {
-    if (expected[key] !== actual[key]) throw new Error(`Inventory ${key}: expected ${expected[key]}, produced ${actual[key]}`);
+    if (expected[key] !== actual[key]) throw new Error(`Inventory ${key}: expected ${String(expected[key])}, produced ${String(actual[key])}`);
   }
 }

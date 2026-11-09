@@ -21,8 +21,8 @@ import { modeIndicator } from "./mode-engine.js";
 import { loadSymbolProgram } from "./symbol-program.js";
 import { TECHNICAL_SIGN_PROGRAM } from "./generated/ueb-2024/technical-program.js";
 import type {
-  TechnicalComparison, TechnicalExpression, TechnicalGrade1Policy,
-  TechnicalOperation, TechnicalProfile, TechnicalShape,
+  TechnicalExpression, TechnicalGrade1Policy, TechnicalLayout, TechnicalLayoutCase,
+  TechnicalLayoutChild, TechnicalProfile, TechnicalSignPath,
 } from "./technical-program.js";
 export type {
   BanaTechnicalProfile, InternationalTechnicalProfile, TechnicalGrade1Policy, TechnicalProfile,
@@ -212,12 +212,41 @@ const VALUE_PATTERNS = {
 };
 const COMPUTER_WHITESPACE = TECHNICAL_SIGN_PROGRAM.computerWhitespace;
 
-function operationCell(operation: TechnicalOperation): string {
-  return symbolCell(TECHNICAL_SIGN_PROGRAM.operations[operation]);
+const LAYOUTS = new Map<string, TechnicalLayout>(Object.entries(TECHNICAL_SIGN_PROGRAM.layouts));
+const NUMERIC_INDICATOR = modeIndicator(GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.numeric, "symbol");
+
+type ExpressionNode = Readonly<Record<string, unknown>>;
+
+function nodeOf(value: unknown): ExpressionNode {
+  /* v8 ignore next 3 -- typed API inputs are objects. */
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("Technical expression must be an object.");
+  }
+  return Object.fromEntries(Object.entries(value));
 }
 
-function comparisonCell(comparison: TechnicalComparison): string {
-  return symbolCell(TECHNICAL_SIGN_PROGRAM.comparisons[comparison]);
+function textOf(value: unknown): string {
+  /* v8 ignore next 3 -- typed API inputs and validated layouts name strings. */
+  if (typeof value !== "string") {
+    throw new Error("Technical layout expected a string.");
+  }
+  return value;
+}
+
+/** Follow a layout path through the compiled program; `{ field }` steps read the expression. */
+function signAt(path: TechnicalSignPath, expression: ExpressionNode): unknown {
+  let value: unknown = TECHNICAL_SIGN_PROGRAM;
+  for (const step of path) {
+    value = nodeOf(value)[typeof step === "string" ? step : textOf(expression[step.field])];
+  }
+  return value;
+}
+
+function operationSpaced(profile: TechnicalProfile): boolean {
+  const spacing = TECHNICAL_SIGN_PROGRAM.operationSpacing;
+  return profile.jurisdiction === "international"
+    ? spacing.international[profile.operationSpacing]
+    : spacing["bana-2026"][profile.production];
 }
 
 function symbolCell(print: string): string {
@@ -233,14 +262,6 @@ const UNPREFIXED_LATIN_LETTER_CELLS = new Set(
   TECHNICAL_SIGN_PROGRAM.functionSpacing.letterCells,
 );
 const FUNCTION_NAME_BOUNDARY = new RegExp(TECHNICAL_SIGN_PROGRAM.functionSpacing.namePattern, "u");
-
-function shapeCell(shape: TechnicalShape): string {
-  const signs = TECHNICAL_SIGN_PROGRAM.shapes;
-  const braille = `${signs.fills[shape.fill]}${signs.names[shape.shape]}`;
-  return shape.terminator === "present"
-    ? `${braille}${signs.terminator}`
-    : braille;
-}
 
 function renderPrintValue(
   value: string,
@@ -259,7 +280,7 @@ function renderPrintValue(
 
 function renderStandingValue(
   value: string,
-  kind: "chemical-element" | "identifier",
+  kind: TechnicalInvalidValueKind,
   pattern: RegExp,
 ): RenderResult {
   const rendered = renderPrintValue(value, kind, pattern);
@@ -277,16 +298,18 @@ function renderStandingValue(
 }
 
 function renderScriptValue(
-  expression: TechnicalExpression,
+  value: unknown,
   profile: TechnicalProfile,
 ): RenderResult {
-  const rendered = renderExpression(expression, profile);
+  const rendered = renderExpression(value, profile);
   if (!rendered.ok) {
     return rendered;
   }
-  const singleItem = expression.kind === "identifier"
-    ? ITEM_IDENTIFIER.test(expression.value)
-    : TECHNICAL_SIGN_PROGRAM.itemPolicy.kinds[expression.kind];
+  const expression = nodeOf(value);
+  const kind = textOf(expression["kind"]);
+  const singleItem = kind === "identifier"
+    ? ITEM_IDENTIFIER.test(textOf(expression["value"]))
+    : Object.entries(TECHNICAL_SIGN_PROGRAM.itemPolicy.kinds).some(([name, single]) => name === kind && single);
   if (singleItem) {
     return rendered;
   }
@@ -298,12 +321,12 @@ function renderScriptValue(
 
 function needsSpaceBeforeFunction(
   previous: RenderSuccess | undefined,
-  expression: TechnicalExpression,
+  expression: ExpressionNode,
 ): boolean {
   return previous !== undefined &&
     UNPREFIXED_LATIN_LETTER_CELLS.has(previous.braille.at(-1) ?? "") &&
-    expression.kind === "function" &&
-    FUNCTION_NAME_BOUNDARY.test(expression.name);
+    expression["kind"] === "function" &&
+    FUNCTION_NAME_BOUNDARY.test(textOf(expression["name"]));
 }
 
 function joinRendered(results: readonly RenderResult[]): RenderResult {
@@ -319,303 +342,155 @@ function joinRendered(results: readonly RenderResult[]): RenderResult {
   return renderSuccess(braille, requirements);
 }
 
-function renderExpression(
-  expression: TechnicalExpression,
+function renderChild(
+  child: TechnicalLayoutChild,
+  expression: ExpressionNode,
   profile: TechnicalProfile,
 ): RenderResult {
-  switch (expression.kind) {
-    case "chemical-element":
-      return renderStandingValue(
-        expression.symbol,
-        "chemical-element",
-        VALUE_PATTERNS["chemical-element"],
+  const value = expression[child.field];
+  switch (child.render) {
+    case "expression":
+      return renderExpression(value, profile);
+    case "script":
+      return renderScriptValue(value, profile);
+    case "value":
+      return (child.standing ? renderStandingValue : renderPrintValue)(
+        textOf(value), child.invalid, VALUE_PATTERNS[child.pattern],
       );
-    case "comparison": {
-      const left = renderExpression(expression.left, profile);
-      const right = renderExpression(expression.right, profile);
-      if (!left.ok) {
-        return left;
-      }
-      if (!right.ok) {
-        return right;
-      }
-      const rightOffset =
-        left.braille.length + comparisonCell(expression.comparison).length + 2;
-      return renderSuccess(
-        `${left.braille}${BRAILLE_SPACE}${comparisonCell(expression.comparison)}${BRAILLE_SPACE}${right.braille}`,
-        [
-          ...left.requirements,
-          ...shiftRequirements(right.requirements, rightOffset),
-        ],
-      );
+  }
+}
+
+function layoutCase(layout: Exclude<TechnicalLayout, { readonly sequence: string }>, expression: ExpressionNode): TechnicalLayoutCase {
+  if (!("select" in layout)) return layout;
+  const key = "field" in layout.select
+    ? textOf(expression[layout.select.field])
+    : textOf(signAt(layout.select.sign, expression));
+  const chosen = Object.entries(layout.cases).find(([name]) => name === key)?.[1];
+  /* v8 ignore next 3 -- typed inputs select a declared case. */
+  if (chosen === undefined) {
+    throw new Error(`Technical layout has no case ${JSON.stringify(key)}.`);
+  }
+  return chosen;
+}
+
+/** Interpret one layout: render children in order, then join the parts. */
+function renderLayout(
+  layout: TechnicalLayoutCase,
+  expression: ExpressionNode,
+  profile: TechnicalProfile,
+): RenderResult {
+  const rendered = new Map<string, RenderSuccess>();
+  for (const child of layout.children) {
+    const result = renderChild(child, expression, profile);
+    if (!result.ok) {
+      return result;
     }
-    case "general-fraction": {
-      const numerator = renderExpression(expression.numerator, profile);
-      const denominator = renderExpression(expression.denominator, profile);
-      if (!numerator.ok) {
-        return numerator;
-      }
-      if (!denominator.ok) {
-        return denominator;
-      }
-      const denominatorOffset =
-        DELIMITERS.fractionOpen.length +
-        numerator.braille.length +
-        DELIMITERS.fractionLine.length;
-      return renderSuccess(
-        `${DELIMITERS.fractionOpen}${numerator.braille}${DELIMITERS.fractionLine}${denominator.braille}${DELIMITERS.fractionClose}`,
-        [
-          { end: DELIMITERS.fractionOpen.length, kind: "symbol", offset: 0 },
-          ...shiftRequirements(
-            numerator.requirements,
-            DELIMITERS.fractionOpen.length,
-          ),
-          ...shiftRequirements(denominator.requirements, denominatorOffset),
-        ],
-      );
+    rendered.set(child.name, result);
+  }
+  const renderedChild = (name: string): RenderSuccess => {
+    const result = rendered.get(name);
+    /* v8 ignore next 3 -- validated layouts name declared children. */
+    if (result === undefined) {
+      throw new Error(`Technical layout has no child ${name}.`);
     }
-    case "group": {
-      const content = renderExpression(expression.content, profile);
-      if (!content.ok) {
-        return content;
-      }
-      const enclosure = DELIMITERS.enclosures[expression.enclosure];
-      const openLength = enclosure.open.length;
-      const totalLength = openLength + content.braille.length + enclosure.close.length;
-      const requirements: Grade1Requirement[] = [];
-      for (const requirement of content.requirements) {
-        requirements.push(
-          (requirement.kind === "standing-symbol" ||
-              requirement.kind === "standing-word") &&
-            requirement.offset === 0 && requirement.end === content.braille.length
-            ? { ...requirement, end: totalLength, offset: 0 }
-            : {
-                ...requirement,
-                end: requirement.end + openLength,
-                offset: requirement.offset + openLength,
-              },
-        );
-      }
-      return renderSuccess(
-        `${enclosure.open}${content.braille}${enclosure.close}`,
-        requirements,
-      );
-    }
-    case "identifier": {
-      return renderStandingValue(
-        expression.value,
-        "identifier",
-        VALUE_PATTERNS.identifier,
-      );
-    }
-    case "function": {
-      const name = renderPrintValue(
-        expression.name,
-        "function-name",
-        VALUE_PATTERNS["function-name"],
-      );
-      const argument = renderExpression(expression.argument, profile);
-      if (!name.ok) {
-        return name;
-      }
-      if (!argument.ok) {
-        return argument;
-      }
-      const space = UNPREFIXED_LATIN_LETTER_CELLS.has(
-        argument.braille.charAt(0),
-      )
-        ? BRAILLE_SPACE
-        : "";
-      return renderSuccess(
-        `${name.braille}${space}${argument.braille}`,
-        shiftRequirements(
-          argument.requirements,
-          name.braille.length + space.length,
-        ),
-      );
-    }
-    case "modifier": {
-      const item = renderExpression(expression.item, profile);
-      if (!item.ok) {
-        return item;
-      }
-      const modifier = TECHNICAL_SIGN_PROGRAM.modifiers[expression.modifier];
-      return renderSuccess(`${item.braille}${modifier}`, [
-        ...item.requirements,
-        {
-          end: item.braille.length + modifier.length,
-          kind: "symbol",
-          offset: item.braille.length,
-        },
-      ]);
-    }
-    case "negation": {
-      const operand = renderExpression(expression.operand, profile);
-      if (!operand.ok) {
-        return operand;
-      }
-      const minus = operationCell("minus");
-      return renderSuccess(
-        `${minus}${operand.braille}`,
-        shiftRequirements(operand.requirements, minus.length),
-      );
-    }
-    case "number":
-      return renderPrintValue(expression.value, "number", VALUE_PATTERNS.number);
-    case "operation": {
-      const left = renderExpression(expression.left, profile);
-      const right = renderExpression(expression.right, profile);
-      if (!left.ok) {
-        return left;
-      }
-      if (!right.ok) {
-        return right;
-      }
-      const spacing = TECHNICAL_SIGN_PROGRAM.operationSpacing;
-      const spaced = profile.jurisdiction === "international"
-        ? spacing.international[profile.operationSpacing]
-        : spacing["bana-2026"][profile.production];
-      const space = spaced ? BRAILLE_SPACE : "";
-      const rightOffset =
-        left.braille.length +
-        operationCell(expression.operation).length +
-        space.length * 2;
-      return renderSuccess(
-        `${left.braille}${space}${operationCell(expression.operation)}${space}${right.braille}`,
-        [
-          ...left.requirements,
-          ...shiftRequirements(right.requirements, rightOffset),
-        ],
-      );
-    }
-    case "radical": {
-      const radicand = renderExpression(expression.radicand, profile);
-      if (!radicand.ok) {
-        return radicand;
-      }
-      if (expression.root === "square") {
-        const braille = `${DELIMITERS.radicalOpen}${radicand.braille}${DELIMITERS.radicalClose}`;
-        return renderSuccess(braille, [
-          { end: DELIMITERS.radicalOpen.length, kind: "symbol", offset: 0 },
-          ...shiftRequirements(radicand.requirements, DELIMITERS.radicalOpen.length),
-        ]);
-      }
-      const index = renderScriptValue(expression.index, profile);
-      if (!index.ok) {
-        return index;
-      }
-      const indicator = TECHNICAL_SIGN_PROGRAM.scripts["right-superscript"].indicator;
-      const indexOffset = DELIMITERS.radicalOpen.length + indicator.length;
-      const radicandOffset = indexOffset + index.braille.length;
-      const braille = `${DELIMITERS.radicalOpen}${indicator}${index.braille}${radicand.braille}${DELIMITERS.radicalClose}`;
-      return renderSuccess(braille, [
-        { end: DELIMITERS.radicalOpen.length, kind: "symbol", offset: 0 },
-        { end: indexOffset, kind: "symbol", offset: DELIMITERS.radicalOpen.length },
-        ...shiftRequirements(index.requirements, indexOffset),
-        ...shiftRequirements(radicand.requirements, radicandOffset),
-      ]);
-    }
-    case "script": {
-      const base = renderExpression(expression.base, profile);
-      const script = renderScriptValue(expression.script, profile);
-      if (!base.ok) {
-        return base;
-      }
-      if (!script.ok) {
-        return script;
-      }
-      const { indicator, position } = TECHNICAL_SIGN_PROGRAM.scripts[expression.placement];
-      const rendered = `${indicator}${script.braille}`;
-      if (position === "before") {
-        return renderSuccess(`${rendered}${base.braille}`, [
-          { end: indicator.length, kind: "symbol", offset: 0 },
-          ...shiftRequirements(script.requirements, indicator.length),
-          ...shiftRequirements(
-            base.requirements,
-            indicator.length + script.braille.length,
-          ),
-        ]);
-      }
-      return renderSuccess(`${base.braille}${rendered}`, [
-        ...base.requirements,
-        {
-          end: base.braille.length + indicator.length,
-          kind: "symbol",
-          offset: base.braille.length,
-        },
-        ...shiftRequirements(
-          script.requirements,
-          base.braille.length + indicator.length,
-        ),
-      ]);
-    }
-    case "sequence": {
-      let braille = "";
-      const requirements: Grade1Requirement[] = [];
-      let offset = 0;
-      let previous: TechnicalExpression | undefined;
-      let previousRendered: RenderSuccess | undefined;
-      for (const item of expression.items) {
-        const itemRendered = renderExpression(item, profile);
-        if (!itemRendered.ok) {
-          return itemRendered;
+    return result;
+  };
+  let braille = "";
+  const requirements: Grade1Requirement[] = [];
+  const widened: number[] = [];
+  for (const part of layout.parts) {
+    if ("child" in part) {
+      const child = renderedChild(part.child);
+      const dropped = part.withoutNumericIndicator === true ? NUMERIC_INDICATOR.length : 0;
+      for (const requirement of child.requirements) {
+        if (part.widen?.some((kind) => kind === requirement.kind) === true &&
+          requirement.offset === 0 && requirement.end === child.braille.length) {
+          widened.push(requirements.length);
         }
-        if (needsSpaceBeforeFunction(previousRendered, item)) {
-          braille += BRAILLE_SPACE;
-          offset += BRAILLE_SPACE.length;
-        }
-        requirements.push(
-          ...shiftRequirements(itemRendered.requirements, offset),
-        );
-        if (
-          previous !== undefined &&
-          TECHNICAL_SIGN_PROGRAM.numericContinuation.precedingKinds.includes(previous.kind) &&
-          item.kind === "identifier" &&
-          NUMERIC_CONTINUATION_IDENTIFIER.test(item.value)
-        ) {
-          requirements.push({
-            end: offset + 1,
-            kind: "numeric-mode",
-            offset,
-          });
-        }
-        braille += itemRendered.braille;
-        offset += itemRendered.braille.length;
-        previous = item;
-        previousRendered = itemRendered;
+        requirements.push(...shiftRequirements([requirement], braille.length - dropped));
       }
-      return renderSuccess(braille, requirements);
-    }
-    case "shape":
-      return renderSuccess(shapeCell(expression), [
-        { end: 1, kind: "symbol", offset: 0 },
-      ]);
-    case "simple-arrow":
-      return renderSuccess(symbolCell(TECHNICAL_SIGN_PROGRAM.arrows[expression.direction]), [
-        { end: 1, kind: "symbol", offset: 0 },
-      ]);
-    case "simple-fraction": {
-      const numerator = renderPrintValue(
-        expression.numerator,
-        "simple-fraction-numerator",
-        VALUE_PATTERNS.number,
-      );
-      const denominator = renderPrintValue(
-        expression.denominator,
-        "simple-fraction-denominator",
-        VALUE_PATTERNS.number,
-      );
-      if (!numerator.ok) {
-        return numerator;
+      braille += child.braille.slice(dropped);
+    } else if ("space" in part) {
+      const spaced = part.space === "always" ||
+        (part.space === "operation" && operationSpaced(profile)) ||
+        (part.space === "letter" &&
+          UNPREFIXED_LATIN_LETTER_CELLS.has(renderedChild(part.before).braille.charAt(0)));
+      braille += spaced ? BRAILLE_SPACE : "";
+    } else {
+      const cells = "sign" in part
+        ? textOf(signAt(part.sign, expression))
+        : symbolCell(textOf(signAt(part.symbol, expression)));
+      if (part.require !== undefined) {
+        requirements.push({
+          end: braille.length + (part.requireCells ?? cells.length),
+          kind: part.require,
+          offset: braille.length,
+        });
       }
-      if (!denominator.ok) {
-        return denominator;
-      }
-      return renderSuccess(
-        `${numerator.braille}${DELIMITERS.simpleFractionLine}${denominator.braille.slice(1)}`,
-      );
+      braille += cells;
     }
   }
+  return renderSuccess(braille, requirements.map((requirement, index) =>
+    widened.includes(index) ? { ...requirement, end: braille.length, offset: 0 } : requirement));
+}
+
+function renderSequence(items: unknown, profile: TechnicalProfile): RenderResult {
+  let braille = "";
+  const requirements: Grade1Requirement[] = [];
+  let offset = 0;
+  let previousKind: unknown;
+  let previousRendered: RenderSuccess | undefined;
+  /* v8 ignore next 3 -- typed sequences carry an item list. */
+  if (!Array.isArray(items)) {
+    throw new Error("Technical sequence items must be a list.");
+  }
+  for (const value of items) {
+    const item = nodeOf(value);
+    const itemRendered = renderExpression(item, profile);
+    if (!itemRendered.ok) {
+      return itemRendered;
+    }
+    if (needsSpaceBeforeFunction(previousRendered, item)) {
+      braille += BRAILLE_SPACE;
+      offset += BRAILLE_SPACE.length;
+    }
+    requirements.push(
+      ...shiftRequirements(itemRendered.requirements, offset),
+    );
+    if (
+      TECHNICAL_SIGN_PROGRAM.numericContinuation.precedingKinds.some((kind) => kind === previousKind) &&
+      item["kind"] === "identifier" &&
+      NUMERIC_CONTINUATION_IDENTIFIER.test(textOf(item["value"]))
+    ) {
+      requirements.push({
+        end: offset + 1,
+        kind: "numeric-mode",
+        offset,
+      });
+    }
+    braille += itemRendered.braille;
+    offset += itemRendered.braille.length;
+    previousKind = item["kind"];
+    previousRendered = itemRendered;
+  }
+  return renderSuccess(braille, requirements);
+}
+
+/** Render one expression through its kind's cited layout (technical-layout-rules.json). */
+function renderExpression(
+  value: unknown,
+  profile: TechnicalProfile,
+): RenderResult {
+  const expression = nodeOf(value);
+  const kind = textOf(expression["kind"]);
+  const layout = LAYOUTS.get(kind);
+  /* v8 ignore next 3 -- typed inputs name a declared expression kind. */
+  if (layout === undefined) {
+    throw new Error(`Technical layout missing for ${kind}.`);
+  }
+  return "sequence" in layout
+    ? renderSequence(expression[layout.sequence], profile)
+    : renderLayout(layoutCase(layout, expression), expression, profile);
 }
 
 function translateComputerPrint(

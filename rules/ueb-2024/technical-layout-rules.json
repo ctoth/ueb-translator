@@ -1,0 +1,193 @@
+{
+  "chemical-element": {
+    "citation": { "source": "technical-2014", "locator": "16, pp.75-76" },
+    "children": [{ "name": "symbol", "render": "value", "field": "symbol", "pattern": "chemical-element", "invalid": "chemical-element", "standing": true }],
+    "parts": [{ "child": "symbol" }]
+  },
+  "comparison": {
+    "citation": { "source": "technical-operations-2018", "locator": "Spacing, pp.2-7" },
+    "children": [
+      { "name": "left", "render": "expression", "field": "left" },
+      { "name": "right", "render": "expression", "field": "right" }
+    ],
+    "parts": [
+      { "child": "left" },
+      { "space": "always" },
+      { "symbol": ["comparisons", { "field": "comparison" }] },
+      { "space": "always" },
+      { "child": "right" }
+    ]
+  },
+  "function": {
+    "citation": { "source": "technical-2014", "locator": "9, pp.43-44" },
+    "children": [
+      { "name": "name", "render": "value", "field": "name", "pattern": "function-name", "invalid": "function-name", "standing": false },
+      { "name": "argument", "render": "expression", "field": "argument" }
+    ],
+    "parts": [
+      { "child": "name" },
+      { "space": "letter", "before": "argument" },
+      { "child": "argument" }
+    ]
+  },
+  "general-fraction": {
+    "citation": { "source": "technical-2014", "locator": "6, pp.32-33" },
+    "children": [
+      { "name": "numerator", "render": "expression", "field": "numerator" },
+      { "name": "denominator", "render": "expression", "field": "denominator" }
+    ],
+    "parts": [
+      { "sign": ["delimiters", "fractionOpen"], "require": "symbol" },
+      { "child": "numerator" },
+      { "sign": ["delimiters", "fractionLine"] },
+      { "child": "denominator" },
+      { "sign": ["delimiters", "fractionClose"] }
+    ]
+  },
+  "group": {
+    "citation": { "source": "technical-2014", "locator": "5, p.30" },
+    "children": [{ "name": "content", "render": "expression", "field": "content" }],
+    "parts": [
+      { "sign": ["delimiters", "enclosures", { "field": "enclosure" }, "open"] },
+      { "child": "content", "widen": ["standing-symbol", "standing-word"] },
+      { "sign": ["delimiters", "enclosures", { "field": "enclosure" }, "close"] }
+    ]
+  },
+  "identifier": {
+    "citation": { "source": "technical-2014", "locator": "1, p.2" },
+    "children": [{ "name": "value", "render": "value", "field": "value", "pattern": "identifier", "invalid": "identifier", "standing": true }],
+    "parts": [{ "child": "value" }]
+  },
+  "modifier": {
+    "citation": { "source": "technical-2014", "locator": "12, p.57" },
+    "children": [{ "name": "item", "render": "expression", "field": "item" }],
+    "parts": [
+      { "child": "item" },
+      { "sign": ["modifiers", { "field": "modifier" }], "require": "symbol" }
+    ]
+  },
+  "negation": {
+    "citation": { "source": "technical-operations-2018", "locator": "Minus, p.9" },
+    "children": [{ "name": "operand", "render": "expression", "field": "operand" }],
+    "parts": [
+      { "symbol": ["operations", "minus"] },
+      { "child": "operand" }
+    ]
+  },
+  "number": {
+    "citation": { "source": "technical-2014", "locator": "1, p.2" },
+    "children": [{ "name": "value", "render": "value", "field": "value", "pattern": "number", "invalid": "number", "standing": false }],
+    "parts": [{ "child": "value" }]
+  },
+  "operation": {
+    "citation": { "source": "technical-operations-2018", "locator": "Spacing, pp.2-7" },
+    "children": [
+      { "name": "left", "render": "expression", "field": "left" },
+      { "name": "right", "render": "expression", "field": "right" }
+    ],
+    "parts": [
+      { "child": "left" },
+      { "space": "operation" },
+      { "symbol": ["operations", { "field": "operation" }] },
+      { "space": "operation" },
+      { "child": "right" }
+    ]
+  },
+  "radical": {
+    "citation": { "source": "technical-2014", "locator": "8, pp.40-41" },
+    "select": { "field": "root" },
+    "cases": {
+      "indexed": {
+        "children": [
+          { "name": "radicand", "render": "expression", "field": "radicand" },
+          { "name": "index", "render": "script", "field": "index" }
+        ],
+        "parts": [
+          { "sign": ["delimiters", "radicalOpen"], "require": "symbol" },
+          { "sign": ["scripts", "right-superscript", "indicator"], "require": "symbol" },
+          { "child": "index" },
+          { "child": "radicand" },
+          { "sign": ["delimiters", "radicalClose"] }
+        ]
+      },
+      "square": {
+        "children": [{ "name": "radicand", "render": "expression", "field": "radicand" }],
+        "parts": [
+          { "sign": ["delimiters", "radicalOpen"], "require": "symbol" },
+          { "child": "radicand" },
+          { "sign": ["delimiters", "radicalClose"] }
+        ]
+      }
+    }
+  },
+  "script": {
+    "citation": { "source": "technical-2014", "locator": "7, p.34; 7, p.38" },
+    "select": { "sign": ["scripts", { "field": "placement" }, "position"] },
+    "cases": {
+      "after": {
+        "children": [
+          { "name": "base", "render": "expression", "field": "base" },
+          { "name": "script", "render": "script", "field": "script" }
+        ],
+        "parts": [
+          { "child": "base" },
+          { "sign": ["scripts", { "field": "placement" }, "indicator"], "require": "symbol" },
+          { "child": "script" }
+        ]
+      },
+      "before": {
+        "children": [
+          { "name": "base", "render": "expression", "field": "base" },
+          { "name": "script", "render": "script", "field": "script" }
+        ],
+        "parts": [
+          { "sign": ["scripts", { "field": "placement" }, "indicator"], "require": "symbol" },
+          { "child": "script" },
+          { "child": "base" }
+        ]
+      }
+    }
+  },
+  "sequence": {
+    "citation": { "source": "technical-2014", "locator": "1, p.2; 9, pp.43-44" },
+    "sequence": "items"
+  },
+  "shape": {
+    "citation": { "source": "technical-2014", "locator": "14, pp.65-66" },
+    "select": { "field": "terminator" },
+    "cases": {
+      "omitted": {
+        "children": [],
+        "parts": [
+          { "sign": ["shapes", "fills", { "field": "fill" }], "require": "symbol", "requireCells": 1 },
+          { "sign": ["shapes", "names", { "field": "shape" }] }
+        ]
+      },
+      "present": {
+        "children": [],
+        "parts": [
+          { "sign": ["shapes", "fills", { "field": "fill" }], "require": "symbol", "requireCells": 1 },
+          { "sign": ["shapes", "names", { "field": "shape" }] },
+          { "sign": ["shapes", "terminator"] }
+        ]
+      }
+    }
+  },
+  "simple-arrow": {
+    "citation": { "source": "technical-2014", "locator": "13, pp.60-61" },
+    "children": [],
+    "parts": [{ "symbol": ["arrows", { "field": "direction" }], "require": "symbol", "requireCells": 1 }]
+  },
+  "simple-fraction": {
+    "citation": { "source": "technical-2014", "locator": "6, pp.31-32" },
+    "children": [
+      { "name": "numerator", "render": "value", "field": "numerator", "pattern": "number", "invalid": "simple-fraction-numerator", "standing": false },
+      { "name": "denominator", "render": "value", "field": "denominator", "pattern": "number", "invalid": "simple-fraction-denominator", "standing": false }
+    ],
+    "parts": [
+      { "child": "numerator" },
+      { "sign": ["delimiters", "simpleFractionLine"] },
+      { "child": "denominator", "withoutNumericIndicator": true }
+    ]
+  }
+}

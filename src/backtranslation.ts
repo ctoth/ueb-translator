@@ -23,6 +23,7 @@ import {
 import {
   GRADE1_MODE_IDS,
   GRADE1_MODE_PROGRAM,
+  GRADE1_RUNTIME_FACTS,
   GRADE1_SYMBOL_PROGRAM,
 } from "./generated/ueb-2024/grade1-program.js";
 import { modeIndicator } from "./mode-engine.js";
@@ -34,12 +35,12 @@ import { traceGrade2 } from "./grade2-diagnostics.js";
 import { CURLY_APOSTROPHE } from "./grade1-runtime.js";
 import {
   decodeForeignLanguageBraille,
+  FOREIGN_LANGUAGES,
   NON_UEB_PASSAGE_INDICATOR,
   NON_UEB_PASSAGE_TERMINATOR,
   NON_UEB_WORD_INDICATOR,
   NON_UEB_WORD_TERMINATOR,
   translateForeignLanguageRun,
-  type ForeignLanguage,
 } from "./foreign-language.js";
 
 export type BacktranslationMode = "grade1" | "grade2";
@@ -357,6 +358,14 @@ const CAPITALS_TERMINATOR = modeIndicator(
 const GRADE1_INDICATOR = modeIndicator(
   GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.grade1, "symbol",
 );
+// Literal text may keep a wider indicator than forward translation writes.
+const LITERAL_SCOPE = GRADE1_RUNTIME_FACTS.literalIndicatorScope;
+const LITERAL_SCOPE_WRITTEN = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS[LITERAL_SCOPE.mode], LITERAL_SCOPE.written,
+);
+const LITERAL_SCOPE_FORWARD = modeIndicator(
+  GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS[LITERAL_SCOPE.mode], LITERAL_SCOPE.forward,
+);
 const NUMERIC_INDICATOR = modeIndicator(
   GRADE1_MODE_PROGRAM, GRADE1_MODE_IDS.numeric, "symbol",
 );
@@ -392,10 +401,21 @@ const GRADE1_ENTRIES = invertSymbolProgram(GRADE1_SYMBOL_PROGRAM);
 const TYPEFORM_MODE_IDS = Object.entries(GRADE1_MODE_IDS)
   .filter(([name]) => name.startsWith("typeform-"))
   .map(([, modeId]) => modeId);
+/** Numeric-mode punctuation (runtime-facts.json numeric) by its symbol cell. */
+const NUMERIC_PUNCTUATION: readonly string[] = GRADE1_RUNTIME_FACTS.numeric.punctuation;
+const NUMERIC_PUNCTUATION_BY_CELL: ReadonlyMap<string, string> = new Map(
+  GRADE1_SYMBOL_PROGRAM.symbols
+    .filter((symbol) => NUMERIC_PUNCTUATION.includes(symbol.print))
+    .map((symbol) => [symbol.braille, symbol.print]),
+);
+/** A curly apostrophe needs preceding letters or a quote-opening context (runtime-facts.json quotes). */
+const APOSTROPHE_CONTEXT = new RegExp(
+  `(?:^|[\\s${GRADE1_RUNTIME_FACTS.quotes.openingContext.replace(/[\\\]^-]/gu, "\\$&")}]|\\p{L}\\p{M}*)$`, "u",
+);
 const SEMANTIC_CONTROLS: readonly SemanticControlToken[] = [
-  { braille: "⠣", grade2Lexical: false, kind: "semantic-control" },
-  { braille: "⠜", grade2Lexical: false, kind: "semantic-control" },
-  { braille: "⠘⠖", grade2Lexical: false, kind: "semantic-control" },
+  { braille: GRADE1_RUNTIME_FACTS.grouping.open, grade2Lexical: false, kind: "semantic-control" },
+  { braille: GRADE1_RUNTIME_FACTS.grouping.close, grade2Lexical: false, kind: "semantic-control" },
+  { braille: GRADE1_RUNTIME_FACTS.ligature.indicator, grade2Lexical: false, kind: "semantic-control" },
   ...TYPEFORM_MODE_IDS.flatMap((modeId): readonly SemanticControlToken[] => [
     {
       braille: modeIndicator(GRADE1_MODE_PROGRAM, modeId, "passage"),
@@ -822,6 +842,7 @@ function decode(
 
     if (path.numeric) {
       const digit = NUMERIC_DIGITS.get(current);
+      const punctuation = NUMERIC_PUNCTUATION_BY_CELL.get(current);
       if (digit !== undefined) {
         const typeformScopes = withTypeformOperand(path.typeformScopes, digit);
         /* v8 ignore next -- numeric digits contain exactly one scalar. */
@@ -834,8 +855,8 @@ function decode(
             typeformScopes,
           });
         }
-      } else if (current === "⠂" || current === "⠲") {
-        const print = current === "⠂" ? "," : ".";
+      } else if (punctuation !== undefined) {
+        const print = punctuation;
         const typeformScopes = withTypeformOperand(path.typeformScopes, print);
         /* v8 ignore next -- numeric punctuation contains exactly one scalar. */
         if (typeformScopes !== undefined) {
@@ -915,7 +936,7 @@ function decode(
           // context; complete forward validation still checks its right side.
           if (token.print === CURLY_APOSTROPHE.print &&
             token.braille === CURLY_APOSTROPHE.braille &&
-            !/(?:^|[\s([{‘“«]|\p{L}\p{M}*)$/u.test(path.print)) break;
+            !APOSTROPHE_CONTEXT.test(path.print)) break;
           if (path.modifiers.length === 0 && path.capitals !== "next") {
             const typeformScopes = withTypeformOperand(
               path.typeformScopes,
@@ -1097,11 +1118,9 @@ function grade2Candidates(
         translated.ok &&
         withoutGrade1Indicators(translated.braille) ===
           withoutGrade1Indicators(expected);
-      // A word indicator remains valid for literal text even when forward
-      // translation now needs only a symbol indicator (UEB 5.3.1).
       const retainedGrade1WordScope = translated.ok && translated.rules.length === 0 &&
-        expected.includes(GRADE1_INDICATOR.repeat(2)) &&
-        expected.replaceAll(GRADE1_INDICATOR.repeat(2), GRADE1_INDICATOR) ===
+        expected.includes(LITERAL_SCOPE_WRITTEN) &&
+        expected.replaceAll(LITERAL_SCOPE_WRITTEN, LITERAL_SCOPE_FORWARD) ===
           translated.braille;
       if (!translated.ok ||
         (translated.braille !== expected && !relaxedCapitalsPassage &&
@@ -1560,7 +1579,7 @@ function foreignCandidates(
   /* v8 ignore next -- only foreign segments call this function. */
   if (wrappedBraille === undefined) return [];
   const candidates = new Map<string, Grade2BacktranslationCandidate>();
-  for (const language of ["de", "fr"] satisfies readonly ForeignLanguage[]) {
+  for (const language of FOREIGN_LANGUAGES) {
     for (const print of decodeForeignLanguageBraille(segment.braille, language)) {
       const translated = translateForeignLanguageRun({
         code: "foreign",

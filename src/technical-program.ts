@@ -222,8 +222,145 @@ export interface TechnicalGrade1Protection {
   readonly passageSequenceThreshold: number;
 }
 
+export const TECHNICAL_EXPRESSION_KINDS: readonly TechnicalExpression["kind"][] = [
+  "identifier", ...TECHNICAL_ITEM_KINDS,
+];
+type TechnicalInvalidValue =
+  | (typeof TECHNICAL_VALUE_KINDS)[number] | "simple-fraction-denominator" | "simple-fraction-numerator";
+const TECHNICAL_INVALID_VALUE_KINDS: readonly TechnicalInvalidValue[] = [
+  ...TECHNICAL_VALUE_KINDS, "simple-fraction-denominator", "simple-fraction-numerator",
+];
+const TECHNICAL_WIDENED_KINDS = ["standing-symbol", "standing-word"] as const;
+
+/** A path into the compiled program; `{ field }` steps read the expression. */
+export type TechnicalSignPath = readonly (string | { readonly field: string })[];
+
+export type TechnicalLayoutChild =
+  | { readonly name: string; readonly render: "expression" | "script"; readonly field: string }
+  | {
+    readonly name: string;
+    readonly render: "value";
+    readonly field: string;
+    readonly pattern: (typeof TECHNICAL_VALUE_KINDS)[number];
+    readonly invalid: TechnicalInvalidValue;
+    readonly standing: boolean;
+  };
+
+export type TechnicalLayoutPart =
+  | {
+    readonly child: string;
+    readonly withoutNumericIndicator?: boolean;
+    readonly widen?: readonly (typeof TECHNICAL_WIDENED_KINDS)[number][];
+  }
+  | { readonly sign: TechnicalSignPath; readonly require?: "symbol"; readonly requireCells?: number }
+  | { readonly symbol: TechnicalSignPath; readonly require?: "symbol"; readonly requireCells?: number }
+  | { readonly space: "always" | "operation" }
+  | { readonly space: "letter"; readonly before: string };
+
+export interface TechnicalLayoutCase {
+  readonly children: readonly TechnicalLayoutChild[];
+  readonly parts: readonly TechnicalLayoutPart[];
+}
+
+/** Print-to-Braille layout of one expression kind (GTM sections cited in the rule file). */
+export type TechnicalLayout =
+  | TechnicalLayoutCase
+  | {
+    readonly select: { readonly field: string } | { readonly sign: TechnicalSignPath };
+    readonly cases: Readonly<Record<string, TechnicalLayoutCase>>;
+  }
+  | { readonly sequence: string };
+
+export type TechnicalLayouts = Readonly<Record<TechnicalExpression["kind"], TechnicalLayout>>;
+
+function isObject(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isMember<T extends string>(values: readonly T[], value: unknown): value is T {
+  return values.some((candidate) => candidate === value);
+}
+
+function hasOnly(value: Readonly<Record<string, unknown>>, keys: readonly string[]): boolean {
+  return Object.keys(value).every((key) => keys.includes(key));
+}
+
+function isSignPath(value: unknown): value is TechnicalSignPath {
+  return Array.isArray(value) && value.length > 0 && value.every((step: unknown) =>
+    typeof step === "string" ||
+    (isObject(step) && hasOnly(step, ["field"]) && typeof step["field"] === "string"));
+}
+
+function isLayoutChild(value: unknown): value is TechnicalLayoutChild {
+  if (!isObject(value) || typeof value["name"] !== "string" || typeof value["field"] !== "string") {
+    return false;
+  }
+  if (value["render"] === "expression" || value["render"] === "script") {
+    return hasOnly(value, ["name", "render", "field"]);
+  }
+  return value["render"] === "value" && hasOnly(value, ["name", "render", "field", "pattern", "invalid", "standing"]) &&
+    isMember(TECHNICAL_VALUE_KINDS, value["pattern"]) &&
+    isMember(TECHNICAL_INVALID_VALUE_KINDS, value["invalid"]) && typeof value["standing"] === "boolean";
+}
+
+function isRequirement(value: Readonly<Record<string, unknown>>): boolean {
+  const cells = value["requireCells"];
+  return (value["require"] === undefined || value["require"] === "symbol") &&
+    (cells === undefined || (value["require"] === "symbol" && Number.isSafeInteger(cells) && Number(cells) > 0));
+}
+
+function isLayoutPart(value: unknown, children: readonly string[]): value is TechnicalLayoutPart {
+  if (!isObject(value)) return false;
+  if ("child" in value) {
+    const widen = value["widen"];
+    return hasOnly(value, ["child", "withoutNumericIndicator", "widen"]) &&
+      isMember(children, value["child"]) &&
+      (value["withoutNumericIndicator"] === undefined || value["withoutNumericIndicator"] === true) &&
+      (widen === undefined || (Array.isArray(widen) &&
+        widen.every((kind: unknown) => isMember(TECHNICAL_WIDENED_KINDS, kind))));
+  }
+  if ("sign" in value || "symbol" in value) {
+    return hasOnly(value, ["sign", "symbol", "require", "requireCells"]) &&
+      ("sign" in value !== "symbol" in value) &&
+      isSignPath(value["sign"] ?? value["symbol"]) && isRequirement(value);
+  }
+  if (value["space"] === "letter") {
+    return hasOnly(value, ["space", "before"]) && isMember(children, value["before"]);
+  }
+  return hasOnly(value, ["space"]) && (value["space"] === "always" || value["space"] === "operation");
+}
+
+function isLayoutCase(value: unknown): value is TechnicalLayoutCase {
+  if (!isObject(value) || !hasOnly(value, ["children", "parts"])) return false;
+  const children = value["children"];
+  const parts = value["parts"];
+  if (!Array.isArray(children) || !children.every(isLayoutChild) || !Array.isArray(parts)) return false;
+  const names = children.map((child) => child.name);
+  return new Set(names).size === names.length && parts.length > 0 &&
+    parts.every((part: unknown) => isLayoutPart(part, names));
+}
+
+function isLayout(value: unknown): value is TechnicalLayout {
+  if (!isObject(value)) return false;
+  if ("sequence" in value) return hasOnly(value, ["sequence"]) && typeof value["sequence"] === "string";
+  if (!("select" in value)) return isLayoutCase(value);
+  const select = value["select"];
+  const cases = value["cases"];
+  return hasOnly(value, ["select", "cases"]) && isObject(select) && hasOnly(select, ["field", "sign"]) &&
+    ("field" in select !== "sign" in select) &&
+    (typeof select["field"] === "string" || isSignPath(select["sign"])) &&
+    isObject(cases) && Object.keys(cases).length > 0 && Object.values(cases).every(isLayoutCase);
+}
+
+/** One layout per expression kind, each well formed. */
+export function isTechnicalLayouts(value: unknown): value is TechnicalLayouts {
+  return isObject(value) && hasOnly(value, TECHNICAL_EXPRESSION_KINDS) &&
+    TECHNICAL_EXPRESSION_KINDS.every((kind) => isLayout(value[kind]));
+}
+
 /** Compiled symbols and descriptors for structured notation. */
 export interface TechnicalSignProgram extends SymbolProgram {
+  readonly layouts: TechnicalLayouts;
   readonly computerWhitespace: {
     readonly visibleSpace: string;
     readonly minimumRunLength: number;

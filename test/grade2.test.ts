@@ -3,6 +3,7 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { APPENDIX1_LONGER_WORDS } from "../rules/ueb-2024/appendix1.js";
 import { CONSTRAINTS } from "../rules/ueb-2024/constraints.js";
+import { guardWords } from "../rules/ueb-2024/contextual-engine.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import { GRADE2_INVENTORY_COUNTS } from "../rules/ueb-2024/inventory.js";
 import { SHORTFORMS } from "../rules/ueb-2024/shortforms.js";
@@ -131,11 +132,11 @@ describe("official Grade 2 source inventory", () => {
   it("cites the words whose be forms a syllable before a vowel", () => {
     const records = CONSTRAINTS.filter(c => c.target.kind === "lower-groupsign" && c.target.print === "be");
     const words = records.flatMap(c => c.guards.flatMap(g =>
-      g.kind === "following-not-vowel-y-except-words" ? g.words : []));
+      g.kind === "following-not-vowel-y-except-words" ? guardWords(g, "words") : []));
     expect(words).toContain("being");
     for (const record of records) expect(record.citation.locator).toBe("10.6.1");
     for (const word of words) expect(word).toMatch(/^be[aeiouy][a-z']*$/u);
-    const denied = records.flatMap(c => c.guards.flatMap(g => g.kind === "not-word" ? g.words : []));
+    const denied = records.flatMap(c => c.guards.flatMap(g => g.kind === "not-word" ? guardWords(g, "words") : []));
     expect(denied.filter(word => /^be[aeiouy]/u.test(word))).toEqual([]);
   });
 });
@@ -276,7 +277,7 @@ describe("translateGrade2", () => {
   it.each(
     CONSTRAINTS.filter(c => c.target.kind === "initial-letter-contraction").flatMap(constraint =>
       constraint.guards.flatMap(guard => guard.kind === "not-word"
-        ? guard.words.map(word => ({ contraction: constraint.target.print, word })) : [])),
+        ? guardWords(guard, "words").map(word => ({ contraction: constraint.target.print, word })) : [])),
   )("excludes $contraction in $word", ({ contraction, word }) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
@@ -290,7 +291,7 @@ describe("translateGrade2", () => {
   it.each(
     CONSTRAINTS.filter(c => c.target.kind === "final-letter-groupsign").flatMap(constraint =>
       constraint.guards.flatMap(guard => guard.kind === "not-word"
-        ? guard.words.map(word => ({ groupsign: constraint.target.print, word })) : [])),
+        ? guardWords(guard, "words").map(word => ({ groupsign: constraint.target.print, word })) : [])),
   )("excludes $groupsign in $word", ({ groupsign, word }) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
@@ -302,7 +303,7 @@ describe("translateGrade2", () => {
   it.each(
     CONSTRAINTS.filter(c => c.target.kind === "final-letter-groupsign").flatMap(constraint =>
       constraint.guards.flatMap(guard => guard.kind === "not-word-ending"
-        ? guard.endings.map(ending => ({ ending, groupsign: constraint.target.print, word: `a${ending}` })) : [])),
+        ? guardWords(guard, "endings").map(ending => ({ ending, groupsign: constraint.target.print, word: `a${ending}` })) : [])),
   )("excludes $groupsign in words ending in $ending", ({ groupsign, word }) => {
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
@@ -334,7 +335,7 @@ describe("translateGrade2", () => {
     const exception = CONSTRAINTS.find(c =>
       c.target.kind === "final-letter-groupsign" && c.target.print === "ness");
     expect(exception?.citation.locator).toBe("10.8.4");
-    expect(exception?.guards.flatMap(g => g.kind === "not-word" ? g.words : [])).toContain(word);
+    expect(exception?.guards.flatMap(g => g.kind === "not-word" ? guardWords(g, "words") : [])).toContain(word);
     const result = traceGrade2(word);
     expect(result.ok).toBe(true);
     if (result.ok) {

@@ -1,0 +1,31 @@
+{
+  "compactIntegers": { "offset": 256, "max": 55039 },
+  "precedences": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "boundaries": { "braille-line": 1, "compound": 2, "prefix": 4, "suffix": 8, "syllable": 16 },
+  "guards": {
+    "eligibility-word": { "opcode": 0, "operands": [{ "field": "word", "as": "text" }, { "field": "pluralSuffix", "as": "text" }] },
+    "first-syllable": { "opcode": 1, "operands": [] },
+    "following-not-vowel-y": { "opcode": 2, "operands": [{ "field": "characters", "as": "text" }] },
+    "lower-sign": { "opcode": { "field": "policy", "values": { "enough-or-in": 3, "other": 16 } }, "operands": [] },
+    "not-boundary": { "opcode": 4, "operands": [{ "field": "boundary", "as": "boundary" }] },
+    "not-crossing": { "opcode": 5, "operands": [{ "field": "boundaries", "as": "boundaries" }] },
+    "not-word": { "opcode": 6, "operands": [{ "field": "words", "as": "words" }, { "field": "ignoredCharacters", "as": "text" }] },
+    "not-word-ending": { "opcode": 7, "operands": [{ "field": "endings", "as": "words" }] },
+    "not-word-end": { "opcode": 8, "operands": [] },
+    "not-word-start": { "opcode": 9, "operands": [] },
+    "not-whole-word": { "opcode": 10, "operands": [] },
+    "previous-not": { "opcode": 11, "operands": [{ "field": "characters", "as": "text" }] },
+    "standing-alone": { "opcode": 12, "operands": [] },
+    "word-end": { "opcode": 13, "operands": [] },
+    "word-internal": { "opcode": 14, "operands": [] },
+    "word-start": { "opcode": 15, "operands": [] },
+    "following": { "opcode": 17, "operands": [{ "field": "characters", "as": "text" }] },
+    "word-with-affixes": { "opcode": 18, "operands": [{ "field": "affixes", "as": "words" }] },
+    "preceded-by-letter": { "opcode": 19, "operands": [] },
+    "not-standing-word": { "opcode": 20, "operands": [{ "field": "words", "as": "words" }, { "field": "ignoredCharacters", "as": "text" }] },
+    "not-standing-match": { "opcode": 21, "operands": [{ "field": "pattern", "as": "text" }] },
+    "following-not-vowel-y-except-words": { "opcode": 22, "operands": [{ "field": "characters", "as": "text" }, { "field": "words", "as": "words" }] },
+    "stable-following-modes": { "opcode": 23, "operands": [] },
+    "stable-adjacent-modes": { "opcode": 24, "operands": [] }
+  }
+}

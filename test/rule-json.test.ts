@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import * as readers from "../rules/ueb-2024/rule-json.js";
 import { SYMBOL_RULES } from "../rules/ueb-2024/symbols/source.js";
-import { GRADE2_RULE_KINDS, GRADE2_RULE_FAMILIES } from "../rules/ueb-2024/grade2-rules.js";
+import { expandSources, expansionTable } from "../rules/ueb-2024/expansion.js";
 import { GRADE2_CONTEXTUAL_RULES } from "../rules/ueb-2024/program.js";
 import type { ContextualRuleGuard } from "../rules/ueb-2024/contextual-compiler.js";
+import { guardWords } from "../rules/ueb-2024/contextual-engine.js";
+import { citeIceb } from "../rules/ueb-2024/source.js";
 import modeData from "../rules/ueb-2024/modes/rules.json" with { type: "json" };
 import specialData from "../rules/ueb-2024/symbols/special.json" with { type: "json" };
 import groupData from "../rules/ueb-2024/grade2-rules.json" with { type: "json" };
@@ -12,7 +14,6 @@ import delimiterData from "../rules/ueb-2024/technical-delimiter-rules.json" wit
 import valuePatterns from "../rules/ueb-2024/technical-value-patterns.json" with { type: "json" };
 import spacingData from "../rules/ueb-2024/technical-operation-spacing-rules.json" with { type: "json" };
 import constraintData from "../rules/ueb-2024/constraints.json" with { type: "json" };
-import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import inventoryData from "../rules/ueb-2024/inventory.json" with { type: "json" };
 import { assembleSources, sourceData, sourceFile, SYMBOL_FAMILY_DATA } from "../rules/ueb-2024/source-manifest.js";
 import { expandSymbolSources } from "../rules/ueb-2024/symbols/compiler.js";
@@ -24,16 +25,23 @@ const symbol = specialData[0];
 if (symbol === undefined) throw new Error("Symbol fixture missing.");
 const group = groupData[0];
 if (group === undefined) throw new Error("Contraction fixture missing.");
+function isRow(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+const expandedRow: unknown = expansionTable("grade2Rules")[0];
+if (!isRow(expandedRow)) throw new Error("Expanded rule fixture missing.");
+const expandedRule = expandedRow;
 
 describe("JSON rule source decoding", () => {
   it("takes expansion precedence, citations and provenance IDs from policy data", () => {
-    const policy = readers.readExpansionPolicy(expansionData);
-    const changed = { ...policy, shortformPrecedence: 8 as const,
-      ids: { ...policy.ids, shortformPrefix: "selected-", contractionPrefix: "selected-" } };
-    expect(readers.readShortforms([["about", "⠁⠃"]], changed)[0]?.id).toBe("selected-about");
-    expect(readers.readGrade2Rules([group], GRADE2_RULE_KINDS, GRADE2_RULE_FAMILIES, changed)[0]?.id)
-      .toMatch(/^selected-/u);
-    expect(() => readers.readExpansionPolicy({ ...expansionData, shortformPrecedence: true })).toThrow();
+    const changed = expandSources({ expansion: { ...expansionData, shortformPrecedence: 8,
+      ids: { ...expansionData.ids, shortformPrefix: "selected-", contractionPrefix: "selected-" } } });
+    expect(readers.readExpandedShortform(changed["shortforms"]?.[0]).id).toBe("selected-about");
+    expect(readers.readExpandedGrade2Rule(changed["grade2Rules"]?.[0]).id).toMatch(/^selected-/u);
+    expect((changed["rules"] ?? []).map(readers.readExpandedContextualRule)
+      .find((rule) => rule.id === "selected-about")?.precedence).toBe(8);
+    const malformed = expandSources({ expansion: { ...expansionData, shortformPrecedence: true } });
+    expect(() => (malformed["rules"] ?? []).map(readers.readExpandedContextualRule)).toThrow();
   });
   it("routes nested sources by the shared manifest", () => {
     expect(sourceData("modes")).toBe(modeData);
@@ -92,10 +100,24 @@ describe("JSON rule source decoding", () => {
   it("rejects a mode name outside its retained TypeScript domain", () => {
     expect(() => readers.readModeRules([{ ...mode, name: "unknown-mode" }])).toThrow("Unexpected JSON member");
   });
-  it.each(["missing", 1])("rejects malformed citation locator %j", locator => {
+  it.each(["", " ", 1])("rejects malformed citation locator %j", locator => {
     expect(() => readers.readModeRules([{ ...mode, citation: { ...mode.citation, locator } }])).toThrow();
   });
-  it.each(["technical-2014", "missing"])("rejects incorrect citation document reference %s", source => {
+  it("strips runtime fact citations and rejects uncited or empty groups", () => {
+    const citation = { source: "ueb-2024", locator: "4.3" };
+    expect(readers.readRuntimeFacts({ ligature: { citation, indicator: "⠘⠖", list: ["a"], map: { b: "c" } } }))
+      .toEqual({ ligature: { indicator: "⠘⠖", list: ["a"], map: { b: "c" } } });
+    expect(() => readers.readRuntimeFacts({ ligature: { citation } })).toThrow("empty");
+    expect(() => readers.readRuntimeFacts({ ligature: { indicator: "⠘⠖" } })).toThrow();
+    expect(() => readers.readRuntimeFacts({ ligature: { citation, indicator: 1 } })).toThrow();
+  });
+  it("rejects a rule group whose kind has no family", () => {
+    expect(() => expandSources({ families: {} })).toThrow("no match");
+  });
+  it("rejects an empty locator at the citation boundary", () => {
+    expect(() => citeIceb(" ")).toThrow("Malformed citation");
+  });
+  it.each(["missing", 1])("rejects unknown citation document reference %s", source => {
     expect(() => readers.readModeRules([{ ...mode, citation: { ...mode.citation, source } }])).toThrow();
   });
   it("rejects malformed nullable symbol fields", () => {
@@ -107,13 +129,11 @@ describe("JSON rule source decoding", () => {
       ...GRADE2_CONTEXTUAL_RULES.flatMap(rule => rule.guards),
       { kind: "not-word-ending", endings: ["ing"] },
     ];
-    for (const guard of guards) {
-      expect(readers.readGrade2Rules([{ ...group, guards: [guard] }], GRADE2_RULE_KINDS,
-        GRADE2_RULE_FAMILIES)[0]?.guards).toContainEqual(guard);
-    }
+    const expandedGroup = (guards: readonly unknown[]): readonly ContextualRuleGuard[] =>
+      readers.readExpandedGrade2Rule(expandSources({ groups: [{ ...group, guards }, ...groupData.slice(1)] })["grade2Rules"]?.[0]).guards;
+    expect(expandedGroup(guards)).toEqual(expect.arrayContaining([...guards]));
     const boundaryGuard: ContextualRuleGuard = { kind: "not-crossing", boundaries: ["braille-line", "compound", "prefix", "suffix", "syllable"] };
-    expect(readers.readGrade2Rules([{ ...group, guards: [boundaryGuard] }], GRADE2_RULE_KINDS,
-      GRADE2_RULE_FAMILIES)[0]?.guards).toContainEqual(boundaryGuard);
+    expect(expandedGroup([boundaryGuard])).toContainEqual(boundaryGuard);
   });
   it.each([
     { kind: "unknown" }, { kind: "previous-not", characters: 2 },
@@ -128,7 +148,7 @@ describe("JSON rule source decoding", () => {
     { kind: "not-standing-match", pattern: 2 }, { kind: "not-word-ending", endings: [2] },
     { kind: "word-with-affixes", affixes: [2] },
   ])("rejects malformed authored contraction guard %j", guard => {
-    expect(() => readers.readGrade2Rules([{ ...group, guards: [guard] }], GRADE2_RULE_KINDS, GRADE2_RULE_FAMILIES)).toThrow();
+    expect(() => readers.readExpandedGrade2Rule({ ...expandedRule, guards: [guard] })).toThrow();
   });
   it("rejects non-string values and missing keys in closed maps", () => {
     expect(() => readers.readTechnicalValuePatterns({})).toThrow();
@@ -153,24 +173,27 @@ describe("JSON rule source decoding", () => {
     })).toThrow();
   });
   it("resolves targeted guards and their citation", () => {
-    expect(readers.readConstraints(constraintData, GRADE2_RULES)[0]).toMatchObject({
+    const constraint = readers.readExpandedConstraint(expandSources()["constraints"]?.[0]);
+    expect(constraint).toMatchObject({
       target: { kind: "strong-contraction", print: "of" },
       citation: { authority: "ICEB", locator: "10.3.1" },
-      guards: [{ kind: "not-word", ignoredCharacters: "-", words: expect.arrayContaining(["microfilms", "microfilm's"]) }],
+      guards: [{ kind: "not-word", ignoredCharacters: "-" }],
     });
+    const [guard] = constraint.guards;
+    expect(guard === undefined ? [] : guardWords(guard, "words")).toEqual(
+      expect.arrayContaining(["microfilms", "microfilm's"]));
   });
   it.each([
     { kind: "missing", print: "of" }, { kind: "strong-contraction", print: "missing" },
   ])("rejects unknown constraint target %j", target => {
-    expect(() => readers.readConstraints([{ ...constraintData[0], target }], GRADE2_RULES)).toThrow("target");
+    expect(() => expandSources({ constraints: [{ ...constraintData[0], target }] })).toThrow("no match");
   });
   it.each([
-    { idSuffix: "extra", locator: "missing", precedence: 4, guards: [] },
+    { idSuffix: "extra", locator: "", precedence: 4, guards: [] },
     { idSuffix: "extra", locator: "10.10", precedence: 10, guards: [] },
     { idSuffix: "extra", locator: "10.10", precedence: 4, guards: [{ kind: "unknown" }] },
   ])("rejects malformed explicit variant %j", variant => {
-    expect(() => readers.readGrade2Rules([{ ...group, variants: [variant] }], GRADE2_RULE_KINDS,
-      GRADE2_RULE_FAMILIES)).toThrow();
+    expect(() => readers.readExpandedGrade2Rule({ ...expandedRule, variants: [variant] })).toThrow();
   });
   it.each([
     { kind: "not-word", words: [{ base: "microfilm", suffixes: [2] }], possessives: true, ignoredCharacters: "-" },
@@ -178,6 +201,7 @@ describe("JSON rule source decoding", () => {
     { kind: "not-word-ending", endings: [2] },
     { kind: "unknown" },
   ])("rejects malformed targeted guard %j", guard => {
-    expect(() => readers.readConstraints([{ ...constraintData[0], guards: [guard] }], GRADE2_RULES)).toThrow();
+    expect(() => (expandSources({ constraints: [{ ...constraintData[0], guards: [guard] }] })["constraints"] ?? [])
+      .map(readers.readExpandedConstraint)).toThrow();
   });
 });

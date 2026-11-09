@@ -8,15 +8,13 @@ import {
   type ContextualRuleSource,
 } from "../rules/ueb-2024/contextual-compiler.js";
 import {
-  compileGrade2RuleGuards,
   GRADE2_AMBIGUOUS_LETTER_SEQUENCES,
   GRADE2_CONTEXTUAL_COMPILATION,
+  GRADE2_CONTEXTUAL_RULES,
   GRADE2_STANDING_LITERAL_INPUTS,
-  requireAppendixShortformBase,
-  decodeShortforms,
-  substituteAppendixBase,
-  checkedAmbiguities,
 } from "../rules/ueb-2024/program.js";
+import { expandSources } from "../rules/ueb-2024/expansion.js";
+import { runPipeline, toJson } from "../rules/ueb-2024/pipeline.js";
 import { GRADE2_INVENTORY_COUNTS, validateInventory } from "../rules/ueb-2024/inventory.js";
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
@@ -44,20 +42,43 @@ const rule = (
 
 describe("compileContextualRules", () => {
   it("indexes every real shortform reading independently of source order", () => {
-    const spellings = GRADE2_RULES.filter(rule => rule.kind === "lower-groupsign" && ["be", "bb"].includes(rule.print));
-    const shortforms = [{ print: "before", braille: "⠆" }];
-    const decoded = decodeShortforms(shortforms, spellings);
-    expect(decoded.get("before")?.map(reading => reading.literal)).toEqual(["bb", "be"]);
-    expect(decodeShortforms(shortforms, [...spellings].reverse())).toEqual(decoded);
-    expect(() => substituteAppendixBase("foreign", "before", "bef")).toThrow("lacks base");
-    expect(substituteAppendixBase("beforehand", "before", "bef")).toBe("befhand");
+    const spellings = GRADE2_RULES.filter(rule => rule.kind === "lower-groupsign" && ["be", "bb"].includes(rule.print))
+      .map(({ id, print, braille }) => ({ id, print, braille }));
+    const decodePipeline = {
+      steps: [
+        { name: "words", op: "table", source: "words" },
+        { name: "alphabet", op: "table", source: "alphabet" },
+        { name: "readings", op: "decode", from: "words", cells: { get: "row.braille" }, alphabet: "alphabet" },
+        { name: "literals", op: "flatMap", from: "readings", rows: { list: [{ get: "row.reading.literal" }] } },
+      ],
+      outputs: { literals: "literals" },
+    };
+    const words = [{ print: "before", braille: "⠆" }];
+    const decoded = runPipeline(decodePipeline, { words, alphabet: spellings });
+    expect(decoded["literals"]).toEqual(["bb", "be"]);
+    expect(runPipeline(decodePipeline, { words, alphabet: [...spellings].reverse() })).toEqual(decoded);
+    expect(() => runPipeline(decodePipeline, { words: [{ print: "x", braille: "⠭" }], alphabet: spellings }))
+      .toThrow("no reading");
+    const replace = (subject: string): unknown => runPipeline({
+      steps: [{ name: "one", op: "table", source: "one" },
+        { name: "out", op: "flatMap", from: "one", rows: { list: [{ replaceFirst: [subject, "before", "bef"] }] } }],
+      outputs: { out: "out" },
+    }, { one: [{}] })["out"];
+    expect(() => replace("foreign")).toThrow("does not contain");
+    expect(replace("beforehand")).toEqual(["befhand"]);
   });
 
   it("rejects conflicting ambiguity outputs and stale inventory", () => {
-    expect([...checkedAmbiguities([["x", "⠭"], ["x", "⠭"]]).values()]).toEqual([["x", "⠭"]]);
-    expect(() => checkedAmbiguities([["x", "⠭"], ["x", "⠁"]])).toThrow("Conflicting ambiguity");
-    expect(() => validateInventory(GRADE2_INVENTORY_COUNTS,
-      { ...GRADE2_INVENTORY_COUNTS, rules: 0 })).toThrow("Inventory rules");
+    const distinct = (rows: unknown): unknown => runPipeline({
+      steps: [{ name: "rows", op: "table", source: "rows" },
+        { name: "out", op: "distinct", from: "rows", by: { get: "row.0" } }],
+      outputs: { out: "out" },
+    }, { rows: toJson(rows) })["out"];
+    expect(distinct([["x", "⠭"], ["x", "⠭"]])).toEqual([["x", "⠭"]]);
+    expect(() => distinct([["x", "⠭"], ["x", "⠁"]])).toThrow("conflicting rows");
+    expect(() => {
+      validateInventory(GRADE2_INVENTORY_COUNTS, { ...GRADE2_INVENTORY_COUNTS, rules: 0 });
+    }).toThrow("Inventory rules");
   });
   it("rejects an unresolved precedence overlap", () => {
     expect(() =>
@@ -245,22 +266,17 @@ describe("Grade 2 source compilation", () => {
   });
 
   it("keeps the lower groupsign whole-word guard limited to en and in", () => {
-    const restricted = GRADE2_RULES.filter(rule => rule.kind === "lower-groupsign" &&
-      compileGrade2RuleGuards(rule).some(guard => guard.kind === "not-whole-word"));
-    expect(restricted.map(rule => rule.print)).toEqual(["en", "in"]);
+    const lower = new Set(GRADE2_RULES.filter(rule => rule.kind === "lower-groupsign").map(rule => rule.id));
+    const restricted = GRADE2_CONTEXTUAL_RULES.filter(rule => lower.has(rule.id) &&
+      rule.guards.some(guard => guard.kind === "not-whole-word"));
+    expect(restricted.map(rule => rule.input)).toEqual(["en", "in"]);
   });
 
   it("requires every Appendix 1 base to have a shortform", () => {
-    const shortform = {
-      braille: "⠁⠃",
-      citation: citeIceb("10.9 and Appendix 1"),
-      id: "UEB-10.9-about",
-      print: "about",
-    } as const;
-    const shortforms = new Map([[shortform.print, shortform]]);
-    expect(requireAppendixShortformBase("about", shortforms)).toBe(shortform);
-    expect(() => requireAppendixShortformBase("missing", shortforms))
-      .toThrow("Appendix 1 base has no shortform: missing");
+    expect(() => expandSources({ appendix: [{ base: "missing", words: ["missingword"] }] }))
+      .toThrow("appendixBases: no match");
+    expect(() => expandSources({ appendix: [{ base: "about", words: ["foreign"] }] }))
+      .toThrow("does not contain");
   });
 });
 

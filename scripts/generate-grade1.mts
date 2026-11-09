@@ -9,9 +9,11 @@ import {
   TECHNICAL_ARROW_DIRECTIONS, TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
   TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
   TECHNICAL_VALUE_KINDS, TECHNICAL_ITEM_KINDS, TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
+  isTechnicalLayouts,
 } from "../src/technical-program.ts";
 
 interface LoadedCompilation {
+  readonly facts: Readonly<Record<string, unknown>>;
   readonly initialElisionWords: readonly string[];
   readonly classIds: Readonly<Record<string, number>>;
   readonly modeIds: Readonly<Record<string, number>>;
@@ -91,7 +93,8 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
   const grade1Protection = isRecord(value) ? value["grade1Protection"] : undefined;
   const modifiers = isRecord(value) ? value["modifiers"] : undefined;
   const shapes = isRecord(value) ? value["shapes"] : undefined;
-  if (!isPrintMap(arrows, TECHNICAL_ARROW_DIRECTIONS) ||
+  const layouts = isRecord(value) ? value["layouts"] : undefined;
+  if (!isTechnicalLayouts(layouts) || !isPrintMap(arrows, TECHNICAL_ARROW_DIRECTIONS) ||
     !isPrintMap(operations, TECHNICAL_OPERATIONS) ||
     !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
     !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
@@ -99,7 +102,7 @@ function technicalProgram(value: unknown): TechnicalSignProgram {
     !isOperationSpacing(operationSpacing) || !isGrade1Protection(grade1Protection) || !isFunctionSpacing(functionSpacing) || !isNumericContinuation(numericContinuation) || !isComputerWhitespace(computerWhitespace)) {
     throw new Error("Compiled technical sign mappings are malformed.");
   }
-  return { ...symbolProgram(value), arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, grade1Protection, functionSpacing, numericContinuation, computerWhitespace };
+  return { ...symbolProgram(value), layouts, arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, grade1Protection, functionSpacing, numericContinuation, computerWhitespace };
 }
 
 function isGrade1Protection(value: unknown): value is TechnicalSignProgram["grade1Protection"] {
@@ -198,13 +201,15 @@ function compositionPolicies(value: unknown): CompositionPolicies {
   const lowerPunctuation = value["lowerPunctuation"];
   const openingStandingPunctuation = value["openingStandingPunctuation"];
   const standingBoundaries = value["standingBoundaries"];
+  const standingSuffixes = value["standingSuffixes"];
   if (
     typeof closingStandingPunctuation !== "string" ||
     typeof dashJoiners !== "string" ||
     typeof elisionPunctuation !== "string" ||
     typeof lowerPunctuation !== "string" ||
     typeof openingStandingPunctuation !== "string" ||
-    typeof standingBoundaries !== "string"
+    typeof standingBoundaries !== "string" ||
+    typeof standingSuffixes !== "string"
   ) {
     throw new Error("Compiled composition policies are malformed.");
   }
@@ -215,6 +220,7 @@ function compositionPolicies(value: unknown): CompositionPolicies {
     lowerPunctuation,
     openingStandingPunctuation,
     standingBoundaries,
+    standingSuffixes,
   };
 }
 
@@ -259,7 +265,10 @@ function loadCompilation(imported: unknown): LoadedCompilation {
   if (!isRecord(modes) || !isRecord(policies) || !isRecord(symbols)) {
     throw new Error("Compiled Grade 1 module lacks its compilations.");
   }
+  const facts: unknown = imported["GRADE1_RUNTIME_FACTS"];
+  if (!isRecord(facts)) throw new Error("Compiled Grade 1 runtime facts are malformed.");
   return {
+    facts,
     classIds: idObject(modes["classIds"], "class"),
     initialElisionWords,
     modeIds: idObject(modes["modeIds"], "mode"),
@@ -280,6 +289,7 @@ function generatedProgram(compilation: LoadedCompilation): string {
     'import type { SymbolProgram } from "../../symbol-program.js";\n' +
     'type UebProgram<Program> = Program & { readonly code: "ueb-2024" };\n' +
     `export const INITIAL_ELISION_WORDS: readonly string[] = ${JSON.stringify(compilation.initialElisionWords)};\n` +
+    `export const GRADE1_RUNTIME_FACTS = ${JSON.stringify(compilation.facts, undefined, 2)} as const;\n` +
     `export const GRADE1_MODE_PROGRAM: UebProgram<ModeProgram> = ${JSON.stringify({ code: "ueb-2024", ...compilation.modes }, undefined, 2)};\n` +
     `export const UEB_COMPOSITION_POLICIES: UebProgram<CompositionPolicies> = ${JSON.stringify({ code: "ueb-2024", ...compilation.policies }, undefined, 2)};\n` +
     `export const GRADE1_SYMBOL_PROGRAM: UebProgram<SymbolProgram> = ${JSON.stringify({ code: "ueb-2024", ...compilation.symbols }, undefined, 2)};\n` +

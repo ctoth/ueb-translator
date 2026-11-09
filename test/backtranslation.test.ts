@@ -795,6 +795,8 @@ describe("backtranslateGrade2", () => {
         case "strong-contraction":
         case "strong-groupsign":
           return `a${rule.print}a`;
+        default:
+          throw new Error(`No round-trip context for rule kind ${rule.kind}.`);
       }
     });
     const sourcePrints = new Set([

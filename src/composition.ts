@@ -26,6 +26,8 @@ export interface CompositionPolicies {
   readonly lowerPunctuation: string;
   readonly openingStandingPunctuation: string;
   readonly standingBoundaries: string;
+  /** Letters that, after elision punctuation, keep a word standing alone (UEB 2.6.2-2.6.3). */
+  readonly standingSuffixes: string;
 }
 
 export interface CompositionTextOptions {
@@ -269,7 +271,8 @@ function isCompleteAmbiguityLiteral(
   const suffix = units[range.end + 1];
   return apostrophe?.kind === "symbol" &&
     isOneOf(apostrophe.source, policies.elisionPunctuation) &&
-    suffix !== undefined && programBase(suffix, bucketAlphabet) === "s";
+    suffix !== undefined &&
+    Array.from(policies.standingSuffixes).some((letter) => letter === programBase(suffix, bucketAlphabet));
 }
 
 function dashComponentAt(

@@ -15,7 +15,8 @@ export const COMPOSITION_POLICY_RULE_IDS: readonly string[] = [
   "UEB-policy-elision-punctuation",
   "UEB-policy-lower-punctuation",
   "UEB-policy-opening-standing-punctuation",
-  "UEB-policy-standing-boundaries"
+  "UEB-policy-standing-boundaries",
+  "UEB-policy-standing-suffixes"
 ];
 export const GRADE1_SYMBOL_RULE_IDS: readonly string[] = [
   "UEB-symbol-21",

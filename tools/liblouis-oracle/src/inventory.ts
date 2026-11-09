@@ -1,5 +1,6 @@
 import { GRADE2_CONTEXTUAL_RULES } from "../../../rules/ueb-2024/program.js";
 import type { ContextualRuleSource } from "../../../rules/ueb-2024/contextual-compiler.js";
+import { guardText } from "../../../rules/ueb-2024/contextual-engine.js";
 import { traceGrade2 } from "../../../src/grade2-diagnostics.js";
 import { translateGrade1 } from "../../../src/grade1.js";
 import { translateGrade2 } from "../../../src/grade2.js";
@@ -143,8 +144,8 @@ function ruleExample(rule: ContextualRuleSource): string {
   const eligibleWord = rule.guards.find(
     (guard) => guard.kind === "eligibility-word",
   );
-  if (eligibleWord?.kind === "eligibility-word") {
-    return eligibleWord.word;
+  if (eligibleWord !== undefined) {
+    return guardText(eligibleWord, "word");
   }
   if (rule.id.endsWith("-longer-word")) {
     const example = LONGER_SHORTFORM_EXAMPLES[rule.input];
@@ -162,12 +163,9 @@ function ruleExample(rule: ContextualRuleSource): string {
   ) {
     return rule.input;
   }
-  const following = rule.guards.find(
-    (guard): guard is Extract<ContextualRuleSource["guards"][number], { kind: "following" }> =>
-      guard.kind === "following",
-  );
+  const following = rule.guards.find((guard) => guard.kind === "following");
   if (following !== undefined) {
-    return `a${rule.input}${following.characters.charAt(0)}`;
+    return `a${rule.input}${guardText(following, "characters").charAt(0)}`;
   }
   if (guardKinds.has("not-word-start") || guardKinds.has("preceded-by-letter")) {
     return `a${rule.input}`;

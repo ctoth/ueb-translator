@@ -1,5 +1,5 @@
 import { sourceData } from "./source-manifest.js";
-import { readTechnicalSignMappings, readSymbolRules, readTechnicalDelimiterRules, readTechnicalModifierRules, readTechnicalScriptRules, readTechnicalShapeRules, readTechnicalItemRules, readTechnicalValuePatterns, readTechnicalOperationSpacingRules, readTechnicalGrade1ProtectionRules, readTechnicalFunctionSpacingRules, readTechnicalNumericContinuationRules, readTechnicalComputerWhitespaceRules } from "./rule-json.js";
+import { readTechnicalSignMappings, readSymbolRules, readTechnicalDelimiterRules, readTechnicalModifierRules, readTechnicalScriptRules, readTechnicalShapeRules, readTechnicalItemRules, readTechnicalValuePatterns, readTechnicalOperationSpacingRules, readTechnicalGrade1ProtectionRules, readTechnicalFunctionSpacingRules, readTechnicalNumericContinuationRules, readTechnicalComputerWhitespaceRules, readTechnicalLayoutRules } from "./rule-json.js";
 import { loadSymbolProgram } from "../../src/symbol-program.js";
 import { TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
 import type { RuleCitation } from "./source.js";
@@ -15,10 +15,7 @@ export const TECHNICAL_SIGN_MAPPINGS: Pick<TechnicalSignProgram, "operations" | 
 export const TECHNICAL_SYMBOL_RULES: readonly SymbolRuleSource[] = readSymbolRules(sourceData("technical", "symbols"));
 
 interface TechnicalRuleSource<Definitions> {
-  readonly citation: RuleCitation<
-    "ICEB", "Unified English Braille: Guidelines for Technical Material (2014)",
-    string, "https://iceb.org/publications/ueb/"
-  >;
+  readonly citation: RuleCitation;
   readonly definitions: Definitions;
 }
 export type TechnicalScriptSource = TechnicalRuleSource<TechnicalSignProgram["scripts"]>;
@@ -59,10 +56,7 @@ export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = r
 export interface TechnicalOperationSpacingSource {
   readonly international: TechnicalRuleSource<TechnicalSignProgram["operationSpacing"]["international"]>;
   readonly "bana-2026": {
-    readonly citation: RuleCitation<
-      "BANA", "Guidance on Transcribing Mathematics and Science in UEB (2026)",
-      string, "https://brailleauthority.org/node/50"
-    >;
+    readonly citation: RuleCitation;
     readonly definitions: TechnicalSignProgram["operationSpacing"]["bana-2026"];
   };
 }
@@ -70,10 +64,7 @@ export interface TechnicalOperationSpacingSource {
 export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource = readTechnicalOperationSpacingRules(sourceData("technical", "spacing"));
 
 export interface TechnicalGrade1ProtectionSource {
-  readonly citation: RuleCitation<
-    "ICEB", "Guidelines for Technical Material: replacement Section 1.7 (2025)",
-    string, "https://iceb.org/publications/ueb/"
-  >;
+  readonly citation: RuleCitation;
   readonly definitions: TechnicalSignProgram["grade1Protection"];
 }
 
@@ -87,10 +78,7 @@ export type TechnicalFunctionSpacingSource = TechnicalRuleSource<{
 export const TECHNICAL_FUNCTION_SPACING_RULES: TechnicalFunctionSpacingSource = readTechnicalFunctionSpacingRules(sourceData("technical", "functionSpacing"));
 
 export interface TechnicalNumericContinuationSource {
-  readonly citation: RuleCitation<
-    "ICEB", "Guidelines for Technical Material: Grade 1 Indicators (July 2025)",
-    string, "https://iceb.org/publications/ueb/"
-  >;
+  readonly citation: RuleCitation;
   readonly definitions: TechnicalSignProgram["numericContinuation"];
 }
 
@@ -99,6 +87,13 @@ export const TECHNICAL_NUMERIC_CONTINUATION_RULES: TechnicalNumericContinuationS
 export type TechnicalComputerWhitespaceSource = TechnicalRuleSource<TechnicalSignProgram["computerWhitespace"]>;
 
 export const TECHNICAL_COMPUTER_WHITESPACE_RULES: TechnicalComputerWhitespaceSource = readTechnicalComputerWhitespaceRules(sourceData("technical", "computerWhitespace"));
+
+export interface TechnicalLayoutSource {
+  readonly citations: readonly RuleCitation[];
+  readonly definitions: TechnicalSignProgram["layouts"];
+}
+
+export const TECHNICAL_LAYOUT_RULES: TechnicalLayoutSource = readTechnicalLayoutRules(sourceData("technical", "layouts"));
 
 export function compileTechnicalSigns(
   general: readonly SymbolRuleSource[],
@@ -115,6 +110,7 @@ export function compileTechnicalSigns(
   functionSpacing: TechnicalFunctionSpacingSource,
   numericContinuation: TechnicalNumericContinuationSource,
   computerWhitespace: TechnicalComputerWhitespaceSource,
+  layouts: TechnicalLayoutSource,
 ): TechnicalSignProgram {
   const compiled = compileSymbols([...general, ...additional]).runtime;
   const runtime = loadSymbolProgram(compiled);
@@ -158,11 +154,11 @@ export function compileTechnicalSigns(
     return { ...rule, pattern: new RegExp(rule.pattern, rule.flags).source };
   });
   const additionalPrints = new Set(additional.map((rule) => rule.print));
-  for (const source of [scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], protection, functionSpacing, numericContinuation, computerWhitespace]) {
-    const authority = source.citation.authority;
+  for (const citation of [...[scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], protection, functionSpacing, numericContinuation, computerWhitespace].map((source) => source.citation), ...layouts.citations]) {
+    const authority = citation.authority;
     const officialHost = authority === "BANA" ? "https://brailleauthority.org/" : "https://iceb.org/";
-    if (source.citation.locator.trim().length === 0 ||
-      !source.citation.url.startsWith(officialHost)) {
+    if (citation.locator.trim().length === 0 ||
+      !citation.url.startsWith(officialHost)) {
       throw new Error(`Technical definitions lack an official ${authority} citation.`);
     }
   }
@@ -221,6 +217,7 @@ export function compileTechnicalSigns(
     }
   }
   return {
+    layouts: layouts.definitions,
     computerWhitespace: { ...whitespace },
     numericContinuation: {
       precedingKinds: [...numericContinuation.definitions.precedingKinds],

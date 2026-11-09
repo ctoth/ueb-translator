@@ -106,5 +106,14 @@
       "-"
     ],
     "name": "standingBoundaries"
+  },
+  {
+    "citation": {
+      "source": "ueb-2024",
+      "locator": "2.6"
+    },
+    "id": "UEB-policy-standing-suffixes",
+    "members": ["s"],
+    "name": "standingSuffixes"
   }
 ]

@@ -45,6 +45,552 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
       "uppercasePrint": null
     }
   ],
+  "layouts": {
+    "chemical-element": {
+      "children": [
+        {
+          "name": "symbol",
+          "render": "value",
+          "field": "symbol",
+          "pattern": "chemical-element",
+          "invalid": "chemical-element",
+          "standing": true
+        }
+      ],
+      "parts": [
+        {
+          "child": "symbol"
+        }
+      ]
+    },
+    "comparison": {
+      "children": [
+        {
+          "name": "left",
+          "render": "expression",
+          "field": "left"
+        },
+        {
+          "name": "right",
+          "render": "expression",
+          "field": "right"
+        }
+      ],
+      "parts": [
+        {
+          "child": "left"
+        },
+        {
+          "space": "always"
+        },
+        {
+          "symbol": [
+            "comparisons",
+            {
+              "field": "comparison"
+            }
+          ]
+        },
+        {
+          "space": "always"
+        },
+        {
+          "child": "right"
+        }
+      ]
+    },
+    "function": {
+      "children": [
+        {
+          "name": "name",
+          "render": "value",
+          "field": "name",
+          "pattern": "function-name",
+          "invalid": "function-name",
+          "standing": false
+        },
+        {
+          "name": "argument",
+          "render": "expression",
+          "field": "argument"
+        }
+      ],
+      "parts": [
+        {
+          "child": "name"
+        },
+        {
+          "space": "letter",
+          "before": "argument"
+        },
+        {
+          "child": "argument"
+        }
+      ]
+    },
+    "general-fraction": {
+      "children": [
+        {
+          "name": "numerator",
+          "render": "expression",
+          "field": "numerator"
+        },
+        {
+          "name": "denominator",
+          "render": "expression",
+          "field": "denominator"
+        }
+      ],
+      "parts": [
+        {
+          "sign": [
+            "delimiters",
+            "fractionOpen"
+          ],
+          "require": "symbol"
+        },
+        {
+          "child": "numerator"
+        },
+        {
+          "sign": [
+            "delimiters",
+            "fractionLine"
+          ]
+        },
+        {
+          "child": "denominator"
+        },
+        {
+          "sign": [
+            "delimiters",
+            "fractionClose"
+          ]
+        }
+      ]
+    },
+    "group": {
+      "children": [
+        {
+          "name": "content",
+          "render": "expression",
+          "field": "content"
+        }
+      ],
+      "parts": [
+        {
+          "sign": [
+            "delimiters",
+            "enclosures",
+            {
+              "field": "enclosure"
+            },
+            "open"
+          ]
+        },
+        {
+          "child": "content",
+          "widen": [
+            "standing-symbol",
+            "standing-word"
+          ]
+        },
+        {
+          "sign": [
+            "delimiters",
+            "enclosures",
+            {
+              "field": "enclosure"
+            },
+            "close"
+          ]
+        }
+      ]
+    },
+    "identifier": {
+      "children": [
+        {
+          "name": "value",
+          "render": "value",
+          "field": "value",
+          "pattern": "identifier",
+          "invalid": "identifier",
+          "standing": true
+        }
+      ],
+      "parts": [
+        {
+          "child": "value"
+        }
+      ]
+    },
+    "modifier": {
+      "children": [
+        {
+          "name": "item",
+          "render": "expression",
+          "field": "item"
+        }
+      ],
+      "parts": [
+        {
+          "child": "item"
+        },
+        {
+          "sign": [
+            "modifiers",
+            {
+              "field": "modifier"
+            }
+          ],
+          "require": "symbol"
+        }
+      ]
+    },
+    "negation": {
+      "children": [
+        {
+          "name": "operand",
+          "render": "expression",
+          "field": "operand"
+        }
+      ],
+      "parts": [
+        {
+          "symbol": [
+            "operations",
+            "minus"
+          ]
+        },
+        {
+          "child": "operand"
+        }
+      ]
+    },
+    "number": {
+      "children": [
+        {
+          "name": "value",
+          "render": "value",
+          "field": "value",
+          "pattern": "number",
+          "invalid": "number",
+          "standing": false
+        }
+      ],
+      "parts": [
+        {
+          "child": "value"
+        }
+      ]
+    },
+    "operation": {
+      "children": [
+        {
+          "name": "left",
+          "render": "expression",
+          "field": "left"
+        },
+        {
+          "name": "right",
+          "render": "expression",
+          "field": "right"
+        }
+      ],
+      "parts": [
+        {
+          "child": "left"
+        },
+        {
+          "space": "operation"
+        },
+        {
+          "symbol": [
+            "operations",
+            {
+              "field": "operation"
+            }
+          ]
+        },
+        {
+          "space": "operation"
+        },
+        {
+          "child": "right"
+        }
+      ]
+    },
+    "radical": {
+      "select": {
+        "field": "root"
+      },
+      "cases": {
+        "indexed": {
+          "children": [
+            {
+              "name": "radicand",
+              "render": "expression",
+              "field": "radicand"
+            },
+            {
+              "name": "index",
+              "render": "script",
+              "field": "index"
+            }
+          ],
+          "parts": [
+            {
+              "sign": [
+                "delimiters",
+                "radicalOpen"
+              ],
+              "require": "symbol"
+            },
+            {
+              "sign": [
+                "scripts",
+                "right-superscript",
+                "indicator"
+              ],
+              "require": "symbol"
+            },
+            {
+              "child": "index"
+            },
+            {
+              "child": "radicand"
+            },
+            {
+              "sign": [
+                "delimiters",
+                "radicalClose"
+              ]
+            }
+          ]
+        },
+        "square": {
+          "children": [
+            {
+              "name": "radicand",
+              "render": "expression",
+              "field": "radicand"
+            }
+          ],
+          "parts": [
+            {
+              "sign": [
+                "delimiters",
+                "radicalOpen"
+              ],
+              "require": "symbol"
+            },
+            {
+              "child": "radicand"
+            },
+            {
+              "sign": [
+                "delimiters",
+                "radicalClose"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "script": {
+      "select": {
+        "sign": [
+          "scripts",
+          {
+            "field": "placement"
+          },
+          "position"
+        ]
+      },
+      "cases": {
+        "after": {
+          "children": [
+            {
+              "name": "base",
+              "render": "expression",
+              "field": "base"
+            },
+            {
+              "name": "script",
+              "render": "script",
+              "field": "script"
+            }
+          ],
+          "parts": [
+            {
+              "child": "base"
+            },
+            {
+              "sign": [
+                "scripts",
+                {
+                  "field": "placement"
+                },
+                "indicator"
+              ],
+              "require": "symbol"
+            },
+            {
+              "child": "script"
+            }
+          ]
+        },
+        "before": {
+          "children": [
+            {
+              "name": "base",
+              "render": "expression",
+              "field": "base"
+            },
+            {
+              "name": "script",
+              "render": "script",
+              "field": "script"
+            }
+          ],
+          "parts": [
+            {
+              "sign": [
+                "scripts",
+                {
+                  "field": "placement"
+                },
+                "indicator"
+              ],
+              "require": "symbol"
+            },
+            {
+              "child": "script"
+            },
+            {
+              "child": "base"
+            }
+          ]
+        }
+      }
+    },
+    "sequence": {
+      "sequence": "items"
+    },
+    "shape": {
+      "select": {
+        "field": "terminator"
+      },
+      "cases": {
+        "omitted": {
+          "children": [],
+          "parts": [
+            {
+              "sign": [
+                "shapes",
+                "fills",
+                {
+                  "field": "fill"
+                }
+              ],
+              "require": "symbol",
+              "requireCells": 1
+            },
+            {
+              "sign": [
+                "shapes",
+                "names",
+                {
+                  "field": "shape"
+                }
+              ]
+            }
+          ]
+        },
+        "present": {
+          "children": [],
+          "parts": [
+            {
+              "sign": [
+                "shapes",
+                "fills",
+                {
+                  "field": "fill"
+                }
+              ],
+              "require": "symbol",
+              "requireCells": 1
+            },
+            {
+              "sign": [
+                "shapes",
+                "names",
+                {
+                  "field": "shape"
+                }
+              ]
+            },
+            {
+              "sign": [
+                "shapes",
+                "terminator"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "simple-arrow": {
+      "children": [],
+      "parts": [
+        {
+          "symbol": [
+            "arrows",
+            {
+              "field": "direction"
+            }
+          ],
+          "require": "symbol",
+          "requireCells": 1
+        }
+      ]
+    },
+    "simple-fraction": {
+      "children": [
+        {
+          "name": "numerator",
+          "render": "value",
+          "field": "numerator",
+          "pattern": "number",
+          "invalid": "simple-fraction-numerator",
+          "standing": false
+        },
+        {
+          "name": "denominator",
+          "render": "value",
+          "field": "denominator",
+          "pattern": "number",
+          "invalid": "simple-fraction-denominator",
+          "standing": false
+        }
+      ],
+      "parts": [
+        {
+          "child": "numerator"
+        },
+        {
+          "sign": [
+            "delimiters",
+            "simpleFractionLine"
+          ]
+        },
+        {
+          "child": "denominator",
+          "withoutNumericIndicator": true
+        }
+      ]
+    }
+  },
   "arrows": {
     "down": "↓",
     "down-left": "↙",

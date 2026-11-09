@@ -1,49 +1,51 @@
-export const CONTEXTUAL_GUARD_SCHEMA = {
-  eligibilityWord: { opcode: 0, operands: "two-string" },
-  firstSyllable: { opcode: 1, operands: "none" },
-  following: { opcode: 17, operands: "string" },
-  followingNotVowelY: { opcode: 2, operands: "string" },
-  followingNotVowelYExceptWords: { opcode: 22, operands: "two-string" },
-  lowerSignEnoughOrIn: { opcode: 3, operands: "none" },
-  notBoundary: { opcode: 4, operands: "boundary" },
-  notCrossing: { opcode: 5, operands: "boundary" },
-  notWord: { opcode: 6, operands: "two-string" },
-  notStandingWord: { opcode: 20, operands: "two-string" },
-  notStandingMatch: { opcode: 21, operands: "string" },
-  notWordEnding: { opcode: 7, operands: "string" },
-  notWordEnd: { opcode: 8, operands: "none" },
-  notWordStart: { opcode: 9, operands: "none" },
-  notWholeWord: { opcode: 10, operands: "none" },
-  previousNot: { opcode: 11, operands: "string" },
-  standingAlone: { opcode: 12, operands: "none" },
-  wordEnd: { opcode: 13, operands: "none" },
-  wordInternal: { opcode: 14, operands: "none" },
-  wordStart: { opcode: 15, operands: "none" },
-  wordWithAffixes: { opcode: 18, operands: "string" },
-  precededByLetter: { opcode: 19, operands: "none" },
-  lowerSignOther: { opcode: 16, operands: "none" },
-  stableFollowingModes: { opcode: 23, operands: "none" },
-  stableAdjacentModes: { opcode: 24, operands: "none" },
-} as const;
+import { CONTEXTUAL_ENGINE } from "./generated/contextual-engine.ts";
+import type { ContextualGuardTuple } from "./contextual-transducer.js";
 
-type ContextualGuardSchema =
-  (typeof CONTEXTUAL_GUARD_SCHEMA)[keyof typeof CONTEXTUAL_GUARD_SCHEMA];
+type Engine = typeof CONTEXTUAL_ENGINE;
+type ContextualGuardSchema = Engine["guards"][number];
 
-export type ContextualGuardOpcode = ContextualGuardSchema["opcode"];
-export type ContextualGuardOperandKind = ContextualGuardSchema["operands"];
+export type ContextualGuardOpcode = ContextualGuardSchema[0];
+export type ContextualGuardOperandKind = ContextualGuardSchema[1];
 export type ContextualGuardOpcodeWith<
   OperandKind extends ContextualGuardOperandKind,
-> = Extract<ContextualGuardSchema, { readonly operands: OperandKind }>["opcode"];
+> = Extract<ContextualGuardSchema, readonly [number, OperandKind]>[0];
 
-export const CONTEXTUAL_BOUNDARY_MASKS = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-  21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-] as const;
-export type ContextualBoundaryMask = (typeof CONTEXTUAL_BOUNDARY_MASKS)[number];
+export const CONTEXTUAL_GUARDS: readonly ContextualGuardSchema[] = CONTEXTUAL_ENGINE.guards;
+export const CONTEXTUAL_BOUNDARY_BITS: Engine["boundaries"] = CONTEXTUAL_ENGINE.boundaries;
+export type ContextualBoundaryKind = keyof Engine["boundaries"];
+export const CONTEXTUAL_BOUNDARY_MASKS: Engine["boundaryMasks"] = CONTEXTUAL_ENGINE.boundaryMasks;
+export type ContextualBoundaryMask = Engine["boundaryMasks"][number];
+export const CONTEXTUAL_PRECEDENCES: Engine["precedences"] = CONTEXTUAL_ENGINE.precedences;
+export type ContextualPrecedence = Engine["precedences"][number];
 
-export const CONTEXTUAL_PRECEDENCES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
-export type ContextualPrecedence = (typeof CONTEXTUAL_PRECEDENCES)[number];
+function hasShape<Kind extends ContextualGuardOperandKind>(
+  opcode: unknown,
+  kind: Kind,
+): opcode is ContextualGuardOpcodeWith<Kind> {
+  return CONTEXTUAL_GUARDS.some(([candidate, shape]) => candidate === opcode && shape === kind);
+}
+function isIndex(value: unknown, count: number): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 && value < count;
+}
+export function isContextualBoundaryMask(value: unknown): value is ContextualBoundaryMask {
+  return CONTEXTUAL_BOUNDARY_MASKS.some((mask) => mask === value);
+}
+export function isContextualPrecedence(value: unknown): value is ContextualPrecedence {
+  return CONTEXTUAL_PRECEDENCES.some((precedence) => precedence === value);
+}
 
+/** Check one compiled guard against the engine ABI; string operands index a table of the given size. */
+export function contextualGuardTuple(guard: readonly unknown[], stringOperandCount: number): ContextualGuardTuple {
+  const [opcode, first, second] = guard;
+  if (guard.length === 1 && hasShape(opcode, "none")) return [opcode];
+  if (guard.length === 2 && hasShape(opcode, "string") && isIndex(first, stringOperandCount)) return [opcode, first];
+  if (guard.length === 3 && hasShape(opcode, "two-string") &&
+    isIndex(first, stringOperandCount) && isIndex(second, stringOperandCount)) return [opcode, first, second];
+  if (guard.length === 2 && hasShape(opcode, "boundary") && isContextualBoundaryMask(first)) return [opcode, first];
+  throw new Error("Compiled contextual program has a malformed guard.");
+}
+
+/** Fixed-width integers are stored as one UTF-16 code unit at this offset. */
+export const CONTEXTUAL_COMPACT_INTEGER_OFFSET: number = CONTEXTUAL_ENGINE.compactIntegers.offset;
 /** Largest integer whose fixed-width encoding remains outside UTF-16 surrogate space. */
-export const CONTEXTUAL_COMPACT_INTEGER_MAX = 0xd6ff;
+export const CONTEXTUAL_COMPACT_INTEGER_MAX: number = CONTEXTUAL_ENGINE.compactIntegers.max;

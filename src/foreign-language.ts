@@ -5,6 +5,7 @@ import {
 } from "./composition.js";
 import {
   GRADE1_MODE_PROGRAM,
+  GRADE1_RUNTIME_FACTS,
   GRADE1_SYMBOL_PROGRAM,
   UEB_COMPOSITION_POLICIES,
 } from "./generated/ueb-2024/grade1-program.js";
@@ -13,7 +14,12 @@ import type {
   SymbolProgram,
 } from "./symbol-program.js";
 
-export type ForeignLanguage = "de" | "fr";
+/** ICEB 2024 Sections 13-14: foreign-code packages, all from runtime-facts.json foreignCode. */
+type ForeignFacts = typeof GRADE1_RUNTIME_FACTS.foreignCode;
+const FOREIGN: ForeignFacts = GRADE1_RUNTIME_FACTS.foreignCode;
+const LANGUAGES: ForeignFacts["languages"] = FOREIGN.languages;
+
+export type ForeignLanguage = keyof ForeignFacts["languages"];
 export type ForeignLanguageCode = "foreign" | "ueb";
 
 export interface ForeignLanguageRun {
@@ -23,75 +29,34 @@ export interface ForeignLanguageRun {
   readonly text: string;
 }
 
-export const NON_UEB_WORD_INDICATOR = "⠘⠷";
-export const NON_UEB_WORD_TERMINATOR = "⠘⠾";
-export const NON_UEB_PASSAGE_INDICATOR = "⠐⠷⠄";
-export const NON_UEB_PASSAGE_TERMINATOR = "⠠⠐⠾";
+export const NON_UEB_WORD_INDICATOR: string = FOREIGN.nonUebIndicators.word;
+export const NON_UEB_WORD_TERMINATOR: string = FOREIGN.nonUebIndicators.wordTerminator;
+export const NON_UEB_PASSAGE_INDICATOR: string = FOREIGN.nonUebIndicators.passage;
+export const NON_UEB_PASSAGE_TERMINATOR: string = FOREIGN.nonUebIndicators.passageTerminator;
 
 interface ForeignCodePackage {
   readonly symbols: SymbolProgram;
 }
 
-function letter(
-  print: string,
-  braille: string,
-): CompiledSymbol {
-  return {
-    braille,
-    kind: "letter",
-    numericDigit: null,
-    print,
-    uppercasePrint: uppercaseForeignPrint(print),
-  };
+function uppercaseForeignPrint(language: ForeignLanguage, print: string): string {
+  const exceptions: Readonly<Record<string, string>> = LANGUAGES[language].uppercase;
+  return Object.hasOwn(exceptions, print) ? exceptions[print] ?? print : print.toUpperCase();
 }
 
-function uppercaseForeignPrint(print: string): string {
-  return print === "ß" ? "ẞ" : print.toUpperCase();
-}
-
+const BASE_LETTER = new RegExp(FOREIGN.baseLetters, "u");
 const LATIN = GRADE1_SYMBOL_PROGRAM.symbols.filter((symbol) =>
-  symbol.kind === "letter" && /^[a-z]$/u.test(symbol.print)
+  symbol.kind === "letter" && BASE_LETTER.test(symbol.print)
 );
 
-function foreignPackage(
-  replacements: readonly CompiledSymbol[],
-): ForeignCodePackage {
-  const replaced = new Set(replacements.map((symbol) => symbol.print));
+function foreignPackage(language: ForeignLanguage): ForeignCodePackage {
+  const letters: Readonly<Record<string, string>> = LANGUAGES[language].letters;
+  const replacements = Object.entries(letters).map(([print, braille]): CompiledSymbol => ({
+    braille, kind: "letter", numericDigit: null, print, uppercasePrint: uppercaseForeignPrint(language, print),
+  }));
   return {
-    symbols: {
-      symbols: [
-        ...LATIN.filter((symbol) => !replaced.has(symbol.print)),
-        ...replacements,
-      ],
-    },
+    symbols: { symbols: [...LATIN.filter((symbol) => !Object.hasOwn(letters, symbol.print)), ...replacements] },
   };
 }
-
-/* ICEB 2024 Section 13 foreign-code sign list and Section 14 sign table. */
-const FOREIGN_CODE_PACKAGES = {
-  de: foreignPackage([
-    letter("ä", "⠜"),
-    letter("ö", "⠪"),
-    letter("ü", "⠳"),
-    letter("ß", "⠮"),
-  ]),
-  fr: foreignPackage([
-    letter("à", "⠷"),
-    letter("â", "⠡"),
-    letter("ç", "⠯"),
-    letter("é", "⠿"),
-    letter("è", "⠮"),
-    letter("ê", "⠣"),
-    letter("ë", "⠫"),
-    letter("î", "⠩"),
-    letter("ï", "⠻"),
-    letter("ô", "⠹"),
-    letter("œ", "⠪"),
-    letter("ù", "⠾"),
-    letter("û", "⠱"),
-    letter("ü", "⠳"),
-  ]),
-} satisfies Readonly<Record<ForeignLanguage, ForeignCodePackage>>;
 
 const UEB_UNCONTRACTED_TRANSLATOR = compose(
   GRADE1_SYMBOL_PROGRAM,
@@ -99,23 +64,40 @@ const UEB_UNCONTRACTED_TRANSLATOR = compose(
   UEB_COMPOSITION_POLICIES,
 );
 
-const FOREIGN_TRANSLATORS: Readonly<Record<ForeignLanguage, ComposedTranslator>> = {
-  de: compose(
-    FOREIGN_CODE_PACKAGES.de.symbols,
-    GRADE1_MODE_PROGRAM,
-    UEB_COMPOSITION_POLICIES,
-  ),
-  fr: compose(
-    FOREIGN_CODE_PACKAGES.fr.symbols,
-    GRADE1_MODE_PROGRAM,
-    UEB_COMPOSITION_POLICIES,
-  ),
-};
+interface ForeignCode {
+  readonly capital: string;
+  readonly inverse: ReadonlyMap<string, readonly string[]>;
+  readonly translator: ComposedTranslator;
+}
 
-const FOREIGN_CAPITAL_SIGNS = {
-  de: "⠠",
-  fr: "⠨",
-} satisfies Readonly<Record<ForeignLanguage, string>>;
+function inverseLetters(symbols: SymbolProgram): ReadonlyMap<string, readonly string[]> {
+  const inverse = new Map<string, string[]>();
+  for (const symbol of symbols.symbols) {
+    inverse.set(symbol.braille, [...(inverse.get(symbol.braille) ?? []), symbol.print]);
+  }
+  return inverse;
+}
+
+/** Every built-in foreign-code language, in runtime-facts.json order. */
+export const FOREIGN_LANGUAGES: readonly ForeignLanguage[] =
+  Object.keys(LANGUAGES).filter((name): name is ForeignLanguage => Object.hasOwn(LANGUAGES, name));
+
+const FOREIGN_CODES: ReadonlyMap<string, ForeignCode> = new Map(
+  FOREIGN_LANGUAGES.map((language) => {
+    const { symbols } = foreignPackage(language);
+    return [language, {
+      capital: LANGUAGES[language].capital,
+      inverse: inverseLetters(symbols),
+      translator: compose(symbols, GRADE1_MODE_PROGRAM, UEB_COMPOSITION_POLICIES),
+    }];
+  }),
+);
+
+function foreignCode(language: ForeignLanguage): ForeignCode {
+  const code = FOREIGN_CODES.get(language);
+  if (code === undefined) throw new Error(`No foreign-code package for ${language}.`);
+  return code;
+}
 
 function sequenceCount(text: string): number {
   let count = 0;
@@ -145,12 +127,13 @@ export function translateForeignLanguageRun(
   if (run.code === "ueb") {
     return UEB_UNCONTRACTED_TRANSLATOR.translate(run.text);
   }
+  const code = foreignCode(run.language);
   let braille = "";
   let codeUnitIndex = 0;
   let scalarIndex = 0;
   for (const value of run.text) {
     const lowercase = value.toLowerCase();
-    const translated = FOREIGN_TRANSLATORS[run.language].translate(lowercase);
+    const translated = code.translator.translate(lowercase);
     if (!translated.ok) {
       return {
         ...translated,
@@ -158,8 +141,7 @@ export function translateForeignLanguageRun(
         scalarIndex: scalarIndex + translated.scalarIndex,
       };
     }
-    braille += (value === lowercase ? "" : FOREIGN_CAPITAL_SIGNS[run.language]) +
-      translated.braille;
+    braille += (value === lowercase ? "" : code.capital) + translated.braille;
     codeUnitIndex += value.length;
     scalarIndex += 1;
   }
@@ -170,49 +152,33 @@ export function translateForeignLanguageRun(
   };
 }
 
-function inverseLetters(
-  language: ForeignLanguage,
-): ReadonlyMap<string, readonly string[]> {
-  const inverse = new Map<string, string[]>();
-  for (const symbol of FOREIGN_CODE_PACKAGES[language].symbols.symbols) {
-    const prints = inverse.get(symbol.braille) ?? [];
-    prints.push(symbol.print);
-    inverse.set(symbol.braille, prints);
-  }
-  return inverse;
-}
-
-const FOREIGN_INVERSES: Readonly<Record<ForeignLanguage, ReadonlyMap<string, readonly string[]>>> = {
-  de: inverseLetters("de"),
-  fr: inverseLetters("fr"),
-};
-
-/** Decode the finite built-in French or German foreign-code symbol package. */
+/** Decode a built-in foreign-code symbol package. */
 export function decodeForeignLanguageBraille(
   braille: string,
   language: ForeignLanguage,
 ): readonly string[] {
+  const code = foreignCode(language);
   let candidates = [{ capital: false, print: "" }];
   for (const cell of braille) {
-    if (cell === FOREIGN_CAPITAL_SIGNS[language]) {
+    if (cell === code.capital) {
       candidates = candidates
         .filter((candidate) => !candidate.capital)
         .map((candidate) => ({ ...candidate, capital: true }));
       continue;
     }
-    if (cell === "⠀") {
+    if (cell === GRADE1_RUNTIME_FACTS.whitespace.blank) {
       candidates = candidates
         .filter((candidate) => !candidate.capital)
         .map((candidate) => ({ ...candidate, print: candidate.print + " " }));
       continue;
     }
-    const prints = FOREIGN_INVERSES[language].get(cell);
+    const prints = code.inverse.get(cell);
     if (prints === undefined) return [];
     candidates = candidates.flatMap((candidate) =>
       prints.map((print) => ({
         capital: false,
         print: candidate.print +
-          (candidate.capital ? uppercaseForeignPrint(print) : print),
+          (candidate.capital ? uppercaseForeignPrint(language, print) : print),
       }))
     );
   }

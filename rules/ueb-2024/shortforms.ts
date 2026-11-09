@@ -1,5 +1,5 @@
-import { sourceData } from "./source-manifest.js";
-import { readShortforms } from "./rule-json.js";
+import { expansionTable } from "./expansion.js";
+import { readExpandedShortform } from "./rule-json.js";
 import type { IcebRuleCitation } from "./source.js";
 
 export type ShortformRuleId = string;
@@ -11,4 +11,4 @@ export interface ShortformSource {
   readonly print: string;
 }
 
-export const SHORTFORMS: readonly ShortformSource[] = readShortforms(sourceData("shortforms"));
+export const SHORTFORMS: readonly ShortformSource[] = expansionTable("shortforms").map(readExpandedShortform);

@@ -1,100 +1,31 @@
 import { CITATION_DOCUMENT_DATA } from "./source-manifest.js";
 
-export type Grade2RuleLocator =
-  | "10.1"
-  | "10.2"
-  | "10.3"
-  | "10.4"
-  | "10.5"
-  | "10.6"
-  | "10.7"
-  | "10.8";
+/** A citation is a document from citation-documents.json plus the locator its source JSON names. */
+export interface RuleCitation {
+  readonly authority: string;
+  readonly document: string;
+  readonly locator: string;
+  readonly url: string;
+}
+export type IcebRuleCitation = RuleCitation;
 
-export type ShortformLocator = "10.9 and Appendix 1";
-export type CompositionPolicyLocator = "2.6" | "10.5";
-export type Grade1RuleLocator =
-  | "3"
-  | "4.1.1"
-  | "4.2.1"
-  | "4.3"
-  | "4.4.1"
-  | "4.5.1"
-  | "4.6.1"
-  | "5"
-  | "6.1.1"
-  | "6.1-6.5"
-  | "7"
-  | "8.3-8.6"
-  | "9.2-9.4"
-  | `Symbols list: U+${string}`;
-export type Grade2ConstraintLocator =
-  | "10.3.1"
-  | "10.6.1"
-  | "10.10"
-  | "10.7.2"
-  | "10.7.3"
-  | "10.7.4"
-  | "10.7.5"
-  | "10.7.6"
-  | "10.7.7"
-  | "10.7.8"
-  | "10.7.9"
-  | "10.8.3"
-  | "10.8.4";
-export type IcebRuleLocator =
-  | Grade1RuleLocator
-  | Grade2ConstraintLocator
-  | Grade2RuleLocator
-  | CompositionPolicyLocator
-  | ShortformLocator;
-
-export interface RuleCitation<
-  Authority extends string = string,
-  Document extends string = string,
-  Locator extends string = string,
-  Url extends string = string,
-> {
-  readonly authority: Authority;
-  readonly document: Document;
-  readonly locator: Locator;
-  readonly url: Url;
+function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export type IcebRuleCitation<
-  Locator extends IcebRuleLocator = IcebRuleLocator,
-> = RuleCitation<
-  "ICEB",
-  "Rules of Unified English Braille, Third Edition (2024)",
-  Locator,
-  "https://iceb.org/publications/ueb/"
->;
-
-export function citeIceb<const Locator extends IcebRuleLocator>(
-  locator: Locator,
-): IcebRuleCitation<Locator> {
-  if (typeof CITATION_DOCUMENT_DATA !== "object" || CITATION_DOCUMENT_DATA === null ||
-    !("ueb-2024" in CITATION_DOCUMENT_DATA)) throw new Error("Missing UEB book document.");
-  const book = CITATION_DOCUMENT_DATA["ueb-2024"];
-  if (typeof book !== "object" || book === null ||
-    !("authority" in book) || !("document" in book) || !("url" in book)) {
-    throw new Error("Malformed UEB book document.");
+/** Resolve a document key and locator against citation-documents.json. */
+export function cite(source: string, locator: string): RuleCitation {
+  const documents = CITATION_DOCUMENT_DATA;
+  const document = isRecord(documents) && Object.hasOwn(documents, source) ? documents[source] : undefined;
+  if (!isRecord(document)) throw new Error(`Unknown citation document: ${source}`);
+  const { authority, document: title, url } = document;
+  if (typeof authority !== "string" || typeof title !== "string" || typeof url !== "string" ||
+    locator.trim().length === 0) {
+    throw new Error(`Malformed citation for ${source}.`);
   }
-  const { authority, document, url } = book;
-  if (authority !== "ICEB" || document !== "Rules of Unified English Braille, Third Edition (2024)" ||
-    url !== "https://iceb.org/publications/ueb/") {
-    throw new Error("Malformed UEB book document.");
-  }
-  return { authority, document, locator, url };
+  return { authority, document: title, locator, url };
 }
 
-export type TechnicalSignLocator =
-  | "Operation signs table, p. 1"
-  | "Comparison signs table, p. 1"
-  | "Comparison signs table, p. 2";
-export type TechnicalSignCitation = RuleCitation<
-  "ICEB",
-  "Guidelines for Technical Material: Section 3, Signs of Operation and Comparison (2018)",
-  TechnicalSignLocator,
-  "https://iceb.org/publications/ueb/"
->;
-
+export function citeIceb(locator: string): IcebRuleCitation {
+  return cite("ueb-2024", locator);
+}
