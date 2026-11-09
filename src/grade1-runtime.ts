@@ -462,22 +462,25 @@ function addContextClasses(
     return flags[index] === true;
   };
   /** One rule from runtime-facts.json grade1Required: every stated condition must hold. */
-  const matches = (rule: CompiledGrade1RequiredRule, index: number): boolean => {
+  const matches = (
+    rule: CompiledGrade1RequiredRule, index: number, classes: ModeUnit, previousClasses: ModeUnit | undefined,
+  ): boolean => {
     const unit = units[index];
     const before = rule.previous;
-    if (((baseModeUnits[index] ?? 0) & rule.classes) !== rule.classes) return false;
+    if ((classes & rule.classes) !== rule.classes) return false;
     if (rule.sources !== undefined && (unit === undefined || !rule.sources.includes(unit.source))) return false;
     if (before !== undefined) {
       const previous = units[index - 1];
-      if (index === 0 ? !before.start
-        : ((baseModeUnits[index - 1] ?? 0) & before.classes) === 0 &&
+      if (previousClasses === undefined ? !before.start
+        : (previousClasses & before.classes) === 0 &&
           (previous === undefined || !before.sources.includes(previous.source))) return false;
     }
     return rule.mode === undefined || active(rule.mode, index);
   };
   return baseModeUnits.map((modeUnit, index) => {
     const grade1Required = additionalGrade1Required.has(index) ||
-      GRADE1_REQUIRED_RULES.some((rule) => matches(rule, index));
+      GRADE1_REQUIRED_RULES.some((rule) =>
+        matches(rule, index, modeUnit, index === 0 ? undefined : baseModeUnits[index - 1]));
     return modeUnit |
       (grade1Required ? classMask(GRADE1_MODE_CLASS_IDS["grade1-required"]) : 0);
   });

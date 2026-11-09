@@ -17,6 +17,7 @@ it("rejects a quote rule with an unknown condition", () => {
   const units = parsed.ok ? parsed.units : [];
   expect(() => resolveContextualPunctuation(units, [{ source: "'", when: ["unknown"] }]))
     .toThrow("Unknown quote condition unknown.");
+  expect(resolveContextualPunctuation(units, [{ source: "'", close: "single", emit: "⠴" }])).toEqual(["⠴"]);
 });
 
 describe("ICEB 2024 4.1 and 8.3-8.6: letters and capitals", () => {
