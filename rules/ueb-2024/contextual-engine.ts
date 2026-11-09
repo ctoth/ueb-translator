@@ -39,7 +39,7 @@ function isGuardSchemas(value: unknown): value is Readonly<Record<string, GuardS
 function isStrings(value: unknown): value is readonly string[] {
   return Array.isArray(value) && value.every((item: unknown) => typeof item === "string");
 }
-function readEngineSchema(value: unknown): EngineSchema {
+export function readEngineSchema(value: unknown): EngineSchema {
   if (!isRecord(value)) throw new Error("Malformed contextual engine schema.");
   const { boundaries, guards } = value;
   if (!isNumbers(boundaries) || !isGuardSchemas(guards)) throw new Error("Malformed contextual engine schema.");
@@ -52,9 +52,6 @@ function schemaFor(kind: string): GuardSchema {
   const schema = CONTEXTUAL_ENGINE.guards[kind];
   if (schema === undefined || !Object.hasOwn(CONTEXTUAL_ENGINE.guards, kind)) throw new Error(`Unknown guard kind: ${kind}`);
   return schema;
-}
-function compareText(left: string, right: string): number {
-  return left < right ? -1 : left > right ? 1 : 0;
 }
 function strings(value: ContextualGuardField | undefined): readonly string[] {
   if (value === undefined || typeof value === "string") throw new Error("Contextual guard field must be a list.");
@@ -81,7 +78,7 @@ export function guardOperands(guard: ContextualRuleGuard): readonly (number | st
   return schemaFor(guard.kind).operands.map(({ field, as }) => {
     const value = guard[field];
     if (as === "text") return text(value);
-    if (as === "words") return [...strings(value)].sort(compareText).join("\u0000");
+    if (as === "words") return [...strings(value)].sort().join("\u0000");
     let mask = 0;
     for (const boundary of as === "boundary" ? [text(value)] : strings(value)) {
       const bit = CONTEXTUAL_ENGINE.boundaries[boundary];

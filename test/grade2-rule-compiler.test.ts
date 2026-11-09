@@ -19,6 +19,7 @@ import { GRADE2_INVENTORY_COUNTS, validateInventory } from "../rules/ueb-2024/in
 import { GRADE2_RULES } from "../rules/ueb-2024/grade2-rules.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
 import { compose } from "../src/composition.js";
+import { contextualGuardTuple } from "../src/contextual-schema.js";
 import {
   GRADE1_MODE_PROGRAM,
   GRADE1_SYMBOL_PROGRAM,
@@ -79,6 +80,9 @@ describe("compileContextualRules", () => {
     expect(() => {
       validateInventory(GRADE2_INVENTORY_COUNTS, { ...GRADE2_INVENTORY_COUNTS, rules: 0 });
     }).toThrow("Inventory rules");
+  });
+  it("rejects a compiled guard outside the engine ABI", () => {
+    expect(() => contextualGuardTuple([999], 0)).toThrow("malformed guard");
   });
   it("rejects an unresolved precedence overlap", () => {
     expect(() =>

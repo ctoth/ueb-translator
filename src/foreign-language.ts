@@ -40,7 +40,7 @@ interface ForeignCodePackage {
 
 function uppercaseForeignPrint(language: ForeignLanguage, print: string): string {
   const exceptions: Readonly<Record<string, string>> = LANGUAGES[language].uppercase;
-  return Object.hasOwn(exceptions, print) ? exceptions[print] ?? print : print.toUpperCase();
+  return (Object.hasOwn(exceptions, print) ? exceptions[print] : undefined) ?? print.toUpperCase();
 }
 
 const BASE_LETTER = new RegExp(FOREIGN.baseLetters, "u");
@@ -82,20 +82,19 @@ function inverseLetters(symbols: SymbolProgram): ReadonlyMap<string, readonly st
 export const FOREIGN_LANGUAGES: readonly ForeignLanguage[] =
   Object.keys(LANGUAGES).filter((name): name is ForeignLanguage => Object.hasOwn(LANGUAGES, name));
 
-const FOREIGN_CODES: ReadonlyMap<string, ForeignCode> = new Map(
-  FOREIGN_LANGUAGES.map((language) => {
-    const { symbols } = foreignPackage(language);
-    return [language, {
-      capital: LANGUAGES[language].capital,
-      inverse: inverseLetters(symbols),
-      translator: compose(symbols, GRADE1_MODE_PROGRAM, UEB_COMPOSITION_POLICIES),
-    }];
-  }),
-);
+const FOREIGN_CODES = new Map<ForeignLanguage, ForeignCode>();
 
+/** Each language's package is composed on first use and reused afterwards. */
 function foreignCode(language: ForeignLanguage): ForeignCode {
-  const code = FOREIGN_CODES.get(language);
-  if (code === undefined) throw new Error(`No foreign-code package for ${language}.`);
+  const built = FOREIGN_CODES.get(language);
+  if (built !== undefined) return built;
+  const { symbols } = foreignPackage(language);
+  const code: ForeignCode = {
+    capital: LANGUAGES[language].capital,
+    inverse: inverseLetters(symbols),
+    translator: compose(symbols, GRADE1_MODE_PROGRAM, UEB_COMPOSITION_POLICIES),
+  };
+  FOREIGN_CODES.set(language, code);
   return code;
 }
 

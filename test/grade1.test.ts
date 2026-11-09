@@ -5,10 +5,18 @@ import {
   translateGrade1,
   type Grade1Document,
 } from "../src/grade1.js";
-import { parseCompositionText } from "../src/grade1-runtime.js";
+import { parseCompositionText, resolveContextualPunctuation } from "../src/grade1-runtime.js";
 
 it("exposes the shared composition parser", () => {
   expect(parseCompositionText("a").ok).toBe(true);
+});
+
+it("rejects a quote rule with an unknown condition", () => {
+  const parsed = parseCompositionText("'");
+  expect(parsed.ok).toBe(true);
+  const units = parsed.ok ? parsed.units : [];
+  expect(() => resolveContextualPunctuation(units, [{ source: "'", when: ["unknown"] }]))
+    .toThrow("Unknown quote condition unknown.");
 });
 
 describe("ICEB 2024 4.1 and 8.3-8.6: letters and capitals", () => {

@@ -19,10 +19,14 @@ export function assembleSources(
   ]));
 }
 
-if (Object.hasOwn(manifest.sources, "documents") || Object.hasOwn(manifest.sources, "symbols")) {
-  throw new Error("Routed sources cannot replace documents or expanded symbols.");
+/** Routed sources sit beside the citation documents and the expanded symbols, never in their place. */
+export function routedSources(sources: Readonly<Record<string, unknown>>): Readonly<Record<string, unknown>> {
+  if (Object.hasOwn(sources, "documents") || Object.hasOwn(sources, "symbols")) {
+    throw new Error("Routed sources cannot replace documents or expanded symbols.");
+  }
+  return sources;
 }
-const SOURCE_DATA: Readonly<Record<string, unknown>> = assembleSources(manifest.sources, sourceFile);
+const SOURCE_DATA: Readonly<Record<string, unknown>> = assembleSources(routedSources(manifest.sources), sourceFile);
 
 export function sourceData(...path: readonly string[]): unknown {
   let node: unknown = SOURCE_DATA;

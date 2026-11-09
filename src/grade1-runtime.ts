@@ -555,7 +555,7 @@ export const CURLY_APOSTROPHE: {
   readonly print: string;
 } = { braille: GRADE1_RUNTIME_FACTS.quotes.apostrophe, print: GRADE1_RUNTIME_FACTS.quotes.apostrophePrint };
 
-interface QuoteRule {
+export interface QuoteRule {
   readonly close?: string;
   readonly continue?: boolean;
   readonly emit?: string;
@@ -573,6 +573,7 @@ const QUOTE_RULES: readonly QuoteRule[] = QUOTES.rules;
  */
 export function resolveContextualPunctuation(
   units: readonly CompositionUnit[],
+  rules: readonly QuoteRule[] = QUOTE_RULES,
 ): readonly (string | undefined)[] {
   const depth = new Map<string, number>();
   let elisionEnd = -1;
@@ -602,7 +603,7 @@ export function resolveContextualPunctuation(
           throw new Error(`Unknown quote condition ${condition}.`);
       }
     };
-    for (const rule of QUOTE_RULES) {
+    for (const rule of rules) {
       if (rule.source !== unit.source || !(rule.when ?? []).every(holds)) continue;
       if (rule.open !== undefined) depth.set(rule.open, (depth.get(rule.open) ?? 0) + 1);
       if (rule.close !== undefined) depth.set(rule.close, (depth.get(rule.close) ?? 0) - 1);

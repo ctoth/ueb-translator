@@ -9,7 +9,6 @@ import {
 
 import {
   contextualGuardTuple,
-  isContextualPrecedence,
   type ContextualPrecedence,
 } from "../../src/contextual-schema.js";
 import type { ContextualGuardTuple, ContextualRuleTuple } from "../../src/contextual-transducer.js";
@@ -148,13 +147,6 @@ function compileGuard(
 }
 
 function cloneRule(rule: ContextualRuleSource): ContextualRuleSource {
-  if (!isContextualPrecedence(rule.precedence)) {
-    throw new ContextualRuleCompilationError(
-      "unreachable-rule",
-      [rule.id],
-      `Rule ${rule.id} has precedence ${String(rule.precedence)} outside the engine range.`,
-    );
-  }
   return {
     braille: rule.braille,
     citation: { ...rule.citation },

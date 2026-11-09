@@ -4,7 +4,8 @@ import { SYMBOL_RULES } from "../rules/ueb-2024/symbols/source.js";
 import { expandSources, expansionTable } from "../rules/ueb-2024/expansion.js";
 import { GRADE2_CONTEXTUAL_RULES } from "../rules/ueb-2024/program.js";
 import type { ContextualRuleGuard } from "../rules/ueb-2024/contextual-compiler.js";
-import { guardWords } from "../rules/ueb-2024/contextual-engine.js";
+import { guardText, guardWords, readEngineSchema, readGuard } from "../rules/ueb-2024/contextual-engine.js";
+import { routedSources } from "../rules/ueb-2024/source-manifest.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
 import modeData from "../rules/ueb-2024/modes/rules.json" with { type: "json" };
 import specialData from "../rules/ueb-2024/symbols/special.json" with { type: "json" };
@@ -171,6 +172,23 @@ describe("JSON rule source decoding", () => {
     expect(() => readers.readTechnicalDelimiterRules({ ...delimiterData,
       definitions: { ...delimiterData.definitions, matrixEnclosures: { ...delimiterData.definitions.matrixEnclosures, round: "missing" } },
     })).toThrow();
+  });
+  it("rejects a malformed contextual engine schema", () => {
+    for (const schema of [null, { boundaries: "x", guards: {} },
+      { boundaries: {}, guards: { "word-end": { opcode: 0, operands: "x" } } }]) {
+      expect(() => readEngineSchema(schema)).toThrow("Malformed contextual engine schema.");
+    }
+  });
+  it("rejects malformed contextual guards", () => {
+    expect(guardText(readGuard({ kind: "previous-not", characters: "a" }), "characters")).toBe("a");
+    expect(() => readGuard(null)).toThrow("Malformed contextual guard.");
+    expect(() => readGuard({ kind: "word-end", extra: "x" })).toThrow("Unexpected field in word-end guard.");
+    expect(() => readGuard({ kind: "previous-not", characters: ["a"] })).toThrow("must be text");
+    expect(() => readGuard({ kind: "not-word-ending", endings: "ing" })).toThrow("must be a list");
+  });
+  it("keeps routed sources beside documents and symbols", () => {
+    expect(() => routedSources({ documents: "x" })).toThrow("Routed sources cannot replace");
+    expect(() => routedSources({ symbols: "x" })).toThrow("Routed sources cannot replace");
   });
   it("resolves targeted guards and their citation", () => {
     const constraint = readers.readExpandedConstraint(expandSources()["constraints"]?.[0]);

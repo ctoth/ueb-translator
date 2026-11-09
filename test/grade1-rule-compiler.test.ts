@@ -75,6 +75,8 @@ describe("declarative Grade 1 vocabulary", () => {
   });
 
   it("rejects missing or unknown names and non-dense IDs", () => {
+    expect(() => readGrade1Vocabulary(null)).toThrow("Expected a Grade 1 vocabulary.");
+    expect(() => readGrade1Vocabulary({ ...GRADE1_VOCABULARY, extra: {} })).toThrow("Expected a Grade 1 vocabulary.");
     const missing = Object.fromEntries(Object.entries(GRADE1_VOCABULARY.classes).filter(([name]) => name !== "digit"));
     for (const classes of [missing, { ...GRADE1_VOCABULARY.classes, extra: 8 },
       { ...GRADE1_VOCABULARY.classes, digit: 1 },
