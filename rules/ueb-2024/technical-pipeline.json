@@ -1,0 +1,149 @@
+{
+  "functions": {
+    "cells": {
+      "params": ["cells", "message"],
+      "body": {"if": [{"test": ["^[\\u2800-\\u28ff]+$", "$cells"]}, "$cells", {"fail": "$message"}]}
+    },
+    "pattern": {
+      "params": ["pattern", "flags"],
+      "body": {"if": [{"eq": ["$pattern", ""]}, {"fail": "Technical pattern is empty."}, {"source": ["$pattern", "$flags"]}]}
+    },
+    "count": {
+      "params": ["count"],
+      "body": {"if": [
+        {"and": [{"isInteger": "$count"}, {"less": [0, "$count"]}, {"less": ["$count", 9007199254740992]}]},
+        "$count",
+        {"fail": "Technical Grade 1 protection thresholds must be positive safe integers."}
+      ]}
+    },
+    "symbol": {
+      "params": ["print"],
+      "body": {"if": [
+        {"some": ["@compiled", "symbol", {"eq": ["$symbol.print", "$print"]}]},
+        "$print",
+        {"fail": "Technical sign references missing symbol."}
+      ]}
+    },
+    "cell": {
+      "params": ["print"],
+      "body": {"at": [
+        {"find": ["@compiled", "symbol", {"eq": ["$symbol.print", "$print"]}]},
+        "braille",
+        {"fail": "Technical delimiter references missing symbol."}
+      ]}
+    },
+    "enclosure": {
+      "params": ["prefix", "pair"],
+      "body": {"merge": ["$pair", {"record": {
+        "open": {"concat": ["$prefix", {"call": ["cell", "$pair.open"]}]},
+        "close": {"concat": ["$prefix", {"call": ["cell", "$pair.close"]}]}
+      }}]}
+    },
+    "delimiters": {
+      "params": ["delimiters", "prefix"],
+      "body": {"merge": [
+        {"each": [
+          {"without": ["$delimiters", {"list": ["enclosures", "matrixEnclosures", "enlargedPrefix"]}]},
+          "cells",
+          {"call": ["cells", "$cells", "Technical delimiter has malformed cells."]}
+        ]},
+        {"record": {
+          "enclosures": {"each": ["$delimiters.enclosures", "pair", {"call": ["enclosure", "", "$pair"]}]},
+          "matrixEnclosures": {"each": ["$delimiters.matrixEnclosures", "target", {"call": ["enclosure", "$prefix",
+            {"at": ["$delimiters.enclosures", "$target", {"fail": "Technical matrix enclosures must name declared enclosures."}]}
+          ]}]}
+        }}
+      ]}
+    }
+  },
+  "steps": [
+    {
+      "name": "citations",
+      "op": "row",
+      "row": {"record": {
+        "groups": {"each": [
+          {"list": ["@scripts", "@modifiers", "@shapes", "@delimiters", "@items", "@protection", "@functionSpacing", "@numericContinuation", "@computerWhitespace"]},
+          "group",
+          {"cite": "$group.citation"}
+        ]},
+        "spacing": {"each": ["@spacing", "rule", {"cite": "$rule.citation"}]},
+        "layouts": {"each": ["@layouts", "layout", {"cite": "$layout.citation"}]}
+      }}
+    },
+    {
+      "name": "program",
+      "op": "row",
+      "row": {"record": {
+        "symbols": {"where": ["@compiled", "symbol", {"in": ["$symbol.print", {"each": ["@symbols", "rule", "$rule.print"]}]}]},
+        "layouts": {"each": ["@layouts", "layout", {"without": ["$layout", {"list": ["citation"]}]}]},
+        "arrows": {"each": ["@mappings.arrows", "print", {"call": ["symbol", "$print"]}]},
+        "operations": {"each": ["@mappings.operations", "print", {"call": ["symbol", "$print"]}]},
+        "comparisons": {"each": ["@mappings.comparisons", "print", {"call": ["symbol", "$print"]}]},
+        "scripts": {"each": ["@scripts.definitions", "script", {"merge": ["$script", {"record": {
+          "indicator": {"call": ["cells", "$script.indicator", "Technical script has a malformed indicator."]}
+        }}]}]},
+        "modifiers": {"each": ["@modifiers.definitions", "cells", {"call": ["cells", "$cells", "Technical modifier has malformed cells."]}]},
+        "shapes": {"merge": ["@shapes.definitions", {"record": {
+          "fills": {"each": ["@shapes.definitions.fills", "cells", {"call": ["cells", "$cells", "Technical shape has malformed cells."]}]},
+          "names": {"each": ["@shapes.definitions.names", "cells", {"call": ["cells", "$cells", "Technical shape has malformed cells."]}]},
+          "terminator": {"call": ["cells", "@shapes.definitions.terminator", "Technical shape has malformed cells."]}
+        }}]},
+        "delimiters": {"call": ["delimiters", "@delimiters.definitions",
+          {"call": ["cells", "@delimiters.definitions.enlargedPrefix", "Technical delimiter has malformed cells."]}]},
+        "itemPolicy": {"merge": ["@items.definitions", {"record": {
+          "identifierPattern": {"call": ["pattern", "@items.definitions.identifierPattern", "u"]}
+        }}]},
+        "valuePatterns": {"each": ["@valuePatterns", "pattern", {"call": ["pattern", "$pattern", "u"]}]},
+        "operationSpacing": {"each": ["@spacing", "rule", {"without": ["$rule", {"list": ["citation"]}]}]},
+        "grade1Protection": {"merge": ["@protection.definitions", {"record": {
+          "standingValues": {"if": [
+            {"isEmpty": "@protection.definitions.standingValues"},
+            {"fail": "Technical Grade 1 standing classifiers are empty."},
+            {"each": ["@protection.definitions.standingValues", "rule", {"if": [
+              {"and": [
+                {"in": ["$rule.flags", {"list": ["iu", "u"]}]},
+                {"in": ["$rule.kind", {"list": ["standing-symbol", "standing-word"]}]}
+              ]},
+              {"merge": ["$rule", {"record": {"pattern": {"call": ["pattern", "$rule.pattern", "$rule.flags"]}}}]},
+              {"fail": "Technical Grade 1 standing classifier is malformed."}
+            ]}]}
+          ]},
+          "maxSymbolsPerSequence": {"call": ["count", "@protection.definitions.maxSymbolsPerSequence"]},
+          "passageSequenceThreshold": {"call": ["count", "@protection.definitions.passageSequenceThreshold"]}
+        }}]},
+        "functionSpacing": {"merge": [
+          {"record": {"letterCells": {"each": [
+            {"where": ["@compiled", "symbol", {"test": ["@functionSpacing.definitions.letterPrintPattern", "$symbol.print"]}]},
+            "symbol",
+            "$symbol.braille"
+          ]}}},
+          {"without": ["@functionSpacing.definitions", {"list": ["letterPrintPattern"]}]},
+          {"record": {"namePattern": {"source": ["@functionSpacing.definitions.namePattern", "u"]}}}
+        ]},
+        "numericContinuation": {"merge": ["@numericContinuation.definitions", {"record": {
+          "precedingKinds": {"each": ["@numericContinuation.definitions.precedingKinds", "kind", {"if": [
+            {"or": [{"eq": ["$kind", "identifier"]}, {"not": {"eq": [{"at": ["@items.definitions.kinds", "$kind", null]}, null]}}]},
+            "$kind",
+            {"fail": "Technical numeric continuation names an undeclared expression kind."}
+          ]}]},
+          "identifierPattern": {"call": ["pattern", "@numericContinuation.definitions.identifierPattern", "u"]}
+        }}]},
+        "computerWhitespace": {"if": [
+          {"and": [
+            {"test": ["^[\\u2800-\\u28ff]$", "@computerWhitespace.definitions.visibleSpace"]},
+            {"isInteger": "@computerWhitespace.definitions.minimumRunLength"},
+            {"isInteger": "@computerWhitespace.definitions.ordinaryEdgeLength"},
+            {"not": {"less": ["@computerWhitespace.definitions.ordinaryEdgeLength", 0]}},
+            {"less": [
+              {"add": ["@computerWhitespace.definitions.ordinaryEdgeLength", "@computerWhitespace.definitions.ordinaryEdgeLength"]},
+              "@computerWhitespace.definitions.minimumRunLength"
+            ]}
+          ]},
+          "@computerWhitespace.definitions",
+          {"fail": "Technical computer whitespace has malformed definitions."}
+        ]}
+      }}
+    }
+  ],
+  "outputs": {"program": "program"}
+}

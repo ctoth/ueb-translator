@@ -3,6 +3,7 @@ import authorities from "./citation-authorities.json" with { type: "json" };
 import engine from "./contextual-engine.json" with { type: "json" };
 import facts from "./runtime-facts.json" with { type: "json" };
 import pipeline from "./expansion-pipeline.json" with { type: "json" };
+import technicalPipeline from "./technical-pipeline.json" with { type: "json" };
 import vocabulary from "./grade1-vocabulary.json" with { type: "json" };
 import expansion from "./expansion-policy.json" with { type: "json" };
 import source1 from "./modes/rules.json" with { type: "json" };
@@ -42,6 +43,7 @@ export const SOURCE_FILES: Readonly<Record<string, unknown>> = {
   "contextual-engine.json": engine,
   "runtime-facts.json": facts,
   "expansion-pipeline.json": pipeline,
+  "technical-pipeline.json": technicalPipeline,
   "expansion-policy.json": expansion,
   "grade1-vocabulary.json": vocabulary,
   "citation-documents.json": source0,

@@ -1,18 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { isTechnicalLayouts } from "../src/technical-program.js";
-import { readTechnicalLayoutRules } from "../rules/ueb-2024/rule-json.js";
-import {
-  compileTechnicalSigns, TECHNICAL_LAYOUT_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES,
-  TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_FUNCTION_SPACING_RULES,
-  TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_VALUE_PATTERNS,
-  TECHNICAL_ITEM_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SCRIPT_RULES,
-  TECHNICAL_SHAPE_RULES, TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SYMBOL_RULES,
-} from "../rules/ueb-2024/technical-signs.js";
-import { SYMBOL_RULES } from "../rules/ueb-2024/symbols/source.js";
+import { TECHNICAL_SIGN_PROGRAM } from "../src/generated/ueb-2024/technical-program.js";
+import { compileTechnicalSigns } from "../rules/ueb-2024/technical-signs.js";
 import { sourceData } from "../rules/ueb-2024/source-manifest.js";
 
-const LAYOUTS = TECHNICAL_LAYOUT_RULES.definitions;
+const LAYOUTS = TECHNICAL_SIGN_PROGRAM.layouts;
 const VALUE_CHILD = {
   name: "value", render: "value", field: "value", pattern: "number", invalid: "number", standing: false,
 };
@@ -93,30 +86,19 @@ describe("technical layouts", () => {
   });
 
   it("strips each citation and rejects uncited or malformed layouts", () => {
-    const source = sourceData("technical", "layouts");
-    expect(readTechnicalLayoutRules(source).definitions).toEqual(LAYOUTS);
-    expect(() => readTechnicalLayoutRules(LAYOUTS)).toThrow();
-    const cited = (layout: unknown) => ({
-      citation: { source: "technical-2014", locator: "1, p.2" },
-      ...(typeof layout === "object" ? layout : {}),
-    });
+    expect(compileTechnicalSigns()["layouts"]).toEqual(LAYOUTS);
+    expect(() => compileTechnicalSigns({ layouts: LAYOUTS })).toThrow("No field citation.");
+    const cited = (layout: object) => ({ citation: { source: "technical-2014", locator: "1, p.2" }, ...layout });
     const malformed = Object.fromEntries(Object.entries(LAYOUTS).map(([kind, layout]) =>
       [kind, cited(kind === "number" ? { ...layout, extra: true } : layout)]));
-    expect(() => readTechnicalLayoutRules(malformed)).toThrow("Malformed JSON rule source.");
+    expect(() => compileTechnicalSigns({ layouts: malformed })).toThrow("Technical layouts are malformed.");
   });
 
   it("requires an official citation for every layout", () => {
-    const [first] = TECHNICAL_LAYOUT_RULES.citations;
-    if (first === undefined) throw new Error("Layouts are uncited.");
-    const unofficial = {
-      ...TECHNICAL_LAYOUT_RULES,
-      citations: [{ ...first, locator: "" }],
-    };
-    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, TECHNICAL_SIGN_MAPPINGS,
-      TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES,
-      TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES,
-      TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES,
-      TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, unofficial))
-      .toThrow("official ICEB citation");
+    const source = sourceData("technical", "inputs", "layouts");
+    const uncited = Object.fromEntries(Object.entries(LAYOUTS).map(([kind, layout]) =>
+      [kind, { citation: { source: "technical-2014", locator: kind === "number" ? " " : "1, p.2" }, ...layout }]));
+    expect(compileTechnicalSigns({ layouts: source })["layouts"]).toEqual(LAYOUTS);
+    expect(() => compileTechnicalSigns({ layouts: uncited })).toThrow("Empty citation locator.");
   });
 });

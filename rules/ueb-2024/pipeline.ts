@@ -1,7 +1,7 @@
 /**
- * Interpreter for the declarative compiler pipeline (expansion-pipeline.json).
- * The Python package implements the same operations; the pipeline file is the
- * single description of how sources become contextual rules.
+ * Interpreter for the declarative compiler pipelines (expansion-pipeline.json, technical-pipeline.json).
+ * The Python package implements the same operations; each pipeline file is the
+ * single description of how its sources become compiled output.
  */
 export type Json = boolean | number | string | null | readonly Json[] | { readonly [key: string]: Json };
 type Row = Readonly<Record<string, Json>>;
@@ -25,6 +25,9 @@ function list(value: Json): readonly Json[] {
 }
 function text(value: Json): string {
   return typeof value === "string" ? value : fail(`Expected text, got ${JSON.stringify(value)}.`);
+}
+function number(value: Json): number {
+  return typeof value === "number" ? value : fail(`Expected a number, got ${JSON.stringify(value)}.`);
 }
 export function record(value: Json): Row {
   return isRecord(value) ? value : fail(`Expected a record, got ${JSON.stringify(value)}.`);
@@ -146,8 +149,29 @@ export function evaluate(expression: Json, scope: Scope, context: Context): Json
       return new RegExp(text(value(pattern)), "u").test(text(value(subject)));
     }
     case "each": {
+      // Over a record: map its values, keeping keys and order.
       const [items, name, body] = three(argument);
-      return list(value(items)).map((item) => within(name, item, body));
+      const found = value(items);
+      return isRecord(found) ? Object.fromEntries(Object.entries(found).map(([key, item]) => [key, within(name, item, body)]))
+        : list(found).map((item) => within(name, item, body));
+    }
+    case "without": {
+      const [subject, keys] = two(argument);
+      const omitted = list(value(keys));
+      return Object.fromEntries(Object.entries(record(value(subject))).filter(([key]) => !omitted.includes(key)));
+    }
+    case "source": {
+      const [pattern, flags] = two(argument);
+      return new RegExp(text(value(pattern)), text(value(flags))).source;
+    }
+    case "isInteger": return Number.isInteger(value(argument));
+    case "less": {
+      const [left, right] = two(argument);
+      return number(value(left)) < number(value(right));
+    }
+    case "add": {
+      const [left, right] = two(argument);
+      return number(value(left)) + number(value(right));
     }
     case "where": {
       const [items, name, condition] = three(argument);
@@ -270,6 +294,7 @@ function runStep(step: Row, context: Context): readonly Json[] {
       return Array.isArray(source) ? list(source)
         : Object.entries(record(source)).map(([key, entry]) => ({ key, ...record(entry) }));
     }
+    case "row": return [record(evaluate(field(step, "row"), {}, context))];
     case "map": return from().map((row) => record(each(row, "row")));
     case "flatMap": return from().flatMap((row) => list(each(row, "rows")));
     case "filter": return from().filter((row) => truth(each(row, "where")));

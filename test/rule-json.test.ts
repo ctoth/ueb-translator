@@ -11,9 +11,6 @@ import modeData from "../rules/ueb-2024/modes/rules.json" with { type: "json" };
 import specialData from "../rules/ueb-2024/symbols/special.json" with { type: "json" };
 import groupData from "../rules/ueb-2024/grade2-rules.json" with { type: "json" };
 import scriptData from "../rules/ueb-2024/technical-script-rules.json" with { type: "json" };
-import delimiterData from "../rules/ueb-2024/technical-delimiter-rules.json" with { type: "json" };
-import valuePatterns from "../rules/ueb-2024/technical-value-patterns.json" with { type: "json" };
-import spacingData from "../rules/ueb-2024/technical-operation-spacing-rules.json" with { type: "json" };
 import constraintData from "../rules/ueb-2024/constraints.json" with { type: "json" };
 import inventoryData from "../rules/ueb-2024/inventory.json" with { type: "json" };
 import { assembleSources, sourceData, sourceFile, SYMBOL_FAMILY_DATA } from "../rules/ueb-2024/source-manifest.js";
@@ -46,7 +43,7 @@ describe("JSON rule source decoding", () => {
   });
   it("routes nested sources by the shared manifest", () => {
     expect(sourceData("modes")).toBe(modeData);
-    expect(sourceData("technical", "scripts")).toBe(scriptData);
+    expect(sourceData("technical", "inputs", "scripts")).toBe(scriptData);
     expect(assembleSources({ renamed: { letters: "symbols/special.json" } }, sourceFile))
       .toEqual({ renamed: { letters: specialData } });
     expect(() => sourceData("missing")).toThrow("Unknown rule source");
@@ -164,28 +161,6 @@ describe("JSON rule source decoding", () => {
     { kind: "word-with-affixes", affixes: [2] },
   ])("rejects malformed authored contraction guard %j", guard => {
     expect(() => readers.readExpandedGrade2Rule({ ...expandedRule, guards: [guard] })).toThrow();
-  });
-  it("rejects non-string values and missing keys in closed maps", () => {
-    expect(() => readers.readTechnicalValuePatterns({})).toThrow();
-    expect(() => readers.readTechnicalValuePatterns({ ...valuePatterns, number: 1 })).toThrow();
-    expect(() => readers.readTechnicalOperationSpacingRules({ ...spacingData,
-      international: { ...spacingData.international, definitions: { spaced: 1, unspaced: false } },
-    })).toThrow();
-  });
-  it.each([{ indicator: 2, position: "before" }, { indicator: "⠢", position: "sideways" }])("rejects malformed script descriptor %j", descriptor => {
-    expect(() => readers.readTechnicalScriptRules({ ...scriptData,
-      definitions: { ...scriptData.definitions, "left-subscript": descriptor },
-    })).toThrow();
-  });
-  it.each([{ open: false, close: "|" }, { open: "|", close: false }])("rejects malformed enclosure %j", descriptor => {
-    expect(() => readers.readTechnicalDelimiterRules({ ...delimiterData,
-      definitions: { ...delimiterData.definitions, enclosures: { ...delimiterData.definitions.enclosures, absolute: descriptor } },
-    })).toThrow();
-  });
-  it("rejects an unknown matrix enclosure reference", () => {
-    expect(() => readers.readTechnicalDelimiterRules({ ...delimiterData,
-      definitions: { ...delimiterData.definitions, matrixEnclosures: { ...delimiterData.definitions.matrixEnclosures, round: "missing" } },
-    })).toThrow();
   });
   it("rejects a malformed contextual engine schema", () => {
     for (const schema of [null, { boundaries: "x", guards: {} },

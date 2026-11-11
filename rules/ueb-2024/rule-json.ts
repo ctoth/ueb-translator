@@ -10,18 +10,6 @@ import type { ShortformSource } from "./shortforms.js";
 import type { ConstraintSource } from "./constraints.js";
 import type { ContextualRuleSource } from "./contextual-compiler.js";
 import { readGuard, type ContextualRuleGuard } from "./contextual-engine.js";
-import type {
-  TechnicalScriptSource, TechnicalDelimiterSource, TechnicalModifierSource, TechnicalShapeSource,
-  TechnicalItemSource, TechnicalOperationSpacingSource, TechnicalGrade1ProtectionSource,
-  TechnicalFunctionSpacingSource, TechnicalNumericContinuationSource, TechnicalComputerWhitespaceSource,
-  TechnicalLayoutSource,
-} from "./technical-signs.js";
-import {
-  TECHNICAL_OPERATIONS, TECHNICAL_COMPARISONS, TECHNICAL_ARROW_DIRECTIONS,
-  TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_MODIFIERS, TECHNICAL_SHAPE_NAMES, TECHNICAL_SHAPE_FILLS,
-  TECHNICAL_ITEM_KINDS, TECHNICAL_VALUE_KINDS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
-  TECHNICAL_DELIMITER_SIGNS, isTechnicalLayouts, type TechnicalSignProgram,
-} from "../../src/technical-program.js";
 import { CONTEXTUAL_PRECEDENCES } from "../../src/contextual-schema.js";
 
 function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
@@ -52,7 +40,7 @@ function checked<T>(value: unknown, predicate: (value: unknown) => value is T): 
 function isString(value: unknown): value is string { return typeof value === "string"; }
 function isBoolean(value: unknown): value is boolean { return typeof value === "boolean"; }
 function isStrings(value: unknown): value is readonly string[] { return Array.isArray(value) && value.every(isString); }
-export function mapOf<K extends string, T>(value: unknown, keys: readonly K[], predicate: (entry: unknown) => entry is T): Readonly<Record<K, T>> {
+function mapOf<K extends string, T>(value: unknown, keys: readonly K[], predicate: (entry: unknown) => entry is T): Readonly<Record<K, T>> {
   return checked(value, (candidate): candidate is Readonly<Record<K, T>> => {
     const entries = record(candidate);
     return Object.keys(entries).length === keys.length && keys.every(key => predicate(entries[key]));
@@ -176,80 +164,4 @@ export function readRuntimeFacts(value: unknown): Readonly<Record<string, Readon
 export function readInventory(value: unknown): { readonly appendix1LongerWords: number; readonly contextualRules: number; readonly rules: number; readonly shortforms: number } {
   const source = record(value);
   return { appendix1LongerWords: number(source["appendix1LongerWords"]), contextualRules: number(source["contextualRules"]), rules: number(source["rules"]), shortforms: number(source["shortforms"]) };
-}
-
-function technical<T>(value: unknown, decode: (value: unknown) => T): { readonly citation: RuleCitation; readonly definitions: T } {
-  const source = record(value);
-  return { citation: cited(source["citation"]), definitions: decode(source["definitions"]) };
-}
-export function readTechnicalSignMappings(value: unknown): Pick<TechnicalSignProgram, "operations" | "comparisons" | "arrows"> {
-  const source = record(value);
-  return { operations: mapOf(source["operations"], TECHNICAL_OPERATIONS, isString), comparisons: mapOf(source["comparisons"], TECHNICAL_COMPARISONS, isString), arrows: mapOf(source["arrows"], TECHNICAL_ARROW_DIRECTIONS, isString) };
-}
-export function readTechnicalScriptRules(value: unknown): TechnicalScriptSource {
-  return technical(value, definitions => mapOf(definitions, TECHNICAL_SCRIPT_PLACEMENTS,
-    (value): value is TechnicalSignProgram["scripts"]["left-subscript"] => {
-      const source = record(value);
-      return isString(source["indicator"]) && (source["position"] === "before" || source["position"] === "after");
-    }));
-}
-/** An enclosure's {open, close} pair of prints or cells. */
-export function isPair(value: unknown): value is { readonly open: string; readonly close: string } {
-  const pair = record(value); return isString(pair["open"]) && isString(pair["close"]);
-}
-export function readTechnicalDelimiterRules(value: unknown): TechnicalDelimiterSource {
-  return technical(value, value => { const { enlargedPrefix, enclosures, matrixEnclosures, ...signs } = record(value); return {
-    ...mapOf(signs, TECHNICAL_DELIMITER_SIGNS, isString),
-    enlargedPrefix: string(enlargedPrefix),
-    enclosures: mapOf(enclosures, TECHNICAL_ENCLOSURES, isPair),
-    matrixEnclosures: mapOf(matrixEnclosures, TECHNICAL_MATRIX_ENCLOSURES,
-      (value): value is (typeof TECHNICAL_ENCLOSURES)[number] => TECHNICAL_ENCLOSURES.some(entry => entry === value)),
-  }; });
-}
-export function readTechnicalModifierRules(value: unknown): TechnicalModifierSource { return technical(value, value => mapOf(value, TECHNICAL_MODIFIERS, isString)); }
-export function readTechnicalLayoutRules(value: unknown): TechnicalLayoutSource {
-  const citations: RuleCitation[] = [];
-  const definitions = Object.fromEntries(Object.entries(record(value)).map(([kind, entry]) => {
-    const { citation, ...layout } = record(entry);
-    citations.push(cited(citation));
-    return [kind, layout];
-  }));
-  return { citations, definitions: checked(definitions, isTechnicalLayouts) };
-}
-export function readTechnicalShapeRules(value: unknown): TechnicalShapeSource {
-  return technical(value, value => { const source = record(value); return {
-    fills: mapOf(source["fills"], TECHNICAL_SHAPE_FILLS, isString), names: mapOf(source["names"], TECHNICAL_SHAPE_NAMES, isString), terminator: string(source["terminator"]),
-  }; });
-}
-export function readTechnicalItemRules(value: unknown): TechnicalItemSource {
-  return technical(value, value => { const source = record(value); return { kinds: mapOf(source["kinds"], TECHNICAL_ITEM_KINDS, isBoolean), identifierPattern: string(source["identifierPattern"]) }; });
-}
-export function readTechnicalValuePatterns(value: unknown): TechnicalSignProgram["valuePatterns"] { return mapOf(value, TECHNICAL_VALUE_KINDS, isString); }
-export function readTechnicalOperationSpacingRules(value: unknown): TechnicalOperationSpacingSource {
-  const source = record(value);
-  const spacing = <Value extends string>(rule: unknown, values: readonly Value[]) => ({
-    ...technical(rule, value => mapOf(value, values, isBoolean)), field: string(record(rule)["field"]),
-  });
-  return { international: spacing(source["international"], ["spaced", "unspaced"]),
-    "bana-2026": spacing(source["bana-2026"], ["standardized", "teaching"]) };
-}
-export function readTechnicalGrade1ProtectionRules(value: unknown): TechnicalGrade1ProtectionSource {
-  const source = record(value), definitions = record(source["definitions"]);
-  return { citation: cited(source["citation"]), definitions: {
-    standingValues: array(definitions["standingValues"]).map(value => { const rule = record(value); return {
-      pattern: string(rule["pattern"]), flags: member(rule["flags"], ["u", "iu"]), kind: member(rule["kind"], ["standing-symbol", "standing-word"]),
-    }; }), maxSymbolsPerSequence: number(definitions["maxSymbolsPerSequence"]), passageSequenceThreshold: number(definitions["passageSequenceThreshold"]),
-  } };
-}
-export function readTechnicalFunctionSpacingRules(value: unknown): TechnicalFunctionSpacingSource {
-  return technical(value, value => { const source = record(value); return { letterPrintPattern: string(source["letterPrintPattern"]), namePattern: string(source["namePattern"]) }; });
-}
-export function readTechnicalNumericContinuationRules(value: unknown): TechnicalNumericContinuationSource {
-  const source = record(value), definitions = record(source["definitions"]);
-  return { citation: cited(source["citation"]), definitions: {
-    precedingKinds: array(definitions["precedingKinds"]).map(value => member(value, [...TECHNICAL_ITEM_KINDS, "identifier"])), identifierPattern: string(definitions["identifierPattern"]),
-  } };
-}
-export function readTechnicalComputerWhitespaceRules(value: unknown): TechnicalComputerWhitespaceSource {
-  return technical(value, value => { const source = record(value); return { visibleSpace: string(source["visibleSpace"]), minimumRunLength: number(source["minimumRunLength"]), ordinaryEdgeLength: number(source["ordinaryEdgeLength"]) }; });
 }
