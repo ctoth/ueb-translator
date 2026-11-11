@@ -20,7 +20,7 @@ import {
   TECHNICAL_OPERATIONS, TECHNICAL_COMPARISONS, TECHNICAL_ARROW_DIRECTIONS,
   TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_MODIFIERS, TECHNICAL_SHAPE_NAMES, TECHNICAL_SHAPE_FILLS,
   TECHNICAL_ITEM_KINDS, TECHNICAL_VALUE_KINDS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
-  isTechnicalLayouts, type TechnicalSignProgram,
+  TECHNICAL_DELIMITER_SIGNS, isTechnicalLayouts, type TechnicalSignProgram,
 } from "../../src/technical-program.js";
 import { CONTEXTUAL_PRECEDENCES } from "../../src/contextual-schema.js";
 
@@ -52,7 +52,7 @@ function checked<T>(value: unknown, predicate: (value: unknown) => value is T): 
 function isString(value: unknown): value is string { return typeof value === "string"; }
 function isBoolean(value: unknown): value is boolean { return typeof value === "boolean"; }
 function isStrings(value: unknown): value is readonly string[] { return Array.isArray(value) && value.every(isString); }
-function mapOf<K extends string, T>(value: unknown, keys: readonly K[], predicate: (entry: unknown) => entry is T): Readonly<Record<K, T>> {
+export function mapOf<K extends string, T>(value: unknown, keys: readonly K[], predicate: (entry: unknown) => entry is T): Readonly<Record<K, T>> {
   return checked(value, (candidate): candidate is Readonly<Record<K, T>> => {
     const entries = record(candidate);
     return Object.keys(entries).length === keys.length && keys.every(key => predicate(entries[key]));
@@ -193,17 +193,16 @@ export function readTechnicalScriptRules(value: unknown): TechnicalScriptSource 
       return isString(source["indicator"]) && (source["position"] === "before" || source["position"] === "after");
     }));
 }
+/** An enclosure's {open, close} pair of prints or cells. */
+export function isPair(value: unknown): value is { readonly open: string; readonly close: string } {
+  const pair = record(value); return isString(pair["open"]) && isString(pair["close"]);
+}
 export function readTechnicalDelimiterRules(value: unknown): TechnicalDelimiterSource {
-  return technical(value, value => { const source = record(value); return {
-    groupOpen: string(source["groupOpen"]), groupClose: string(source["groupClose"]),
-    simpleFractionLine: string(source["simpleFractionLine"]), fractionOpen: string(source["fractionOpen"]),
-    fractionLine: string(source["fractionLine"]), fractionClose: string(source["fractionClose"]),
-    radicalOpen: string(source["radicalOpen"]), radicalClose: string(source["radicalClose"]),
-    enlargedPrefix: string(source["enlargedPrefix"]),
-    enclosures: mapOf(source["enclosures"], TECHNICAL_ENCLOSURES, (value): value is { readonly open: string; readonly close: string } => {
-      const pair = record(value); return isString(pair["open"]) && isString(pair["close"]);
-    }),
-    matrixEnclosures: mapOf(source["matrixEnclosures"], TECHNICAL_MATRIX_ENCLOSURES,
+  return technical(value, value => { const { enlargedPrefix, enclosures, matrixEnclosures, ...signs } = record(value); return {
+    ...mapOf(signs, TECHNICAL_DELIMITER_SIGNS, isString),
+    enlargedPrefix: string(enlargedPrefix),
+    enclosures: mapOf(enclosures, TECHNICAL_ENCLOSURES, isPair),
+    matrixEnclosures: mapOf(matrixEnclosures, TECHNICAL_MATRIX_ENCLOSURES,
       (value): value is (typeof TECHNICAL_ENCLOSURES)[number] => TECHNICAL_ENCLOSURES.some(entry => entry === value)),
   }; });
 }

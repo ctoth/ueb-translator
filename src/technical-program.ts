@@ -1,49 +1,34 @@
 import type { SymbolProgram } from "./symbol-program.js";
+import { TECHNICAL_VOCABULARY } from "./generated/technical-vocabulary.ts";
 
-export const TECHNICAL_OPERATIONS = [
-  "asterisk", "divide", "dot", "minus", "multiply", "plus", "plus-or-minus",
-] as const;
-export type TechnicalOperation = (typeof TECHNICAL_OPERATIONS)[number];
-
-export const TECHNICAL_COMPARISONS = [
-  "approximately-equal", "equals", "greater-than", "greater-than-or-equal",
-  "less-than", "less-than-or-equal", "not-equal",
-] as const;
-export type TechnicalComparison = (typeof TECHNICAL_COMPARISONS)[number];
-
-export const TECHNICAL_SCRIPT_PLACEMENTS = [
-  "directly-above", "directly-below", "left-subscript", "left-superscript",
-  "right-subscript", "right-superscript",
-] as const;
-export type TechnicalScriptPlacement = (typeof TECHNICAL_SCRIPT_PLACEMENTS)[number];
-
-export const TECHNICAL_SHAPE_NAMES = [
-  "circle", "hexagon", "heptagon", "octagon", "parallelogram", "pentagon", "square", "triangle",
-] as const;
-export type TechnicalShapeName = (typeof TECHNICAL_SHAPE_NAMES)[number];
-
-export const TECHNICAL_SHAPE_FILLS = ["filled", "outline", "shaded"] as const;
-export type TechnicalShapeFill = (typeof TECHNICAL_SHAPE_FILLS)[number];
-
-export const TECHNICAL_MODIFIERS = [
-  "arc-above", "bar-above", "bar-below", "dot-above", "dot-below",
-  "hat-above", "hat-below", "line-through", "right-arrow-above",
-  "right-arrow-below", "tilde-above", "tilde-below",
-] as const;
-export type TechnicalModifier = (typeof TECHNICAL_MODIFIERS)[number];
+/** Closed technical vocabularies: the key sets of the technical rule JSON, generated. */
+type Vocabulary = typeof TECHNICAL_VOCABULARY;
+export const TECHNICAL_OPERATIONS: Vocabulary["operations"] = TECHNICAL_VOCABULARY.operations;
+export type TechnicalOperation = Vocabulary["operations"][number];
+export const TECHNICAL_COMPARISONS: Vocabulary["comparisons"] = TECHNICAL_VOCABULARY.comparisons;
+export type TechnicalComparison = Vocabulary["comparisons"][number];
+export const TECHNICAL_SCRIPT_PLACEMENTS: Vocabulary["scriptPlacements"] = TECHNICAL_VOCABULARY.scriptPlacements;
+export type TechnicalScriptPlacement = Vocabulary["scriptPlacements"][number];
+export const TECHNICAL_SHAPE_NAMES: Vocabulary["shapeNames"] = TECHNICAL_VOCABULARY.shapeNames;
+export type TechnicalShapeName = Vocabulary["shapeNames"][number];
+export const TECHNICAL_SHAPE_FILLS: Vocabulary["shapeFills"] = TECHNICAL_VOCABULARY.shapeFills;
+export type TechnicalShapeFill = Vocabulary["shapeFills"][number];
+export const TECHNICAL_MODIFIERS: Vocabulary["modifiers"] = TECHNICAL_VOCABULARY.modifiers;
+export type TechnicalModifier = Vocabulary["modifiers"][number];
+export const TECHNICAL_ENCLOSURES: Vocabulary["enclosures"] = TECHNICAL_VOCABULARY.enclosures;
+export type TechnicalEnclosure = Vocabulary["enclosures"][number];
+export const TECHNICAL_MATRIX_ENCLOSURES: Vocabulary["matrixEnclosures"] = TECHNICAL_VOCABULARY.matrixEnclosures;
+export const TECHNICAL_DELIMITER_SIGNS: Vocabulary["delimiterSigns"] = TECHNICAL_VOCABULARY.delimiterSigns;
+export const TECHNICAL_ARROW_DIRECTIONS: Vocabulary["arrows"] = TECHNICAL_VOCABULARY.arrows;
+export type SimpleArrowDirection = Vocabulary["arrows"][number];
+export const TECHNICAL_ITEM_KINDS: Vocabulary["itemKinds"] = TECHNICAL_VOCABULARY.itemKinds;
+export const TECHNICAL_VALUE_KINDS: Vocabulary["valueKinds"] = TECHNICAL_VOCABULARY.valueKinds;
 
 export interface TechnicalScriptRule {
   readonly indicator: string;
   readonly position: "before" | "after";
 }
 
-export const TECHNICAL_ENCLOSURES = ["absolute", "angle", "curly", "round", "square"] as const;
-export type TechnicalEnclosure = (typeof TECHNICAL_ENCLOSURES)[number];
-export const TECHNICAL_MATRIX_ENCLOSURES = ["curly", "determinant", "round", "square"] as const;
-export const TECHNICAL_DELIMITER_SIGNS = [
-  "groupOpen", "groupClose", "simpleFractionLine", "fractionOpen", "fractionLine",
-  "fractionClose", "radicalOpen", "radicalClose",
-] as const;
 export interface TechnicalEnclosureCells {
   readonly open: string;
   readonly close: string;
@@ -75,11 +60,6 @@ export interface TechnicalOperationSpacing<Value extends string> {
 export type TechnicalProfile =
   | BanaTechnicalProfile
   | InternationalTechnicalProfile;
-
-export const TECHNICAL_ARROW_DIRECTIONS = [
-  "down", "down-left", "down-right", "left", "right", "up", "up-left", "up-right",
-] as const;
-export type SimpleArrowDirection = (typeof TECHNICAL_ARROW_DIRECTIONS)[number];
 
 export interface TechnicalIdentifier {
   readonly kind: "identifier";
@@ -202,19 +182,11 @@ export type TechnicalExpression =
   | TechnicalSimpleArrow
   | TechnicalSimpleFraction;
 
-export const TECHNICAL_ITEM_KINDS = [
-  "chemical-element", "comparison", "function", "general-fraction", "group",
-  "modifier", "negation", "number", "operation", "radical", "script", "sequence",
-  "shape", "simple-arrow", "simple-fraction",
-] as const;
-
 export interface TechnicalItemPolicy {
   readonly kinds: Readonly<Record<Exclude<TechnicalExpression["kind"], "identifier">, boolean>>;
   /** Unicode pattern for the identifier value, matched with Unicode semantics. */
   readonly identifierPattern: string;
 }
-
-export const TECHNICAL_VALUE_KINDS = ["chemical-element", "function-name", "identifier", "number"] as const;
 
 export interface TechnicalGrade1Protection {
   /** Ordered, first-match classification of accepted standing values. */
