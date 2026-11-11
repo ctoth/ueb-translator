@@ -6,7 +6,7 @@ import { expansionTable } from "../rules/ueb-2024/expansion.js";
 /** Evaluate one expression over a one-row table bound as `row`. */
 function evaluate(expression: Json, row: Json = {}, extra: Readonly<Record<string, Json>> = {}): Json {
   const result = runPipeline({
-    functions: { pair: { params: ["a", "b"], body: { list: [{ get: "a" }, { get: "b" }] } } },
+    functions: { pair: { params: ["a", "b"], body: { list: ["$a", "$b"] } } },
     steps: [
       { name: "rows", op: "table", source: "rows" },
       { name: "letters", op: "table", source: "letters" },
@@ -24,23 +24,26 @@ function evaluate(expression: Json, row: Json = {}, extra: Readonly<Record<strin
 describe("pipeline expressions", () => {
   it.each<[string, Json, Json]>([
     ["literal", "x", "x"],
-    ["get", { get: "row.a.0" }, 1],
+    ["bound name", "$row.a.0", 1],
+    ["whole bound name", "$row", { a: [1, 2], s: "s" }],
+    ["input", "@letters.0.letter", "a"],
+    ["literal reference-like text", { literal: "$row" }, "$row"],
+    ["literal input-like text", { literal: "@letters" }, "@letters"],
     ["optional present", { optional: "row.a" }, [1, 2]],
     ["optional absent", { optional: "row.missing.deeper" }, null],
-    ["input", { input: "letters.0.letter" }, "a"],
     ["column", { column: ["letters", "letter"] }, ["a", "b"]],
-    ["record", { record: { k: { get: "row.s" } } }, { k: "s" }],
+    ["record", { record: { k: "$row.s" } }, { k: "s" }],
     ["merge", { merge: [{ record: { a: 1, b: 2 } }, { record: { b: 3 } }] }, { a: 1, b: 3 }],
     ["concat text", { concat: ["a", "b"] }, "ab"],
     ["concat lists", { concat: [{ list: [1] }, { list: [2] }] }, [1, 2]],
     ["join", { join: [{ list: ["a", "b"] }, "-"] }, "a-b"],
-    ["replaceFirst", { replaceFirst: ["abab", "b", "$&"] }, "a$&ab"],
-    ["in", { in: [2, { get: "row.a" }] }, true],
+    ["replaceFirst", { replaceFirst: ["abab", "b", { literal: "$&" }] }, "a$&ab"],
+    ["in", { in: [2, "$row.a"] }, true],
     ["test", { test: ["^[a-z]$", "q"] }, true],
-    ["each", { each: [{ get: "row.a" }, "n", { list: [{ get: "n" }] }] }, [[1], [2]]],
-    ["where", { where: [{ get: "row.a" }, "n", { eq: [{ get: "n" }, 2] }] }, [2]],
-    ["find", { find: [{ get: "row.a" }, "n", { eq: [{ get: "n" }, 3] }] }, null],
-    ["some", { some: [{ get: "row.a" }, "n", { eq: [{ get: "n" }, 1] }] }, true],
+    ["each", { each: ["$row.a", "n", { list: ["$n"] }] }, [[1], [2]]],
+    ["where", { where: ["$row.a", "n", { eq: ["$n", 2] }] }, [2]],
+    ["find", { find: ["$row.a", "n", { eq: ["$n", 3] }] }, null],
+    ["some", { some: ["$row.a", "n", { eq: ["$n", 1] }] }, true],
     ["flatten", { flatten: { list: [{ list: [1] }, { list: [2, 3] }] } }, [1, 2, 3]],
     ["sorted", { sorted: { list: ["b", "a", "B"] } }, ["B", "a", "b"]],
     ["unique", { unique: { list: [1, 1, 2] } }, [1, 2]],
@@ -68,13 +71,16 @@ describe("pipeline expressions", () => {
 
   it.each<[string, Json, string]>([
     ["bare list", [1], "Lists are written"],
-    ["two operators", { get: "row", list: [] }, "one operator"],
+    ["two operators", { optional: "row", list: [] }, "one operator"],
     ["empty expression", {}, "one operator"],
     ["unknown operator", { nope: 1 }, "Unknown expression operator"],
-    ["unbound", { get: "missing" }, "Unbound name"],
+    ["removed long reference", { get: "row" }, "Unknown expression operator"],
+    ["unbound", "$missing", "Unbound name"],
     ["unbound optional", { optional: "missing" }, "Unbound name"],
-    ["missing field", { get: "row.missing" }, "No field"],
-    ["missing index", { get: "row.a.9" }, "No index"],
+    ["missing field", "$row.missing", "No field"],
+    ["missing index", "$row.a.9", "No index"],
+    ["missing input", "@missing", "No field"],
+    ["non-text literal", { literal: 1 }, "Expected text"],
     ["non-list", { flatten: "x" }, "Expected a list"],
     ["non-text", { join: [{ list: [1] }, "-"] }, "Expected text"],
     ["non-record", { merge: [1] }, "Expected a record"],
@@ -105,7 +111,7 @@ describe("pipeline operations", () => {
     ];
     const inputs = { left: [{ k: "a" }, { k: "b" }], right: { a: { v: 1 }, c: { v: 2 } } };
     const join = (mode: string): readonly Json[] => run([...steps,
-      { name: "out", op: "join", from: "left", with: "right", left: [{ get: "row.k" }], right: [{ get: "row.key" }], mode, as: "m" }],
+      { name: "out", op: "join", from: "left", with: "right", left: ["$row.k"], right: ["$row.key"], mode, as: "m" }],
     inputs, "out");
     expect(join("all")).toEqual([{ k: "a", m: [{ key: "a", v: 1 }] }, { k: "b", m: [] }]);
     expect(join("first")).toEqual([{ k: "a", m: { key: "a", v: 1 } }, { k: "b", m: null }]);
@@ -117,14 +123,14 @@ describe("pipeline operations", () => {
     const inputs = { rows: [{ g: "b", v: ["y", "x"] }, { g: "a", v: ["z"] }, { g: "b", v: ["x"] }] };
     const steps: Json[] = [
       { name: "rows", op: "table", source: "rows" },
-      { name: "kept", op: "filter", from: "rows", where: { eq: [{ get: "row.g" }, "b"] } },
+      { name: "kept", op: "filter", from: "rows", where: { eq: ["$row.g", "b"] } },
       { name: "both", op: "concat", from: ["kept", "rows"] },
-      { name: "grouped", op: "group", from: "rows", by: { get: "row.g" }, collect: { v: { get: "row.v" } } },
-      { name: "sorted", op: "sort", from: "grouped", by: { get: "row.key" } },
+      { name: "grouped", op: "group", from: "rows", by: "$row.g", collect: { v: "$row.v" } },
+      { name: "sorted", op: "sort", from: "grouped", by: "$row.key" },
     ];
     expect(run(steps, inputs, "both")).toHaveLength(5);
     expect(run(steps, inputs, "sorted")).toEqual([{ key: "a", v: ["z"] }, { key: "b", v: ["x", "y"] }]);
-    expect(() => run([...steps, { name: "distinct", op: "distinct", from: "kept", by: { get: "row.g" } }], inputs, "distinct"))
+    expect(() => run([...steps, { name: "distinct", op: "distinct", from: "kept", by: "$row.g" }], inputs, "distinct"))
       .toThrow("conflicting rows");
     expect(() => run([{ name: "rows", op: "table", source: "rows" },
       { name: "f", op: "filter", from: "rows", where: "yes" }], inputs, "f")).toThrow("Expected a boolean");
@@ -134,7 +140,7 @@ describe("pipeline operations", () => {
     const steps: Json[] = [
       { name: "words", op: "table", source: "words" },
       { name: "alphabet", op: "table", source: "alphabet" },
-      { name: "out", op: "decode", from: "words", cells: { get: "row.cells" }, alphabet: "alphabet" },
+      { name: "out", op: "decode", from: "words", cells: "$row.cells", alphabet: "alphabet" },
     ];
     const alphabet = [{ id: "x", print: "ab", braille: "⠁⠃" }, { id: "a", print: "a", braille: "⠁" }, { id: "b", print: "b", braille: "⠃" }];
     expect(run(steps, { words: [{ cells: "⠁⠃" }], alphabet }, "out")).toEqual([

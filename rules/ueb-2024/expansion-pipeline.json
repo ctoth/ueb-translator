@@ -3,19 +3,19 @@
     "shortformSuffixes": {
       "params": ["word"],
       "body": {"at": [
-        {"find": [{"input": "shortformSuffixes.exceptions"}, "group", {"in": [{"get": "word"}, {"get": "group.words"}]}]},
+        {"find": ["@shortformSuffixes.exceptions", "group", {"in": ["$word", "$group.words"]}]},
         "suffixes",
-        {"input": "shortformSuffixes.default"}
+        "@shortformSuffixes.default"
       ]}
     },
     "longerPattern": {
       "params": ["guards", "literal"],
       "body": {"concat": [
-        {"if": [{"some": [{"get": "guards"}, "guard", {"eq": [{"get": "guard.kind"}, "word-start"]}]}, "^", ""]},
-        "(?=(", {"get": "literal"}, ")",
+        {"if": [{"some": ["$guards", "guard", {"eq": ["$guard.kind", "word-start"]}]}, "^", ""]},
+        "(?=(", "$literal", ")",
         {"join": [{"each": [
-          {"where": [{"get": "guards"}, "guard", {"eq": [{"get": "guard.kind"}, "following-not-vowel-y"]}]},
-          "guard", {"concat": ["(?![", {"get": "guard.characters"}, "])"]}
+          {"where": ["$guards", "guard", {"eq": ["$guard.kind", "following-not-vowel-y"]}]},
+          "guard", {"concat": ["(?![", "$guard.characters", "])"]}
         ]}, ""]},
         ")"
       ]}
@@ -23,22 +23,22 @@
     "constraintWords": {
       "params": ["guard"],
       "body": {"flatten": {"each": [
-        {"flatten": {"each": [{"get": "guard.words"}, "word", {"if": [
-          {"isText": {"get": "word"}},
-          {"list": [{"get": "word"}]},
-          {"concat": [{"list": [{"get": "word.base"}]}, {"each": [{"get": "word.suffixes"}, "suffix", {"concat": [{"get": "word.base"}, {"get": "suffix"}]}]}]}
+        {"flatten": {"each": ["$guard.words", "word", {"if": [
+          {"isText": "$word"},
+          {"list": ["$word"]},
+          {"concat": [{"list": ["$word.base"]}, {"each": ["$word.suffixes", "suffix", {"concat": ["$word.base", "$suffix"]}]}]}
         ]}]}},
         "word",
-        {"if": [{"get": "guard.possessives"},
+        {"if": ["$guard.possessives",
           {"concat": [
-            {"list": [{"get": "word"}]},
-            {"each": [{"input": "expansion.possessives.suffixes"}, "suffix", {"concat": [{"get": "word"}, {"get": "suffix"}]}]},
+            {"list": ["$word"]},
+            {"each": ["@expansion.possessives.suffixes", "suffix", {"concat": ["$word", "$suffix"]}]},
             {"flatten": {"each": [
-              {"where": [{"input": "expansion.possessives.endings"}, "ending", {"endsWith": [{"get": "word"}, {"get": "ending.ending"}]}]},
-              "ending", {"each": [{"get": "ending.suffixes"}, "suffix", {"concat": [{"get": "word"}, {"get": "suffix"}]}]}
+              {"where": ["@expansion.possessives.endings", "ending", {"endsWith": ["$word", "$ending.ending"]}]},
+              "ending", {"each": ["$ending.suffixes", "suffix", {"concat": ["$word", "$suffix"]}]}
             ]}}
           ]},
-          {"list": [{"get": "word"}]}
+          {"list": ["$word"]}
         ]}
       ]}}
     }
@@ -46,200 +46,200 @@
   "steps": [
     {"name": "families", "op": "table", "source": "families"},
     {"name": "groups", "op": "table", "source": "groups"},
-    {"name": "groupEntries", "op": "flatMap", "from": "groups", "rows": {"each": [{"get": "row.entries"}, "entry", {"record": {
-      "kind": {"get": "row.kind"}, "precedence": {"get": "row.precedence"}, "guards": {"get": "row.guards"},
+    {"name": "groupEntries", "op": "flatMap", "from": "groups", "rows": {"each": ["$row.entries", "entry", {"record": {
+      "kind": "$row.kind", "precedence": "$row.precedence", "guards": "$row.guards",
       "variants": {"default": [{"optional": "row.variants"}, {"list": []}]},
-      "print": {"get": "entry.0"}, "braille": {"get": "entry.1"}
+      "print": "$entry.0", "braille": "$entry.1"
     }}]}},
     {"name": "familyEntries", "op": "join", "from": "groupEntries", "with": "families",
-      "left": [{"get": "row.kind"}], "right": [{"get": "row.key"}], "mode": "one", "as": "family"},
+      "left": ["$row.kind"], "right": ["$row.key"], "mode": "one", "as": "family"},
     {"name": "grade2Rules", "op": "map", "from": "familyEntries", "row": {"record": {
-      "braille": {"get": "row.braille"},
-      "citation": {"cite": {"record": {"source": "ueb-2024", "locator": {"get": "row.family.locator"}}}},
-      "id": {"concat": [{"input": "expansion.ids.contractionPrefix"}, {"get": "row.family.locator"}, {"input": "expansion.ids.separator"}, {"get": "row.print"}]},
-      "kind": {"get": "row.kind"}, "print": {"get": "row.print"},
-      "guards": {"concat": [{"get": "row.family.guards"}, {"get": "row.guards"}]},
-      "precedence": {"get": "row.precedence"}, "variants": {"get": "row.variants"}
+      "braille": "$row.braille",
+      "citation": {"cite": {"record": {"source": "ueb-2024", "locator": "$row.family.locator"}}},
+      "id": {"concat": ["@expansion.ids.contractionPrefix", "$row.family.locator", "@expansion.ids.separator", "$row.print"]},
+      "kind": "$row.kind", "print": "$row.print",
+      "guards": {"concat": ["$row.family.guards", "$row.guards"]},
+      "precedence": "$row.precedence", "variants": "$row.variants"
     }}},
 
     {"name": "constraints", "op": "table", "source": "constraints"},
     {"name": "constraintTargets", "op": "join", "from": "constraints", "with": "grade2Rules",
-      "left": [{"get": "row.target.kind"}, {"get": "row.target.print"}], "right": [{"get": "row.kind"}, {"get": "row.print"}],
+      "left": ["$row.target.kind", "$row.target.print"], "right": ["$row.kind", "$row.print"],
       "mode": "one", "as": "rule"},
     {"name": "constraintSources", "op": "map", "from": "constraintTargets", "row": {"record": {
-      "citation": {"cite": {"get": "row.citation"}},
-      "target": {"record": {"kind": {"get": "row.target.kind"}, "print": {"get": "row.target.print"}}},
-      "guards": {"flatten": {"each": [{"get": "row.guards"}, "guard",
-        {"if": [{"eq": [{"get": "guard.kind"}, "not-word-ending"]},
-          {"if": [{"isEmpty": {"get": "guard.endings"}}, {"list": []},
-            {"list": [{"record": {"kind": "not-word-ending", "endings": {"get": "guard.endings"}}}]}]},
-          {"if": [{"eq": [{"get": "guard.kind"}, "not-word"]},
-            {"if": [{"isEmpty": {"call": ["constraintWords", {"get": "guard"}]}}, {"list": []},
-              {"list": [{"record": {"kind": "not-word", "words": {"call": ["constraintWords", {"get": "guard"}]}, "ignoredCharacters": {"get": "guard.ignoredCharacters"}}}]}]},
-            {"if": [{"eq": [{"get": "guard.kind"}, "following-not-vowel-y-except-words"]},
-              {"list": [{"record": {"kind": "following-not-vowel-y-except-words", "words": {"call": ["constraintWords", {"get": "guard"}]}, "characters": {"get": "guard.characters"}}}]},
-              {"fail": {"concat": ["Unsupported constraint guard ", {"get": "guard.kind"}]}}]}]}]}
+      "citation": {"cite": "$row.citation"},
+      "target": {"record": {"kind": "$row.target.kind", "print": "$row.target.print"}},
+      "guards": {"flatten": {"each": ["$row.guards", "guard",
+        {"if": [{"eq": ["$guard.kind", "not-word-ending"]},
+          {"if": [{"isEmpty": "$guard.endings"}, {"list": []},
+            {"list": [{"record": {"kind": "not-word-ending", "endings": "$guard.endings"}}]}]},
+          {"if": [{"eq": ["$guard.kind", "not-word"]},
+            {"if": [{"isEmpty": {"call": ["constraintWords", "$guard"]}}, {"list": []},
+              {"list": [{"record": {"kind": "not-word", "words": {"call": ["constraintWords", "$guard"]}, "ignoredCharacters": "$guard.ignoredCharacters"}}]}]},
+            {"if": [{"eq": ["$guard.kind", "following-not-vowel-y-except-words"]},
+              {"list": [{"record": {"kind": "following-not-vowel-y-except-words", "words": {"call": ["constraintWords", "$guard"]}, "characters": "$guard.characters"}}]},
+              {"fail": {"concat": ["Unsupported constraint guard ", "$guard.kind"]}}]}]}]}
       ]}}
     }}},
     {"name": "constrainedRules", "op": "join", "from": "grade2Rules", "with": "constraintSources",
-      "left": [{"get": "row.kind"}, {"get": "row.print"}], "right": [{"get": "row.target.kind"}, {"get": "row.target.print"}],
+      "left": ["$row.kind", "$row.print"], "right": ["$row.target.kind", "$row.target.print"],
       "mode": "all", "as": "constraints"},
 
-    {"name": "collisionSigns", "op": "filter", "from": "grade2Rules", "where": {"in": [{"get": "row.kind"}, {"input": "expansion.collisionKinds"}]}},
+    {"name": "collisionSigns", "op": "filter", "from": "grade2Rules", "where": {"in": ["$row.kind", "@expansion.collisionKinds"]}},
     {"name": "symbols", "op": "table", "source": "symbols"},
     {"name": "latinLetters", "op": "filter", "from": "symbols", "where": {"and": [
-      {"eq": [{"get": "row.kind"}, {"input": "expansion.latinKind"}]},
-      {"test": [{"input": "expansion.latinPattern"}, {"get": "row.print"}]}
+      {"eq": ["$row.kind", "@expansion.latinKind"]},
+      {"test": ["@expansion.latinPattern", "$row.print"]}
     ]}},
     {"name": "spellings", "op": "concat", "from": ["collisionSigns", "latinLetters"]},
     {"name": "shortformPairs", "op": "table", "source": "shortforms"},
     {"name": "shortforms", "op": "map", "from": "shortformPairs", "row": {"record": {
-      "braille": {"get": "row.1"}, "citation": {"cite": {"input": "expansion.citation"}},
-      "id": {"concat": [{"input": "expansion.ids.shortformPrefix"}, {"get": "row.0"}]}, "print": {"get": "row.0"}
+      "braille": "$row.1", "citation": {"cite": "@expansion.citation"},
+      "id": {"concat": ["@expansion.ids.shortformPrefix", "$row.0"]}, "print": "$row.0"
     }}},
     {"name": "appendix", "op": "table", "source": "appendix"},
-    {"name": "appendixWords", "op": "flatMap", "from": "appendix", "rows": {"each": [{"get": "row.words"}, "word", {"record": {
-      "base": {"get": "row.base"}, "citation": {"cite": {"input": "expansion.citation"}},
-      "id": {"concat": [{"input": "expansion.ids.appendixPrefix"}, {"get": "row.base"}, {"input": "expansion.ids.separator"}, {"get": "word"}]},
-      "print": {"get": "word"},
-      "withoutBase": {"replaceFirst": [{"get": "word"}, {"get": "row.base"}, ""]}
+    {"name": "appendixWords", "op": "flatMap", "from": "appendix", "rows": {"each": ["$row.words", "word", {"record": {
+      "base": "$row.base", "citation": {"cite": "@expansion.citation"},
+      "id": {"concat": ["@expansion.ids.appendixPrefix", "$row.base", "@expansion.ids.separator", "$word"]},
+      "print": "$word",
+      "withoutBase": {"replaceFirst": ["$word", "$row.base", ""]}
     }}]}},
     {"name": "appendixSources", "op": "map", "from": "appendixWords", "row": {"record": {
-      "base": {"get": "row.base"}, "citation": {"get": "row.citation"}, "id": {"get": "row.id"}, "print": {"get": "row.print"}
+      "base": "$row.base", "citation": "$row.citation", "id": "$row.id", "print": "$row.print"
     }}},
     {"name": "longerGroups", "op": "table", "source": "longerShortforms"},
-    {"name": "longerWords", "op": "flatMap", "from": "longerGroups", "rows": {"each": [{"get": "row.words"}, "word",
-      {"record": {"word": {"get": "word"}, "guards": {"get": "row.guards"}}}]}},
+    {"name": "longerWords", "op": "flatMap", "from": "longerGroups", "rows": {"each": ["$row.words", "word",
+      {"record": {"word": "$word", "guards": "$row.guards"}}]}},
     {"name": "shortformAppendix", "op": "join", "from": "shortforms", "with": "appendixWords",
-      "left": [{"get": "row.print"}], "right": [{"get": "row.base"}], "mode": "all", "as": "appendix"},
+      "left": ["$row.print"], "right": ["$row.base"], "mode": "all", "as": "appendix"},
     {"name": "shortformInfo", "op": "join", "from": "shortformAppendix", "with": "longerWords",
-      "left": [{"get": "row.print"}], "right": [{"get": "row.word"}], "mode": "first", "as": "longer"},
-    {"name": "readings", "op": "decode", "from": "shortformInfo", "cells": {"get": "row.braille"}, "alphabet": "spellings"},
-    {"name": "collisionReadings", "op": "filter", "from": "readings", "where": {"not": {"eq": [{"get": "row.reading.literal"}, {"get": "row.print"}]}}},
+      "left": ["$row.print"], "right": ["$row.word"], "mode": "first", "as": "longer"},
+    {"name": "readings", "op": "decode", "from": "shortformInfo", "cells": "$row.braille", "alphabet": "spellings"},
+    {"name": "collisionReadings", "op": "filter", "from": "readings", "where": {"not": {"eq": ["$row.reading.literal", "$row.print"]}}},
     {"name": "collisionTargets", "op": "flatMap", "from": "collisionReadings", "rows": {"each": [
-      {"where": [{"get": "row.reading.ids"}, "id", {"in": [{"get": "id"}, {"column": ["collisionSigns", "id"]}]}]},
+      {"where": ["$row.reading.ids", "id", {"in": ["$id", {"column": ["collisionSigns", "id"]}]}]},
       "target",
       {"record": {
-        "target": {"get": "target"},
+        "target": "$target",
         "words": {"flatten": {"each": [
           {"concat": [
-            {"list": [{"list": [{"get": "row.print"}, {"get": "row.reading.literal"}]}]},
-            {"each": [{"get": "row.appendix"}, "entry", {"list": [{"get": "entry.print"}, {"replaceFirst": [{"get": "entry.print"}, {"get": "row.print"}, {"get": "row.reading.literal"}]}]}]}
+            {"list": [{"list": ["$row.print", "$row.reading.literal"]}]},
+            {"each": ["$row.appendix", "entry", {"list": ["$entry.print", {"replaceFirst": ["$entry.print", "$row.print", "$row.reading.literal"]}]}]}
           ]},
           "form",
           {"concat": [
-            {"list": [{"get": "form.1"}]},
-            {"flatten": {"each": [{"call": ["shortformSuffixes", {"get": "form.0"}]}, "suffix", {"concat": [
-              {"list": [{"concat": [{"get": "form.1"}, {"get": "suffix"}]}]},
-              {"each": [{"at": [{"input": "expansion.suffixExtensions"}, {"get": "suffix"}, {"list": []}]}, "extension",
-                {"concat": [{"get": "form.1"}, {"get": "suffix"}, {"get": "extension"}]}]}
+            {"list": ["$form.1"]},
+            {"flatten": {"each": [{"call": ["shortformSuffixes", "$form.0"]}, "suffix", {"concat": [
+              {"list": [{"concat": ["$form.1", "$suffix"]}]},
+              {"each": [{"at": ["@expansion.suffixExtensions", "$suffix", {"list": []}]}, "extension",
+                {"concat": ["$form.1", "$suffix", "$extension"]}]}
             ]}]}}
           ]}
         ]}},
-        "patterns": {"if": [{"eq": [{"get": "row.longer"}, null]}, {"list": []},
-          {"list": [{"call": ["longerPattern", {"get": "row.longer.guards"}, {"get": "row.reading.literal"}]}]}]}
+        "patterns": {"if": [{"eq": ["$row.longer", null]}, {"list": []},
+          {"list": [{"call": ["longerPattern", "$row.longer.guards", "$row.reading.literal"]}]}]}
       }}
     ]}},
-    {"name": "collisionGroups", "op": "group", "from": "collisionTargets", "by": {"get": "row.target"},
-      "collect": {"words": {"get": "row.words"}, "patterns": {"get": "row.patterns"}}},
+    {"name": "collisionGroups", "op": "group", "from": "collisionTargets", "by": "$row.target",
+      "collect": {"words": "$row.words", "patterns": "$row.patterns"}},
     {"name": "collisionGuards", "op": "map", "from": "collisionGroups", "row": {"record": {
-      "target": {"get": "row.key"},
+      "target": "$row.key",
       "guards": {"concat": [
-        {"list": [{"record": {"kind": "not-standing-word", "ignoredCharacters": "", "words": {"get": "row.words"}}}]},
-        {"each": [{"get": "row.patterns"}, "pattern", {"record": {"kind": "not-standing-match", "pattern": {"get": "pattern"}}}]}
+        {"list": [{"record": {"kind": "not-standing-word", "ignoredCharacters": "", "words": "$row.words"}}]},
+        {"each": ["$row.patterns", "pattern", {"record": {"kind": "not-standing-match", "pattern": "$pattern"}}]}
       ]}
     }}},
 
     {"name": "collidedRules", "op": "join", "from": "constrainedRules", "with": "collisionGuards",
-      "left": [{"get": "row.id"}], "right": [{"get": "row.target"}], "mode": "first", "as": "collision"},
+      "left": ["$row.id"], "right": ["$row.target"], "mode": "first", "as": "collision"},
     {"name": "generalRules", "op": "map", "from": "collidedRules", "row": {"record": {
-      "braille": {"get": "row.braille"}, "citation": {"get": "row.citation"},
+      "braille": "$row.braille", "citation": "$row.citation",
       "guards": {"concat": [
-        {"get": "row.guards"},
-        {"flatten": {"each": [{"get": "row.constraints"}, "constraint", {"get": "constraint.guards"}]}},
-        {"at": [{"get": "row.collision"}, "guards", {"list": []}]}
+        "$row.guards",
+        {"flatten": {"each": ["$row.constraints", "constraint", "$constraint.guards"]}},
+        {"at": ["$row.collision", "guards", {"list": []}]}
       ]},
-      "id": {"get": "row.id"}, "input": {"get": "row.print"}, "precedence": {"get": "row.precedence"},
-      "variants": {"get": "row.variants"}
+      "id": "$row.id", "input": "$row.print", "precedence": "$row.precedence",
+      "variants": "$row.variants"
     }}},
     {"name": "contractionRules", "op": "flatMap", "from": "generalRules", "rows": {"concat": [
       {"list": [{"record": {
-        "braille": {"get": "row.braille"}, "citation": {"get": "row.citation"}, "guards": {"get": "row.guards"},
-        "id": {"get": "row.id"}, "input": {"get": "row.input"}, "precedence": {"get": "row.precedence"}
+        "braille": "$row.braille", "citation": "$row.citation", "guards": "$row.guards",
+        "id": "$row.id", "input": "$row.input", "precedence": "$row.precedence"
       }}]},
-      {"each": [{"get": "row.variants"}, "variant", {"record": {
-        "braille": {"get": "row.braille"},
-        "citation": {"merge": [{"get": "row.citation"}, {"record": {"locator": {"get": "variant.locator"}}}]},
-        "guards": {"concat": [{"get": "row.guards"}, {"get": "variant.guards"}]},
-        "id": {"concat": [{"get": "row.id"}, {"input": "expansion.ids.separator"}, {"get": "variant.idSuffix"}]},
-        "input": {"get": "row.input"}, "precedence": {"get": "variant.precedence"}
+      {"each": ["$row.variants", "variant", {"record": {
+        "braille": "$row.braille",
+        "citation": {"merge": ["$row.citation", {"record": {"locator": "$variant.locator"}}]},
+        "guards": {"concat": ["$row.guards", "$variant.guards"]},
+        "id": {"concat": ["$row.id", "@expansion.ids.separator", "$variant.idSuffix"]},
+        "input": "$row.input", "precedence": "$variant.precedence"
       }}]}
     ]}},
     {"name": "wholeShortforms", "op": "map", "from": "shortforms", "row": {"record": {
-      "braille": {"get": "row.braille"}, "citation": {"get": "row.citation"},
-      "guards": {"concat": [{"input": "expansion.shortformGuards"},
-        {"list": [{"record": {"kind": "word-with-affixes", "affixes": {"call": ["shortformSuffixes", {"get": "row.print"}]}}}]}]},
-      "id": {"get": "row.id"}, "input": {"get": "row.print"}, "precedence": {"input": "expansion.shortformPrecedence"}
+      "braille": "$row.braille", "citation": "$row.citation",
+      "guards": {"concat": ["@expansion.shortformGuards",
+        {"list": [{"record": {"kind": "word-with-affixes", "affixes": {"call": ["shortformSuffixes", "$row.print"]}}}]}]},
+      "id": "$row.id", "input": "$row.print", "precedence": "@expansion.shortformPrecedence"
     }}},
-    {"name": "longerShortforms", "op": "filter", "from": "shortformInfo", "where": {"not": {"eq": [{"get": "row.longer"}, null]}}},
+    {"name": "longerShortforms", "op": "filter", "from": "shortformInfo", "where": {"not": {"eq": ["$row.longer", null]}}},
     {"name": "longerRules", "op": "map", "from": "longerShortforms", "row": {"record": {
-      "braille": {"get": "row.braille"}, "citation": {"get": "row.citation"},
-      "guards": {"get": "row.longer.guards"},
-      "id": {"concat": [{"get": "row.id"}, {"input": "expansion.ids.longerSuffix"}]},
-      "input": {"get": "row.print"}, "precedence": {"input": "expansion.longerPrecedence"}
+      "braille": "$row.braille", "citation": "$row.citation",
+      "guards": "$row.longer.guards",
+      "id": {"concat": ["$row.id", "@expansion.ids.longerSuffix"]},
+      "input": "$row.print", "precedence": "@expansion.longerPrecedence"
     }}},
     {"name": "appendixBases", "op": "join", "from": "appendixWords", "with": "shortforms",
-      "left": [{"get": "row.base"}], "right": [{"get": "row.print"}], "mode": "one", "as": "shortform"},
+      "left": ["$row.base"], "right": ["$row.print"], "mode": "one", "as": "shortform"},
     {"name": "appendixRules", "op": "map", "from": "appendixBases", "row": {"record": {
-      "braille": {"get": "row.shortform.braille"}, "citation": {"get": "row.citation"},
-      "guards": {"concat": [{"input": "expansion.appendixGuards"},
-        {"list": [{"record": {"kind": "eligibility-word", "pluralSuffix": {"input": "expansion.pluralSuffix"}, "word": {"get": "row.print"}}}]}]},
-      "id": {"get": "row.id"}, "input": {"get": "row.base"}, "precedence": {"input": "expansion.appendixPrecedence"}
+      "braille": "$row.shortform.braille", "citation": "$row.citation",
+      "guards": {"concat": ["@expansion.appendixGuards",
+        {"list": [{"record": {"kind": "eligibility-word", "pluralSuffix": "@expansion.pluralSuffix", "word": "$row.print"}}]}]},
+      "id": "$row.id", "input": "$row.base", "precedence": "@expansion.appendixPrecedence"
     }}},
     {"name": "rules", "op": "concat", "from": ["contractionRules", "wholeShortforms", "longerRules", "appendixRules"]},
 
     {"name": "longerAmbiguities", "op": "flatMap", "from": "longerRules", "rows": {"if": [
-      {"eq": [{"spell": [{"get": "row.braille"}, "latinLetters", "braille", "print"]}, null]}, {"list": []},
-      {"list": [{"call": ["longerPattern", {"get": "row.guards"}, {"spell": [{"get": "row.braille"}, "latinLetters", "braille", "print"]}]}]}
+      {"eq": [{"spell": ["$row.braille", "latinLetters", "braille", "print"]}, null]}, {"list": []},
+      {"list": [{"call": ["longerPattern", "$row.guards", {"spell": ["$row.braille", "latinLetters", "braille", "print"]}]}]}
     ]}},
     {"name": "spelledRules", "op": "map", "from": "rules", "row": {"record": {
-      "rule": {"get": "row"}, "letters": {"spell": [{"get": "row.braille"}, "latinLetters", "braille", "print"]}
+      "rule": "$row", "letters": {"spell": ["$row.braille", "latinLetters", "braille", "print"]}
     }}},
-    {"name": "letterRules", "op": "filter", "from": "spelledRules", "where": {"not": {"eq": [{"get": "row.letters"}, null]}}},
+    {"name": "letterRules", "op": "filter", "from": "spelledRules", "where": {"not": {"eq": ["$row.letters", null]}}},
     {"name": "ambiguityEntries", "op": "flatMap", "from": "letterRules", "rows": {"concat": [
       {"each": [
         {"concat": [{"list": [""]}, {"where": [
-          {"flatten": {"each": [{"where": [{"get": "row.rule.guards"}, "guard", {"eq": [{"get": "guard.kind"}, "word-with-affixes"]}]}, "guard", {"get": "guard.affixes"}]}},
-          "affix", {"not": {"eq": [{"spell": [{"get": "affix"}, "latinLetters", "print", "braille"]}, null]}}
+          {"flatten": {"each": [{"where": ["$row.rule.guards", "guard", {"eq": ["$guard.kind", "word-with-affixes"]}]}, "guard", "$guard.affixes"]}},
+          "affix", {"not": {"eq": [{"spell": ["$affix", "latinLetters", "print", "braille"]}, null]}}
         ]}]},
         "affix",
-        {"list": [{"concat": [{"get": "row.letters"}, {"get": "affix"}]}, {"concat": [{"get": "row.rule.braille"}, {"spell": [{"get": "affix"}, "latinLetters", "print", "braille"]}]}]}
+        {"list": [{"concat": ["$row.letters", "$affix"]}, {"concat": ["$row.rule.braille", {"spell": ["$affix", "latinLetters", "print", "braille"]}]}]}
       ]},
       {"each": [
         {"flatten": {"each": [
-          {"where": [{"get": "row.rule.guards"}, "guard", {"and": [
-            {"eq": [{"get": "guard.kind"}, "eligibility-word"]},
-            {"startsWith": [{"get": "guard.word"}, {"get": "row.rule.input"}]},
-            {"not": {"eq": [{"spell": [{"get": "guard.word"}, "latinLetters", "print", "braille"]}, null]}}
+          {"where": ["$row.rule.guards", "guard", {"and": [
+            {"eq": ["$guard.kind", "eligibility-word"]},
+            {"startsWith": ["$guard.word", "$row.rule.input"]},
+            {"not": {"eq": [{"spell": ["$guard.word", "latinLetters", "print", "braille"]}, null]}}
           ]}]},
           "guard",
-          {"list": [{"after": [{"get": "guard.word"}, {"get": "row.rule.input"}]}, {"concat": [{"after": [{"get": "guard.word"}, {"get": "row.rule.input"}]}, {"get": "guard.pluralSuffix"}]}]}
+          {"list": [{"after": ["$guard.word", "$row.rule.input"]}, {"concat": [{"after": ["$guard.word", "$row.rule.input"]}, "$guard.pluralSuffix"]}]}
         ]}},
         "suffix",
-        {"list": [{"concat": [{"get": "row.letters"}, {"get": "suffix"}]}, {"concat": [{"get": "row.rule.braille"}, {"spell": [{"get": "suffix"}, "latinLetters", "print", "braille"]}]}]}
+        {"list": [{"concat": ["$row.letters", "$suffix"]}, {"concat": ["$row.rule.braille", {"spell": ["$suffix", "latinLetters", "print", "braille"]}]}]}
       ]}
     ]}},
-    {"name": "distinctAmbiguities", "op": "distinct", "from": "ambiguityEntries", "by": {"get": "row.0"}},
-    {"name": "ambiguities", "op": "sort", "from": "distinctAmbiguities", "by": {"get": "row.0"}},
+    {"name": "distinctAmbiguities", "op": "distinct", "from": "ambiguityEntries", "by": "$row.0"},
+    {"name": "ambiguities", "op": "sort", "from": "distinctAmbiguities", "by": "$row.0"},
 
-    {"name": "standingWords", "op": "filter", "from": "grade2Rules", "where": {"in": [{"get": "row.kind"}, {"input": "expansion.standingWordKinds"}]}},
+    {"name": "standingWords", "op": "filter", "from": "grade2Rules", "where": {"in": ["$row.kind", "@expansion.standingWordKinds"]}},
     {"name": "standingLiteralRules", "op": "filter", "from": "grade2Rules", "where": {"and": [
-      {"in": [{"get": "row.kind"}, {"input": "expansion.standingLiteralKinds"}]},
-      {"in": [{"get": "row.braille"}, {"column": ["standingWords", "braille"]}]}
+      {"in": ["$row.kind", "@expansion.standingLiteralKinds"]},
+      {"in": ["$row.braille", {"column": ["standingWords", "braille"]}]}
     ]}},
-    {"name": "standingLiteralPrints", "op": "flatMap", "from": "standingLiteralRules", "rows": {"list": [{"get": "row.print"}]}},
-    {"name": "standingLiterals", "op": "sort", "from": "standingLiteralPrints", "by": {"get": "row"}},
-    {"name": "alphabet", "op": "flatMap", "from": "latinLetters", "rows": {"list": [{"get": "row.print"}]}}
+    {"name": "standingLiteralPrints", "op": "flatMap", "from": "standingLiteralRules", "rows": {"list": ["$row.print"]}},
+    {"name": "standingLiterals", "op": "sort", "from": "standingLiteralPrints", "by": "$row"},
+    {"name": "alphabet", "op": "flatMap", "from": "latinLetters", "rows": {"list": ["$row.print"]}}
   ],
   "outputs": {
     "grade2Rules": "grade2Rules",
