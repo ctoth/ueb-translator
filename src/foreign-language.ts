@@ -62,6 +62,7 @@ const UEB_UNCONTRACTED_TRANSLATOR = compose(
   GRADE1_SYMBOL_PROGRAM,
   GRADE1_MODE_PROGRAM,
   UEB_COMPOSITION_POLICIES,
+  GRADE1_RUNTIME_FACTS,
 );
 
 interface ForeignCode {
@@ -92,7 +93,7 @@ function foreignCode(language: ForeignLanguage): ForeignCode {
   const code: ForeignCode = {
     capital: LANGUAGES[language].capital,
     inverse: inverseLetters(symbols),
-    translator: compose(symbols, GRADE1_MODE_PROGRAM, UEB_COMPOSITION_POLICIES),
+    translator: compose(symbols, GRADE1_MODE_PROGRAM, UEB_COMPOSITION_POLICIES, GRADE1_RUNTIME_FACTS),
   };
   FOREIGN_CODES.set(language, code);
   return code;

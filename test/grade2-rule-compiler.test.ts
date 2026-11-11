@@ -22,6 +22,7 @@ import { compose } from "../src/composition.js";
 import { contextualGuardTuple, isContextualPrecedence } from "../src/contextual-schema.js";
 import {
   GRADE1_MODE_PROGRAM,
+  GRADE1_RUNTIME_FACTS,
   GRADE1_SYMBOL_PROGRAM,
   UEB_COMPOSITION_POLICIES,
 } from "../src/generated/ueb-2024/grade1-program.js";
@@ -297,7 +298,7 @@ describe("Grade 2 runtime architecture", () => {
       const encode = (values: readonly number[]): string =>
         String.fromCharCode(...values.map((value) => value + 0x100));
       const translator = compose(GRADE1_SYMBOL_PROGRAM, GRADE1_MODE_PROGRAM,
-        UEB_COMPOSITION_POLICIES, {
+        UEB_COMPOSITION_POLICIES, GRADE1_RUNTIME_FACTS, {
           ...compiled,
           code: "ueb-2024",
           grade1Ambiguities: [],
@@ -361,6 +362,7 @@ describe("Grade 2 runtime architecture", () => {
       GRADE1_SYMBOL_PROGRAM,
       GRADE1_MODE_PROGRAM,
       UEB_COMPOSITION_POLICIES,
+      GRADE1_RUNTIME_FACTS,
       {
         ...compiled,
         code: "ueb-2024",
@@ -396,6 +398,7 @@ describe("Grade 2 runtime architecture", () => {
       GRADE1_SYMBOL_PROGRAM,
       GRADE1_MODE_PROGRAM,
       UEB_COMPOSITION_POLICIES,
+      GRADE1_RUNTIME_FACTS,
       {
         ...compiled,
         code: "ueb-2024",
@@ -433,6 +436,7 @@ describe("Grade 2 runtime architecture", () => {
       GRADE1_SYMBOL_PROGRAM,
       GRADE1_MODE_PROGRAM,
       { ...UEB_COMPOSITION_POLICIES, elisionPunctuation: "" },
+      GRADE1_RUNTIME_FACTS,
       {
         ...compiled,
         code: "ueb-2024",
@@ -482,6 +486,7 @@ describe("Grade 2 runtime architecture", () => {
       GRADE1_SYMBOL_PROGRAM,
       GRADE1_MODE_PROGRAM,
       UEB_COMPOSITION_POLICIES,
+      GRADE1_RUNTIME_FACTS,
       contractions,
     );
 
@@ -493,11 +498,13 @@ describe("Grade 2 runtime architecture", () => {
       { symbols: [] },
       GRADE1_MODE_PROGRAM,
       UEB_COMPOSITION_POLICIES,
+      GRADE1_RUNTIME_FACTS,
     )).toThrow("requires compiled symbol and mode programs");
     expect(() => compose(
       GRADE1_SYMBOL_PROGRAM,
       { modes: [] },
       UEB_COMPOSITION_POLICIES,
+      GRADE1_RUNTIME_FACTS,
     )).toThrow("requires compiled symbol and mode programs");
   });
 

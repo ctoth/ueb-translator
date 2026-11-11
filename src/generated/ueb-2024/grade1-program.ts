@@ -266,6 +266,112 @@ export const GRADE1_RUNTIME_FACTS = {
     "apostrophePrint": "’",
     "apostrophe": "⠄"
   },
+  "standing": {
+    "when": [
+      {
+        "unit": "previous",
+        "skip": "openingStandingPunctuation",
+        "edge": true,
+        "classes": [
+          "sequence-boundary"
+        ],
+        "sources": "standingBoundaries"
+      },
+      {
+        "unit": "next",
+        "skip": "closingStandingPunctuation",
+        "edge": true,
+        "classes": [
+          "sequence-boundary"
+        ],
+        "sources": "standingBoundaries"
+      }
+    ]
+  },
+  "lowerSigns": {
+    "within": [
+      {
+        "unit": "self",
+        "classes": [
+          "lowercase-letter",
+          "uppercase-letter",
+          "digit",
+          "sequence-boundary"
+        ],
+        "not": true
+      }
+    ],
+    "facts": {
+      "hasLowerPunctuation": [
+        {
+          "when": [
+            {
+              "unit": "self",
+              "sources": "lowerPunctuation"
+            }
+          ]
+        }
+      ],
+      "hasRestrictingLowerPunctuation": [
+        {
+          "when": [
+            {
+              "unit": "self",
+              "sources": "lowerPunctuation"
+            },
+            {
+              "unit": "self",
+              "sources": "elisionPunctuation",
+              "not": true
+            }
+          ]
+        },
+        {
+          "when": [
+            {
+              "unit": "self",
+              "sources": "lowerPunctuation"
+            },
+            {
+              "unit": "previous",
+              "classes": [
+                "lowercase-letter",
+                "uppercase-letter"
+              ],
+              "not": true
+            }
+          ]
+        },
+        {
+          "when": [
+            {
+              "unit": "self",
+              "sources": "lowerPunctuation"
+            },
+            {
+              "unit": "next",
+              "classes": [
+                "lowercase-letter",
+                "uppercase-letter"
+              ],
+              "not": true
+            }
+          ]
+        }
+      ],
+      "hasUpperPunctuation": [
+        {
+          "when": [
+            {
+              "unit": "self",
+              "sources": "lowerPunctuation",
+              "not": true
+            }
+          ]
+        }
+      ]
+    }
+  },
   "typeforms": {
     "modes": {
       "bold": "typeform-bold",

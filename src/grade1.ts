@@ -7,6 +7,7 @@ import {
 import { compose } from "./composition.js";
 import {
   GRADE1_MODE_PROGRAM,
+  GRADE1_RUNTIME_FACTS,
   GRADE1_SYMBOL_PROGRAM,
   UEB_COMPOSITION_POLICIES,
 } from "./generated/ueb-2024/grade1-program.js";
@@ -31,6 +32,7 @@ const GRADE1_TRANSLATOR = compose(
   GRADE1_SYMBOL_PROGRAM,
   GRADE1_MODE_PROGRAM,
   UEB_COMPOSITION_POLICIES,
+  GRADE1_RUNTIME_FACTS,
 );
 
 /** Compose the generated symbol program with the closed mode runtime. */

@@ -57,6 +57,26 @@
     "apostrophePrint": "’",
     "apostrophe": "⠄"
   },
+  "standing": {
+    "citation": { "source": "ueb-2024", "locator": "2.6" },
+    "when": [
+      { "unit": "previous", "skip": "openingStandingPunctuation", "edge": true, "classes": ["sequence-boundary"], "sources": "standingBoundaries" },
+      { "unit": "next", "skip": "closingStandingPunctuation", "edge": true, "classes": ["sequence-boundary"], "sources": "standingBoundaries" }
+    ]
+  },
+  "lowerSigns": {
+    "citation": { "source": "ueb-2024", "locator": "10.5" },
+    "within": [{ "unit": "self", "classes": ["lowercase-letter", "uppercase-letter", "digit", "sequence-boundary"], "not": true }],
+    "facts": {
+      "hasLowerPunctuation": [{ "when": [{ "unit": "self", "sources": "lowerPunctuation" }] }],
+      "hasRestrictingLowerPunctuation": [
+        { "when": [{ "unit": "self", "sources": "lowerPunctuation" }, { "unit": "self", "sources": "elisionPunctuation", "not": true }] },
+        { "when": [{ "unit": "self", "sources": "lowerPunctuation" }, { "unit": "previous", "classes": ["lowercase-letter", "uppercase-letter"], "not": true }] },
+        { "when": [{ "unit": "self", "sources": "lowerPunctuation" }, { "unit": "next", "classes": ["lowercase-letter", "uppercase-letter"], "not": true }] }
+      ],
+      "hasUpperPunctuation": [{ "when": [{ "unit": "self", "sources": "lowerPunctuation", "not": true }] }]
+    }
+  },
   "typeforms": {
     "citation": { "source": "ueb-2024", "locator": "9.2-9.4" },
     "modes": {
