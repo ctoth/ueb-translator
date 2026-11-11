@@ -168,34 +168,121 @@ const NUMERIC_LETTER_CELLS = new Set(
 const CAPITALS_MODE = GRADE1_MODE_IDS.capitals;
 const SEQUENCE_BOUNDARY_CLASS = GRADE1_MODE_CLASS_IDS["sequence-boundary"];
 const NUMERIC_PUNCTUATION: readonly string[] = FACTS.numeric.punctuation;
-const QUOTES = FACTS.quotes;
 type ModeClassName = keyof typeof GRADE1_MODE_CLASS_IDS;
-interface Grade1RequiredRule {
-  readonly activeMode?: keyof typeof GRADE1_MODE_IDS;
-  readonly classes?: readonly ModeClassName[];
-  readonly previous?: {
-    readonly classes: readonly ModeClassName[];
-    readonly sources: readonly string[];
-    readonly start: boolean;
+
+/**
+ * One condition of a runtime-facts.json rule (a rule holds when all its
+ * conditions hold). A unit test looks at this unit or a neighbour, after
+ * skipping neighbours whose source is in the `skip` set; it holds when that
+ * unit has one of `classes` or a source in the `sources` set, or when there is
+ * no unit there and `edge` is set. `not` inverts it. The other forms read the
+ * evaluation state: a mode active before this unit, an open counter, the end
+ * of a marked elision, or the letters after this unit spelling an initial
+ * elision word.
+ */
+export type RuleCondition<SetName extends string> =
+  | { readonly active: keyof typeof GRADE1_MODE_IDS }
+  | { readonly elisionEnd: true }
+  | { readonly elisionWord: true }
+  | { readonly open: string }
+  | {
+    readonly classes?: readonly ModeClassName[];
+    readonly not?: boolean;
+    readonly sources?: SetName;
+    readonly unit: "self";
+  }
+  | {
+    readonly classes?: readonly ModeClassName[];
+    readonly edge?: boolean;
+    readonly not?: boolean;
+    readonly skip?: SetName;
+    readonly sources?: SetName;
+    readonly unit: "next" | "previous";
   };
-  readonly sources?: readonly string[];
+
+interface RuleState {
+  readonly active: (mode: number, index: number) => boolean;
+  readonly classes: readonly ModeUnit[];
+  readonly depth: Map<string, number>;
+  elisionEnd: number;
+  readonly units: readonly CompositionUnit[];
 }
-interface CompiledGrade1RequiredRule {
-  readonly classes: number;
-  readonly mode: number | undefined;
-  readonly previous: { readonly classes: number; readonly sources: readonly string[]; readonly start: boolean } | undefined;
-  readonly sources: readonly string[] | undefined;
+
+type RuleTest = (state: RuleState, index: number) => boolean;
+
+function ruleState(units: readonly CompositionUnit[], classes: readonly ModeUnit[]): RuleState {
+  const activeBefore = new Map<number, readonly boolean[]>();
+  return {
+    active: (mode, index) => {
+      let flags = activeBefore.get(mode);
+      if (flags === undefined) {
+        flags = activeModeBefore(GRADE1_MODE_PROGRAM, mode, classes);
+        activeBefore.set(mode, flags);
+      }
+      return flags[index] === true;
+    },
+    classes,
+    depth: new Map(),
+    elisionEnd: -1,
+    units,
+  };
 }
-const classesMask = (names: readonly ModeClassName[] | undefined): number =>
-  classMask(...(names ?? []).map((name) => GRADE1_MODE_CLASS_IDS[name]));
-const GRADE1_REQUIRED_RULES: readonly CompiledGrade1RequiredRule[] =
-  (FACTS.grade1Required.rules satisfies readonly Grade1RequiredRule[]).map((rule: Grade1RequiredRule) => ({
-    classes: classesMask(rule.classes),
-    mode: rule.activeMode === undefined ? undefined : GRADE1_MODE_IDS[rule.activeMode],
-    previous: rule.previous === undefined ? undefined
-      : { classes: classesMask(rule.previous.classes), sources: rule.previous.sources, start: rule.previous.start },
-    sources: rule.sources,
-  }));
+
+function letterRunEnd(units: readonly CompositionUnit[], index: number): number {
+  let end = index + 1;
+  while (units[end]?.kind === "letter") end += 1;
+  return end;
+}
+
+function conditionTest<SetName extends string>(
+  condition: RuleCondition<SetName>,
+  sets: Readonly<Record<SetName, readonly string[]>>,
+): RuleTest {
+  if ("active" in condition) {
+    const mode = GRADE1_MODE_IDS[condition.active];
+    return (state, index) => state.active(mode, index);
+  }
+  if ("open" in condition) {
+    const counter = condition.open;
+    return (state) => (state.depth.get(counter) ?? 0) > 0;
+  }
+  if ("elisionEnd" in condition) return (state, index) => index === state.elisionEnd;
+  if ("elisionWord" in condition) {
+    return (state, index) => INITIAL_ELISION_WORDS.includes(state.units.slice(index + 1, letterRunEnd(state.units, index))
+      .map((part) => part.source).join("").toLowerCase());
+  }
+  const step = { next: 1, previous: -1, self: 0 }[condition.unit];
+  const mask = classMask(...(condition.classes ?? []).map((name) => GRADE1_MODE_CLASS_IDS[name]));
+  const sources = condition.sources === undefined ? [] : sets[condition.sources];
+  const skip = "skip" in condition ? sets[condition.skip] : [];
+  const edge = "edge" in condition && condition.edge;
+  const negate = condition.not === true;
+  return (state, index) => {
+    let at = index + step;
+    let unit = state.units[at];
+    while (unit !== undefined && skip.includes(unit.source)) {
+      at += step;
+      unit = state.units[at];
+    }
+    const classes = state.classes[at];
+    const found = unit === undefined || classes === undefined
+      ? edge
+      : (classes & mask) !== 0 || sources.includes(unit.source);
+    return found !== negate;
+  };
+}
+
+/** Compile each rule's conditions once; the rule's `test` holds when all of them hold. */
+export function compileRules<SetName extends string, Rule extends { readonly when?: readonly RuleCondition<SetName>[] }>(
+  group: { readonly rules: readonly Rule[]; readonly sets: Readonly<Record<SetName, readonly string[]>> },
+): readonly (Rule & { readonly test: RuleTest })[] {
+  return group.rules.map((rule) => {
+    const tests = (rule.when ?? []).map((condition) => conditionTest(condition, group.sets));
+    return { ...rule, test: (state: RuleState, index: number) => tests.every((test) => test(state, index)) };
+  });
+}
+
+const GRADE1_REQUIRED_RULES = compileRules(FACTS.grade1Required);
 const modeIds = (names: readonly (keyof typeof GRADE1_MODE_IDS)[]): readonly number[] =>
   names.map((name) => GRADE1_MODE_IDS[name]);
 const UNCONTRACTED_MODE_ORDER = modeIds(FACTS.modeOrder.uncontracted);
@@ -452,35 +539,10 @@ function addContextClasses(
   baseModeUnits: readonly ModeUnit[],
   additionalGrade1Required: ReadonlySet<number> = new Set(),
 ): readonly ModeUnit[] {
-  const activeBefore = new Map<number, readonly boolean[]>();
-  const active = (mode: number, index: number): boolean => {
-    let flags = activeBefore.get(mode);
-    if (flags === undefined) {
-      flags = activeModeBefore(GRADE1_MODE_PROGRAM, mode, baseModeUnits);
-      activeBefore.set(mode, flags);
-    }
-    return flags[index] === true;
-  };
-  /** One rule from runtime-facts.json grade1Required: every stated condition must hold. */
-  const matches = (
-    rule: CompiledGrade1RequiredRule, index: number, classes: ModeUnit, previousClasses: ModeUnit | undefined,
-  ): boolean => {
-    const unit = units[index];
-    const before = rule.previous;
-    if ((classes & rule.classes) !== rule.classes) return false;
-    if (rule.sources !== undefined && (unit === undefined || !rule.sources.includes(unit.source))) return false;
-    if (before !== undefined) {
-      const previous = units[index - 1];
-      if (previousClasses === undefined ? !before.start
-        : (previousClasses & before.classes) === 0 &&
-          (previous === undefined || !before.sources.includes(previous.source))) return false;
-    }
-    return rule.mode === undefined || active(rule.mode, index);
-  };
+  const state = ruleState(units, baseModeUnits);
   return baseModeUnits.map((modeUnit, index) => {
     const grade1Required = additionalGrade1Required.has(index) ||
-      GRADE1_REQUIRED_RULES.some((rule) =>
-        matches(rule, index, modeUnit, index === 0 ? undefined : baseModeUnits[index - 1]));
+      GRADE1_REQUIRED_RULES.some((rule) => rule.test(state, index));
     return modeUnit |
       (grade1Required ? classMask(GRADE1_MODE_CLASS_IDS["grade1-required"]) : 0);
   });
@@ -524,34 +586,6 @@ export function emitCompositionUnit(unit: CompositionUnit): string {
   return emittedUnit(unit);
 }
 
-function isAsciiQuoteOpeningContext(
-  unit: CompositionUnit | undefined,
-): boolean {
-  return unit === undefined ||
-    unit.kind === "space" ||
-    unit.kind === "line-boundary" ||
-    (unit.kind === "symbol" && QUOTES.openingContext.includes(unit.source));
-}
-
-function hasAsciiQuoteMaterial(unit: CompositionUnit | undefined): boolean {
-  return unit !== undefined &&
-    unit.kind !== "space" &&
-    unit.kind !== "line-boundary";
-}
-
-function isAsciiQuoteClosingContext(
-  units: readonly CompositionUnit[],
-  index: number,
-): boolean {
-  let end = index + 1;
-  let next = units[end];
-  while (next?.kind === "symbol" && QUOTES.closingContext.includes(next.source)) {
-    end += 1;
-    next = units[end];
-  }
-  return !hasAsciiQuoteMaterial(next);
-}
-
 /** Shared forward/inverse edge; context decides whether U+2019 is an apostrophe. */
 export const CURLY_APOSTROPHE: {
   readonly braille: string;
@@ -565,9 +599,9 @@ export interface QuoteRule {
   readonly markElision?: boolean;
   readonly open?: string;
   readonly source: string;
-  readonly when?: readonly string[];
+  readonly when?: readonly RuleCondition<keyof typeof GRADE1_RUNTIME_FACTS.quotes.sets>[];
 }
-const QUOTE_RULES: readonly QuoteRule[] = QUOTES.rules;
+const QUOTE_RULES = compileRules<keyof typeof FACTS.quotes.sets, QuoteRule>(FACTS.quotes);
 
 /**
  * Resolve contextual punctuation (ICEB 2024 7.6.6 and 7.6.13-15) by the
@@ -576,41 +610,16 @@ const QUOTE_RULES: readonly QuoteRule[] = QUOTES.rules;
  */
 export function resolveContextualPunctuation(
   units: readonly CompositionUnit[],
-  rules: readonly QuoteRule[] = QUOTE_RULES,
+  rules: readonly (QuoteRule & { readonly test: RuleTest })[] = QUOTE_RULES,
 ): readonly (string | undefined)[] {
-  const depth = new Map<string, number>();
-  let elisionEnd = -1;
+  const state = ruleState(units, units.map(unitModeClasses));
+  const { depth } = state;
   return units.map((unit, index) => {
-    const previous = units[index - 1];
-    const next = units[index + 1];
-    const letterRunEnd = (): number => {
-      let end = index + 1;
-      while (units[end]?.kind === "letter") end += 1;
-      return end;
-    };
-    const holds = (condition: string): boolean => {
-      switch (condition) {
-        case "elision-end": return index === elisionEnd;
-        case "next-letter": return next?.kind === "letter";
-        case "previous-letter": return previous?.kind === "letter";
-        case "previous-opening": return isAsciiQuoteOpeningContext(previous);
-        case "previous-material": return hasAsciiQuoteMaterial(previous);
-        case "previous-not-digit": return previous?.kind !== "digit";
-        case "previous-possessive": return previous?.source.toLowerCase() === QUOTES.possessiveLetter;
-        case "next-material": return hasAsciiQuoteMaterial(next);
-        case "closing": return isAsciiQuoteClosingContext(units, index);
-        case "elision-word": return INITIAL_ELISION_WORDS.includes(
-          units.slice(index + 1, letterRunEnd()).map((part) => part.source).join("").toLowerCase());
-        default:
-          if (condition.startsWith("open:")) return (depth.get(condition.slice(5)) ?? 0) > 0;
-          throw new Error(`Unknown quote condition ${condition}.`);
-      }
-    };
     for (const rule of rules) {
-      if (rule.source !== unit.source || !(rule.when ?? []).every(holds)) continue;
+      if (rule.source !== unit.source || !rule.test(state, index)) continue;
       if (rule.open !== undefined) depth.set(rule.open, (depth.get(rule.open) ?? 0) + 1);
       if (rule.close !== undefined) depth.set(rule.close, (depth.get(rule.close) ?? 0) - 1);
-      if (rule.markElision === true) elisionEnd = letterRunEnd();
+      if (rule.markElision === true) state.elisionEnd = letterRunEnd(units, index);
       if (rule.continue !== true) return rule.emit;
     }
     return undefined;

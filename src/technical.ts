@@ -243,10 +243,9 @@ function signAt(path: TechnicalSignPath, expression: ExpressionNode): unknown {
 }
 
 function operationSpaced(profile: TechnicalProfile): boolean {
-  const spacing = TECHNICAL_SIGN_PROGRAM.operationSpacing;
-  return profile.jurisdiction === "international"
-    ? spacing.international[profile.operationSpacing]
-    : spacing["bana-2026"][profile.production];
+  const rule = TECHNICAL_SIGN_PROGRAM.operationSpacing[profile.jurisdiction];
+  const selected = nodeOf(profile)[rule.field];
+  return Object.entries(rule.definitions).some(([value, spaced]) => spaced && value === selected);
 }
 
 function symbolCell(print: string): string {

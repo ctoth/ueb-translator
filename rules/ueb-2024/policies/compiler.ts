@@ -1,6 +1,6 @@
 import type { CompositionPolicies } from "../../../src/composition.js";
 import type { IcebRuleCitation } from "../source.js";
-import { GRADE1_VOCABULARY, orderedNames, readGrade1Vocabulary,
+import { GRADE1_VOCABULARY, isCompositionPolicies, orderedNames, readGrade1Vocabulary,
   type Grade1Vocabulary, type CompositionPolicyName } from "../grade1-vocabulary.js";
 export type { CompositionPolicyName } from "../grade1-vocabulary.js";
 
@@ -35,27 +35,8 @@ export function compileCompositionPolicies(
     ids.add(rule.id);
     byName.set(rule.name, rule);
   }
-  const provenance = orderedNames(vocabulary.policies).map((name) => {
-    const rule = byName.get(name);
-    if (rule === undefined) throw new Error(`Composition policy ${name} is missing.`);
-    return rule;
-  });
-  const compiled = (name: CompositionPolicyName): string => {
-    const rule = byName.get(name);
-    /* v8 ignore next -- the complete-name check above established every entry. */
-    if (rule === undefined) throw new Error(`Composition policy ${name} is missing.`);
-    return rule.members.join("");
-  };
-  return {
-    provenance,
-    runtime: {
-      closingStandingPunctuation: compiled("closingStandingPunctuation"),
-      dashJoiners: compiled("dashJoiners"),
-      elisionPunctuation: compiled("elisionPunctuation"),
-      lowerPunctuation: compiled("lowerPunctuation"),
-      openingStandingPunctuation: compiled("openingStandingPunctuation"),
-      standingBoundaries: compiled("standingBoundaries"),
-      standingSuffixes: compiled("standingSuffixes"),
-    },
-  };
+  const provenance = orderedNames(vocabulary.policies).flatMap((name) => byName.get(name) ?? []);
+  const runtime = Object.fromEntries(provenance.map((rule) => [rule.name, rule.members.join("")]));
+  if (!isCompositionPolicies(runtime)) throw new Error("A composition policy is missing.");
+  return { provenance, runtime };
 }

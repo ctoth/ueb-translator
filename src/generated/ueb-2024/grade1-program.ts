@@ -22,33 +22,83 @@ export const GRADE1_RUNTIME_FACTS = {
     ]
   },
   "grade1Required": {
+    "sets": {
+      "question": [
+        "?"
+      ],
+      "dash": [
+        "-",
+        "–",
+        "—"
+      ]
+    },
     "rules": [
       {
-        "classes": [
-          "lowercase-letter",
-          "numeric-ambiguous-letter"
-        ],
-        "activeMode": "numeric"
+        "when": [
+          {
+            "unit": "self",
+            "classes": [
+              "lowercase-letter"
+            ]
+          },
+          {
+            "unit": "self",
+            "classes": [
+              "numeric-ambiguous-letter"
+            ]
+          },
+          {
+            "active": "numeric"
+          }
+        ]
       },
       {
-        "sources": [
-          "?"
-        ],
-        "previous": {
-          "start": true,
-          "classes": [
-            "sequence-boundary"
-          ],
-          "sources": [
-            "-",
-            "–",
-            "—"
-          ]
-        }
+        "when": [
+          {
+            "unit": "self",
+            "sources": "question"
+          },
+          {
+            "unit": "previous",
+            "edge": true,
+            "classes": [
+              "sequence-boundary"
+            ],
+            "sources": "dash"
+          }
+        ]
       }
     ]
   },
   "quotes": {
+    "sets": {
+      "opening": [
+        "(",
+        "[",
+        "{",
+        "‘",
+        "“",
+        "«"
+      ],
+      "closing": [
+        ",",
+        ";",
+        ":",
+        ".",
+        "!",
+        "?",
+        ")",
+        "]",
+        "}",
+        "'",
+        "’",
+        "”"
+      ],
+      "possessive": [
+        "s",
+        "S"
+      ]
+    },
     "rules": [
       {
         "source": "‘",
@@ -58,24 +108,53 @@ export const GRADE1_RUNTIME_FACTS = {
       {
         "source": "’",
         "when": [
-          "elision-end"
+          {
+            "elisionEnd": true
+          }
         ],
         "emit": "⠄"
       },
       {
         "source": "’",
         "when": [
-          "next-letter",
-          "previous-letter"
+          {
+            "unit": "next",
+            "classes": [
+              "lowercase-letter",
+              "uppercase-letter"
+            ]
+          },
+          {
+            "unit": "previous",
+            "classes": [
+              "lowercase-letter",
+              "uppercase-letter"
+            ]
+          }
         ],
         "emit": "⠄"
       },
       {
         "source": "’",
         "when": [
-          "next-letter",
-          "previous-opening",
-          "elision-word"
+          {
+            "unit": "next",
+            "classes": [
+              "lowercase-letter",
+              "uppercase-letter"
+            ]
+          },
+          {
+            "unit": "previous",
+            "edge": true,
+            "classes": [
+              "sequence-boundary"
+            ],
+            "sources": "opening"
+          },
+          {
+            "elisionWord": true
+          }
         ],
         "markElision": true,
         "emit": "⠄"
@@ -83,8 +162,21 @@ export const GRADE1_RUNTIME_FACTS = {
       {
         "source": "’",
         "when": [
-          "next-letter",
-          "previous-opening"
+          {
+            "unit": "next",
+            "classes": [
+              "lowercase-letter",
+              "uppercase-letter"
+            ]
+          },
+          {
+            "unit": "previous",
+            "edge": true,
+            "classes": [
+              "sequence-boundary"
+            ],
+            "sources": "opening"
+          }
         ],
         "open": "single",
         "emit": "⠠⠦"
@@ -92,21 +184,28 @@ export const GRADE1_RUNTIME_FACTS = {
       {
         "source": "’",
         "when": [
-          "open:single"
+          {
+            "open": "single"
+          }
         ],
         "close": "single"
       },
       {
         "source": "’",
         "when": [
-          "previous-possessive"
+          {
+            "unit": "previous",
+            "sources": "possessive"
+          }
         ],
         "emit": "⠄"
       },
       {
         "source": "\"",
         "when": [
-          "open:double"
+          {
+            "open": "double"
+          }
         ],
         "close": "double",
         "emit": "⠴"
@@ -114,8 +213,22 @@ export const GRADE1_RUNTIME_FACTS = {
       {
         "source": "\"",
         "when": [
-          "previous-opening",
-          "next-material"
+          {
+            "unit": "previous",
+            "edge": true,
+            "classes": [
+              "sequence-boundary"
+            ],
+            "sources": "opening"
+          },
+          {
+            "unit": "next",
+            "edge": true,
+            "classes": [
+              "sequence-boundary"
+            ],
+            "not": true
+          }
         ],
         "open": "double",
         "emit": "⠦"
@@ -123,18 +236,35 @@ export const GRADE1_RUNTIME_FACTS = {
       {
         "source": "\"",
         "when": [
-          "previous-not-digit",
-          "previous-material",
-          "closing"
+          {
+            "unit": "previous",
+            "classes": [
+              "digit"
+            ],
+            "not": true
+          },
+          {
+            "unit": "previous",
+            "edge": true,
+            "classes": [
+              "sequence-boundary"
+            ],
+            "not": true
+          },
+          {
+            "unit": "next",
+            "skip": "closing",
+            "edge": true,
+            "classes": [
+              "sequence-boundary"
+            ]
+          }
         ],
         "emit": "⠴"
       }
     ],
     "apostrophePrint": "’",
-    "apostrophe": "⠄",
-    "possessiveLetter": "s",
-    "openingContext": "([{‘“«",
-    "closingContext": ",;:.!?)]}'’”"
+    "apostrophe": "⠄"
   },
   "typeforms": {
     "modes": {

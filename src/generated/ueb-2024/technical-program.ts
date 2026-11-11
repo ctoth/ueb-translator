@@ -755,12 +755,18 @@ export const TECHNICAL_SIGN_PROGRAM: TechnicalSignProgram = {
   },
   "operationSpacing": {
     "international": {
-      "spaced": true,
-      "unspaced": false
+      "field": "operationSpacing",
+      "definitions": {
+        "spaced": true,
+        "unspaced": false
+      }
     },
     "bana-2026": {
-      "standardized": false,
-      "teaching": true
+      "field": "production",
+      "definitions": {
+        "standardized": false,
+        "teaching": true
+      }
     }
   },
   "grade1Protection": {

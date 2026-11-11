@@ -53,13 +53,10 @@ export const TECHNICAL_ITEM_RULES: TechnicalItemSource = readTechnicalItemRules(
 /** Accepted structured API inputs, not a normative list of chemical elements. */
 export const TECHNICAL_VALUE_PATTERNS: TechnicalSignProgram["valuePatterns"] = readTechnicalValuePatterns(sourceData("technical", "valuePatterns"));
 
-export interface TechnicalOperationSpacingSource {
-  readonly international: TechnicalRuleSource<TechnicalSignProgram["operationSpacing"]["international"]>;
-  readonly "bana-2026": {
-    readonly citation: RuleCitation;
-    readonly definitions: TechnicalSignProgram["operationSpacing"]["bana-2026"];
-  };
-}
+export type TechnicalOperationSpacingSource = {
+  readonly [Jurisdiction in keyof TechnicalSignProgram["operationSpacing"]]:
+    TechnicalSignProgram["operationSpacing"][Jurisdiction] & { readonly citation: RuleCitation };
+};
 
 export const TECHNICAL_OPERATION_SPACING_RULES: TechnicalOperationSpacingSource = readTechnicalOperationSpacingRules(sourceData("technical", "spacing"));
 
@@ -230,8 +227,8 @@ export function compileTechnicalSigns(
     },
     grade1Protection: { ...grade1Protection, standingValues },
     operationSpacing: {
-      international: { ...spacing.international.definitions },
-      "bana-2026": { ...spacing["bana-2026"].definitions },
+      international: { field: spacing.international.field, definitions: { ...spacing.international.definitions } },
+      "bana-2026": { field: spacing["bana-2026"].field, definitions: { ...spacing["bana-2026"].definitions } },
     },
     valuePatterns: compiledPatterns,
     itemPolicy: { kinds: { ...items.definitions.kinds }, identifierPattern: identifierPattern.source },

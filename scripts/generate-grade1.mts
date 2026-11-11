@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 import type { ModeProgram } from "../src/mode-engine.js";
 import type { CompiledSymbol, SymbolProgram } from "../src/symbol-program.js";
 import type { CompositionPolicies } from "../src/composition.js";
+import vocabulary from "../rules/ueb-2024/grade1-vocabulary.json" with { type: "json" };
 import {
   TECHNICAL_ARROW_DIRECTIONS, TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
   TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
@@ -139,9 +140,12 @@ function isComputerWhitespace(value: unknown): value is TechnicalSignProgram["co
 }
 
 function isOperationSpacing(value: unknown): value is TechnicalSignProgram["operationSpacing"] {
+  const rule = (jurisdiction: unknown, values: readonly string[]): boolean => isRecord(jurisdiction) &&
+    Object.keys(jurisdiction).length === 2 && typeof jurisdiction["field"] === "string" &&
+    isBooleanMap(jurisdiction["definitions"], values);
   return isRecord(value) &&
-    isBooleanMap(value["international"], ["spaced", "unspaced"]) &&
-    isBooleanMap(value["bana-2026"], ["standardized", "teaching"]);
+    rule(value["international"], ["spaced", "unspaced"]) &&
+    rule(value["bana-2026"], ["standardized", "teaching"]);
 }
 
 function isItemPolicy(value: unknown): value is TechnicalSignProgram["itemPolicy"] {
@@ -191,37 +195,18 @@ function modeProgram(value: unknown): ModeProgram {
   return { modes };
 }
 
+/** One member string for every policy name in grade1-vocabulary.json. */
+function isCompositionPolicies(value: unknown): value is CompositionPolicies {
+  const names = Object.keys(vocabulary.policies);
+  return isRecord(value) && Object.keys(value).length === names.length &&
+    names.every((name) => typeof value[name] === "string");
+}
+
 function compositionPolicies(value: unknown): CompositionPolicies {
-  if (!isRecord(value)) {
+  if (!isCompositionPolicies(value)) {
     throw new Error("Compiled composition policies are malformed.");
   }
-  const closingStandingPunctuation = value["closingStandingPunctuation"];
-  const dashJoiners = value["dashJoiners"];
-  const elisionPunctuation = value["elisionPunctuation"];
-  const lowerPunctuation = value["lowerPunctuation"];
-  const openingStandingPunctuation = value["openingStandingPunctuation"];
-  const standingBoundaries = value["standingBoundaries"];
-  const standingSuffixes = value["standingSuffixes"];
-  if (
-    typeof closingStandingPunctuation !== "string" ||
-    typeof dashJoiners !== "string" ||
-    typeof elisionPunctuation !== "string" ||
-    typeof lowerPunctuation !== "string" ||
-    typeof openingStandingPunctuation !== "string" ||
-    typeof standingBoundaries !== "string" ||
-    typeof standingSuffixes !== "string"
-  ) {
-    throw new Error("Compiled composition policies are malformed.");
-  }
-  return {
-    closingStandingPunctuation,
-    dashJoiners,
-    elisionPunctuation,
-    lowerPunctuation,
-    openingStandingPunctuation,
-    standingBoundaries,
-    standingSuffixes,
-  };
+  return value;
 }
 
 function idObject(value: unknown, label: string): Readonly<Record<string, number>> {

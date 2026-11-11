@@ -5,30 +5,57 @@
   "numeric": { "citation": { "source": "ueb-2024", "locator": "6.1-6.5" }, "punctuation": [",", "."] },
   "grade1Required": {
     "citation": { "source": "ueb-2024", "locator": "6.5.2; 7.5.4" },
+    "sets": { "question": ["?"], "dash": ["-", "–", "—"] },
     "rules": [
-      { "classes": ["lowercase-letter", "numeric-ambiguous-letter"], "activeMode": "numeric" },
-      { "sources": ["?"], "previous": { "start": true, "classes": ["sequence-boundary"], "sources": ["-", "–", "—"] } }
+      { "when": [
+        { "unit": "self", "classes": ["lowercase-letter"] },
+        { "unit": "self", "classes": ["numeric-ambiguous-letter"] },
+        { "active": "numeric" }
+      ] },
+      { "when": [
+        { "unit": "self", "sources": "question" },
+        { "unit": "previous", "edge": true, "classes": ["sequence-boundary"], "sources": "dash" }
+      ] }
     ]
   },
   "quotes": {
     "citation": { "source": "ueb-2024", "locator": "7.6" },
+    "sets": {
+      "opening": ["(", "[", "{", "‘", "“", "«"],
+      "closing": [",", ";", ":", ".", "!", "?", ")", "]", "}", "'", "’", "”"],
+      "possessive": ["s", "S"]
+    },
     "rules": [
       { "source": "‘", "open": "single", "continue": true },
-      { "source": "’", "when": ["elision-end"], "emit": "⠄" },
-      { "source": "’", "when": ["next-letter", "previous-letter"], "emit": "⠄" },
-      { "source": "’", "when": ["next-letter", "previous-opening", "elision-word"], "markElision": true, "emit": "⠄" },
-      { "source": "’", "when": ["next-letter", "previous-opening"], "open": "single", "emit": "⠠⠦" },
-      { "source": "’", "when": ["open:single"], "close": "single" },
-      { "source": "’", "when": ["previous-possessive"], "emit": "⠄" },
-      { "source": "\"", "when": ["open:double"], "close": "double", "emit": "⠴" },
-      { "source": "\"", "when": ["previous-opening", "next-material"], "open": "double", "emit": "⠦" },
-      { "source": "\"", "when": ["previous-not-digit", "previous-material", "closing"], "emit": "⠴" }
+      { "source": "’", "when": [{ "elisionEnd": true }], "emit": "⠄" },
+      { "source": "’", "when": [
+        { "unit": "next", "classes": ["lowercase-letter", "uppercase-letter"] },
+        { "unit": "previous", "classes": ["lowercase-letter", "uppercase-letter"] }
+      ], "emit": "⠄" },
+      { "source": "’", "when": [
+        { "unit": "next", "classes": ["lowercase-letter", "uppercase-letter"] },
+        { "unit": "previous", "edge": true, "classes": ["sequence-boundary"], "sources": "opening" },
+        { "elisionWord": true }
+      ], "markElision": true, "emit": "⠄" },
+      { "source": "’", "when": [
+        { "unit": "next", "classes": ["lowercase-letter", "uppercase-letter"] },
+        { "unit": "previous", "edge": true, "classes": ["sequence-boundary"], "sources": "opening" }
+      ], "open": "single", "emit": "⠠⠦" },
+      { "source": "’", "when": [{ "open": "single" }], "close": "single" },
+      { "source": "’", "when": [{ "unit": "previous", "sources": "possessive" }], "emit": "⠄" },
+      { "source": "\"", "when": [{ "open": "double" }], "close": "double", "emit": "⠴" },
+      { "source": "\"", "when": [
+        { "unit": "previous", "edge": true, "classes": ["sequence-boundary"], "sources": "opening" },
+        { "unit": "next", "edge": true, "classes": ["sequence-boundary"], "not": true }
+      ], "open": "double", "emit": "⠦" },
+      { "source": "\"", "when": [
+        { "unit": "previous", "classes": ["digit"], "not": true },
+        { "unit": "previous", "edge": true, "classes": ["sequence-boundary"], "not": true },
+        { "unit": "next", "skip": "closing", "edge": true, "classes": ["sequence-boundary"] }
+      ], "emit": "⠴" }
     ],
     "apostrophePrint": "’",
-    "apostrophe": "⠄",
-    "possessiveLetter": "s",
-    "openingContext": "([{‘“«",
-    "closingContext": ",;:.!?)]}'’”"
+    "apostrophe": "⠄"
   },
   "typeforms": {
     "citation": { "source": "ueb-2024", "locator": "9.2-9.4" },
