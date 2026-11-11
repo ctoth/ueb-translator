@@ -23,20 +23,23 @@
     "elisions": "apostrophes.json",
     "inventory": "inventory.json",
     "technical": {
-      "mappings": "technical-sign-mappings.json",
-      "symbols": "technical-symbol-rules.json",
-      "scripts": "technical-script-rules.json",
-      "modifiers": "technical-modifier-rules.json",
-      "shapes": "technical-shape-rules.json",
-      "delimiters": "technical-delimiter-rules.json",
-      "items": "technical-item-rules.json",
-      "valuePatterns": "technical-value-patterns.json",
-      "spacing": "technical-operation-spacing-rules.json",
-      "protection": "technical-grade1-protection-rules.json",
-      "functionSpacing": "technical-function-spacing-rules.json",
-      "numericContinuation": "technical-numeric-continuation-rules.json",
-      "computerWhitespace": "technical-computer-whitespace-rules.json",
-      "layouts": "technical-layout-rules.json"
+      "program": "technical-pipeline.json",
+      "inputs": {
+        "mappings": "technical-sign-mappings.json",
+        "symbols": "technical-symbol-rules.json",
+        "scripts": "technical-script-rules.json",
+        "modifiers": "technical-modifier-rules.json",
+        "shapes": "technical-shape-rules.json",
+        "delimiters": "technical-delimiter-rules.json",
+        "items": "technical-item-rules.json",
+        "valuePatterns": "technical-value-patterns.json",
+        "spacing": "technical-operation-spacing-rules.json",
+        "protection": "technical-grade1-protection-rules.json",
+        "functionSpacing": "technical-function-spacing-rules.json",
+        "numericContinuation": "technical-numeric-continuation-rules.json",
+        "computerWhitespace": "technical-computer-whitespace-rules.json",
+        "layouts": "technical-layout-rules.json"
+      }
     }
   },
   "symbols": [

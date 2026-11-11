@@ -6,12 +6,6 @@ import type { ModeProgram } from "../src/mode-engine.js";
 import type { CompiledSymbol, SymbolProgram } from "../src/symbol-program.js";
 import type { CompositionPolicies } from "../src/composition.js";
 import vocabulary from "../rules/ueb-2024/grade1-vocabulary.json" with { type: "json" };
-import {
-  TECHNICAL_ARROW_DIRECTIONS, TECHNICAL_COMPARISONS, TECHNICAL_MODIFIERS, TECHNICAL_OPERATIONS, TECHNICAL_SCRIPT_PLACEMENTS,
-  TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalSignProgram,
-  TECHNICAL_VALUE_KINDS, TECHNICAL_ITEM_KINDS, TECHNICAL_DELIMITER_SIGNS, TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES,
-  isTechnicalLayouts,
-} from "../src/technical-program.ts";
 
 interface LoadedCompilation {
   readonly facts: Readonly<Record<string, unknown>>;
@@ -24,7 +18,8 @@ interface LoadedCompilation {
   readonly policyRuleIds: readonly string[];
   readonly symbolRuleIds: readonly string[];
   readonly symbols: SymbolProgram;
-  readonly technical: TechnicalSignProgram;
+  /** Emitted as TechnicalSignProgram; tsc checks its shape in the generated file. */
+  readonly technical: unknown;
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -91,124 +86,6 @@ function symbolProgram(value: unknown): SymbolProgram {
     throw new Error("Compiled Grade 1 symbol program is malformed.");
   }
   return { symbols };
-}
-
-function isPrintMap<Key extends string>(
-  value: unknown, keys: readonly Key[],
-): value is Readonly<Record<Key, string>> {
-  return isRecord(value) && Object.keys(value).length === keys.length &&
-    keys.every((key) => typeof value[key] === "string");
-}
-
-function isBooleanMap<Key extends string>(
-  value: unknown, keys: readonly Key[],
-): value is Readonly<Record<Key, boolean>> {
-  return isRecord(value) && Object.keys(value).length === keys.length &&
-    keys.every((key) => typeof value[key] === "boolean");
-}
-
-function technicalProgram(value: unknown): TechnicalSignProgram {
-  const arrows = isRecord(value) ? value["arrows"] : undefined;
-  const operations = isRecord(value) ? value["operations"] : undefined;
-  const comparisons = isRecord(value) ? value["comparisons"] : undefined;
-  const scripts = isRecord(value) ? value["scripts"] : undefined;
-  const delimiters = isRecord(value) ? value["delimiters"] : undefined;
-  const itemPolicy = isRecord(value) ? value["itemPolicy"] : undefined;
-  const operationSpacing = isRecord(value) ? value["operationSpacing"] : undefined;
-  const valuePatterns = isRecord(value) ? value["valuePatterns"] : undefined;
-  const computerWhitespace = isRecord(value) ? value["computerWhitespace"] : undefined;
-  const numericContinuation = isRecord(value) ? value["numericContinuation"] : undefined;
-  const functionSpacing = isRecord(value) ? value["functionSpacing"] : undefined;
-  const grade1Protection = isRecord(value) ? value["grade1Protection"] : undefined;
-  const modifiers = isRecord(value) ? value["modifiers"] : undefined;
-  const shapes = isRecord(value) ? value["shapes"] : undefined;
-  const layouts = isRecord(value) ? value["layouts"] : undefined;
-  if (!isTechnicalLayouts(layouts) || !isPrintMap(arrows, TECHNICAL_ARROW_DIRECTIONS) ||
-    !isPrintMap(operations, TECHNICAL_OPERATIONS) ||
-    !isPrintMap(comparisons, TECHNICAL_COMPARISONS) || !isScriptMap(scripts) ||
-    !isPrintMap(modifiers, TECHNICAL_MODIFIERS) || !isShapeMap(shapes) || !isDelimiterMap(delimiters) ||
-    !isItemPolicy(itemPolicy) || !isPrintMap(valuePatterns, TECHNICAL_VALUE_KINDS) ||
-    !isOperationSpacing(operationSpacing) || !isGrade1Protection(grade1Protection) || !isFunctionSpacing(functionSpacing) || !isNumericContinuation(numericContinuation) || !isComputerWhitespace(computerWhitespace)) {
-    throw new Error("Compiled technical sign mappings are malformed.");
-  }
-  return { ...symbolProgram(value), layouts, arrows, operations, comparisons, scripts, modifiers, shapes, delimiters, itemPolicy, valuePatterns, operationSpacing, grade1Protection, functionSpacing, numericContinuation, computerWhitespace };
-}
-
-function isGrade1Protection(value: unknown): value is TechnicalSignProgram["grade1Protection"] {
-  if (!isRecord(value)) return false;
-  const rules = value["standingValues"];
-  const maxSymbols = value["maxSymbolsPerSequence"];
-  const passageThreshold = value["passageSequenceThreshold"];
-  return typeof maxSymbols === "number" && Number.isSafeInteger(maxSymbols) && maxSymbols > 0 &&
-    typeof passageThreshold === "number" && Number.isSafeInteger(passageThreshold) && passageThreshold > 0 &&
-    Array.isArray(rules) && rules.length > 0 && rules.every((rule: unknown) =>
-      isRecord(rule) && typeof rule["pattern"] === "string" && rule["pattern"].length > 0 &&
-      (rule["flags"] === "iu" || rule["flags"] === "u") &&
-      (rule["kind"] === "standing-symbol" || rule["kind"] === "standing-word"));
-}
-
-function isFunctionSpacing(value: unknown): value is TechnicalSignProgram["functionSpacing"] {
-  return isRecord(value) && Array.isArray(value["letterCells"]) &&
-    value["letterCells"].every((cell: unknown) => typeof cell === "string") &&
-    typeof value["namePattern"] === "string";
-}
-
-function isNumericContinuation(value: unknown): value is TechnicalSignProgram["numericContinuation"] {
-  if (!isRecord(value)) return false;
-  const kinds = value["precedingKinds"];
-  const expressionKinds: readonly string[] = [...TECHNICAL_ITEM_KINDS, "identifier"];
-  return Array.isArray(kinds) && kinds.every((kind: unknown) =>
-    typeof kind === "string" && expressionKinds.includes(kind)) &&
-    typeof value["identifierPattern"] === "string";
-}
-
-function isComputerWhitespace(value: unknown): value is TechnicalSignProgram["computerWhitespace"] {
-  return isRecord(value) && typeof value["visibleSpace"] === "string" &&
-    typeof value["minimumRunLength"] === "number" && typeof value["ordinaryEdgeLength"] === "number";
-}
-
-function isOperationSpacing(value: unknown): value is TechnicalSignProgram["operationSpacing"] {
-  const rule = (jurisdiction: unknown, values: readonly string[]): boolean => isRecord(jurisdiction) &&
-    Object.keys(jurisdiction).length === 2 && typeof jurisdiction["field"] === "string" &&
-    isBooleanMap(jurisdiction["definitions"], values);
-  return isRecord(value) &&
-    rule(value["international"], ["spaced", "unspaced"]) &&
-    rule(value["bana-2026"], ["standardized", "teaching"]);
-}
-
-function isItemPolicy(value: unknown): value is TechnicalSignProgram["itemPolicy"] {
-  if (!isRecord(value)) return false;
-  const kinds = value["kinds"];
-  return isBooleanMap(kinds, TECHNICAL_ITEM_KINDS) &&
-    typeof value["identifierPattern"] === "string";
-}
-
-function isDelimiterMap(value: unknown): value is TechnicalSignProgram["delimiters"] {
-  if (!isRecord(value)) return false;
-  const { enclosures, matrixEnclosures, ...signs } = value;
-  const pairs = (mapping: unknown, keys: readonly string[]): boolean =>
-    isRecord(mapping) && Object.keys(mapping).length === keys.length && keys.every((key) => {
-      const pair = mapping[key];
-      return isPrintMap(pair, ["open", "close"]);
-    });
-  return isPrintMap(signs, TECHNICAL_DELIMITER_SIGNS) &&
-    pairs(enclosures, TECHNICAL_ENCLOSURES) && pairs(matrixEnclosures, TECHNICAL_MATRIX_ENCLOSURES);
-}
-
-function isShapeMap(value: unknown): value is TechnicalSignProgram["shapes"] {
-  return isRecord(value) &&
-    isPrintMap(value["fills"], TECHNICAL_SHAPE_FILLS) &&
-    isPrintMap(value["names"], TECHNICAL_SHAPE_NAMES) &&
-    typeof value["terminator"] === "string";
-}
-
-function isScriptMap(value: unknown): value is TechnicalSignProgram["scripts"] {
-  return isRecord(value) && Object.keys(value).length === TECHNICAL_SCRIPT_PLACEMENTS.length &&
-    TECHNICAL_SCRIPT_PLACEMENTS.every((placement) => {
-      const rule = value[placement];
-      return isRecord(rule) && typeof rule["indicator"] === "string" &&
-        (rule["position"] === "before" || rule["position"] === "after");
-    });
 }
 
 function modeProgram(value: unknown): ModeProgram {
@@ -291,7 +168,7 @@ function loadCompilation(imported: unknown): LoadedCompilation {
     policyRuleIds: provenanceIds(policies["provenance"], "policy"),
     symbolRuleIds: provenanceIds(symbols["provenance"], "symbol"),
     symbols: symbolProgram(symbols["runtime"]),
-    technical: technicalProgram(imported["TECHNICAL_SIGN_PROGRAM"]),
+    technical: imported["TECHNICAL_SIGN_PROGRAM"],
   };
 }
 
@@ -344,4 +221,4 @@ await emit(generatedTechnicalPath,
 const manifest: unknown = await import(pathToFileURL(compiledManifestPath).href);
 const sourceData = isRecord(manifest) ? manifest["sourceData"] : undefined;
 if (!isSourceData(sourceData)) throw new Error(`${compiledManifestPath} does not export sourceData.`);
-await emit(generatedVocabularyPath, generatedVocabulary(sourceData("technical")), check);
+await emit(generatedVocabularyPath, generatedVocabulary(sourceData("technical", "inputs")), check);

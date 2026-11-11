@@ -40,7 +40,7 @@ records, full citations and provenance as before.
 | Appendix longer words | `appendix1.json` | `Appendix1GroupSource`, `Appendix1WordSource` |
 | Targeted constraints | `constraints.json` | `ConstraintSource`, `WordFamilySource`, existing contextual guards |
 | Initial elisions | `apostrophes.json` | `readonly string[]` |
-| Technical descriptors | separate `technical-*.json` files | `technical-signs.ts`, `src/technical-program.ts` |
+| Technical descriptors | separate `technical-*.json` files, compiled by `technical-pipeline.json` | `src/technical-program.ts` (`TechnicalSignProgram`, checked by tsc on the generated program) |
 | Longer-shortform guards and retained suffixes | `longer-shortforms.json`, `shortform-suffixes.json` | `ContextualRuleGuard`, checked word/suffix groups |
 | Citation documents | `citation-documents.json`, `citation-authorities.json` | `RuleCitation`, retained family-specific citation types |
 | Expected inventory counts | `inventory.json` | named numeric fields in `readInventory` |

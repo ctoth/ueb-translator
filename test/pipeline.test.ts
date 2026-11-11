@@ -65,6 +65,16 @@ describe("pipeline expressions", () => {
     ["cite", { cite: { record: { source: "book", locator: "1.2" } } },
       { authority: "ICEB", document: "Book", locator: "1.2", url: "https://iceb.org/" }],
     ["call", { call: ["pair", 1, 2] }, [1, 2]],
+    ["each over a record", { each: [{ record: { x: 1, y: 2 } }, "n", { list: ["$n"] }] }, { x: [1], y: [2] }],
+    ["without", { without: [{ record: { a: 1, b: 2, c: 3 } }, { list: ["b", "z"] }] }, { a: 1, c: 3 }],
+    ["source", { source: ["a/b\n", "u"] }, "a\\/b\\n"],
+    ["source of empty", { source: ["", "iu"] }, "(?:)"],
+    ["isInteger", { isInteger: 2 }, true],
+    ["isInteger fraction", { isInteger: 2.5 }, false],
+    ["isInteger text", { isInteger: "2" }, false],
+    ["less", { less: [1, 2] }, true],
+    ["less equal", { less: [2, 2] }, false],
+    ["add", { add: [1, 2.5] }, 3.5],
   ])("evaluates %s", (_name, expression, expected) => {
     expect(evaluate(expression, { a: [1, 2], s: "s" })).toEqual(expected);
   });
@@ -95,6 +105,11 @@ describe("pipeline expressions", () => {
     ["function arity", { call: ["pair", 1] }, "takes 2 arguments"],
     ["function name", { call: [] }, "needs a function name"],
     ["explicit failure", { fail: "stop" }, "stop"],
+    ["non-number", { less: [1, "2"] }, "Expected a number"],
+    ["non-number sum", { add: [true, 1] }, "Expected a number"],
+    ["without from a non-record", { without: [{ list: [] }, { list: [] }] }, "Expected a record"],
+    ["each over text", { each: ["abc", "n", "$n"] }, "Expected a list"],
+    ["invalid source pattern", { source: ["(", "u"] }, "Invalid regular expression"],
   ])("rejects %s", (_name, expression, message) => {
     expect(() => evaluate(expression, { a: [1, 2] })).toThrow(message);
   });
@@ -150,6 +165,12 @@ describe("pipeline operations", () => {
     expect(() => run(steps, { words: [{ cells: "⠉" }], alphabet }, "out")).toThrow("no reading");
     expect(() => run(steps, { words: [{ cells: "⠁" }], alphabet: [{ id: "e", print: "", braille: "" }] }, "out"))
       .toThrow("empty");
+  });
+
+  it("makes a one-row table from an expression over the inputs", () => {
+    expect(run([{ name: "out", op: "row", row: { record: { n: "@n" } } }], { n: 1 }, "out")).toEqual([{ n: 1 }]);
+    expect(() => run([{ name: "out", op: "row", row: "@n" }], { n: 1 }, "out")).toThrow("Expected a record");
+    expect(() => run([{ name: "out", op: "row", row: "$row" }], {}, "out")).toThrow("Unbound name");
   });
 
   it("rejects unknown ops, duplicate tables and non-JSON inputs", () => {
