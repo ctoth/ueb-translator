@@ -49,7 +49,7 @@ function compareText(left: string, right: string): number {
 
 function cited(rule: SymbolRuleSource): boolean {
   return rule.citation.locator.trim().length > 0 &&
-    rule.citation.url.startsWith("https://iceb.org/");
+    rule.citation.authority === "ICEB";
 }
 
 function compiled(rule: SymbolRuleSource): CompiledSymbol {

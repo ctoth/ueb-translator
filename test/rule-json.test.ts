@@ -5,7 +5,7 @@ import { expandSources, expansionTable } from "../rules/ueb-2024/expansion.js";
 import { GRADE2_CONTEXTUAL_RULES } from "../rules/ueb-2024/program.js";
 import type { ContextualRuleGuard } from "../rules/ueb-2024/contextual-compiler.js";
 import { guardText, guardWords, readEngineSchema, readGuard } from "../rules/ueb-2024/contextual-engine.js";
-import { routedSources } from "../rules/ueb-2024/source-manifest.js";
+import { officialDocuments, routedSources } from "../rules/ueb-2024/source-manifest.js";
 import { citeIceb } from "../rules/ueb-2024/source.js";
 import modeData from "../rules/ueb-2024/modes/rules.json" with { type: "json" };
 import specialData from "../rules/ueb-2024/symbols/special.json" with { type: "json" };
@@ -52,6 +52,20 @@ describe("JSON rule source decoding", () => {
     expect(() => sourceData("missing")).toThrow("Unknown rule source");
     expect(() => sourceFile("missing.json")).toThrow("Unknown rule source file");
     expect(() => assembleSources({ invalid: 4 }, sourceFile)).toThrow("Expected a source group");
+  });
+
+  it("keeps every citation document at its authority's official host", () => {
+    const hosts = { ICEB: "https://iceb.org/", BANA: "https://brailleauthority.org/" };
+    const documents = { book: { authority: "BANA", document: "Book", url: "https://brailleauthority.org/node/1" } };
+    expect(officialDocuments(documents, hosts)).toBe(documents);
+    for (const url of ["https://iceb.org/publications/", "https://example.com/", 1]) {
+      expect(() => officialDocuments({ book: { ...documents.book, url } }, hosts)).toThrow("official host");
+    }
+    expect(() => officialDocuments({ book: { ...documents.book, authority: "Other" } }, hosts)).toThrow("official host");
+    expect(() => officialDocuments(documents, { BANA: 1 })).toThrow("official host");
+    expect(() => officialDocuments(documents, [])).toThrow("citation authorities to be a record");
+    expect(() => officialDocuments([], hosts)).toThrow("citation documents to be a record");
+    expect(() => officialDocuments({ book: "Book" }, hosts)).toThrow("citation document book to be a record");
   });
 
   it("takes family order and derived symbol metadata from descriptors", () => {

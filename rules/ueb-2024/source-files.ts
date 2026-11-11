@@ -1,4 +1,5 @@
 import source0 from "./citation-documents.json" with { type: "json" };
+import authorities from "./citation-authorities.json" with { type: "json" };
 import engine from "./contextual-engine.json" with { type: "json" };
 import facts from "./runtime-facts.json" with { type: "json" };
 import pipeline from "./expansion-pipeline.json" with { type: "json" };
@@ -44,6 +45,7 @@ export const SOURCE_FILES: Readonly<Record<string, unknown>> = {
   "expansion-policy.json": expansion,
   "grade1-vocabulary.json": vocabulary,
   "citation-documents.json": source0,
+  "citation-authorities.json": authorities,
   "modes/rules.json": source1,
   "policies/rules.json": source2,
   "grade2-rules.json": source3,

@@ -28,7 +28,7 @@ export function compileCompositionPolicies(
       ids.has(rule.id) || byName.has(rule.name) || rule.members.length === 0 ||
       new Set(rule.members).size !== rule.members.length ||
       rule.members.some((member) => Array.from(member).length !== 1) ||
-      !rule.citation.url.startsWith("https://iceb.org/")
+      rule.citation.authority !== "ICEB"
     ) {
       throw new Error(`Composition policy ${rule.id} is not closed cited data.`);
     }

@@ -215,7 +215,7 @@ describe("compileContextualRules", () => {
     ])).toThrow("at least one boundary");
 
     const uncited = structuredClone(rule("test-uncited", "a", 1));
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    Object.defineProperty(uncited.citation, "authority", { value: "BANA" });
     expect(() => compileContextualRules([uncited]))
       .toThrow(expect.objectContaining({ code: "uncited-rule" }));
   });

@@ -126,7 +126,7 @@ describe("compiled composition policies", () => {
     expect(() => { compile({ ...first, members: ["ab"] }); })
       .toThrow("not closed cited data");
     const uncited = structuredClone(first);
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    Object.defineProperty(uncited.citation, "authority", { value: "BANA" });
     expect(() => { compile(uncited); }).toThrow("not closed cited data");
     expect(() => compileCompositionPolicies(COMPOSITION_POLICY_RULES.slice(0, -1)))
       .toThrow("is missing");
@@ -167,7 +167,7 @@ describe("compiled Grade 1 symbols", () => {
         code: "conflicting-rule-id",
       }));
     const uncited = structuredClone(symbol("uncited", "a"));
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    Object.defineProperty(uncited.citation, "authority", { value: "BANA" });
     expect(() => compileSymbols([uncited])).toThrow(
       expect.objectContaining<Partial<SymbolCompilationError>>({ code: "uncited-rule" }),
     );
@@ -294,7 +294,7 @@ describe("compiled technical signs", () => {
 
   it("rejects malformed Grade 1 classifiers, thresholds and citations", () => {
     const changes: readonly ["citation" | "definitions", string, unknown][] = [
-      ["citation", "locator", ""], ["citation", "url", "https://example.com/"],
+      ["citation", "locator", ""],
       ["definitions", "maxSymbolsPerSequence", 0],
       ["definitions", "passageSequenceThreshold", 1.5],
       ["definitions", "passageSequenceThreshold", Infinity],
@@ -317,14 +317,12 @@ describe("compiled technical signs", () => {
 
   it.each(["international", "bana-2026"] as const)(
     "rejects operation spacing without an official %s citation", (jurisdiction) => {
-      for (const [field, value] of [["locator", ""], ["url", "https://example.com/"]] as const) {
-        const uncited = structuredClone(TECHNICAL_OPERATION_SPACING_RULES);
-        Object.defineProperty(uncited[jurisdiction].citation, field, { value });
-        expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
-          TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES,
-          TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES,
-          TECHNICAL_VALUE_PATTERNS, uncited, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official");
-      }
+      const uncited = structuredClone(TECHNICAL_OPERATION_SPACING_RULES);
+      Object.defineProperty(uncited[jurisdiction].citation, "locator", { value: "" });
+      expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
+        TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES,
+        TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES,
+        TECHNICAL_VALUE_PATTERNS, uncited, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official");
     },
   );
 
@@ -403,7 +401,7 @@ describe("compiled technical signs", () => {
 
   it("rejects uncited delimiter definitions", () => {
     const uncited = structuredClone(TECHNICAL_DELIMITER_RULES);
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    Object.defineProperty(uncited.citation, "locator", { value: "" });
     expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
       TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES, uncited, TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official ICEB citation");
   });
@@ -461,11 +459,6 @@ describe("compiled technical signs", () => {
         citation: { ...TECHNICAL_SCRIPT_RULES.citation, locator: "" },
       },
       TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official ICEB citation");
-    const uncited = structuredClone(TECHNICAL_SCRIPT_RULES);
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
-    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
-      TECHNICAL_SIGN_MAPPINGS, uncited,
-      TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official ICEB citation");
   });
 
   it.each(["", "not-braille"])("rejects malformed modifier cells %j", (cells) => {
@@ -482,10 +475,6 @@ describe("compiled technical signs", () => {
         ...TECHNICAL_MODIFIER_RULES,
         citation: { ...TECHNICAL_MODIFIER_RULES.citation, locator: "" },
       }, TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official ICEB citation");
-    const uncited = structuredClone(TECHNICAL_MODIFIER_RULES);
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
-    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
-      TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, uncited, TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official ICEB citation");
   });
 
   it.each(["", "not-braille"])("rejects malformed shape cells %j", (cells) => {
@@ -502,15 +491,9 @@ describe("compiled technical signs", () => {
   });
 
   it("rejects shape definitions without an official citation", () => {
-    const uncited = structuredClone(TECHNICAL_SHAPE_RULES);
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
-    for (const source of [uncited, {
-      ...TECHNICAL_SHAPE_RULES,
-      citation: { ...TECHNICAL_SHAPE_RULES.citation, locator: "" },
-    }]) {
-      expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
-        TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, source, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official ICEB citation");
-    }
+    const source = { ...TECHNICAL_SHAPE_RULES, citation: { ...TECHNICAL_SHAPE_RULES.citation, locator: "" } };
+    expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES,
+      TECHNICAL_SIGN_MAPPINGS, TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, source, TECHNICAL_DELIMITER_RULES, TECHNICAL_ITEM_RULES, TECHNICAL_VALUE_PATTERNS, TECHNICAL_OPERATION_SPACING_RULES, TECHNICAL_GRADE1_PROTECTION_RULES, TECHNICAL_FUNCTION_SPACING_RULES, TECHNICAL_NUMERIC_CONTINUATION_RULES, TECHNICAL_COMPUTER_WHITESPACE_RULES, TECHNICAL_LAYOUT_RULES)).toThrow("official ICEB citation");
   });
 });
 
@@ -571,7 +554,7 @@ describe("compiled closed mode engine", () => {
     expect(() => compileModes(MODE_RULES.slice(0, -1)))
       .toThrow(expect.objectContaining({ code: "malformed-mode" }));
     const uncited = structuredClone(first);
-    Object.defineProperty(uncited.citation, "url", { value: "https://example.com/" });
+    Object.defineProperty(uncited.citation, "authority", { value: "BANA" });
     expect(() => compileModes(MODE_RULES.map((mode) =>
       mode === first ? uncited : mode
     ))).toThrow(expect.objectContaining({ code: "uncited-rule" }));

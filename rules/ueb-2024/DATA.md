@@ -5,7 +5,10 @@ in their TypeScript family modules. `rule-json.ts` reads these shapes and expand
 compact records into the existing compiler inputs. `sources.json` owns source
 assembly and symbol-family expansion; the Latin Braille mapping is authored once.
 
-The manifest's `documents` field selects the citation catalog. Its `sources` tree
+The manifest's `documents` field selects the citation catalog and `authorities`
+names each citing authority's official host (`citation-authorities.json`); both
+compilers check every document's URL against its authority's host once, where the
+catalog is loaded. Its `sources` tree
 maps typed source fields to JSON filenames, including the nested `technical`
 group. Python assembles this tree and decodes it into its existing attrs models.
 TypeScript uses the same destinations through its checked family readers;
@@ -39,7 +42,7 @@ records, full citations and provenance as before.
 | Initial elisions | `apostrophes.json` | `readonly string[]` |
 | Technical descriptors | separate `technical-*.json` files | `technical-signs.ts`, `src/technical-program.ts` |
 | Longer-shortform guards and retained suffixes | `longer-shortforms.json`, `shortform-suffixes.json` | `ContextualRuleGuard`, checked word/suffix groups |
-| Citation documents | `citation-documents.json` | `RuleCitation`, retained family-specific citation types |
+| Citation documents | `citation-documents.json`, `citation-authorities.json` | `RuleCitation`, retained family-specific citation types |
 | Expected inventory counts | `inventory.json` | named numeric fields in `readInventory` |
 | Contextual expansion policy | `expansion-policy.json` | `ExpansionPolicy`, precedence and guard unions |
 | Grade 1 vocabulary and wire IDs | `grade1-vocabulary.json` | `Grade1Vocabulary`, mode/class name types, `CompositionPolicies` |
