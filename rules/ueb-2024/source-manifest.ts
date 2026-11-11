@@ -39,5 +39,23 @@ export function sourceData(...path: readonly string[]): unknown {
   return node;
 }
 
-export const CITATION_DOCUMENT_DATA: unknown = sourceFile(manifest.documents);
+function entries(value: unknown, label: string): readonly (readonly [string, unknown])[] {
+  if (!isRecord(value)) throw new Error(`Expected ${label} to be a record.`);
+  return Object.entries(value);
+}
+
+/** Every citation document lives at the official host its authority declares in citation-authorities.json. */
+export function officialDocuments(documents: unknown, authorities: unknown): unknown {
+  const hosts = new Map<unknown, unknown>(entries(authorities, "citation authorities"));
+  for (const [key, document] of entries(documents, "citation documents")) {
+    const fields = new Map(entries(document, `citation document ${key}`));
+    const host = hosts.get(fields.get("authority")), url = fields.get("url");
+    if (typeof host !== "string" || typeof url !== "string" || !url.startsWith(host)) {
+      throw new Error(`Citation document ${key} is not at its authority's official host.`);
+    }
+  }
+  return documents;
+}
+
+export const CITATION_DOCUMENT_DATA: unknown = officialDocuments(sourceFile(manifest.documents), sourceFile(manifest.authorities));
 export const SYMBOL_FAMILY_DATA: unknown = manifest.symbols;

@@ -1,5 +1,6 @@
 {
   "documents": "citation-documents.json",
+  "authorities": "citation-authorities.json",
   "sources": {
     "engine": "contextual-engine.json",
     "facts": "runtime-facts.json",

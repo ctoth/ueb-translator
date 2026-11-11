@@ -191,7 +191,7 @@ function validateAndSort(
     if (
       rule.citation.locator.trim().length === 0 ||
       rule.citation.document.trim().length === 0 ||
-      !rule.citation.url.startsWith("https://iceb.org/")
+      rule.citation.authority !== "ICEB"
     ) {
       throw new ContextualRuleCompilationError(
         "uncited-rule",

@@ -110,7 +110,7 @@ describe("technical layouts", () => {
     if (first === undefined) throw new Error("Layouts are uncited.");
     const unofficial = {
       ...TECHNICAL_LAYOUT_RULES,
-      citations: [{ ...first, url: "https://example.com/" }],
+      citations: [{ ...first, locator: "" }],
     };
     expect(() => compileTechnicalSigns(SYMBOL_RULES, TECHNICAL_SYMBOL_RULES, TECHNICAL_SIGN_MAPPINGS,
       TECHNICAL_SCRIPT_RULES, TECHNICAL_MODIFIER_RULES, TECHNICAL_SHAPE_RULES, TECHNICAL_DELIMITER_RULES,

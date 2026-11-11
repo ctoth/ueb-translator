@@ -152,11 +152,8 @@ export function compileTechnicalSigns(
   });
   const additionalPrints = new Set(additional.map((rule) => rule.print));
   for (const citation of [...[scripts, modifiers, shapes, delimiters, items, spacing.international, spacing["bana-2026"], protection, functionSpacing, numericContinuation, computerWhitespace].map((source) => source.citation), ...layouts.citations]) {
-    const authority = citation.authority;
-    const officialHost = authority === "BANA" ? "https://brailleauthority.org/" : "https://iceb.org/";
-    if (citation.locator.trim().length === 0 ||
-      !citation.url.startsWith(officialHost)) {
-      throw new Error(`Technical definitions lack an official ${authority} citation.`);
+    if (citation.locator.trim().length === 0) {
+      throw new Error(`Technical definitions lack an official ${citation.authority} citation.`);
     }
   }
   const whitespace = computerWhitespace.definitions;
