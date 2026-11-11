@@ -1,7 +1,7 @@
 import { sourceData } from "./source-manifest.js";
-import { readTechnicalSignMappings, readSymbolRules, readTechnicalDelimiterRules, readTechnicalModifierRules, readTechnicalScriptRules, readTechnicalShapeRules, readTechnicalItemRules, readTechnicalValuePatterns, readTechnicalOperationSpacingRules, readTechnicalGrade1ProtectionRules, readTechnicalFunctionSpacingRules, readTechnicalNumericContinuationRules, readTechnicalComputerWhitespaceRules, readTechnicalLayoutRules } from "./rule-json.js";
+import { isPair, mapOf, readTechnicalSignMappings, readSymbolRules, readTechnicalDelimiterRules, readTechnicalModifierRules, readTechnicalScriptRules, readTechnicalShapeRules, readTechnicalItemRules, readTechnicalValuePatterns, readTechnicalOperationSpacingRules, readTechnicalGrade1ProtectionRules, readTechnicalFunctionSpacingRules, readTechnicalNumericContinuationRules, readTechnicalComputerWhitespaceRules, readTechnicalLayoutRules } from "./rule-json.js";
 import { loadSymbolProgram } from "../../src/symbol-program.js";
-import { TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
+import { TECHNICAL_ENCLOSURES, TECHNICAL_MATRIX_ENCLOSURES, TECHNICAL_VALUE_KINDS, TECHNICAL_MODIFIERS, TECHNICAL_SCRIPT_PLACEMENTS, TECHNICAL_SHAPE_FILLS, TECHNICAL_SHAPE_NAMES, type TechnicalEnclosure, type TechnicalSignProgram } from "../../src/technical-program.js";
 import type { RuleCitation } from "./source.js";
 import { compileSymbols, type SymbolRuleSource } from "./symbols/compiler.js";
 
@@ -186,21 +186,11 @@ export function compileTechnicalSigns(
     }
     return cells;
   };
-  const enclosure = (name: TechnicalEnclosure): { open: string; close: string } => ({
-    open: symbol(enclosurePrint[name].open), close: symbol(enclosurePrint[name].close),
-  });
-  const enclosures = {
-    absolute: enclosure("absolute"), angle: enclosure("angle"), curly: enclosure("curly"),
-    round: enclosure("round"), square: enclosure("square"),
-  };
-  const matrixEnclosure = (name: keyof typeof matrixNames): { open: string; close: string } => ({
-    open: enlargedPrefix + enclosures[matrixNames[name]].open,
-    close: enlargedPrefix + enclosures[matrixNames[name]].close,
-  });
-  const matrixEnclosures = {
-    curly: matrixEnclosure("curly"), determinant: matrixEnclosure("determinant"),
-    round: matrixEnclosure("round"), square: matrixEnclosure("square"),
-  };
+  const enclosures = mapOf(Object.fromEntries(Object.entries(enclosurePrint).map(([name, pair]) =>
+    [name, { open: symbol(pair.open), close: symbol(pair.close) }])), TECHNICAL_ENCLOSURES, isPair);
+  const matrixEnclosures = mapOf(Object.fromEntries(Object.entries(matrixNames).map(([name, target]) =>
+    [name, { open: enlargedPrefix + enclosures[target].open, close: enlargedPrefix + enclosures[target].close }])),
+  TECHNICAL_MATRIX_ENCLOSURES, isPair);
   for (const cells of [
     ...TECHNICAL_SHAPE_FILLS.map((fill) => shapes.definitions.fills[fill]),
     ...TECHNICAL_SHAPE_NAMES.map((name) => shapes.definitions.names[name]),
