@@ -31,4 +31,4 @@ See the Python note for item 1's reasoning (the routing file says which sources 
 ## Surprises
 
 ## Next step
-Item 3.
+All five items committed. Not run locally: full vitest with the 100% coverage gate (new branches each have a test case: `$`/`@`/plain/`literal` in pipeline.ts, every `officialDocuments` failure path, the kept ICEB authority checks), tools/liblouis-oracle tests. CI on the pull request runs them.
