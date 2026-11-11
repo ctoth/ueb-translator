@@ -220,7 +220,7 @@
           {"where": [{"get": "row.rule.guards"}, "guard", {"and": [
             {"eq": [{"get": "guard.kind"}, "eligibility-word"]},
             {"startsWith": [{"get": "guard.word"}, {"get": "row.rule.input"}]},
-            {"test": ["^[a-z]+$", {"get": "guard.word"}]}
+            {"not": {"eq": [{"spell": [{"get": "guard.word"}, "latinLetters", "print", "braille"]}, null]}}
           ]}]},
           "guard",
           {"list": [{"after": [{"get": "guard.word"}, {"get": "row.rule.input"}]}, {"concat": [{"after": [{"get": "guard.word"}, {"get": "row.rule.input"}]}, {"get": "guard.pluralSuffix"}]}]}
