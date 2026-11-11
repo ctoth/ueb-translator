@@ -49,8 +49,8 @@ describe("compileContextualRules", () => {
       steps: [
         { name: "words", op: "table", source: "words" },
         { name: "alphabet", op: "table", source: "alphabet" },
-        { name: "readings", op: "decode", from: "words", cells: { get: "row.braille" }, alphabet: "alphabet" },
-        { name: "literals", op: "flatMap", from: "readings", rows: { list: [{ get: "row.reading.literal" }] } },
+        { name: "readings", op: "decode", from: "words", cells: "$row.braille", alphabet: "alphabet" },
+        { name: "literals", op: "flatMap", from: "readings", rows: { list: ["$row.reading.literal"] } },
       ],
       outputs: { literals: "literals" },
     };
@@ -72,7 +72,7 @@ describe("compileContextualRules", () => {
   it("rejects conflicting ambiguity outputs and stale inventory", () => {
     const distinct = (rows: unknown): unknown => runPipeline({
       steps: [{ name: "rows", op: "table", source: "rows" },
-        { name: "out", op: "distinct", from: "rows", by: { get: "row.0" } }],
+        { name: "out", op: "distinct", from: "rows", by: "$row.0" }],
       outputs: { out: "out" },
     }, { rows: toJson(rows) })["out"];
     expect(distinct([["x", "⠭"], ["x", "⠭"]])).toEqual([["x", "⠭"]]);

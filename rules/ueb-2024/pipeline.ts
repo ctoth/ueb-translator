@@ -92,8 +92,16 @@ function lookupName(scope: Scope, dotted: string, optional: boolean): Json {
   return node;
 }
 
-/** Evaluate one expression against the current row and bound variables. */
+/**
+ * Evaluate one expression against the current row and bound variables.
+ * A string starting with "$" reads a bound name's dotted path, one starting with "@" reads
+ * a dotted path into the named inputs; {"literal": s} is the string s as written.
+ */
 export function evaluate(expression: Json, scope: Scope, context: Context): Json {
+  if (typeof expression === "string") {
+    return expression.startsWith("$") ? lookupName(scope, expression.slice(1), false)
+      : expression.startsWith("@") ? path(context.inputs, expression.slice(1)) : expression;
+  }
   if (!isRecord(expression)) {
     return Array.isArray(expression) ? fail("Lists are written {\"list\": [...]}.") : expression;
   }
@@ -105,9 +113,8 @@ export function evaluate(expression: Json, scope: Scope, context: Context): Json
   const args = (): readonly Json[] => list(argument).map(value);
   const within = (name: Json, item: Json, body: Json): Json => evaluate(body, { ...scope, [text(name)]: item }, context);
   switch (operator) {
-    case "get": return lookupName(scope, text(argument), false);
+    case "literal": return text(argument);
     case "optional": return lookupName(scope, text(argument), true);
-    case "input": return path(context.inputs, text(argument));
     case "column": {
       const [name, column] = two(argument);
       return table(context, text(name)).map((row) => path(row, text(column)));
