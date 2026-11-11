@@ -200,7 +200,7 @@ export type RuleCondition<SetName extends string> =
     readonly unit: "next" | "previous";
   };
 
-interface RuleState {
+export interface RuleState {
   readonly active: (mode: number, index: number) => boolean;
   readonly classes: readonly ModeUnit[];
   readonly depth: Map<string, number>;
@@ -234,9 +234,12 @@ function letterRunEnd(units: readonly CompositionUnit[], index: number): number 
   return end;
 }
 
-function conditionTest<SetName extends string>(
+/** Named source sets: lists, or strings whose characters are the members (composition policies). */
+export type RuleSets<SetName extends string> = Readonly<Record<SetName, string | readonly string[]>>;
+
+export function conditionTest<SetName extends string>(
   condition: RuleCondition<SetName>,
-  sets: Readonly<Record<SetName, readonly string[]>>,
+  sets: RuleSets<SetName>,
 ): RuleTest {
   if ("active" in condition) {
     const mode = GRADE1_MODE_IDS[condition.active];
@@ -274,7 +277,7 @@ function conditionTest<SetName extends string>(
 
 /** Compile each rule's conditions once; the rule's `test` holds when all of them hold. */
 export function compileRules<SetName extends string, Rule extends { readonly when?: readonly RuleCondition<SetName>[] }>(
-  group: { readonly rules: readonly Rule[]; readonly sets: Readonly<Record<SetName, readonly string[]>> },
+  group: { readonly rules: readonly Rule[]; readonly sets: RuleSets<SetName> },
 ): readonly (Rule & { readonly test: RuleTest })[] {
   return group.rules.map((rule) => {
     const tests = (rule.when ?? []).map((condition) => conditionTest(condition, group.sets));
@@ -377,28 +380,26 @@ function isAsciiLineBoundary(value: string): value is "\n" | "\r" {
   return value === "\n" || value === "\r";
 }
 
+const UPPERCASE_LETTER_CLASSES = classMask(GRADE1_MODE_CLASS_IDS["uppercase-letter"]);
+const LOWERCASE_LETTER_CLASSES = classMask(GRADE1_MODE_CLASS_IDS["lowercase-letter"]);
+const NUMERIC_AMBIGUOUS_LETTER_CLASSES = LOWERCASE_LETTER_CLASSES |
+  classMask(GRADE1_MODE_CLASS_IDS["numeric-ambiguous-letter"]);
+const DIGIT_CLASSES = classMask(GRADE1_MODE_CLASS_IDS.digit);
+const SEQUENCE_BOUNDARY_CLASSES = classMask(SEQUENCE_BOUNDARY_CLASS);
+const NUMERIC_PUNCTUATION_CLASSES = classMask(GRADE1_MODE_CLASS_IDS["numeric-punctuation"]);
+
 function unitModeClasses(unit: TranslatableUnit): ModeUnit {
   switch (unit.kind) {
     case "letter":
-      return unit.uppercase
-          ? classMask(GRADE1_MODE_CLASS_IDS["uppercase-letter"])
-          : classMask(
-              GRADE1_MODE_CLASS_IDS["lowercase-letter"],
-              ...(unit.numericAmbiguous
-                ? [GRADE1_MODE_CLASS_IDS["numeric-ambiguous-letter"]]
-                : []),
-            );
+      if (unit.uppercase) return UPPERCASE_LETTER_CLASSES;
+      return unit.numericAmbiguous ? NUMERIC_AMBIGUOUS_LETTER_CLASSES : LOWERCASE_LETTER_CLASSES;
     case "digit":
-      return classMask(GRADE1_MODE_CLASS_IDS.digit);
+      return DIGIT_CLASSES;
     case "line-boundary":
     case "space":
-      return classMask(SEQUENCE_BOUNDARY_CLASS);
+      return SEQUENCE_BOUNDARY_CLASSES;
     case "symbol":
-      return classMask(
-        ...(NUMERIC_PUNCTUATION.includes(unit.source)
-          ? [GRADE1_MODE_CLASS_IDS["numeric-punctuation"]]
-          : []),
-      );
+      return NUMERIC_PUNCTUATION.includes(unit.source) ? NUMERIC_PUNCTUATION_CLASSES : 0;
   }
 }
 
@@ -582,6 +583,11 @@ export function resolveCompositionModes(
   );
 }
 
+/** Rule-condition state over parsed units, each with its mode classes. */
+export function unitRuleState(units: readonly CompositionUnit[]): RuleState {
+  return ruleState(units, units.map(unitModeClasses));
+}
+
 export function emitCompositionUnit(unit: CompositionUnit): string {
   return emittedUnit(unit);
 }
@@ -612,7 +618,7 @@ export function resolveContextualPunctuation(
   units: readonly CompositionUnit[],
   rules: readonly (QuoteRule & { readonly test: RuleTest })[] = QUOTE_RULES,
 ): readonly (string | undefined)[] {
-  const state = ruleState(units, units.map(unitModeClasses));
+  const state = unitRuleState(units);
   const { depth } = state;
   return units.map((unit, index) => {
     for (const rule of rules) {

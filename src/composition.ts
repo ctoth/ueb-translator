@@ -5,13 +5,18 @@ import {
   type ContextualBoundary,
 } from "./contextual-transducer.js";
 import {
+  compileRules,
+  conditionTest,
   emitCompositionUnit,
   parseCompositionTextWithSymbols,
   resolveContextualPunctuation,
   resolveCompositionModes,
+  unitRuleState,
   type CompositionModePlan,
   type CompositionUnit,
   type Grade1UnsupportedCharacter,
+  type RuleCondition,
+  type RuleState,
 } from "./grade1-runtime.js";
 import type { ModeProgram } from "./mode-engine.js";
 import {
@@ -28,6 +33,24 @@ export interface CompositionPolicies {
   readonly standingBoundaries: string;
   /** Letters that, after elision punctuation, keep a word standing alone (UEB 2.6.2-2.6.3). */
   readonly standingSuffixes: string;
+}
+
+type PolicyCondition = RuleCondition<keyof CompositionPolicies>;
+type LowerSignFact = "hasLowerPunctuation" | "hasRestrictingLowerPunctuation" | "hasUpperPunctuation";
+
+/**
+ * runtime-facts.json groups whose condition sets are the composition policies.
+ * `standing`: a component stands alone when its `previous` conditions hold at
+ * its first unit and its `next` conditions at its last. `lowerSigns`: a fact
+ * holds when one of its rules holds at a unit walked outward from the
+ * contraction range while `within` holds there.
+ */
+export interface CompositionScans {
+  readonly lowerSigns: {
+    readonly facts: Readonly<Record<LowerSignFact, readonly { readonly when: readonly PolicyCondition[] }[]>>;
+    readonly within: readonly PolicyCondition[];
+  };
+  readonly standing: { readonly when: readonly PolicyCondition[] };
 }
 
 export interface CompositionTextOptions {
@@ -67,14 +90,6 @@ function requiredValue<Value>(
 
 function isOneOf(value: string, values: string): boolean {
   return value.length > 0 && values.includes(value);
-}
-
-function isStandingBoundary(
-  unit: CompositionUnit,
-  policies: CompositionPolicies,
-): boolean {
-  return unit.kind === "line-boundary" ||
-    isOneOf(unit.source, policies.standingBoundaries);
 }
 
 function isLexicalJoiner(
@@ -131,72 +146,6 @@ function lexicalRanges(
     hasLetter = false;
   }
   return ranges;
-}
-
-function standingAt(
-  units: readonly CompositionUnit[],
-  range: UnitRange,
-  policies: CompositionPolicies,
-): boolean {
-  let before = range.start - 1;
-  while (
-    before >= 0 &&
-    /* v8 ignore next -- the index is bounded by the units array. */
-    isOneOf(units[before]?.source ?? "", policies.openingStandingPunctuation)
-  ) before -= 1;
-  if (
-    before >= 0 &&
-    !isStandingBoundary(requiredValue(units[before], "Missing preceding unit."), policies)
-  ) return false;
-
-  let after = range.end;
-  while (
-    after < units.length &&
-    /* v8 ignore next -- the index is bounded by the units array. */
-    isOneOf(units[after]?.source ?? "", policies.closingStandingPunctuation)
-  ) after += 1;
-  return after >= units.length || isStandingBoundary(
-    requiredValue(units[after], "Missing following unit."),
-    policies,
-  );
-}
-
-function lowerSignContext(
-  units: readonly CompositionUnit[],
-  range: UnitRange,
-  policies: CompositionPolicies,
-): {
-  readonly hasLowerPunctuation: boolean;
-  readonly hasRestrictingLowerPunctuation: boolean;
-  readonly hasUpperPunctuation: boolean;
-} {
-  let hasLowerPunctuation = false;
-  let hasRestrictingLowerPunctuation = false;
-  let hasUpperPunctuation = false;
-  const inspect = (initial: number, step: -1 | 1): void => {
-    let index = initial;
-    while (index >= 0 && index < units.length) {
-      const unit = units[index];
-      if (unit === undefined || unit.kind === "letter" || unit.kind === "digit" ||
-        unit.kind === "space" || unit.kind === "line-boundary") break;
-      if (isOneOf(unit.source, policies.lowerPunctuation)) {
-        hasLowerPunctuation = true;
-        const joinsLetters = isOneOf(unit.source, policies.elisionPunctuation) &&
-          units[index - 1]?.kind === "letter" && units[index + 1]?.kind === "letter";
-        hasRestrictingLowerPunctuation ||= !joinsLetters;
-      } else {
-        hasUpperPunctuation = true;
-      }
-      index += step;
-    }
-  };
-  inspect(range.start - 1, -1);
-  inspect(range.end, 1);
-  return {
-    hasLowerPunctuation,
-    hasRestrictingLowerPunctuation,
-    hasUpperPunctuation,
-  };
 }
 
 function programBase(
@@ -380,6 +329,7 @@ export function compose(
   symbols: SymbolProgram,
   modes: ModeProgram,
   policies: CompositionPolicies,
+  scans: CompositionScans,
   contractions?: ComposedContractionProgram,
 ): ComposedTranslator {
   // Reject mismatched empty packages at the composition boundary.
@@ -387,6 +337,27 @@ export function compose(
     throw new Error("A composition requires compiled symbol and mode programs.");
   }
   const symbolRuntime = loadSymbolProgram(symbols);
+  const standingTests = scans.standing.when.map((condition) => ({
+    atLast: "unit" in condition && condition.unit === "next",
+    test: conditionTest(condition, policies),
+  }));
+  const isStanding = (state: RuleState, component: UnitRange): boolean =>
+    standingTests.every(({ atLast, test }) => test(state, atLast ? component.end - 1 : component.start));
+  const within = scans.lowerSigns.within.map((condition) => conditionTest(condition, policies));
+  const lowerSignRules = new Map(Object.entries(scans.lowerSigns.facts)
+    .map(([fact, rules]) => [fact, compileRules({ rules, sets: policies })]));
+  const lowerSigns = (
+    state: RuleState,
+    range: UnitRange,
+  ): (fact: LowerSignFact) => boolean => {
+    const walked: number[] = [];
+    const inSequence = (index: number): boolean => within.every((test) => test(state, index));
+    for (let index = range.start - 1; index >= 0 && inSequence(index); index -= 1) walked.push(index);
+    for (let index = range.end; index < state.units.length && inSequence(index); index += 1) walked.push(index);
+    if (walked.length === 0) return () => false;
+    return (fact) => requiredValue(lowerSignRules.get(fact), "Missing lower-sign fact.")
+      .some((rule) => walked.some((index) => rule.test(state, index)));
+  };
   const ambiguityPrints = new Set(
     contractions?.grade1Ambiguities.map(([print]) => print),
   );
@@ -419,13 +390,14 @@ export function compose(
 
       if (contractions !== undefined) {
         const [bucketAlphabet] = contractions.matcher;
+        const state = unitRuleState(units);
         for (const lexical of lexicalRanges(units, policies)) {
           const eligibilityWord = units.slice(lexical.start, lexical.end)
             .map((unit) => eligibilityCharacter(unit, policies, bucketAlphabet))
             .join("");
           for (const range of contractionRanges(units, lexical, bucketAlphabet)) {
             const component = dashComponentAt(units, lexical, range, policies);
-            const standing = options.standing ?? standingAt(units, component, policies);
+            const standing = options.standing ?? isStanding(state, component);
             const programLiteralComponent = hasOnlyProgramLiteralLetters(
               units,
               component,
@@ -469,7 +441,7 @@ export function compose(
             ) {
               continue;
             }
-            const lowerContext = lowerSignContext(units, range, policies);
+            const lowerSign = lowerSigns(state, range);
             const word = units.slice(range.start, range.end)
               .map((unit) => requiredValue(
                 programBase(unit, bucketAlphabet),
@@ -503,10 +475,9 @@ export function compose(
                   exclusionComponent(units, lexical, range, policies, bucketAlphabet),
                   exclusionComponent(units, component, range, policies, bucketAlphabet),
                 ],
-                hasLowerPunctuation: lowerContext.hasLowerPunctuation,
-                hasRestrictingLowerPunctuation:
-                  lowerContext.hasRestrictingLowerPunctuation,
-                hasUpperPunctuation: lowerContext.hasUpperPunctuation,
+                hasLowerPunctuation: lowerSign("hasLowerPunctuation"),
+                hasRestrictingLowerPunctuation: lowerSign("hasRestrictingLowerPunctuation"),
+                hasUpperPunctuation: lowerSign("hasUpperPunctuation"),
                 atWordStart: !units.slice(component.start, range.start)
                   .some((unit) => unit.kind === "letter"),
                 precededByLetter: units[range.start - 1]?.kind === "letter",
