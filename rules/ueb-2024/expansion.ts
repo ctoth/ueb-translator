@@ -1,20 +1,13 @@
 /** The one run of expansion-pipeline.json over the authored sources. */
 import { CITATION_DOCUMENT_DATA, sourceData } from "./source-manifest.js";
-import { runPipeline, toJson, type Json } from "./pipeline.js";
+import { record, runPipeline, toJson, type Json } from "./pipeline.js";
 import { SYMBOL_RULES } from "./symbols/source.js";
 
-const INPUTS = ["expansion", "groups", "families", "shortforms", "appendix", "constraints",
-  "longerShortforms", "shortformSuffixes"] as const;
-
-/** Run the pipeline over the authored sources, with named inputs replaced (tests change one source). */
+/** Run the pipeline over the inputs sources.json routes to it, with named inputs replaced (tests change one source). */
 export function expandSources(overrides: Readonly<Record<string, unknown>> = {}): Readonly<Record<string, readonly Json[]>> {
-  const inputs: Record<string, Json> = {
-    documents: toJson(CITATION_DOCUMENT_DATA),
-    symbols: toJson(SYMBOL_RULES),
-    ...Object.fromEntries(INPUTS.map((name) => [name, toJson(sourceData(name))])),
-  };
-  for (const [name, value] of Object.entries(overrides)) inputs[name] = toJson(value);
-  return runPipeline(toJson(sourceData("pipeline")), inputs);
+  const routed = record(toJson(sourceData("pipeline", "inputs")));
+  const inputs = record(toJson({ documents: CITATION_DOCUMENT_DATA, symbols: SYMBOL_RULES, ...routed, ...overrides }));
+  return runPipeline(toJson(sourceData("pipeline", "program")), inputs);
 }
 
 export const EXPANSION: Readonly<Record<string, readonly Json[]>> = expandSources();

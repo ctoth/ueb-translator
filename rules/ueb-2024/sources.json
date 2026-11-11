@@ -3,19 +3,23 @@
   "sources": {
     "engine": "contextual-engine.json",
     "facts": "runtime-facts.json",
-    "pipeline": "expansion-pipeline.json",
-    "expansion": "expansion-policy.json",
+    "pipeline": {
+      "program": "expansion-pipeline.json",
+      "inputs": {
+        "expansion": "expansion-policy.json",
+        "groups": "grade2-rules.json",
+        "families": "grade2-families.json",
+        "shortforms": "shortforms.json",
+        "appendix": "appendix1.json",
+        "constraints": "constraints.json",
+        "longerShortforms": "longer-shortforms.json",
+        "shortformSuffixes": "shortform-suffixes.json"
+      }
+    },
     "vocabulary": "grade1-vocabulary.json",
     "modes": "modes/rules.json",
     "policies": "policies/rules.json",
-    "groups": "grade2-rules.json",
-    "families": "grade2-families.json",
-    "shortforms": "shortforms.json",
-    "appendix": "appendix1.json",
-    "constraints": "constraints.json",
     "elisions": "apostrophes.json",
-    "longerShortforms": "longer-shortforms.json",
-    "shortformSuffixes": "shortform-suffixes.json",
     "inventory": "inventory.json",
     "technical": {
       "mappings": "technical-sign-mappings.json",

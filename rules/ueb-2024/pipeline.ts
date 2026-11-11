@@ -26,7 +26,7 @@ function list(value: Json): readonly Json[] {
 function text(value: Json): string {
   return typeof value === "string" ? value : fail(`Expected text, got ${JSON.stringify(value)}.`);
 }
-function record(value: Json): Row {
+export function record(value: Json): Row {
   return isRecord(value) ? value : fail(`Expected a record, got ${JSON.stringify(value)}.`);
 }
 /** Conditions are booleans; anything else is a malformed source, not "false". */
