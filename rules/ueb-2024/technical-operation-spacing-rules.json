@@ -4,6 +4,7 @@
       "source": "technical-2014",
       "locator": "1.1.2, p.1 (caller-selected presentation)"
     },
+    "field": "operationSpacing",
     "definitions": {
       "spaced": true,
       "unspaced": false
@@ -14,6 +15,7 @@
       "source": "bana-math-2026",
       "locator": "Introduction and 2 Spacing of signs, p.2 (agency-selected teaching presentation)"
     },
+    "field": "production",
     "definitions": {
       "standardized": false,
       "teaching": true

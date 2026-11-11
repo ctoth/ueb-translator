@@ -67,6 +67,11 @@ export interface BanaTechnicalProfile {
   readonly production: "standardized" | "teaching";
 }
 
+export interface TechnicalOperationSpacing<Value extends string> {
+  readonly field: string;
+  readonly definitions: Readonly<Record<Value, boolean>>;
+}
+
 export type TechnicalProfile =
   | BanaTechnicalProfile
   | InternationalTechnicalProfile;
@@ -377,9 +382,10 @@ export interface TechnicalSignProgram extends SymbolProgram {
     readonly namePattern: string;
   };
   readonly grade1Protection: TechnicalGrade1Protection;
+  /** Per jurisdiction: the profile field whose value selects a spacing definition. */
   readonly operationSpacing: {
-    readonly international: Readonly<Record<InternationalTechnicalProfile["operationSpacing"], boolean>>;
-    readonly "bana-2026": Readonly<Record<BanaTechnicalProfile["production"], boolean>>;
+    readonly international: TechnicalOperationSpacing<InternationalTechnicalProfile["operationSpacing"]>;
+    readonly "bana-2026": TechnicalOperationSpacing<BanaTechnicalProfile["production"]>;
   };
   readonly itemPolicy: TechnicalItemPolicy;
   /** Accepted API input grammars, matched with Unicode semantics. */

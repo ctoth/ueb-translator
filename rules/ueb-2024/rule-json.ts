@@ -227,9 +227,12 @@ export function readTechnicalItemRules(value: unknown): TechnicalItemSource {
 }
 export function readTechnicalValuePatterns(value: unknown): TechnicalSignProgram["valuePatterns"] { return mapOf(value, TECHNICAL_VALUE_KINDS, isString); }
 export function readTechnicalOperationSpacingRules(value: unknown): TechnicalOperationSpacingSource {
-  const source = record(value), bana = record(source["bana-2026"]);
-  return { international: technical(source["international"], value => mapOf(value, ["spaced", "unspaced"], isBoolean)),
-    "bana-2026": { citation: cited(bana["citation"]), definitions: mapOf(bana["definitions"], ["standardized", "teaching"], isBoolean) } };
+  const source = record(value);
+  const spacing = <Value extends string>(rule: unknown, values: readonly Value[]) => ({
+    ...technical(rule, value => mapOf(value, values, isBoolean)), field: string(record(rule)["field"]),
+  });
+  return { international: spacing(source["international"], ["spaced", "unspaced"]),
+    "bana-2026": spacing(source["bana-2026"], ["standardized", "teaching"]) };
 }
 export function readTechnicalGrade1ProtectionRules(value: unknown): TechnicalGrade1ProtectionSource {
   const source = record(value), definitions = record(source["definitions"]);

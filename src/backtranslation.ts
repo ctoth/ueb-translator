@@ -398,9 +398,8 @@ function decodeToken(entry: CompiledSymbol): DecodeToken | undefined {
 }
 
 const GRADE1_ENTRIES = invertSymbolProgram(GRADE1_SYMBOL_PROGRAM);
-const TYPEFORM_MODE_IDS = Object.entries(GRADE1_MODE_IDS)
-  .filter(([name]) => name.startsWith("typeform-"))
-  .map(([, modeId]) => modeId);
+const TYPEFORM_MODE_IDS = Object.values(GRADE1_RUNTIME_FACTS.typeforms.modes)
+  .map((name) => GRADE1_MODE_IDS[name]);
 /** Numeric-mode punctuation (runtime-facts.json numeric) by its symbol cell. */
 const NUMERIC_PUNCTUATION: readonly string[] = GRADE1_RUNTIME_FACTS.numeric.punctuation;
 const NUMERIC_PUNCTUATION_BY_CELL: ReadonlyMap<string, string> = new Map(
@@ -410,7 +409,7 @@ const NUMERIC_PUNCTUATION_BY_CELL: ReadonlyMap<string, string> = new Map(
 );
 /** A curly apostrophe needs preceding letters or a quote-opening context (runtime-facts.json quotes). */
 const APOSTROPHE_CONTEXT = new RegExp(
-  `(?:^|[\\s${GRADE1_RUNTIME_FACTS.quotes.openingContext.replace(/[\\\]^-]/gu, "\\$&")}]|\\p{L}\\p{M}*)$`, "u",
+  `(?:^|[\\s${GRADE1_RUNTIME_FACTS.quotes.sets.opening.join("").replace(/[\\\]^-]/gu, "\\$&")}]|\\p{L}\\p{M}*)$`, "u",
 );
 const SEMANTIC_CONTROLS: readonly SemanticControlToken[] = [
   { braille: GRADE1_RUNTIME_FACTS.grouping.open, grade2Lexical: false, kind: "semantic-control" },

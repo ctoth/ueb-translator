@@ -53,3 +53,9 @@ export const GRADE1_VOCABULARY: Grade1Vocabulary = readGrade1Vocabulary(sourceDa
 export const MODE_NAMES: readonly ModeRuleName[] = orderedNames(GRADE1_VOCABULARY.modes);
 export const MEMBER_CLASSES: readonly ModeMemberClass[] = orderedNames(GRADE1_VOCABULARY.classes);
 export const POLICY_NAMES: readonly CompositionPolicyName[] = orderedNames(GRADE1_VOCABULARY.policies);
+
+/** Compiled composition policies: one member string for every vocabulary policy name. */
+export function isCompositionPolicies(value: unknown): value is CompositionPolicies {
+  return record(value) && Object.keys(value).length === POLICY_NAMES.length &&
+    POLICY_NAMES.every((name) => typeof value[name] === "string");
+}
